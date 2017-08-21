@@ -5,6 +5,7 @@
   "homepage": "http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx",
   "dependencies": {
     "bootstrap": "4.0.0-alpha.6",
+    "chosen-js": "^1.7.0",
     "datatables.net": "^1.10.15",
     "jquery": "^3.2.1",
     "tape-promise": "^2.0.1"

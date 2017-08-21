@@ -7,7 +7,12 @@ NODE_PATH = node_modules
 NODE_CMD = NODE_PATH="$(NODE_PATH)" $(NODE)
 OUT_FILES = \
     www/js/bundle.clic.min.js \
+    www/js/bundle.libraries.min.js \
     www/css/bundle.libraries.min.css \
+
+BUNDLE_LIBS = \
+    chosen-js \
+    jquery \
 
 
 all: test lint compile
@@ -43,7 +48,7 @@ www/js/bundle.clic.min.js: package.json lib/*
 	(cd www/js && ln -sf ../../lib .)
 	(cd www/js && ln -sf ../../node_modules .)
 	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
-	        -x ace-editor \
+	        $(foreach l,$(BUNDLE_LIBS),-x $(l)) \
 	        -g uglifyify \
 	        lib/index.js \
 	    | $(NODE_CMD) $(NODE_PATH)/exorcist/bin/exorcist.js $@.map \
@@ -53,9 +58,18 @@ www/js/bundle.clic.min.js: package.json lib/*
 	    > $@.mktmp
 	mv $@.mktmp $@
 
+www/js/bundle.libraries.min.js: package.json
+	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js \
+	        $(foreach l,$(BUNDLE_LIBS),-r $(l)) \
+	        -g uglifyify \
+	    > $@.mktmp
+	mv $@.mktmp $@
+
 www/css/bundle.libraries.min.css: package.json \
+    node_modules/chosen-js/chosen.css \
     node_modules/bootstrap/dist/css/bootstrap.min.css
 	cat $^ > $@.mktmp
+	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 	mv $@.mktmp $@
 
 .PHONY: pre_commit compile test browser_test lint clean
