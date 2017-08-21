@@ -1,0 +1,58 @@
+#control-bar {
+    display: flex;
+    flex-flow: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    z-index: 2;
+    background: #f5f5f5;
+    border-left: 1px solid #AAA;
+    transition: right 0.3s ease;
+}
+
+#control-bar.in {
+    width: 25em;
+}
+
+#control-bar > .handle {
+    padding: 10px;
+    border-bottom: 1px solid #AAA;
+    font-size: inherit;
+    line-height: initial;
+    cursor: pointer;
+    text-align: right;
+}
+
+#control-bar fieldset {
+    overflow: hidden;
+    height: 70px;
+    flex-grow: 0.0001;
+    transition: flex-grow 0.3s;
+}
+
+#control-bar fieldset:not([disabled]) {
+    flex-grow: 1;
+    border-bottom: 1px solid #AAA;
+    height: auto;
+}
+
+#control-bar fieldset legend {
+    display: block;
+    height: 70px;
+    line-height: 70px;
+    margin: 0;
+    text-align: center;
+    border-bottom: 1px solid #AAA;
+    background: #EEE;
+    cursor: pointer;
+}
+
+#control-bar fieldset:not([disabled]) > legend {
+    background: #CCC;
+}
+
+#control-bar fieldset > legend + * {
+    padding: 5px;
+}

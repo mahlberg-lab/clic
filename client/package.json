@@ -1,0 +1,30 @@
+{
+  "name": "clic-client",
+  "version": "1.6.0-dev0",
+  "description": "CLiC clientside code",
+  "homepage": "http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx",
+  "dependencies": {
+    "bootstrap": "4.0.0-alpha.6",
+    "datatables.net": "^1.10.15",
+    "jquery": "^3.2.1",
+    "tape-promise": "^2.0.1"
+  },
+  "maintainers": [
+    {
+      "name": "Jamie Lentin",
+      "email": "jamie.lentin@shuttlethread.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/birmingham-ccr/clic"
+  },
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "exorcist": "^0.4.0",
+    "jslint": "^0.11.0",
+    "tape": "^4.8.0",
+    "uglifyify": "^4.0.3"
+  }
+}
