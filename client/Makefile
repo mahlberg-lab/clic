@@ -12,7 +12,7 @@ OUT_FILES = \
 
 BUNDLE_LIBS = \
     chosen-js \
-    jquery \
+    jquery/dist/jquery.slim.js \
 
 
 all: test lint compile

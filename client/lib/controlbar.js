@@ -1,6 +1,9 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
+var jQuery = require('jquery/dist/jquery.slim.js');
+global.jQuery = jQuery;  // So chosen-js can find it
+var chosen = require('chosen-js');
 
 function controlbar_init(control_bar) {
     control_bar.addEventListener('click', function (e) {
@@ -12,6 +15,10 @@ function controlbar_init(control_bar) {
                 }
             }
         }
+    });
+
+    Array.prototype.forEach.call(control_bar.querySelectorAll('.chosen-select'), function (el, i) {
+        jQuery(el).chosen();
     });
 }
 
