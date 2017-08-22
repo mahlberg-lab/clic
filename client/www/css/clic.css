@@ -60,12 +60,26 @@
 }
 
 
-#control-bar {
-    right: -25em;
-    width: 25em;
+@media (max-width: 768px) {
+    #control-bar {
+        right: -100%;
+        width: 100%;
+    }
+
+    #control-bar.in {
+        right: 0;
+        width: 100%;
+    }
 }
 
-#control-bar.in {
-    right: 0;
-    width: 25em;
+@media (min-width: 768px) {
+    #control-bar {
+        right: -25em;
+        width: 25em;
+    }
+
+    #control-bar.in {
+        right: 0;
+        width: 25em;
+    }
 }

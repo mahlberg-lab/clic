@@ -37,6 +37,10 @@ function controlbar_init(control_bar) {
         }
     });
 
+    if (window.screen.availWidth > 960) {
+        control_bar.classList.add('in');
+    }
+
     Array.prototype.forEach.call(control_bar.querySelectorAll('.chosen-select'), function (el, i) {
         jQuery(el).chosen();
     });
