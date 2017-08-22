@@ -27,6 +27,8 @@ function controlbar_init(control_bar) {
                     control_bar.elements[i].disabled = (control_bar.elements[i].name !== e.target.parentElement.name);
                 }
             }
+            control_bar.dispatchEvent(new window.Event('change'));
+            return;
         }
 
         if (clickedOn('handle')) {
