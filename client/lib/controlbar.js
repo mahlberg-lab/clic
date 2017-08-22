@@ -8,12 +8,30 @@ var chosen = require('chosen-js');
 function controlbar_init(control_bar) {
     control_bar.addEventListener('click', function (e) {
         var i;
+
+        function clickedOn(className) {
+            var el = e.target;
+
+            while (el.parentElement) {
+                if (el.classList.contains(className)) {
+                    return true;
+                }
+                el = el.parentElement;
+            }
+            return false;
+        }
+
         if (e.target.tagName === 'LEGEND') {
             for (i = 0; i < control_bar.elements.length; i++) {
                 if (control_bar.elements[i].tagName === 'FIELDSET') {
                     control_bar.elements[i].disabled = (control_bar.elements[i].name !== e.target.parentElement.name);
                 }
             }
+        }
+
+        if (clickedOn('handle')) {
+            control_bar.classList.toggle('in');
+            return;
         }
     });
 

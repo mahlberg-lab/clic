@@ -4,25 +4,27 @@
     position: fixed;
     top: 0;
     right: 0;
+    transition: right 0.3s ease;
     bottom: 0;
     height: 100%;
     z-index: 2;
     background: #f5f5f5;
     border-left: 1px solid #AAA;
-    transition: right 0.3s ease;
-}
-
-#control-bar.in {
-    width: 25em;
 }
 
 #control-bar > .handle {
-    padding: 10px;
+    padding: 20px;
     border-bottom: 1px solid #AAA;
     font-size: inherit;
     line-height: initial;
     cursor: pointer;
     text-align: right;
+}
+
+#control-bar > .handle .icon {
+    position: fixed;
+    top: 8px;
+    right: 10px;
 }
 
 #control-bar fieldset {
@@ -55,4 +57,15 @@
 
 #control-bar fieldset > legend + * {
     padding: 5px;
+}
+
+
+#control-bar {
+    right: -25em;
+    width: 25em;
+}
+
+#control-bar.in {
+    right: 0;
+    width: 25em;
 }
