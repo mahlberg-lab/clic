@@ -1,6 +1,7 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true */
 /*global Promise */
+require('./polyfill.js');
 var controlbar = require('./controlbar.js');
 
 function page_load(e) {
