@@ -44,7 +44,43 @@
   <fieldset name="concordance">
     <legend>Concordance</legend>
     <div>
-      <p>Moo</p>
+
+      <label>Search the corpora:</label>
+<select name="corpora" data-placeholder="" class="chosen-select" multiple style="width:100%;" tabindex="4">
+<optgroup label="Entire corpora">
+    <option value="dickens" selected="selected">All dickens</option> 
+    <option value="ntc">All 19thC novels</option> 
+</optgroup>
+<optgroup label="Individual dickens novels" disabled="disabled">
+    <option>Little Dorrit</option> 
+</optgroup>
+<optgroup label="Individual 19thC novels">
+    <option selected>Agnes Grey</option> 
+    <option selected>Antonina, or the Fall of Rome</option> 
+    <option>Armadale</option> 
+    <option>Cranford</option> 
+    <option>Daniel Deronda</option>
+</optgroup>
+    </select>
+
+      <label>Only in subsets:</label>
+<select name="subsets" data-placeholder="" class="chosen-select" style="width:100%;" tabindex="4">
+    <option value="all">All text</option> 
+    <option value="suspension">Suspensions</option> 
+    <option value="long_suspension" selected="selected">Long suspensions</option> 
+</select>
+
+      <label>Containing the types:</label>
+  <input type="text" name="types" placeholder="(any type)" class="form-control">
+  <div style="margin-left: 1em">
+                <label class="radio-inline">
+                    <input name="selectWords" type="radio" id="wholePhrase" value="whole" checked="" style="margin-top: 8px">Whole phrase
+                </label>
+                <label class="radio-inline">
+                    <input name="selectWords" type="radio" id="any" value="any" style="margin-top: 8px">Any
+                </label>
+            </div>
+
     </div>
   </fieldset>
 
