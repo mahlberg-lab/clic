@@ -53,4 +53,9 @@ ControlBar.prototype.reload = function reload(page_opts) {
     //TODO: refresh page
 };
 
+ControlBar.prototype.new_data = function new_data(data) {
+    console.log("TODO: The control bar said");
+    console.log(data);
+};
+
 module.exports = ControlBar;

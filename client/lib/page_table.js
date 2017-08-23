@@ -52,15 +52,20 @@ PageTable.prototype.reload = function reload(page_opts) {
     return new Promise(function (resolve, reject) {
         var table_opts;
 
+        function resolve_second(table, data) {
+            // Ditch the first argument, resolve with the data
+            resolve(data);
+        }
+
         // Make available for ajax / reload_data
         self.page_opts = page_opts;
         self.ajax_reject = reject;
 
         if (self.table) {
-            self.table.reload(resolve.bind(null, {}));
+            self.table.reload(resolve_second);
         } else {
             table_opts = self.table_opts;
-            table_opts.fnInitComplete = resolve.bind(null, {});
+            table_opts.fnInitComplete = resolve_second;
             self.table = jQuery(self.table_el).DataTable(table_opts);
         }
     });

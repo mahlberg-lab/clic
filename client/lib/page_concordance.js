@@ -95,11 +95,14 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
             if (data[i][5] > 1) {
                 totalMatches++;
             }
+            //TODO: Set data[i].DT_RowClass at this point?
         }
 
-        //TODO: Send allWords, totalMatches back to controlbar
-        console.log(["allWords, totalMatches", allWords, totalMatches]);
-        return { data: data };
+        return {
+            allWords: allWords,
+            totalMatches: totalMatches,
+            data: data,
+        };
     });
 };
 
