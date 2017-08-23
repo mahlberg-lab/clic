@@ -6,6 +6,7 @@ var parse_qs = require('./parse_qs.js').parse_qs;
 var ControlBar = require('./controlbar.js');
 
 var page_classes = {
+    '/concordance': require('./page_concordance.js'),
     '': require('./page_static.js'),
 };
 
