@@ -1,0 +1,17 @@
+#content {
+    padding: 3px;
+}
+
+@media (min-width: 768px) {
+    #content {
+        padding: 10px;
+    }
+}
+@media (min-width: 960px) {
+    #content {
+        transition: padding-right 0.3s ease;
+    }
+    #control-bar.in + #content {
+        padding-right: 26rem;
+    }
+}
