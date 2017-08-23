@@ -5,7 +5,9 @@ var jQuery = require('jquery/dist/jquery.slim.js');
 global.jQuery = jQuery;  // So chosen-js can find it
 var chosen = require('chosen-js');
 
-module.exports.init = function init(control_bar) {
+function ControlBar(control_bar) {
+    this.control_bar = control_bar;
+
     control_bar.addEventListener('click', function (e) {
         var i;
 
@@ -37,11 +39,18 @@ module.exports.init = function init(control_bar) {
         }
     });
 
+}
+
+ControlBar.prototype.reload = function reload(page_opts) {
     if (window.screen.availWidth > 960) {
-        control_bar.classList.add('in');
+        this.control_bar.classList.add('in');
     }
 
-    Array.prototype.forEach.call(control_bar.querySelectorAll('.chosen-select'), function (el, i) {
+    Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
         jQuery(el).chosen();
     });
+
+    //TODO: refresh page
 };
+
+module.exports = ControlBar;
