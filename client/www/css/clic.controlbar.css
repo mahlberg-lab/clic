@@ -29,7 +29,7 @@
 
 #control-bar fieldset {
     overflow: hidden;
-    height: 70px;
+    height: 5rem;
     flex-grow: 0.0001;
     transition: flex-grow 0.3s;
 }
@@ -42,8 +42,8 @@
 
 #control-bar fieldset legend {
     display: block;
-    height: 70px;
-    line-height: 70px;
+    height: 5rem;
+    line-height: 5rem;
     margin: 0;
     text-align: center;
     border-bottom: 1px solid #AAA;
@@ -74,12 +74,12 @@
 
 @media (min-width: 768px) {
     #control-bar {
-        right: -25em;
-        width: 25em;
+        right: -25rem;
+        width: 25rem;
     }
 
     #control-bar.in {
         right: 0;
-        width: 25em;
+        width: 25rem;
     }
 }
