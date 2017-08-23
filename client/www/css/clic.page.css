@@ -13,9 +13,9 @@ html {
 }
 @media (min-width: 960px) {
     #content {
-        transition: padding-right 0.3s ease;
+        transition: margin-right 0.3s ease;
     }
     #control-bar.in + #content {
-        padding-right: 26rem;
+        margin-right: 25rem;
     }
 }
