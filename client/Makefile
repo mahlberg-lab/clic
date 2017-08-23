@@ -14,6 +14,7 @@ BUNDLE_LIBS = \
     chosen-js \
     datatables.net \
     jquery/dist/jquery.slim.js \
+    nouislider \
 
 
 all: test lint compile
@@ -68,6 +69,7 @@ www/js/bundle.libraries.min.js: package.json
 
 www/css/bundle.libraries.min.css: package.json \
     node_modules/chosen-js/chosen.css \
+    node_modules/nouislider/distribute/nouislider.min.css \
     node_modules/bootstrap/dist/css/bootstrap.min.css
 	cat $^ > $@.mktmp
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/

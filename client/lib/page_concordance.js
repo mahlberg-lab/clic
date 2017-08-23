@@ -54,29 +54,38 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
             testIdxMod: 'chapter',
         }; //TODO:
 
-    this.kwicTerms = {};
-    this.kwicSpan = [{ignore: true}, {ignore: true}];
-
-    // Values has 2 values, a min and max, which we treat to be
+    // Values has 2 values, "(min):(max)", which we treat to be
     // min and max span inclusive, viz.
     //      [0]<------------------------->[1]
     // -5 : -4 : -3 : -2 : -1 |  1 :  2 :  3 :  4 :  5
     // L5 : L4 : L3 : L2 : L1 | R1 : R2 : R3 : R4 : R5
-    if (this.page_opts['kwic-span-l'] < 0) {
-        this.kwicSpan[0] = {
-            start: -Math.min(this.page_opts['kwic-span-r'], -1),
-            stop: -this.page_opts['kwic-span-l'],
-            reverse: true,
-            prefix: 'l',
-        };
+    // Output a configuration suitable for testList
+    function parseKwicSpan(values) {
+        var out = [{ignore: true}, {ignore: true}],
+            ks = values.split(':');
+
+        if (ks[0] < 0) {
+            out[0] = {
+                start: -Math.min(ks[1], -1),
+                stop: -ks[0],
+                reverse: true,
+                prefix: 'l',
+            };
+        }
+
+        if (ks[1] >= 0) {
+            out[1] = {
+                start: Math.max(ks[0], 1),
+                stop: ks[1],
+                prefix: 'r',
+            };
+        }
+
+        return out;
     }
-    if (this.page_opts['kwic-span-r'] >= 0) {
-        this.kwicSpan[1] = {
-            start: Math.max(this.page_opts['kwic-span-l'], 1),
-            stop: this.page_opts['kwic-span-r'],
-            prefix: 'r',
-        };
-    }
+
+    this.kwicTerms = {};
+    this.kwicSpan = parseKwicSpan(this.page_opts['kwic-span']);
 
     (this.page_opts['kwic-terms'].split(/\s+/) || []).map(function (t, i) {
         self.kwicTerms[t.toLowerCase()] = i + 1;
