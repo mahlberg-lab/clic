@@ -31,7 +31,9 @@ function page_load(e) {
     }).then(function (rvs) {
         rvs.forEach(function (rv) {
             // TODO: Display messages, etc.
-            console.log(rv);
+            if (rv && rv.message) {
+                console.log(rv);
+            }
         });
     }).catch(function (err) {
         console.log("TODO: " + err);
