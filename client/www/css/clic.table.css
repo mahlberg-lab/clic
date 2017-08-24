@@ -1,7 +1,31 @@
-#content table.dataTable>tbody>tr.kwic-highlight-2>td { background: #e6f5c9; }
-#content table.dataTable>tbody>tr.kwic-highlight-3>td { background: #b3e2cd; }
-#content table.dataTable>tbody>tr.kwic-highlight-4>td { background: #cbd5e8; }
-#content table.dataTable>tbody>tr.kwic-highlight-1>td { background: #f4cae4; }
+#content table.dataTable>tbody>tr {
+    cursor: pointer;
+}
+#content table.dataTable>tbody>tr.kwic-highlight-2 { background: #e6f5c9; }
+#content table.dataTable>tbody>tr.kwic-highlight-3 { background: #b3e2cd; }
+#content table.dataTable>tbody>tr.kwic-highlight-4 { background: #cbd5e8; }
+#content table.dataTable>tbody>tr.kwic-highlight-1 { background: #f4cae4; }
+#content table.dataTable>tbody>tr.selected {
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(240, 220,  78, 0.4),
+        rgba(240, 220,  78, 0.4) 10px,
+        rgba(240, 220,  78, 0.3) 10px,
+        rgba(240, 220,  78, 0.3) 20px
+    );
+}
+#content table.dataTable>tbody>tr:hover {
+    background: rgba(70, 74, 76, 0.3);
+}
+#content table.dataTable>tbody>tr.selected:hover {
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(70, 74, 76, 0.4),
+        rgba(70, 74, 76, 0.4) 10px,
+        rgba(70, 74, 76, 0.3) 10px,
+        rgba(70, 74, 76, 0.3) 20px
+    );
+}
 
 #content table.dataTable tr.match-l1 > td.contextLeft .node-1,
 #content table.dataTable tr.match-l2 > td.contextLeft .node-2,

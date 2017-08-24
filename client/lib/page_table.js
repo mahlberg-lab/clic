@@ -8,7 +8,7 @@ if (window && window.document) {
 }
 
 function PageTable(content_el) {
-    content_el.innerHTML = '<table class="table table-hover" cellspacing="0" width="100%"></table>';
+    content_el.innerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
     this.table_el = content_el.children[0];
     this.table_opts = {};
 
@@ -76,6 +76,10 @@ PageTable.prototype.reload = function reload(page_opts) {
                 pageCells.nodes().each(function (cell, i) {
                     cell.innerHTML = pageStart + i + 1;
                 });
+            });
+
+            self.table.on('click', 'tr', function () {
+                jQuery(this).toggleClass('selected');
             });
         }
     });
