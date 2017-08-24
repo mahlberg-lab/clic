@@ -92,18 +92,19 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     });
 
     return api.get('concordance', api_opts).then(function (data) {
-        var i, allWords = {}, totalMatches = 0;
+        var i, r, allWords = {}, totalMatches = 0;
 
         data = data.concordances;
-        data.shift();
+        data.shift();  //NB: CLiC 1.5 puts a useless total as the first item
 
         // Add KWICGrouper match column
         for (i = 0; i < data.length; i++) {
-            data[i].push(self.generateKwicRow(data[i], allWords));
+            r = self.generateKwicRow(data[i], allWords);
 
-            if (data[i][5] > 1) {
+            if (r[0] > 0) {
                 totalMatches++;
             }
+            data[i].push(r);
             //TODO: Set data[i].DT_RowClass at this point?
         }
 
