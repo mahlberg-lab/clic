@@ -67,6 +67,16 @@ PageTable.prototype.reload = function reload(page_opts) {
             table_opts = self.table_opts;
             table_opts.fnInitComplete = resolve_second;
             self.table = jQuery(self.table_el).DataTable(table_opts);
+
+            // TODO: This relies on column definition in lib/page_concordance.js
+            self.table.on('draw.dt', function () {
+                var pageStart = self.table.page.info().start,
+                    pageCells = self.table.cells(null, 1, {page: 'current', order: 'applied', search: 'applied'});
+
+                pageCells.nodes().each(function (cell, i) {
+                    cell.innerHTML = pageStart + i + 1;
+                });
+            });
         }
     });
 };
