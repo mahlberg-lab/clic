@@ -178,32 +178,6 @@ PageConcordance.prototype.generateKwicRow = function (d, allWords) {
     return kwic_row;
 };
 
-PageConcordance.prototype.updateKwicGroup = function () {
-    var cq = this,
-        allWords = {},
-        totalMatches = 0;
-
-    this.concordanceTable.rows().every(function () {
-        var d = this.data(),
-            new_result = cq.generateKwicRow(d, allWords);
-
-        if (new_result.length > 1) {
-            totalMatches++;
-        }
-
-        if (d[5].length !== new_result.length || d[5].join(':') !== new_result.join(':')) {
-            // Concordance membership has changed, update table
-            d[5] = new_result;
-            this.node().className = cq.getRowClass(d);
-            this.invalidate();
-        }
-    });
-
-    //TODO: Send allWords, totalMatches back to controlbar
-    console.log([allWords, totalMatches]);
-    this.concordanceTable.draw();
-};
-
 PageConcordance.prototype.getRowClass = function (data) {
     var i, out = '';
 
@@ -217,32 +191,6 @@ PageConcordance.prototype.getRowClass = function (data) {
     }
 
     return out;
-};
-
-PageConcordance.prototype.updateKwicGroup = function () {
-    var cq = this,
-        allWords = {},
-        totalMatches = 0;
-
-    this.concordanceTable.rows().every(function () {
-        var d = this.data(),
-            new_result = cq.generateKwicRow(d, allWords);
-
-        if (new_result.length > 1) {
-            totalMatches++;
-        }
-
-        if (d[5].length !== new_result.length || d[5].join(':') !== new_result.join(':')) {
-            // Concordance membership has changed, update table
-            d[5] = new_result;
-            this.node().className = cq.getRowClass(d);
-            this.invalidate();
-        }
-    });
-
-    //TODO: Send allWords, totalMatches back to controlbar
-    console.log([allWords, totalMatches]);
-    this.concordanceTable.draw();
 };
 
 module.exports = PageConcordance;
