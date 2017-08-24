@@ -68,8 +68,3 @@ module.exports.renderPosition = function (data, type, full, meta) {
            '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
            '</svg></a>';
 };
-
-// Kwicmatches are sorted by # of KWICGrouper types this row matches, i.e. the first item in the list
-module.exports.renderKwicMatch = function (data, type, row, meta) {
-    return data[0];
-};

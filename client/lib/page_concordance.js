@@ -20,7 +20,7 @@ PageConcordance.prototype.init = function () {
 
     this.table_opts.deferRender = true;
     this.table_opts.columns = [
-        { data: "5", render: dt_utils.renderKwicMatch, visible: false, sortable: false, searchable: false },
+        { data: "5", visible: false, sortable: false, searchable: false },
         { title: "", data: null, render: function () { return ""; }, sortable: false, searchable: false },
         { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft text-right" }, // Left
         { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode hilight" }, // Node
@@ -106,7 +106,7 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
         // Add KWICGrouper match column
         for (i = 0; i < data.length; i++) {
             r = self.generateKwicRow(data[i], allWords);
-            data[i].push(r);
+            data[i].push(r[0]);
 
             if (r[0] > 0) {
                 totalMatches++;
