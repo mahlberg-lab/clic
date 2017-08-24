@@ -6,6 +6,7 @@
   "dependencies": {
     "bootstrap": "4.0.0-alpha.6",
     "chosen-js": "^1.7.0",
+    "custom-event-polyfill": "^0.3.0",
     "datatables.net": "^1.10.15",
     "es6-promise": "^4.1.1",
     "jquery": "^3.2.1",
