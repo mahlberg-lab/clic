@@ -83,3 +83,28 @@
         width: 25rem;
     }
 }
+
+#control-bar fieldset h4 {
+    height: 0.65rem;
+    overflow: visible;
+    margin-top: 1rem;
+    margin-bottom: 1.35rem;
+    font-size: 1rem;
+    border-bottom: 1px solid #AAA;
+}
+#control-bar fieldset h4 span {
+    position: relative;
+    background: #f5f5f5;
+    margin-left: 0.7rem;
+    padding: 0 0.3rem;
+}
+
+#control-bar fieldset label {
+    display: block;
+}
+#control-bar fieldset select {
+    width: 100%;
+}
+#control-bar fieldset .noUi-horizontal {
+    margin: 0 16px 3rem 16px;
+}
