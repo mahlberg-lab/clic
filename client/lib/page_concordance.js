@@ -21,7 +21,7 @@ PageConcordance.prototype.init = function () {
     this.table_opts.deferRender = true;
     this.table_opts.columns = [
         { data: "5", visible: false, sortable: false, searchable: false },
-        { title: "", data: null, render: function () { return ""; }, sortable: false, searchable: false },
+        { title: "", defaultContent: "", sortable: false, searchable: false },
         { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft text-right" }, // Left
         { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode hilight" }, // Node
         { title: "Right", data: "2", render: dt_utils.renderForwardTokenArray, class: "contextRight" }, // Right
