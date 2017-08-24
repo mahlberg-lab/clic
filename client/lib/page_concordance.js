@@ -47,12 +47,7 @@ PageConcordance.prototype.init = function () {
 
 PageConcordance.prototype.reload_data = function reload(page_opts) {
     var self = this,
-        api_opts = {
-            testCollection: 'dickens',
-            terms: 'hands',
-            selectWords: 'whole',
-            testIdxMod: 'chapter',
-        }; //TODO:
+        api_opts = {};
 
     // Values has 2 values, "(min):(max)", which we treat to be
     // min and max span inclusive, viz.
@@ -87,9 +82,27 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     this.kwicTerms = {};
     this.kwicSpan = parseKwicSpan(this.page_opts['kwic-span']);
 
-    (this.page_opts['kwic-terms'].split(/\s+/) || []).map(function (t, i) {
-        self.kwicTerms[t.toLowerCase()] = i + 1;
+    (this.page_opts['kwic-terms'] || "").split(/\s+/).map(function (t, i) {
+        if (t) {
+            self.kwicTerms[t.toLowerCase()] = i + 1;
+        }
     });
+
+    // Mangle page_opts into the API's required parameters
+    api_opts.testCollection = 'dickens'; //TODO:
+    api_opts.terms = this.page_opts['conc-q'];
+    api_opts.testIdxMod = {
+        "all": "chapter",
+        "quote": "quote",
+        "non-quote": "non-quote",
+        "long_suspension": "longsus",
+        "suspension": "shortsus",
+    }[this.page_opts['conc-subset'] || 'all'];
+    api_opts.selectWords = this.page_opts['conc-type'] || 'whole';
+
+    if (!api_opts.terms) {
+        throw new Error("Please provide some terms to search for");
+    }
 
     return api.get('concordance', api_opts).then(function (data) {
         var i, r, allWords = {}, totalMatches = 0;

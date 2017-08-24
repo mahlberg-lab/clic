@@ -46,4 +46,5 @@ function page_load(e) {
 if (window) {
     document.addEventListener('DOMContentLoaded', page_load);
     window.addEventListener('popstate', page_load);
+    window.addEventListener('replacestate', page_load);
 }
