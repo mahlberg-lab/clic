@@ -1,5 +1,6 @@
 html {
     font-size: 80%;
+    overflow-y: scroll;
 }
 
 #content {
