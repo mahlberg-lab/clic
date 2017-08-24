@@ -130,7 +130,7 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
 };
 
 /*
- *
+ * Return value: [(# of unique types matched), (match position, e.g. "r1"), (match position, e.g. "r2"), ... ]
  */
 PageConcordance.prototype.generateKwicRow = function (d, allWords) {
     var matchingTypes = {}, kwic_row;
@@ -168,11 +168,10 @@ PageConcordance.prototype.generateKwicRow = function (d, allWords) {
     }
 
     // Find the kwic matches in both left and right, as well as total matches
-    kwic_row = [
-        0,
+    kwic_row = [0].concat(
         testList(d[0], this.kwicSpan[0], this.kwicTerms),
-        testList(d[2], this.kwicSpan[1], this.kwicTerms),
-    ];
+        testList(d[2], this.kwicSpan[1], this.kwicTerms)
+    );
     kwic_row[0] = Object.keys(matchingTypes).length;
 
     return kwic_row;
