@@ -16,8 +16,6 @@ function PageConcordance() {
 PageConcordance.prototype = Object.create(PageTable.prototype);
 
 PageConcordance.prototype.init = function () {
-    var cq = this;
-
     PageTable.prototype.init.apply(this, arguments);
 
     this.table_opts.deferRender = true;
@@ -37,11 +35,6 @@ PageConcordance.prototype.init = function () {
     this.table_opts.order = [[9, 'asc']];
     this.table_opts.language = {
         search: "Filter concordance:",
-    };
-    this.table_opts.createdRow = function (row, data, index) {
-        if (row) {
-            row.className = cq.getRowClass(data);
-        }
     };
 };
 
@@ -105,7 +98,7 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     }
 
     return api.get('concordance', api_opts).then(function (data) {
-        var i, r, allWords = {}, totalMatches = 0;
+        var i, j, r, allWords = {}, totalMatches = 0;
 
         data = data.concordances;
         data.shift();  //NB: CLiC 1.5 puts a useless total as the first item
@@ -113,12 +106,17 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
         // Add KWICGrouper match column
         for (i = 0; i < data.length; i++) {
             r = self.generateKwicRow(data[i], allWords);
+            data[i].push(r);
 
             if (r[0] > 0) {
                 totalMatches++;
+
+                // Add classes for row highlighting
+                data[i].DT_RowClass = 'kwic-highlight-' + (r[0] % 4 + 1);
+                for (j = 1; j < r.length; j++) {
+                    data[i].DT_RowClass += ' match-' + r[j];
+                }
             }
-            data[i].push(r);
-            //TODO: Set data[i].DT_RowClass at this point?
         }
 
         return {
@@ -175,21 +173,6 @@ PageConcordance.prototype.generateKwicRow = function (d, allWords) {
     kwic_row[0] = Object.keys(matchingTypes).length;
 
     return kwic_row;
-};
-
-PageConcordance.prototype.getRowClass = function (data) {
-    var i, out = '';
-
-    if (data[5].length <= 1) {
-        return '';
-    }
-
-    out += ' kwic-highlight-' + (data[5][0] % 4 + 1);
-    for (i = 1; i < data[5].length; i++) {
-        out += ' match-' + data[5][i];
-    }
-
-    return out;
 };
 
 module.exports = PageConcordance;
