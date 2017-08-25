@@ -16,7 +16,7 @@
     padding: 20px;
     border-bottom: 1px solid #AAA;
     font-size: inherit;
-    line-height: initial;
+    line-height: 0;
     cursor: pointer;
 }
 
