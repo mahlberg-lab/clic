@@ -73,7 +73,7 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     }
 
     this.kwicTerms = {};
-    this.kwicSpan = parseKwicSpan(this.page_opts['kwic-span']);
+    this.kwicSpan = parseKwicSpan(this.page_opts['kwic-span'] || '-5:5');
 
     (this.page_opts['kwic-terms'] || "").split(/\s+/).map(function (t, i) {
         if (t) {
