@@ -1,0 +1,33 @@
+.tag-toggle {
+    display: block;
+    position: relative; /* To contain markers */
+    margin-bottom: 1rem;
+    padding 0 5px;
+    background-color: #AAA;
+    border-radius: 2rem;
+    text-align: center;
+    line-height: 2rem;
+}
+.tag-toggle .yes,
+.tag-toggle .no {
+    position: absolute;
+    width: 25%;
+    border-radius: 2rem;
+    font-size: 1.9rem;
+    background: #CCC;
+    cursor: pointer;
+}
+.tag-toggle .yes {
+    left: 0;
+}
+.tag-toggle .no {
+    right: 0;
+}
+.tag-toggle.yes .yes {
+    background: limegreen;
+    color: white;
+}
+.tag-toggle.no .no {
+    background: darkred;
+    color: white;
+}
