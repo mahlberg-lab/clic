@@ -82,17 +82,45 @@ PageTable.prototype.reload = function reload(page_opts) {
                 jQuery(this).toggleClass('selected');
 
                 if (self.select_debounce) {
-                    window.clearTimeout(this.select_debounce);
+                    window.clearTimeout(self.select_debounce);
                 }
-                self.select_debounce = window.setTimeout(function () {
-                    self.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
-                        detail: self.table.rows('.selected').data(),
-                        bubbles: true,
-                    }));
-                }, 300);
+                self.select_debounce = window.setTimeout(self.select_rows.bind(self), 300);
             });
         }
+    }).then(function (data) {
+        var i, n,
+            page_state = (window.history.state || {}),
+            selected = page_state.selected_rows || [];
+
+        // Make sure previously selected rows are still selected
+        for (i = 0; i < selected.length; i++) {
+            n = document.getElementById(selected[i]);
+
+            if (n) {
+                n.classList.add('selected');
+            }
+        }
+        // Trigger event so controlpanel updates
+        self.select_rows();
+
+        return data;
     });
+};
+
+PageTable.prototype.select_rows = function () {
+    var page_state = window.history.state || {},
+        selected_data = this.table.rows('.selected').data();
+
+    // Record selection in page state
+    page_state.selected_rows = [].concat.apply([], selected_data.map(function (d) {
+        return d.DT_RowId;
+    }));
+    window.history.replaceState(page_state, "", "");
+
+    this.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
+        detail: selected_data,
+        bubbles: true,
+    }));
 };
 
 PageTable.prototype.reload_data = function (page_opts) {
