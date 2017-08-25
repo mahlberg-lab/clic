@@ -80,6 +80,16 @@ PageTable.prototype.reload = function reload(page_opts) {
 
             self.table.on('click', 'tr', function () {
                 jQuery(this).toggleClass('selected');
+
+                if (self.select_debounce) {
+                    window.clearTimeout(this.select_debounce);
+                }
+                self.select_debounce = window.setTimeout(function () {
+                    self.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
+                        detail: self.table.rows('.selected').data(),
+                        bubbles: true,
+                    }));
+                }, 300);
             });
         }
     });

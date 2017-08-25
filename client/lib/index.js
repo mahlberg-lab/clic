@@ -43,8 +43,13 @@ function page_load(e) {
     });
 }
 
+function table_selection(e) {
+    cb.new_selection(e.detail);
+}
+
 if (window) {
     document.addEventListener('DOMContentLoaded', page_load);
     window.addEventListener('popstate', page_load);
     window.addEventListener('replacestate', page_load);
+    window.addEventListener('tableselection', table_selection);
 }

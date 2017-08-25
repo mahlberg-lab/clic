@@ -5,6 +5,7 @@ var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
 global.jQuery = jQuery;  // So chosen-js can find it
 var chosen = require('chosen-js');
+var TagToggle = require('./tagtoggle.js');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -129,6 +130,39 @@ function ControlBar(control_bar) {
 
 // Refresh controls based on page_opts
 ControlBar.prototype.reload = function reload(page_opts) {
+    var self = this,
+        tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0],
+        page_state = window.history.state || {};
+
+    // TODO: Hard-code the tag state for now
+    if (!page_state.tag_columns) {
+        page_state.tag_columns = {
+            'Pablo-BP-CONC': {}, //TODO: Hardcoding for now
+            'MB-BP-CONC': {},
+        };
+    }
+    window.history.replaceState(page_state, "", "");
+
+    // Recreate tag toggles
+    tag_toggles_el.innerHTML = '';
+    this.tag_toggles = Object.keys(page_state.tag_columns).map(function (t) {
+        var toggle = new TagToggle(t);
+
+        toggle.onupdate = function (tag_state) {
+            var i, new_state = window.history.state;
+
+            for (i = 0; i < self.table_selection.length; i++) {
+                new_state.tag_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
+            }
+
+            window.history.replaceState(new_state, "", "");
+            window.dispatchEvent(new window.CustomEvent('replacestate'));
+        };
+
+        tag_toggles_el.appendChild(toggle.dom());
+        return toggle;
+    });
+
     // Make sure we consider existing options valid
     this.control_bar.elements['kwic-terms'].innerHTML = to_options_html([page_opts['kwic-terms']]);
 
@@ -162,6 +196,16 @@ ControlBar.prototype.new_data = function new_data(data) {
     }
 
     this.control_bar.querySelectorAll("#kwic-total-matches")[0].innerText = (data.totalMatches || 0);
+};
+
+// New rows selected, process selection-based widgets
+ControlBar.prototype.new_selection = function new_selection(data) {
+    this.table_selection = data;
+
+    // All toggles update themselves
+    this.tag_toggles.forEach(function (toggle) {
+        toggle.update(data);
+    });
 };
 
 module.exports = ControlBar;

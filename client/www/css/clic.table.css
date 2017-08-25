@@ -39,3 +39,11 @@
 #content table.dataTable tr.match-r5 > td.contextRight .node-5 {
     background: rgba(255, 59, 0, 0.45);
 }
+
+#content table.dataTable th.tagColumn {
+    transform: rotate(90deg);
+}
+#content table.dataTable td.tagColumn {
+    text-align: center;
+    font-size: 1.5rem;
+}

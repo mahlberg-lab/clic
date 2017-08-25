@@ -19,7 +19,7 @@ PageConcordance.prototype.init = function () {
     PageTable.prototype.init.apply(this, arguments);
 
     this.table_opts.deferRender = true;
-    this.table_opts.columns = [
+    this.table_opts.non_tag_columns = [
         { data: "kwic", visible: false, sortable: false, searchable: false },
         { title: "", defaultContent: "", sortable: false, searchable: false },
         { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft text-right" }, // Left
@@ -36,6 +36,22 @@ PageConcordance.prototype.init = function () {
     this.table_opts.language = {
         search: "Filter concordance:",
     };
+};
+
+PageConcordance.prototype.reload = function reload(page_opts) {
+    var page_state = window.history.state || {},
+        tag_list = Object.keys(page_state.tag_columns || {});
+
+    function renderBoolean(data, type, full, meta) {
+        return data ? "✓" : " ";
+    }
+
+    // Generate column list based on tag_columns
+    this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_list.map(function (t) {
+        return { title: t, data: t, render: renderBoolean, class: "tagColumn" };
+    }));
+
+    return PageTable.prototype.reload.apply(this, arguments);
 };
 
 PageConcordance.prototype.reload_data = function reload(page_opts) {
@@ -98,16 +114,20 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     }
 
     return api.get('concordance', api_opts).then(function (data) {
-        var i, j, r, allWords = {}, totalMatches = 0;
+        var i, j, r, allWords = {}, totalMatches = 0,
+            tag_state = window.history.state.tag_columns,
+            tag_list = Object.keys(tag_state);
 
         data = data.concordances;
         data.shift();  //NB: CLiC 1.5 puts a useless total as the first item
 
-        // Add KWICGrouper match column
         for (i = 0; i < data.length; i++) {
+            // TODO: Assume book+chap+word_id is unique for now. Server-generate this
+            data[i].DT_RowId = data[i][3][0] + data[i][3][2] + ':' + data[i][3][5];
+
+            // Add KWICGrouper match column
             r = self.generateKwicRow(data[i], allWords);
             data[i].kwic = r[0];
-
             if (r[0] > 0) {
                 totalMatches++;
 
@@ -116,6 +136,11 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
                 for (j = 1; j < r.length; j++) {
                     data[i].DT_RowClass += ' match-' + r[j];
                 }
+            }
+
+            // Add tag columns
+            for (j = 0; j < tag_list.length; j++) {
+                data[i][tag_list[j]] = !!tag_state[tag_list[j]][data[i].DT_RowId];
             }
         }
 
