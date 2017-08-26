@@ -80,11 +80,7 @@ PageTable.prototype.reload = function reload(page_opts) {
 
             self.table.on('click', 'tr', function () {
                 jQuery(this).toggleClass('selected');
-
-                if (self.select_debounce) {
-                    window.clearTimeout(self.select_debounce);
-                }
-                self.select_debounce = window.setTimeout(self.select_rows.bind(self), 300);
+                self.select_rows();
             });
         }
     }).then(function (data) {
