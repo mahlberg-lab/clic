@@ -27,6 +27,10 @@
     );
 }
 
+#content table.dataTable td span.w {
+    background: rgba(200, 200, 200, 0.33);
+    padding: 0 1px;
+}
 #content table.dataTable tr.match-l1 > td.contextLeft .node-1,
 #content table.dataTable tr.match-l2 > td.contextLeft .node-2,
 #content table.dataTable tr.match-l3 > td.contextLeft .node-3,
