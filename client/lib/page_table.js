@@ -27,13 +27,7 @@ PageTable.prototype.init = function init() {
     this.table_opts.buttons = [
         'csv', 'copy',
         { text: 'Toggle Metadata', action: function (e, dt, node, config) {
-            var i, col;
-
-            /* TODO: Make this generic? */
-            for (i = 6; i < 9; i++) {
-                col = dt.column(i);
-                col.visible(!col.visible());
-            }
+            self.table_el.classList.toggle('metadata-hidden');
         }},
     ];
     this.table_opts.ajax = function (params, callback, settings) {

@@ -25,10 +25,10 @@ PageConcordance.prototype.init = function () {
         { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft text-right" }, // Left
         { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode hilight" }, // Node
         { title: "Right", data: "2", render: dt_utils.renderForwardTokenArray, class: "contextRight" }, // Right
-        { title: "Book", data: "3.1", searchable: false }, // Book
-        { title: "Ch.", data: "3.2", searchable: false }, // Chapter
-        { title: "Par.", data: "3.3", searchable: false }, // Paragraph
-        { title: "Sent.", data: "3.4", searchable: false }, // Sentence
+        { title: "Book", data: "3.1", class: "metadataColumn", searchable: false }, // Book
+        { title: "Ch.", data: "3.2", class: "metadataColumn", searchable: false }, // Chapter
+        { title: "Par.", data: "3.3", class: "metadataColumn", searchable: false }, // Paragraph
+        { title: "Sent.", data: "3.4", class: "metadataColumn", searchable: false }, // Sentence
         { title: "In&nbsp;bk.", data: "4", render: dt_utils.renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
     ];
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };

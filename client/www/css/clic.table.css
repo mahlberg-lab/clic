@@ -47,3 +47,7 @@
     text-align: center;
     font-size: 1.5rem;
 }
+
+#content table.dataTable.metadata-hidden .metadataColumn {
+    display: none;
+}
