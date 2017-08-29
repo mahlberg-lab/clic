@@ -47,51 +47,49 @@
     <div>
 
       <label>Search the corpora:</label>
-<select name="corpora" data-placeholder="" class="chosen-select" multiple style="width:100%;" tabindex="4">
-<optgroup label="Entire corpora">
-    <option value="dickens" selected="selected">All dickens</option> 
-    <option value="ntc">All 19thC novels</option> 
-</optgroup>
-<optgroup label="Individual dickens novels" disabled="disabled">
-    <option>Little Dorrit</option> 
-</optgroup>
-<optgroup label="Individual 19thC novels">
-    <option>Agnes Grey</option>
-    <option>Antonina, or the Fall of Rome</option>
-    <option>Armadale</option> 
-    <option>Cranford</option> 
-    <option>Daniel Deronda</option>
-</optgroup>
-    </select>
+      <select name="corpora" data-placeholder="" class="chosen-select" multiple style="width:100%;" tabindex="4">
+        <optgroup label="Entire corpora">
+          <option value="dickens" selected="selected">All dickens</option>
+          <option value="ntc">All 19thC novels</option>
+        </optgroup>
+        <optgroup label="Individual dickens novels" disabled="disabled">
+          <option>Little Dorrit</option>
+        </optgroup>
+        <optgroup label="Individual 19thC novels">
+          <option>Agnes Grey</option>
+          <option>Antonina, or the Fall of Rome</option>
+          <option>Armadale</option>
+          <option>Cranford</option>
+          <option>Daniel Deronda</option>
+        </optgroup>
+      </select>
 
       <label>Only in subsets:</label>
-<select name="conc-subset" data-placeholder="" class="chosen-select" style="width:100%;" tabindex="4">
-    <option value="all" selected="selected">All text</option> 
-    <option value="suspension">Suspensions</option> 
-    <option value="long_suspension">Long suspensions</option> 
-    <option value="quote">Quotes</option> 
-    <option value="non-quote">Non-quotes</option> 
-</select>
+      <select name="conc-subset" data-placeholder="" class="chosen-select" style="width:100%;" tabindex="4">
+        <option value="all" selected="selected">All text</option>
+        <option value="suspension">Suspensions</option>
+        <option value="long_suspension">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="non-quote">Non-quotes</option>
+      </select>
 
       <label>Search for terms:</label>
-  <input type="text" name="conc-q" placeholder="e.g. 'dense fog'" class="form-control">
+      <input type="text" name="conc-q" placeholder="e.g. 'dense fog'" class="form-control">
+      <div style="margin: 1em">
+        <label class="radio-inline">
+          <input name="conc-type" type="radio" value="whole" checked="checked">Whole phrase
+        </label>
+        <label class="radio-inline">
+          <input name="conc-type" type="radio" value="any">Any
+        </label>
+      </div>
 
-  <div style="margin: 1em">
-                <label class="radio-inline">
-                    <input name="conc-type" type="radio" value="whole" checked="checked">Whole phrase
-                </label>
-                <label class="radio-inline">
-                    <input name="conc-type" type="radio" value="any">Any
-                </label>
-            </div>
-
-<h4><span>KWICGrouper</span></h4>
-<label>Search in span:</label>
-<input name="kwic-span" type="nouislider">
-<div class="slider"></div>
-<label>Search for types:</label>
-<select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
-<p><span id="kwic-total-matches">0</span> matching rows</p>
+      <h4><span>KWICGrouper</span></h4>
+      <label>Search in span:</label>
+      <input name="kwic-span" type="nouislider">
+      <label>Search for types:</label>
+      <select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
+      <p><span id="kwic-total-matches">0</span> matching rows</p>
 
       <h4><span>Tags</span></h4>
       <label>Selected rows are part of:</label>
@@ -104,17 +102,51 @@
   <fieldset name="subsets" disabled="disabled">
     <legend>Subsets</legend>
     <div>
-      <p>Moo</p>
+
+      <label>Search the corpora:</label>
+      <select name="corpora" data-placeholder="" class="chosen-select" multiple style="width:100%;" tabindex="4">
+        <optgroup label="Entire corpora">
+          <option value="dickens" selected="selected">All dickens</option>
+          <option value="ntc">All 19thC novels</option>
+        </optgroup>
+        <optgroup label="Individual dickens novels" disabled="disabled">
+          <option>Little Dorrit</option>
+        </optgroup>
+        <optgroup label="Individual 19thC novels">
+          <option>Agnes Grey</option>
+          <option>Antonina, or the Fall of Rome</option>
+          <option>Armadale</option>
+          <option>Cranford</option>
+          <option>Daniel Deronda</option>
+        </optgroup>
+      </select>
+
+      <label>Show subsets:</label>
+      <select name="conc-subset" data-placeholder="" class="chosen-select" style="width:100%;" tabindex="4">
+        <option value="all" selected="selected">All text</option>
+        <option value="suspension">Suspensions</option>
+        <option value="long_suspension">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="non-quote">Non-quotes</option>
+      </select>
+
     </div>
   </fieldset>
- 
-  <fieldset name="things" disabled="disabled">
-    <legend>Things</legend>
+
+  <fieldset name="keywords" disabled="disabled">
+    <legend>Keywords</legend>
     <div>
-      <p>Moo</p>
+      <p>options go here</p>
     </div>
   </fieldset>
- 
+
+  <fieldset name="clusters" disabled="disabled">
+    <legend>Clusters</legend>
+    <div>
+      <p>options go here</p>
+    </div>
+  </fieldset>
+
 </form>
 
     <div id="content"></div>
