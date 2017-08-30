@@ -290,14 +290,12 @@ class Concordance(object):
         '''
 
         subcorpus = []
-        for corpus in Materials:
-            MatIdx = 'book-idx'
-            # ntc is 19th century?
-            if corpus in ['dickens', 'ntc']:
-                MatIdx_Vol = 'subCorpus-idx'
-                subcorpus.append('c3.{0} = "{1}"'.format(MatIdx_Vol, corpus))
-            else:
-                subcorpus.append('c3.{0} = "{1}"'.format(MatIdx, corpus))
+        corpus_names = c3.get_corpus_names()
+        for m in Materials:
+            subcorpus.append('c3.{0} = "{1}"'.format(
+                'subCorpus-idx' if m in corpus_names else 'book-idx',
+                m,
+            ))
 
         ## search whole phrase or individual words?
         if selectWords == "whole":

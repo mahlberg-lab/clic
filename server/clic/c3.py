@@ -19,3 +19,11 @@ qf = db.get_object(session, 'defaultQueryFactory')
 recStore = db.get_object(session, 'recordStore')
 idxStore = db.get_object(session, 'indexStore')
 #logger = db.get_object(session, 'concordanceLogger')
+
+def get_corpus_names():
+    """Return a list of valid corpus names"""
+    return [
+        x.queryTerm
+        for x
+        in idxStore.get_object(idxStore.session, 'subCorpus-idx')
+    ]
