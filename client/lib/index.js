@@ -36,7 +36,10 @@ function page_load(e) {
             }
         });
 
-        return cb.new_data(rvs[0]);
+        if (rvs[0]) {
+            return cb.new_data(rvs[0]);
+        }
+        return;
     }).catch(function (err) {
         console.log("TODO: " + err);
         throw err;

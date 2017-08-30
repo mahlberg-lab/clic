@@ -46,13 +46,14 @@ function ControlBar(control_bar) {
     this.control_bar = control_bar;
 
     control_bar.addEventListener('click', function (e) {
-        var i;
-
-        function clickedOn(className) {
+        function clickedOn(tagName, className) {
             var el = e.target;
 
             while (el.parentElement) {
-                if (el.classList.contains(className)) {
+                if (tagName && el.tagName === tagName) {
+                    return true;
+                }
+                if (className && el.classList.contains(className)) {
                     return true;
                 }
                 el = el.parentElement;
@@ -60,17 +61,16 @@ function ControlBar(control_bar) {
             return false;
         }
 
-        if (e.target.tagName === 'LEGEND') {
-            for (i = 0; i < control_bar.elements.length; i++) {
-                if (control_bar.elements[i].tagName === 'FIELDSET') {
-                    control_bar.elements[i].disabled = (control_bar.elements[i].name !== e.target.parentElement.name);
-                }
-            }
-            control_bar.dispatchEvent(new window.Event('change'));
+        if (clickedOn('LEGEND', null)) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.history.pushState({}, "", e.target.href);
+            window.dispatchEvent(new window.CustomEvent('replacestate'));
             return;
         }
 
-        if (clickedOn('handle')) {
+        if (clickedOn(null, 'handle')) {
             control_bar.classList.toggle('in');
             return;
         }
@@ -87,7 +87,6 @@ function ControlBar(control_bar) {
                 return;
             }
 
-            //TODO: If page != current page, then add an entry - or just make them links?
             window.history.replaceState(window.history.state, "", new_search);
             window.dispatchEvent(new window.CustomEvent('replacestate'));
         }, 300);
@@ -133,6 +132,13 @@ ControlBar.prototype.reload = function reload(page_opts) {
     var self = this,
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0],
         page_state = window.history.state || {};
+
+    // Enable the fieldset for the page
+    Array.prototype.forEach.call(self.control_bar.elements, function (el, i) {
+        if (el.tagName === 'FIELDSET') {
+            el.disabled = ('/' + el.name !== page_opts.doc);
+        }
+    });
 
     // TODO: Hard-code the tag state for now
     if (!page_state.tag_columns) {
