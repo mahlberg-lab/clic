@@ -23,7 +23,7 @@
 #control-bar > .handle .icon {
     position: fixed;
     top: 8px;
-    right: 10px;
+    right: 20px;
 }
 
 #control-bar fieldset {

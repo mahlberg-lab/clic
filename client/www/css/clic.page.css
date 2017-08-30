@@ -1,6 +1,13 @@
 html {
     font-size: 80%;
+}
+
+#scrollable-body {
+    position: absolute;
+    top: 0; right: 0; left: 0; bottom: 0;
     overflow-y: scroll;
+    margin-right: 0;
+    transition: margin-right 0.3s ease;
 }
 
 #content {
@@ -13,10 +20,7 @@ html {
     }
 }
 @media (min-width: 960px) {
-    #content {
-        transition: margin-right 0.3s ease;
-    }
-    #control-bar.in + #content {
+    #control-bar.in + #scrollable-body {
         margin-right: 25rem;
     }
 }
