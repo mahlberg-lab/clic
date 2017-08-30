@@ -11,3 +11,15 @@
 /client/www/js/lib
 /client/www/js/lib-ace
 /client/www/js/node_modules
+
+*.pyc
+/server/bin
+/server/include
+/server/lib
+/server/local
+/server/share
+/server/booklist.json
+/server/cheshire3-server/
+/server/clic-chapter-cache.pickle
+
+/cheshire3.db_dickens.tar.bz2

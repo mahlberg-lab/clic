@@ -1,0 +1,5 @@
+cheshire3 [web,sql] == 1.1.8
+Flask==0.10.1
+uWSGI==2.0.13.1
+
+pytest==2.6.4
