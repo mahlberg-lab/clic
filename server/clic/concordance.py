@@ -6,10 +6,8 @@ import collections
 import time
 import cPickle as pickle
 
-from cheshire3.baseObjects import Session
-from cheshire3.document import StringDocument
-from cheshire3.internal import cheshire3Root
-from cheshire3.server import SimpleServer
+from clic import c3
+
 from cheshire3.exceptions import ObjectDoesNotExistException
 
 
@@ -261,25 +259,6 @@ class Concordance(object):
 
     This can be used in an ajax api.
     '''
-
-    def __init__(self):
-        '''
-        Set up a cheshire3 session/connection to the database. This initilisation does
-        not handle the actual search term (cf. build_query).
-        '''
-
-        self.session = Session()
-        self.session.database = 'db_dickens'
-        self.serv = SimpleServer(self.session,
-                                 os.path.join(CLIC_DIR, 'cheshire3-server', 'configs', 'serverConfig.xml')
-                                 )
-        self.db = self.serv.get_object(self.session, self.session.database)
-        self.qf = self.db.get_object(self.session, 'defaultQueryFactory')
-        self.recStore = self.db.get_object(self.session, 'recordStore')
-        self.idxStore = self.db.get_object(self.session, 'indexStore')
-        #self.logger = self.db.get_object(self.session, 'concordanceLogger')
-
-
     def warm_cache(self):
         """
         Given a Cheshire3 (session), fetch all objects in (database_name)'s (store_name),
@@ -289,7 +268,7 @@ class Concordance(object):
         startTime = time.time()
         while True:
             try:
-                get_chapter(self.session, self.recStore, i)
+                get_chapter(c3.session, c3.recStore, i)
                 yield "Cached item %d %f\n" % (i, time.time() - startTime);
                 i += 1
             except ObjectDoesNotExistException:
@@ -337,7 +316,7 @@ class Concordance(object):
 
         ## conduct database search
         ## note: /proxInfo needed to search individual books
-        query = self.qf.get_query(self.session, '(%s) and/proxInfo (%s)' % (
+        query = c3.qf.get_query(c3.session, '(%s) and/proxInfo (%s)' % (
             ' or '.join(subcorpus),
             ' or '.join(term_clauses),
         ))
@@ -363,7 +342,7 @@ class Concordance(object):
         ##self.logger.log(10, 'CREATING CONCORDANCE FOR RS: {0} in {1} - {2}'.format(terms, idxName, Materials))
 
         query, number_of_search_terms = self.build_query(terms, idxName, Materials, selectWords)
-        result_set = self.db.search(self.session, query)
+        result_set = c3.db.search(c3.session, query)
 
         conc_lines = [] # return concordance lines in list
         word_window = 10 # word_window is set to 10 by default - on both sides of node
@@ -373,7 +352,7 @@ class Concordance(object):
 
         ## search through each record (chapter) and identify location of search term(s)
         for result in result_set:
-            ch = get_chapter(self.session, self.recStore, result.id)
+            ch = get_chapter(c3.session, c3.recStore, result.id)
 
             for match in result.proxInfo:
                 (word_id, para_chap, sent_chap) = ch.get_word(match)
