@@ -55,8 +55,6 @@ class Chapter():
         ch_node = dom.xpath('/div')[0]
         self.book = ch_node.get('book')
         self.chapter = ch_node.get('num')
-        for (k,v) in c3.get_chapter_stats(self.book, self.chapter).items():
-            setattr(self, k, v)
 
         self.tokens = []
         self.word_map = []
@@ -297,13 +295,14 @@ class Concordance(object):
         ## search through each record (chapter) and identify location of search term(s)
         for result in result_set:
             ch = get_chapter(c3.session, c3.recStore, result.id)
+            (count_prev_chap, total_word) = c3.get_chapter_word_counts(ch.book, ch.chapter)
 
             for match in result.proxInfo:
                 (word_id, para_chap, sent_chap) = ch.get_word(match)
 
                 conc_line = ch.get_conc_line(word_id, number_of_search_terms, word_window) + [
                     [ch.book, ch.chapter, str(para_chap), str(sent_chap)],
-                    [str(ch.count_word + int(word_id)), str(ch.total_word)],
+                    [count_prev_chap + int(word_id), total_word],
                 ]
 
                 conc_lines.append(conc_line)

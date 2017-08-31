@@ -19,6 +19,8 @@
 /server/local
 /server/share
 /server/booklist.json
+/server/cheshire3-server/dbs/c3.sqlite
+/server/cheshire3-server/dbs/extra_data.json
 /server/cheshire3-server/dbs/dickens/indexes/*
 /server/cheshire3-server/dbs/dickens/logs/*
 /server/cheshire3-server/dbs/dickens/stores/*
