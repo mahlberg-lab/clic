@@ -302,7 +302,7 @@ class Concordance(object):
                 (word_id, para_chap, sent_chap) = ch.get_word(match)
 
                 conc_line = ch.get_conc_line(word_id, number_of_search_terms, word_window) + [
-                    [ch.book, ch.book_title, ch.chapter, str(para_chap), str(sent_chap)],
+                    [ch.book, ch.chapter, str(para_chap), str(sent_chap)],
                     [str(ch.count_word + int(word_id)), str(ch.total_word)],
                 ]
 
