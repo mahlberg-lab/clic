@@ -61,37 +61,27 @@ def cache_warm():
 BASE_DIR = os.path.dirname(__file__)
 CLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
 with open(os.path.join(CLIC_DIR, 'booklist.json'), 'r') as raw_booklist:
-    booklist = json.load(raw_booklist)
+    booklist = {}
+    for b in json.load(raw_booklist):
+        booklist[b[0][0]] = b
 
 def get_chapter_stats(book, chapter):
     ## count paragraph, sentence and word in whole book
+    if book not in booklist:
+        raise ValueError("Cannot find book stats")
+
+    b = booklist[book]
     out = dict(
-        count_para=0,
-        count_sent=0,
         count_word=0,
+        book_title=b[0][1],
+        total_word=b[1][0][2],
     )
-
-    for b in booklist:
-        if b[0][0] == book:
-
-            out['book_title'] = b[0][1]
-            out['total_word'] = b[1][0][2]
-
-            for j, c in enumerate(b[2]):
-                while j+1 < int(chapter):
-                    out['count_para'] += int(c[0])
-                    out['count_sent'] += int(c[1])
-                    out['count_word'] += int(c[2])
-                    j += 1
-                    break
-
-                ## total word in chapter
-                if j+1 == int(chapter):
-                    out['count_chap_word'] = b[2][j][2]
-            return out
-
-    raise ValueError("Cannot find book stats")
-
+    for j, c in enumerate(b[2]):
+        while j+1 < int(chapter):
+            out['count_word'] += int(c[2])
+            j += 1
+            break
+    return out
 
 class Chapter():
     """
@@ -355,12 +345,9 @@ class Concordance(object):
             for match in result.proxInfo:
                 (word_id, para_chap, sent_chap) = ch.get_word(match)
 
-                para_book = ch.count_para + int(para_chap)
-                sent_book = ch.count_sent + int(sent_chap)
-                word_book = ch.count_word + int(word_id)
                 conc_line = ch.get_conc_line(word_id, number_of_search_terms, word_window) + [
-                    [ch.book, ch.book_title, ch.chapter, str(para_chap), str(sent_chap), str(word_id), str(ch.count_chap_word)],
-                    [str(para_book), str(sent_book), str(word_book), str(ch.total_word)],
+                    [ch.book, ch.book_title, ch.chapter, str(para_chap), str(sent_chap)],
+                    [str(ch.count_word + int(word_id)), str(ch.total_word)],
                 ]
 
                 conc_lines.append(conc_line)

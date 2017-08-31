@@ -58,10 +58,10 @@ module.exports.renderPosition = function (data, type, full, meta) {
     var xVal;
 
     if (type !== 'display') {
-        return data[2];
+        return data[0];
     }
 
-    xVal = (data[2] / data[3]) * 50; // word in book / total word count
+    xVal = (data[0] / data[1]) * 50; // word in book / total word count
     return '<a href="#" class="bookLink" title="Click to display concordance in book" target="_blank">' +
            '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
            '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
