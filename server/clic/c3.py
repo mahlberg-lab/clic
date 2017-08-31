@@ -83,6 +83,16 @@ def recreate_rdb():
         FOREIGN KEY(book_id) REFERENCES book(book_id),
         PRIMARY KEY (book_id, chapter_id)
     )''')
+    c.execute('''CREATE TABLE subset (
+        book_id TEXT,
+        chapter_id INT,
+        eid INT,
+        subset_type TEXT,
+        offset_start INT NOT NULL,
+        offset_end INT NOT NULL,
+        FOREIGN KEY(book_id) REFERENCES book(book_id),
+        PRIMARY KEY (book_id, chapter_id, eid)
+    )''')
 
     # Extra lookup tables not available from cheshire data
     with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
@@ -99,6 +109,7 @@ def recreate_rdb():
         chapter_id = int(ch_node.get('num'))
         book_id = ch_node.get('book')
         corpus_id = ch_node.get('corpus', extra_data['book_corpus'][book_id])
+        word_count = int(ch_node.xpath("count(descendant::w)"))
 
         _rdb_insert(c, "corpus", (
             corpus_id,
@@ -113,8 +124,47 @@ def recreate_rdb():
             book_id,
             chapter_id,
             record.digest,
-            int(ch_node.xpath("count(descendant::w)")),
+            word_count,
         ));
+
+        node = dict()
+        for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: n.attrib['wordOffset']):
+            node[n.tag] = n
+            if n.tag in ['qs']:
+                # Start of a quote, thus up to the last qe is a non-quote
+                start_node = node.get('qe', None)
+            elif n.tag.endswith('e'):
+                # End of a subset
+                start_node = node.get(n.tag[0:-1] + 's', None)
+            else:
+                # Not the end of a subset, move on
+                continue
+
+            _rdb_insert(c, "subset", (
+                book_id,
+                chapter_id,
+                n.attrib['eid'],
+                dict(
+                    qs='nonquote',
+                    qe='quote',
+                    sle='longsus',
+                    sse='shortsus',
+                )[n.tag],
+                0 if start_node is None else start_node.attrib['wordOffset'],
+                n.attrib['wordOffset'],
+            ))
+
+        if node.get('qe', None):
+            # End of quote up until end of text is non-quote
+            _rdb_insert(c, "subset", (
+                book_id,
+                chapter_id,
+                node['qe'].attrib['eid'],
+                'nonquote',
+                node['qe'].attrib['wordOffset'],
+                word_count,
+            ))
+
         yield "Cached %d %s %s chapter %d" % (rec_id, corpus_id, book_id, chapter_id)
         rec_id += 1
     yield "Committing..."
