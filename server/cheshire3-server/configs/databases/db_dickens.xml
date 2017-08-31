@@ -1,0 +1,233 @@
+<config type="database" id="db_dickens">
+	<objectType>cheshire3.database.SimpleDatabase</objectType>
+	<paths>
+		<path type="defaultPath">../../../../cheshire3-server/dbs/dickens</path>
+		<path type="metadataPath">stores/metadata.bdb</path>
+		<path type="indexStoreList">indexStore</path>
+		<object type="recordStore" ref="recordStore"/>
+		<object type="tokenizer" ref="RegexpFindOffsetTokenizer"/>
+		<object type="geniaNormalizer" ref="TokenizingUnparsedGeniaNormalizer"/>
+	</paths>
+	
+	<subConfigs>
+	   <path type="includeConfigs">dickensConfigs.d</path>
+	   <path type="includeConfigs">configXPaths.xml</path>
+	</subConfigs>
+	
+	<subConfigs>
+
+	<subConfig type="logger" id="keywordLogger">
+	    <objectType>cheshire3.logger.SimpleLogger</objectType>
+	    <paths>
+	        <path type="filePath">logs/keywords.log</path>
+	    </paths>
+	</subConfig>
+
+	<subConfig type="logger" id="clusterLogger">
+	    <objectType>cheshire3.logger.SimpleLogger</objectType>
+	    <paths>
+	        <path type="filePath">logs/clusters.log</path>
+	    </paths>
+	</subConfig>
+	
+	<subConfig type="documentFactory" id="SimpleDocumentFactory">
+		<objectType>cheshire3.documentFactory.SimpleDocumentFactory</objectType>
+		<options>
+			<default type="data">../../../../cheshire3-server/dbs/dickens/data</default>
+			<default type="format">dir</default>
+			<default type="tagName">div</default>
+			<default type="cache">0</default>				
+		</options>
+	</subConfig>
+
+<!-- SHARED STORES -->
+		
+		<subConfig type="indexStore" id="indexStore">
+			<objectType>cheshire3.indexStore.BdbIndexStore</objectType>
+			<paths>
+				<path type="defaultPath">indexes</path>
+				<path type="tempPath">temp</path>
+				<path type="recordStoreHash">recordStore austenRecordStore contStore struStore</path>
+<!-- insert sortPath to avoid trouble with location of sort executive -->
+				<path type="sortPath">/usr/bin/sort</path>
+			</paths>
+		</subConfig>
+<!--END STORES -->
+
+ 		  <subConfig type="normalizer" id="PosTypeFilter">
+		    <objectType>cheshire3.textmining.tmNormalizer.PosTypeNormalizer</objectType>
+		    <options>
+		     <setting type="posTypes">NN NNP NNS VB VBD VBZ VBG VBN VBP JJ JJS JJR</setting>
+		    </options>
+		     <imports>
+		      <module>
+		       <name>textmining</name>
+		      </module>
+		     </imports>
+		   </subConfig>
+
+	<subConfig type="normalizer" id="SubCorpusNormalizer">
+		<objectType>clic.normalizer.CorpusNormalizer</objectType>
+	</subConfig>
+
+	<subConfig type="normalizer" id="NovelNormalizer">
+		<objectType>clic.normalizer.NovelNormalizer</objectType>
+	</subConfig>
+		
+	<subConfig type="transformer" id="geniaTransformer">
+		<objectType>cheshire3.textmining.tmTransformer.GeniaTransformer</objectType>
+		<paths>
+			<object type="tokenizer" ref="RegexpFindOffsetTokenizer"/>
+			<object type="geniaNormalizer" ref="TokenizingUnparsedGeniaNormalizer"/>
+		</paths>
+	</subConfig>
+
+	
+	<subConfig type="extractor" id="RegexpFindOffsetTokenizer">
+      <objectType>cheshire3.tokenizer.RegexpFindOffsetTokenizer</objectType>
+    </subConfig>
+	 
+
+ 	<subConfig type="normalizer" id="WordNamedNormalizer">
+      <objectType>cheshire3.normalizer.NamedRegexpNormalizer</objectType>
+      <options>
+        <setting type="regexp">(?P&lt;word&gt;.+)/(?P&lt;pos&gt;.+)/(?P&lt;stem&gt;.+)</setting>
+        <setting type="template">%(word)s</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="normalizer" id="StemNamedNormalizer">
+      <objectType>cheshire3.normalizer.NamedRegexpNormalizer</objectType>
+      <options>
+        <setting type="regexp">(?P&lt;word&gt;.+)/(?P&lt;pos&gt;.+)/(?P&lt;stem&gt;.+)</setting>
+        <setting type="template">%(stem)s</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="normalizer" id="PosNamedNormalizer">
+      <objectType>cheshire3.normalizer.NamedRegexpNormalizer</objectType>
+      <options>
+        <setting type="regexp">(?P&lt;word&gt;.+)/(?P&lt;pos&gt;.+)/(?P&lt;stem&gt;.+)</setting>
+        <setting type="template">%(pos)s</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="normalizer" id="WordPosNamedNormalizer">
+      <objectType>cheshire3.normalizer.NamedRegexpNormalizer</objectType>
+      <options>
+        <setting type="regexp">(?P&lt;word&gt;.+)/(?P&lt;pos&gt;.+)/(?P&lt;stem&gt;.+)</setting>
+        <setting type="template">%(word)s/%(pos)s</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="normalizer" id="StemPosNamedNormalizer">
+      <objectType>cheshire3.normalizer.NamedRegexpNormalizer</objectType>
+      <options>
+        <setting type="regexp">(?P&lt;word&gt;.+)/(?P&lt;pos&gt;.+)/(?P&lt;stem&gt;.+)</setting>
+        <setting type="template">%(stem)s/%(pos)s</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="extractor" id="TaggedTermExtractor">
+      <objectType>cheshire3.corpus.extractor.TaggedTermExtractor</objectType>
+      <options>
+         <setting type="offset">1</setting>
+         <setting type="prox">1</setting>
+         <setting type="reversable">1</setting>
+      </options>
+    </subConfig>
+    
+    <subConfig type="extractor" id="SpanXPathTaggedTermExtractor">
+    	<objectType>cheshire3.corpus.extractor.SpanXPathTaggedTermExtractor</objectType>
+    	<options>
+         <setting type="offset">1</setting>
+         <setting type="prox">1</setting>
+         <setting type="reversable">1</setting>
+      </options>
+    </subConfig>
+
+    <subConfig type="extractor" id="SuppliedOffsetTokenizer">
+      <objectType>cheshire3.corpus.tokenizer.SuppliedOffsetTokenizer</objectType>
+    </subConfig>
+     
+
+    <subConfig type="extractor" id="PlusTokenizer">
+      <objectType>cheshire3.tokenizer.SimpleTokenizer</objectType>
+      <options>
+        <setting type="char">+</setting>
+      </options>
+    </subConfig>
+
+	
+	<subConfig type="transformer" id="corpusTransformer">
+		<objectType>cheshire3.corpus.transformer.CorpusPrepTransformer</objectType>
+		<paths>
+			<object type="extractor" ref="SimpleExtractor"/>
+			<object type="tokenizer" ref="RegexpFindOffsetTokenizer"/>
+		</paths>
+		<options>
+			<setting type="eidXpath">//s|//p|//qs|//qe|//sls|//sle|//sss|//sse</setting>
+<!-- 			<setting type="recStartTag">qe</setting> -->
+<!-- 			<setting type="recEndTag">qs</setting> -->
+		</options>
+	</subConfig>
+	
+	<subConfig type="transformer" id="chapterView-Txr">
+		<objectType>cheshire3.transformer.LxmlXsltTransformer</objectType>
+		<paths>
+			<path type="xsltPath">xsl/chapterView.xsl</path>
+		</paths>
+	</subConfig>
+
+		<subConfig type="protocolMap">
+			<objectType>cheshire3.protocolMap.CQLProtocolMap</objectType>
+			<paths>
+				<path type="zeerexPath">zeerex_srw.xml</path>
+			</paths>
+		</subConfig>
+		
+	<subConfig type="extracter" id="ProxExtracter">
+ 		 <objectType>cheshire3.extracter.SimpleExtracter</objectType>
+ 		 <options>
+ 		 	 <setting type="prox">1</setting>
+ 		 	 <setting type="reversable">1</setting>
+ 		 	 <setting type="extraSpaceElements">p s headline lead</setting> 		 
+ 		 </options>
+	</subConfig> 		
+	
+
+		<subConfig type="extractor" id="SimpleExtractor">
+  			<objectType>cheshire3.extractor.SimpleExtractor</objectType>
+  			<options> 
+  				<setting type="extraSpaceElements">p s</setting>	
+  			</options>
+		</subConfig>	
+		
+		<subConfig type="tokenMerger" id="2GramTokenMerger">
+  			<objectType>cheshire3.tokenMerger.NGramTokenMerger</objectType>
+  			<options>
+ 		 		<setting type="nValue">2</setting> 	
+ 		 	</options>
+		</subConfig>
+		<subConfig type="tokenMerger" id="3GramTokenMerger">
+  			<objectType>cheshire3.tokenMerger.NGramTokenMerger</objectType>
+  			<options>
+ 		 		<setting type="nValue">3</setting> 	
+ 		 	</options>
+		</subConfig>
+		<subConfig type="tokenMerger" id="4GramTokenMerger">
+  			<objectType>cheshire3.tokenMerger.NGramTokenMerger</objectType>
+  			<options>
+ 		 		<setting type="nValue">4</setting> 	
+ 		 	</options>
+		</subConfig>
+		<subConfig type="tokenMerger" id="5GramTokenMerger">
+  			<objectType>cheshire3.tokenMerger.NGramTokenMerger</objectType>
+  			<options>
+ 		 		<setting type="nValue">5</setting> 	
+ 		 	</options>
+		</subConfig>
+		
+	</subConfigs>
+</config>
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<subConfigs>
+	
+		<subConfig type="recordStore" id="recordStore">
+			<objectType>cheshire3.recordStore.BdbRecordStore</objectType>
+			<paths>
+				<path type="defaultPath">stores</path>
+				<path type="databasePath">recordStore.bdb</path>
+				<object type="idNormalizer" ref="StringIntNormalizer"/>
+		 		<object type="outParser" ref="LxmlParser"/>
+				<object type="inTransformer" ref="XmlTransformer"/>  	 
+			</paths>
+			<options>
+				<setting type="digest">sha</setting>
+			</options>
+		</subConfig>
+	
+	</subConfigs>
+</config>

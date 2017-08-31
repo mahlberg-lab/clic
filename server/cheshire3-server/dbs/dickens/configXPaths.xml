@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<subConfigs>
+	
+		<subConfig type="xpathProcessor" id="sentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter']/p/s</xpath>
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="sentenceTxtXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>//s/txt</xpath>
+			</source>
+		</subConfig>		
+		
+		<subConfig type="xpathProcessor" id="paragraphXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter']/p</xpath>
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="chapterXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter']</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="struXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>stru</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="contXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>cont</xpath>
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="bookXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type="chapter"]/@book</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="quoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>//qs</xpath>
+				<xpath>//qe</xpath>
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="nonQuoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>//qe</xpath>
+				<xpath>//qs</xpath>
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="shortsusXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>//sss</xpath>
+				<xpath>//sse</xpath>	
+			</source>
+		</subConfig>
+		
+		<subConfig type="xpathProcessor" id="longsusXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>//sls</xpath>
+				<xpath>//sle</xpath>	
+			</source>
+		</subConfig>
+				
+		<subConfig type="xpathProcessor" id="extraStuffXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>stru</xpath>
+				<xpath>cont</xpath>
+			</source>
+		</subConfig>
+
+	<!--  books -->
+
+		<!-- GE -->
+		<subConfig type="xpathProcessor" id="GEsentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'GE')]/p/s</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="GEquoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'GE')]//qs</xpath>
+				<xpath>/div[@type='chapter'][starts-with(@id,'GE')]//qe</xpath>
+			</source>
+		</subConfig>
+
+		<!-- BH -->
+		<subConfig type="xpathProcessor" id="BHsentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'BH')]/p/s</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="BHquoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'BH')]//qs</xpath>
+				<xpath>/div[@type='chapter'][starts-with(@id,'BH')]//qe</xpath>
+			</source>
+		</subConfig>
+
+		<!-- LD -->
+		<subConfig type="xpathProcessor" id="LDsentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'LD')]/p/s</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="LDquoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'LD')]//qs</xpath>
+				<xpath>/div[@type='chapter'][starts-with(@id,'LD')]//qe</xpath>
+			</source>
+		</subConfig>
+
+
+		<!-- CC -->
+		<subConfig type="xpathProcessor" id="CCsentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'CC')]/p/s</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="CCquoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'CC')]//qs</xpath>
+				<xpath>/div[@type='chapter'][starts-with(@id,'CC')]//qe</xpath>
+			</source>
+		</subConfig>
+
+
+		<!-- OT -->
+		<subConfig type="xpathProcessor" id="OTsentenceXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'OT')]/p/s</xpath>
+			</source>
+		</subConfig>
+
+		<subConfig type="xpathProcessor" id="OTquoteXPath">
+			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
+			<source>
+				<xpath>/div[@type='chapter'][starts-with(@id,'OT')]//qs</xpath>
+				<xpath>/div[@type='chapter'][starts-with(@id,'OT')]//qe</xpath>
+			</source>
+		</subConfig>
+
+	</subConfigs>
+</config>

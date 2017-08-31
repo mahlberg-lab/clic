@@ -19,7 +19,9 @@
 /server/local
 /server/share
 /server/booklist.json
-/server/cheshire3-server/
+/server/cheshire3-server/dbs/dickens/indexes/*
+/server/cheshire3-server/dbs/dickens/logs/*
+/server/cheshire3-server/dbs/dickens/stores/*
 /server/clic-chapter-cache.pickle
 
 /cheshire3.db_dickens.tar.bz2
