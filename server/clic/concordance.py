@@ -365,5 +365,4 @@ class Concordance(object):
 
                 conc_lines.append(conc_line)
 
-        conc_lines.insert(0, len(conc_lines))  # NB: This was an aborted attempt to provide server-side pagination, keep it here for now.
         return conc_lines

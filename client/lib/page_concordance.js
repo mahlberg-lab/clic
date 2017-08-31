@@ -113,7 +113,6 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
             tag_list = Object.keys(tag_state);
 
         data = data.concordances;
-        data.shift();  //NB: CLiC 1.5 puts a useless total as the first item
 
         for (i = 0; i < data.length; i++) {
             // TODO: Assume book+chap+word_id is unique for now. Server-generate this
