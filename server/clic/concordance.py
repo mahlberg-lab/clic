@@ -2,8 +2,6 @@
 import os
 import os.path
 
-from clic.c3chapter import get_chapter
-
 
 def concordance(cdb, corpora=['dickens'], subset='all', type='whole', q=None):
     """
@@ -64,10 +62,10 @@ def build_query(cdb, terms, idxName, Materials, selectWords):
 
     ## conduct database search
     ## note: /proxInfo needed to search individual books
-    query = cdb.qf.get_query(cdb.session, '(%s) and/proxInfo (%s)' % (
+    query = '(%s) and/proxInfo (%s)' % (
         ' or '.join(subcorpus),
         ' or '.join(term_clauses),
-    ))
+    )
 
     return query, number_of_search_terms
 
@@ -88,7 +86,7 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
     etc.
     """
     query, number_of_search_terms = build_query(cdb, terms, idxName, Materials, selectWords)
-    result_set = cdb.db.search(cdb.session, query)
+    result_set = cdb.c3_query(query)
 
     conc_lines = [] # return concordance lines in list
     word_window = 10 # word_window is set to 10 by default - on both sides of node
@@ -98,7 +96,7 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
 
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
-        ch = get_chapter(cdb.session, cdb.recStore, result.id)
+        ch = cdb.get_chapter(result.id)
         (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, ch.chapter)
 
         for match in result.proxInfo:

@@ -10,6 +10,8 @@ from cheshire3.baseObjects import Session
 from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
+from clic.c3chapter import get_chapter
+
 class ClicDb():
     def __init__(self):
         self.session = Session()
@@ -69,6 +71,12 @@ class ClicDb():
                 count_prev_chap += ch_total
             total_word += ch_total
         return (count_prev_chap, total_word)
+
+    def get_chapter(self, chapter_id):
+        return get_chapter(self.session, self.recStore, chapter_id)
+
+    def c3_query(self, query):
+        return self.db.search(self.session, self.qf.get_query(self.session, query))
 
     def recreate_rdb(self):
         def _rdb_insert(c, table, rec, ignoreDuplicate=True):
