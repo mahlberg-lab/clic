@@ -27,7 +27,7 @@ def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
     )
 
 
-def build_query(self, terms, idxName, Materials, selectWords):
+def build_query(terms, idxName, Materials, selectWords):
     '''
     Builds a cheshire query
      - terms: Search terms (space separated?)
@@ -72,7 +72,7 @@ def build_query(self, terms, idxName, Materials, selectWords):
     return query, number_of_search_terms
 
 
-def create_concordance(self, terms, idxName, Materials, selectWords):
+def create_concordance(terms, idxName, Materials, selectWords):
     """
     main concordance method
     create a list of lists containing each three contexts left - node -right,
@@ -87,8 +87,6 @@ def create_concordance(self, terms, idxName, Materials, selectWords):
     ],
     etc.
     """
-    ##self.logger.log(10, 'CREATING CONCORDANCE FOR RS: {0} in {1} - {2}'.format(terms, idxName, Materials))
-
     query, number_of_search_terms = build_query(terms, idxName, Materials, selectWords)
     result_set = c3.db.search(c3.session, query)
 
