@@ -156,7 +156,7 @@ class ClicDb():
             ));
 
             node = dict()
-            for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: n.attrib['wordOffset']):
+            for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: int(n.attrib['wordOffset'])):
                 node[n.tag] = n
                 if n.tag in ['qs']:
                     # Start of a quote, thus up to the last qe is a non-quote
@@ -177,8 +177,8 @@ class ClicDb():
                         sle='longsus',
                         sse='shortsus',
                     )[n.tag],
-                    0 if start_node is None else start_node.attrib['wordOffset'],
-                    n.attrib['wordOffset'],
+                    0 if start_node is None else int(start_node.attrib['wordOffset']),
+                    int(n.attrib['wordOffset']),
                 ))
 
             if node.get('qe', None):
@@ -191,7 +191,7 @@ class ClicDb():
                     word_count,
                 ))
 
-            yield "Cached %d %s %s chapter %d" % (rec_id, corpus_id, book_id, chapter_id)
+            yield "Cached %d %s %s chapter %d" % (chapter_id, corpus_id, book_id, chapter_num)
             chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
