@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import os.path
-import time
 
 from clic import c3
-from clic.c3chapter import get_chapter, dump_chapter_cache
-
-from cheshire3.exceptions import ObjectDoesNotExistException
+from clic.c3chapter import get_chapter
 
 
 def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
@@ -28,24 +25,6 @@ def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
         corpora,
         type[0],
     )
-
-
-def warm_cache():
-    """
-    Given a Cheshire3 (session), fetch all objects in (database_name)'s (store_name),
-    and parse them as Chapters ready for use
-    """
-    i = 0
-    startTime = time.time()
-    while True:
-        try:
-            get_chapter(c3.session, c3.recStore, i)
-            yield "Cached item %d %f\n" % (i, time.time() - startTime);
-            i += 1
-        except ObjectDoesNotExistException:
-            dump_chapter_cache()
-            yield "Chapter cache now contains %d objects\n" % (len(chapter_cache));
-            return
 
 
 def build_query(self, terms, idxName, Materials, selectWords):

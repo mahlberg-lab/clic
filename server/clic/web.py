@@ -15,9 +15,13 @@ import clic.concordance
 def concordances():
     out = clic.concordance.concordance(**request.args)
     return jsonify(dict(concordances=out))
-@app.route('/api/concordance/warm/', methods=['GET'])
+
+# ==== Admin routes =======================================
+import clic.c3chapter
+
+@app.route('/api/warm/', methods=['GET'])
 def concordance_warm():
-    out = clic.concordance.warm_cache()
+    out = clic.c3chapter.warm_cache()
     return Response(out, mimetype='text/plain')
 
 

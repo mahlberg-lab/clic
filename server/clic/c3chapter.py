@@ -1,9 +1,32 @@
 import os
 import os.path
 import cPickle as pickle
+import time
+
+from cheshire3.exceptions import ObjectDoesNotExistException
+
+from clic import c3
 
 BASE_DIR = os.path.dirname(__file__)
 CLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
+
+
+def warm_cache():
+    """
+    Given a Cheshire3 (session), fetch all objects in (database_name)'s (store_name),
+    and parse them as Chapters ready for use
+    """
+    i = 0
+    startTime = time.time()
+    while True:
+        try:
+            get_chapter(c3.session, c3.recStore, i)
+            yield "Cached item %d %f\n" % (i, time.time() - startTime);
+            i += 1
+        except ObjectDoesNotExistException:
+            dump_chapter_cache()
+            yield "Chapter cache now contains %d objects\n" % (len(chapter_cache));
+            return
 
 
 class Chapter():
