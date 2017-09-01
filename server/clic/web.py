@@ -4,7 +4,7 @@ import os
 # Hack HOME var so cheshire3 can make a useless config directory
 os.environ['HOME'] = "/tmp"
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response, jsonify
 
 app = Flask(__name__)
 
