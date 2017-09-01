@@ -2,11 +2,10 @@
 import os
 import os.path
 
-from clic import c3
 from clic.c3chapter import get_chapter
 
 
-def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
+def concordance(cdb, corpora=['dickens'], subset='all', type='whole', q=None):
     """
     - q: Query to search for
     - corpora: List of corpora / book names
@@ -14,6 +13,7 @@ def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
     - type: ``whole`` expression, or ``any`` word within.
     """
     return create_concordance(
+        cdb,
         q[0],
         dict(
             shortsus='shortsus-idx',
@@ -27,7 +27,7 @@ def concordance(corpora=['dickens'], subset='all', type='whole', q=None):
     )
 
 
-def build_query(terms, idxName, Materials, selectWords):
+def build_query(cdb, terms, idxName, Materials, selectWords):
     '''
     Builds a cheshire query
      - terms: Search terms (space separated?)
@@ -40,7 +40,7 @@ def build_query(terms, idxName, Materials, selectWords):
     '''
 
     subcorpus = []
-    corpus_names = c3.get_corpus_names()
+    corpus_names = cdb.get_corpus_names()
     for m in Materials:
         subcorpus.append('c3.{0} = "{1}"'.format(
             'subCorpus-idx' if m in corpus_names else 'book-idx',
@@ -64,7 +64,7 @@ def build_query(terms, idxName, Materials, selectWords):
 
     ## conduct database search
     ## note: /proxInfo needed to search individual books
-    query = c3.qf.get_query(c3.session, '(%s) and/proxInfo (%s)' % (
+    query = cdb.qf.get_query(cdb.session, '(%s) and/proxInfo (%s)' % (
         ' or '.join(subcorpus),
         ' or '.join(term_clauses),
     ))
@@ -72,7 +72,7 @@ def build_query(terms, idxName, Materials, selectWords):
     return query, number_of_search_terms
 
 
-def create_concordance(terms, idxName, Materials, selectWords):
+def create_concordance(cdb, terms, idxName, Materials, selectWords):
     """
     main concordance method
     create a list of lists containing each three contexts left - node -right,
@@ -87,8 +87,8 @@ def create_concordance(terms, idxName, Materials, selectWords):
     ],
     etc.
     """
-    query, number_of_search_terms = build_query(terms, idxName, Materials, selectWords)
-    result_set = c3.db.search(c3.session, query)
+    query, number_of_search_terms = build_query(cdb, terms, idxName, Materials, selectWords)
+    result_set = cdb.db.search(cdb.session, query)
 
     conc_lines = [] # return concordance lines in list
     word_window = 10 # word_window is set to 10 by default - on both sides of node
@@ -98,8 +98,8 @@ def create_concordance(terms, idxName, Materials, selectWords):
 
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
-        ch = get_chapter(c3.session, c3.recStore, result.id)
-        (count_prev_chap, total_word) = c3.get_chapter_word_counts(ch.book, ch.chapter)
+        ch = get_chapter(cdb.session, cdb.recStore, result.id)
+        (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, ch.chapter)
 
         for match in result.proxInfo:
             (word_id, para_chap, sent_chap) = ch.get_word(match)

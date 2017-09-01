@@ -4,16 +4,26 @@ import os
 # Hack HOME var so cheshire3 can make a useless config directory
 os.environ['HOME'] = "/tmp"
 
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, Response, jsonify, g
+
+from clic.clicdb import ClicDb
 
 app = Flask(__name__)
 
-# ==== Metadata routes ====================================
-import clic.c3
+def clicdb():
+    if not getattr(g, '_clicdb', None):
+        g._clicdb = ClicDb()
+    return g._clicdb
 
+@app.teardown_appcontext
+def close_db(exception):
+    if getattr(g, 'clicdb', None):
+        g.clicdb.close()
+
+# ==== Metadata routes ====================================
 @app.route('/api/corpora', methods=['GET'])
 def corpora():
-    out = clic.c3.get_corpus_structure()
+    out = clicdb().get_corpus_structure()
     return jsonify(dict(corpora=out))
 
 # ==== Concordance routes =================================
@@ -21,7 +31,7 @@ import clic.concordance
 
 @app.route('/api/concordance', methods=['GET'])
 def concordances():
-    out = clic.concordance.concordance(**request.args)
+    out = clic.concordance.concordance(clicdb(), **request.args)
     return jsonify(dict(concordances=out))
 
 # ==== Admin routes =======================================
