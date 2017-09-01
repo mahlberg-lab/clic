@@ -5,6 +5,7 @@ var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
 global.jQuery = jQuery;  // So chosen-js can find it
 var chosen = require('chosen-js');
+var api = require('./api.js');
 var TagToggle = require('./tagtoggle.js');
 
 var noUiSlider_opts = {
@@ -27,7 +28,9 @@ var noUiSlider_opts = {
     },
 };
 
-function to_options_html(opts) {
+function to_options_html(opts, group_label) {
+    var out;
+
     function escapeHtml(s) {
         // https://bugs.jquery.com/ticket/11773
         return (String(s)
@@ -37,9 +40,17 @@ function to_options_html(opts) {
             .replace(/"/g, '&quot;')); // "
     }
 
-    return opts.map(function (t) {
+    out = opts.map(function (t) {
+        if (t.id && t.title) {
+            return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.title) + "</option>";
+        }
         return "<option>" + escapeHtml(t) + "</option>";
     }).join("");
+
+    if (group_label) {
+        out = '<optgroup label="' + escapeHtml(group_label) + '">' + out + '</optgroup>';
+    }
+    return out;
 }
 
 function ControlBar(control_bar) {
@@ -130,57 +141,72 @@ function ControlBar(control_bar) {
 // Refresh controls based on page_opts
 ControlBar.prototype.reload = function reload(page_opts) {
     var self = this,
-        tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0],
         page_state = window.history.state || {};
 
-    // Enable the fieldset for the page
-    Array.prototype.forEach.call(self.control_bar.elements, function (el, i) {
-        if (el.tagName === 'FIELDSET') {
-            el.disabled = ('/' + el.name !== page_opts.doc);
-        }
-    });
+    return api.get('corpora').then(function (corpora) {
+        var tag_toggles_el;
 
-    // TODO: Hard-code the tag state for now
-    if (!page_state.tag_columns) {
-        page_state.tag_columns = {
-            'Pablo-BP-CONC': {}, //TODO: Hardcoding for now
-            'MB-BP-CONC': {},
-        };
-    }
-    window.history.replaceState(page_state, "", "");
-
-    // Recreate tag toggles
-    tag_toggles_el.innerHTML = '';
-    this.tag_toggles = Object.keys(page_state.tag_columns).map(function (t) {
-        var toggle = new TagToggle(t);
-
-        toggle.onupdate = function (tag_state) {
-            var i, new_state = window.history.state;
-
-            for (i = 0; i < self.table_selection.length; i++) {
-                new_state.tag_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
+        // Enable the fieldset for the page
+        Array.prototype.forEach.call(self.control_bar.elements, function (el, i) {
+            if (el.tagName === 'FIELDSET') {
+                el.disabled = ('/' + el.name !== page_opts.doc);
             }
+        });
 
-            window.history.replaceState(new_state, "", "");
-            window.dispatchEvent(new window.CustomEvent('replacestate'));
-        };
+        // TODO: Hard-code the tag state for now
+        if (!page_state.tag_columns) {
+            page_state.tag_columns = {
+                'Pablo-BP-CONC': {}, //TODO: Hardcoding for now
+                'MB-BP-CONC': {},
+            };
+            window.history.replaceState(page_state, "", "");
+        }
 
-        tag_toggles_el.appendChild(toggle.dom());
-        return toggle;
-    });
+        // Recreate tag toggles
+        tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
+        if (tag_toggles_el) {
+            tag_toggles_el.innerHTML = '';
+            self.tag_toggles = Object.keys(page_state.tag_columns).map(function (t) {
+                var toggle = new TagToggle(t);
 
-    // Make sure we consider existing options valid
-    this.control_bar.elements['kwic-terms'].innerHTML = to_options_html([page_opts['kwic-terms']]);
+                toggle.onupdate = function (tag_state) {
+                    var i, new_state = window.history.state;
 
-    this.control_bar.elements['conc-subset'].value = page_opts['conc-subset'] || "all";
-    this.control_bar.elements['conc-q'].value = page_opts['conc-q'] || "";
-    this.control_bar.elements['conc-type'].value = page_opts['conc-type'] || "whole";
-    this.control_bar.elements['kwic-span'].value = page_opts['kwic-span'] || "-5:5";
-    this.control_bar.elements['kwic-terms'].value = page_opts['kwic-terms'] || [];
+                    for (i = 0; i < self.table_selection.length; i++) {
+                        new_state.tag_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
+                    }
 
-    // Tell all the chosen's that values are altered
-    Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
-        jQuery(el).trigger("chosen:updated");
+                    window.history.replaceState(new_state, "", "");
+                    window.dispatchEvent(new window.CustomEvent('replacestate'));
+                };
+
+                tag_toggles_el.appendChild(toggle.dom());
+                return toggle;
+            });
+        }
+
+        // Make sure we consider existing options valid
+        self.control_bar.elements['kwic-terms'].innerHTML = to_options_html(page_opts['kwic-terms'] || []);
+
+        // Populate corpora dropdowns
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('select[name=corpora]'), function (el) {
+            el.innerHTML = to_options_html(corpora.corpora, 'Entire corpora') + corpora.corpora.map(function (c) {
+                return to_options_html(c.children, c.title);
+            }).join("");
+            jQuery(el).val(page_opts.corpora);
+        });
+
+        // Set values from page options, or defaults
+        self.control_bar.elements['conc-subset'].value = (page_opts['conc-subset'] || ["all"])[0];
+        self.control_bar.elements['conc-q'].value = (page_opts['conc-q'] || [""])[0];
+        self.control_bar.elements['conc-type'].value = (page_opts['conc-type'] || ["whole"])[0];
+        self.control_bar.elements['kwic-span'].value = (page_opts['kwic-span'] || ["-5:5"])[0];
+        jQuery(self.control_bar.elements['kwic-terms']).val(page_opts['kwic-terms']);
+
+        // Tell all the chosen's that values are altered
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
+            jQuery(el).trigger("chosen:updated");
+        });
     });
 };
 

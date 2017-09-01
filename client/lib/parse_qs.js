@@ -13,7 +13,7 @@
   * @example
     // page location: /parp/document.html?peep&parp=2=3&poop#!moo=daisy&soup
     parse_qs(document.location)
-    // => { doc: '/document.html', args: ['peep', 'poop', 'soup'], parp: '2=3', moo: 'daisy'
+    // => { doc: '/document.html', args: ['peep', 'poop', 'soup'], parp: ['2=3'], moo: ['daisy']
   */
 module.exports.parse_qs = function (location) {
     var out = { "args": [], "doc": location.pathname.replace(/^.*\//, '/') };
@@ -28,7 +28,10 @@ module.exports.parse_qs = function (location) {
         var m = /(.*?)\=(.*)/.exec(str);
 
         if (m) {
-            out[m[1]] = decodeURIComponent(m[2]);
+            if (!out[m[1]]) {
+                out[m[1]] = [];
+            }
+            out[m[1]].push(decodeURIComponent(m[2]));
         } else {
             out.args.push(str);
         }

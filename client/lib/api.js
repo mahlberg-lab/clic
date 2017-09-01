@@ -3,6 +3,10 @@
 /*global Promise */
 
 function to_query_string(params) {
+    if (!params) {
+        return "";
+    }
+
     return Object.keys(params).map(function (k) {
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
     }).join('&');

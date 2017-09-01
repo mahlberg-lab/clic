@@ -89,27 +89,30 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     }
 
     this.kwicTerms = {};
-    this.kwicSpan = parseKwicSpan(this.page_opts['kwic-span'] || '-5:5');
+    this.kwicSpan = parseKwicSpan((this.page_opts['kwic-span'] || ['-5:5'])[0]);
 
-    (this.page_opts['kwic-terms'] || "").split(/\s+/).map(function (t, i) {
+    (this.page_opts['kwic-terms'] || []).map(function (t, i) {
         if (t) {
             self.kwicTerms[t.toLowerCase()] = i + 1;
         }
     });
 
     // Mangle page_opts into the API's required parameters
-    api_opts.corpora = ['dickens']; //TODO:
-    api_opts.subset = this.page_opts['conc-subset'] || 'all';
+    api_opts.corpora = this.page_opts.corpora;
+    api_opts.subset = this.page_opts['conc-subset'] || ['all'];
     api_opts.q = this.page_opts['conc-q'];
-    api_opts.type = this.page_opts['conc-type'] || 'whole';
+    api_opts.type = this.page_opts['conc-type'] || ['whole'];
 
+    if (!api_opts.corpora || api_opts.corpora.length === 0) {
+        throw new Error("Please select a corpora to search in");
+    }
     if (!api_opts.q) {
         throw new Error("Please provide some terms to search for");
     }
 
     return api.get('concordance', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
-            tag_state = window.history.state.tag_columns,
+            tag_state = (window.history.state || {}).tag_columns,
             tag_list = Object.keys(tag_state);
 
         data = data.concordances;
