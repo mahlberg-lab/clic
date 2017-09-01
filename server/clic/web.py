@@ -8,6 +8,14 @@ from flask import Flask, request, Response, jsonify
 
 app = Flask(__name__)
 
+# ==== Metadata routes ====================================
+import clic.c3
+
+@app.route('/api/corpora', methods=['GET'])
+def corpora():
+    out = clic.c3.get_corpus_structure()
+    return jsonify(dict(corpora=out))
+
 # ==== Concordance routes =================================
 import clic.concordance
 

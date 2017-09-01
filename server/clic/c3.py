@@ -34,6 +34,24 @@ def get_corpus_names():
     ]
 
 
+def get_corpus_structure():
+    """
+    Return a list of dicts containing:
+    - id: corpus short name
+    - title: corpus title
+    - children: [{id: book id, title: book title}, ...]
+    """
+    c = rdb.cursor()
+    c.execute("SELECT c.corpus_id, c.title, b.book_id, b.title FROM corpus c, book b WHERE b.corpus_id = c.corpus_id ORDER BY c.title, b.title")
+
+    out = []
+    for (c_id, c_title, b_id, b_title) in c.fetchall():
+        if len(out) == 0 or out[-1]['id'] != c_id:
+            out.append(dict(id=c_id, title=c_title, children=[]))
+        out[-1]['children'].append(dict(id=b_id, title=b_title))
+    return out
+
+
 def get_chapter_word_counts(book_id, chapter):
     """
     For the given book id and chapter, return:
@@ -65,12 +83,12 @@ def recreate_rdb():
     c = rdb.cursor()
     c.execute('''CREATE TABLE corpus (
         corpus_id TEXT,
-        corpus_title TEXT NOT NULL,
+        title TEXT NOT NULL,
         PRIMARY KEY (corpus_id)
     )''')
     c.execute('''CREATE TABLE book (
         book_id,
-        book_title TEXT NOT NULL,
+        title TEXT NOT NULL,
         corpus_id TEXT,
         FOREIGN KEY(corpus_id) REFERENCES corpus(corpus_id),
         PRIMARY KEY (book_id)

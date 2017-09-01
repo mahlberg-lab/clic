@@ -25,4 +25,7 @@ clean:
 	rm -rf -- ./bin ./include ./lib ./local ./share
 	find ./clic -name '*.pyc' -exec rm -- {} \;
 
+test: lib/python2.7/site-packages/.requirements
+	./bin/py.test tests/
+
 .PHONY: install test start
