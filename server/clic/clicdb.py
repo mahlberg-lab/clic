@@ -103,37 +103,37 @@ class ClicDb():
             PRIMARY KEY (book_id)
         )''')
         c.execute('''CREATE TABLE chapter (
-            book_id TEXT,
             chapter_id INT,
+            book_id TEXT,
+            chapter_num INT NOT NULL,
             c3_digest TEXT NOT NULL,
             word_total INT NOT NULL,
             FOREIGN KEY(book_id) REFERENCES book(book_id),
-            PRIMARY KEY (book_id, chapter_id)
+            PRIMARY KEY (chapter_id)
         )''')
         c.execute('''CREATE TABLE subset (
-            book_id TEXT,
             chapter_id INT,
             eid INT,
             subset_type TEXT,
             offset_start INT NOT NULL,
             offset_end INT NOT NULL,
-            FOREIGN KEY(book_id) REFERENCES book(book_id),
-            PRIMARY KEY (book_id, chapter_id, eid)
+            FOREIGN KEY(chapter_id) REFERENCES chapter(chapter_id),
+            PRIMARY KEY (chapter_id, eid)
         )''')
 
         # Extra lookup tables not available from cheshire data
         with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
             extra_data = json.load(f)
 
-        rec_id = 0
+        chapter_id = 0
         while True:
             try:
-                record = self.recStore.fetch_record(self.session, rec_id)
+                record = self.recStore.fetch_record(self.session, chapter_id)
             except ObjectDoesNotExistException:
                 break
             dom = record.dom
             ch_node = dom.xpath('/div')[0]
-            chapter_id = int(ch_node.get('num'))
+            chapter_num = int(ch_node.get('num'))
             book_id = ch_node.get('book')
             corpus_id = ch_node.get('corpus', extra_data['book_corpus'][book_id])
             word_count = int(ch_node.xpath("count(descendant::w)"))
@@ -148,8 +148,9 @@ class ClicDb():
                 corpus_id,
             ));
             _rdb_insert(c, "chapter", (
-                book_id,
                 chapter_id,
+                book_id,
+                chapter_num,
                 record.digest,
                 word_count,
             ));
@@ -168,7 +169,6 @@ class ClicDb():
                     continue
 
                 _rdb_insert(c, "subset", (
-                    book_id,
                     chapter_id,
                     n.attrib['eid'],
                     dict(
@@ -184,7 +184,6 @@ class ClicDb():
             if node.get('qe', None):
                 # End of quote up until end of text is non-quote
                 _rdb_insert(c, "subset", (
-                    book_id,
                     chapter_id,
                     node['qe'].attrib['eid'],
                     'nonquote',
@@ -193,7 +192,7 @@ class ClicDb():
                 ))
 
             yield "Cached %d %s %s chapter %d" % (rec_id, corpus_id, book_id, chapter_id)
-            rec_id += 1
+            chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
 
