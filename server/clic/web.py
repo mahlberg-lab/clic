@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 
 # Hack HOME var so cheshire3 can make a useless config directory
@@ -20,6 +21,15 @@ def close_db(exception):
     if getattr(g, 'clicdb', None):
         g.clicdb.close()
 
+def stream_json(generator):
+    """Helper to turn a generator's output into JSON"""
+    yield '{"results":['
+    separator = '\n'
+    for x in generator:
+        yield separator + json.dumps(x, separators=(',', ':'))
+        separator = ',\n'
+    yield ']}'
+
 # ==== Metadata routes ====================================
 @app.route('/api/corpora', methods=['GET'])
 def corpora():
@@ -32,15 +42,15 @@ import clic.concordance
 @app.route('/api/concordance', methods=['GET'])
 def concordances():
     out = clic.concordance.concordance(clicdb(), **request.args)
-    return jsonify(dict(concordances=out))
+    return Response(stream_json(out), content_type='application/json')
 
 # ==== Subset routes ======================================
 import clic.subset
 
 @app.route('/api/subset', methods=['GET'])
 def subset():
-    out = [x for x in clic.subset.subset(clicdb(), **request.args)]
-    return jsonify(dict(results=out))
+    out = clic.subset.subset(clicdb(), **request.args)
+    return Response(stream_json(out), content_type='application/json')
 
 # ==== Admin routes =======================================
 import clic.c3chapter

@@ -115,7 +115,7 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
             tag_state = (window.history.state || {}).tag_columns,
             tag_list = Object.keys(tag_state);
 
-        data = data.concordances;
+        data = data.results;
 
         for (i = 0; i < data.length; i++) {
             // TODO: Assume book+chap+word_id is unique for now. Server-generate this

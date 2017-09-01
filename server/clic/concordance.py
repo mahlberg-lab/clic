@@ -107,6 +107,4 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
                 [count_prev_chap + int(word_id), total_word],
             ]
 
-            conc_lines.append(conc_line)
-
-    return conc_lines
+            yield conc_line
