@@ -91,7 +91,9 @@ PageTable.prototype.reload = function reload(page_opts) {
             }
         }
         // Trigger event so controlpanel updates
-        self.select_rows();
+        if (selected.length > 0) {
+            self.select_rows();
+        }
 
         return data;
     });
