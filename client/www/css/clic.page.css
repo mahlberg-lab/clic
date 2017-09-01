@@ -24,3 +24,12 @@ html {
         margin-right: 25rem;
     }
 }
+
+#errors {
+    padding: 10px;
+    background: orangered;
+    font-weight: bold;
+}
+#errors:empty {
+    display: none;
+}

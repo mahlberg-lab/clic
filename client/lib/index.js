@@ -17,6 +17,7 @@ function page_load(e) {
         PageConstructor = page_classes[page_opts.doc] || page_classes[''];
 
     return Promise.resolve(page_opts).then(function (page_opts) {
+        document.getElementById('errors').innerText = "";
         if (!page || page_opts.doc !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
         }
@@ -41,7 +42,7 @@ function page_load(e) {
         }
         return;
     }).catch(function (err) {
-        console.log("TODO: " + err);
+        document.getElementById('errors').innerText = err;
         throw err;
     });
 }
