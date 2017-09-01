@@ -55,19 +55,19 @@ class ClicDb():
             out[-1]['children'].append(dict(id=b_id, title=b_title))
         return out
 
-    def get_chapter_word_counts(self, book_id, chapter):
+    def get_chapter_word_counts(self, book_id, chapter_num):
         """
         For the given book id and chapter, return:
         - count_prev_chap: Word count for all chapters before (chapter)
         - total_word: Total word count in the book
         """
         c = self.rdb.cursor()
-        c.execute("SELECT chapter_id, word_total FROM chapter WHERE book_id = ?", (book_id,))
+        c.execute("SELECT chapter_num, word_total FROM chapter WHERE book_id = ?", (book_id,))
 
         count_prev_chap = 0
         total_word = 0
-        for (chapter_id, ch_total) in c.fetchall():
-            if chapter_id < chapter:
+        for (c_num, ch_total) in c.fetchall():
+            if c_num < chapter_num:
                 count_prev_chap += ch_total
             total_word += ch_total
         return (count_prev_chap, total_word)

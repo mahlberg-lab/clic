@@ -97,7 +97,7 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
         ch = cdb.get_chapter(result.id)
-        (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, ch.chapter)
+        (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, int(ch.chapter))
 
         for match in result.proxInfo:
             (word_id, para_chap, sent_chap) = ch.get_word(match)
