@@ -78,6 +78,10 @@ class ClicDb():
     def c3_query(self, query):
         return self.db.search(self.session, self.qf.get_query(self.session, query))
 
+    def rdb_query(self, *args):
+        c = self.rdb.cursor()
+        return c.execute(*args)
+
     def recreate_rdb(self):
         def _rdb_insert(c, table, rec, ignoreDuplicate=True):
             try:

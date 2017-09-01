@@ -34,6 +34,14 @@ def concordances():
     out = clic.concordance.concordance(clicdb(), **request.args)
     return jsonify(dict(concordances=out))
 
+# ==== Subset routes ======================================
+import clic.subset
+
+@app.route('/api/subset', methods=['GET'])
+def subset():
+    out = [x for x in clic.subset.subset(clicdb(), **request.args)]
+    return jsonify(dict(results=out))
+
 # ==== Admin routes =======================================
 import clic.c3chapter
 

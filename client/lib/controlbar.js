@@ -198,6 +198,7 @@ ControlBar.prototype.reload = function reload(page_opts) {
 
         // Set values from page options, or defaults
         self.control_bar.elements['conc-subset'].value = (page_opts['conc-subset'] || ["all"])[0];
+        self.control_bar.elements['subset-subset'].value = (page_opts['subset-subset'] || ["shortsus"])[0];
         self.control_bar.elements['conc-q'].value = (page_opts['conc-q'] || [""])[0];
         self.control_bar.elements['conc-type'].value = (page_opts['conc-type'] || ["whole"])[0];
         self.control_bar.elements['kwic-span'].value = (page_opts['kwic-span'] || ["-5:5"])[0];
