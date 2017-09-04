@@ -27,3 +27,6 @@
 /server/clic-chapter-cache.pickle
 
 /cheshire3.db_dickens.tar.bz2
+
+/annotation/*.out
+/annotation/tmp-*
