@@ -63,8 +63,8 @@ for i in $( ls | grep ".txt" ); do
 	${PYTHON} $SCRIPT_DIR/alternativesuspensions.py $SCRIPT_DIR/tmp-alternativequotes.xml > $SCRIPT_DIR/tmp-alternativesuspensions.xml
 	cp $SCRIPT_DIR/tmp-alternativesuspensions.xml $OUTPUT_DIR/alternativesuspensions/$nf
 
-	echo 'Writing the resuls to final'
-	cp $SCRIPT_DIR/tmp-alternativesuspensions.xml $OUTPUT_DIR/final/$nf
+	echo 'Writing the resuls to final, with stylesheet declaration'
+	echo '<?xml-stylesheet href="/styles.css"?>' | cat - $SCRIPT_DIR/tmp-alternativesuspensions.xml > $OUTPUT_DIR/final/$nf
 done
 
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'

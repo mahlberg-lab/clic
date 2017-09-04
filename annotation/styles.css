@@ -1,0 +1,77 @@
+div0 {
+  max-width: 960px;
+  margin: 10px auto;
+  font-family: serif;
+  font-size: 1.1em;
+}
+
+div0:after {
+  content: "quotes - red\00000a
+Alternative quotes - yellow\00000a
+Short suspensions - green\00000a
+Long suspensions - orange\00000a";
+  position: fixed;
+  white-space: pre;
+  top: 10px;
+  right: 10px;
+  background: rgba(158, 189, 168, 0.9);
+  padding: 3px;
+  border: 1px solid black;
+  border-radius: 3px;
+  text-align: right;
+}
+
+div0 > div[type=chapter],
+div0 > div[type=chapter] > p {
+  display: block;
+  position: relative;
+  margin-top: 3em;
+  border-top: 5px solid #333;
+}
+div0 > div[type=chapter] > p {
+  margin-top: 1em;
+  border-top: 1px solid #333;
+}
+div0 > div[type=chapter]:before,
+div0 > div[type=chapter] > p:before {
+  content: "chapter";
+  display: block;
+  position: absolute;
+  top: -1.25em;
+  right: 3em;
+  line-height: 1em;
+  color: #666;
+  font-size: 80%;
+}
+div0 > div[type=chapter] > p:before {
+  content: "paragraph";
+  top: -1em;
+}
+
+div0 > div[type=chapter] > title {
+  display: block;
+  font-weight: bold;
+}
+
+div0 s {
+  border: 1px solid #999;
+  background: #eee;
+  margin-right: 0.3em;
+  line-height: 1.4em;
+}
+
+qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
+   display: inline-block;
+   vertical-align: text-top;
+   width: 10px;
+   height: 1.2em;
+   text-align: center;
+   font-weight: bold;
+}
+qs:after, alt-qs:after, sss:after, sls:after { content: "<" }
+qe:after, alt-qe:after, sse:after, sle:after { content: ">" }
+
+qs,qe { background-color: red; }
+alt-qs,alt-qe { background-color: yellow; }
+sss,sse { background-color: mediumspringgreen; }
+sls,sle { background-color: orange; }
