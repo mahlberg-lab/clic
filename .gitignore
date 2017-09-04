@@ -28,5 +28,10 @@
 
 /cheshire3.db_dickens.tar.bz2
 
+/annotation/bin
+/annotation/include
+/annotation/lib
+/annotation/local
+/annotation/share
 /annotation/*.out
 /annotation/tmp-*
