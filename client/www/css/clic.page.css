@@ -25,6 +25,16 @@ html {
     }
 }
 
+header {
+    overflow: hidden;
+}
+header h1 {
+    float: left;
+}
+header .sponsors {
+    float: right;
+}
+
 #errors {
     padding: 10px;
     background: orangered;
