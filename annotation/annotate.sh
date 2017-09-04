@@ -21,6 +21,9 @@ cd $INPUT_DIR && INPUT_DIR=$( pwd ) && cd $SCRIPT_DIR
 OUTPUT_DIR=$2
 cd $OUTPUT_DIR && OUTPUT_DIR=$( pwd ) && cd $SCRIPT_DIR
 
+# Make sure all output dirs exist
+mkdir -p $OUTPUT_DIR/{tmp-paragraphs,paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions}
+
 # Run the scripts for each file in the INPUT_DIR
 cd $INPUT_DIR
 
