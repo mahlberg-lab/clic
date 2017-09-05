@@ -23,13 +23,7 @@ PageTable.prototype.init = function init() {
     this.table_opts.sort = true;
     this.table_opts.paginate = true;
     this.table_opts.displayLength = 50;
-    this.table_opts.dom = 'Bfr<"clear"i>tip';
-    this.table_opts.buttons = [
-        'csv', 'copy',
-        { text: 'Toggle Metadata', action: function (e, dt, node, config) {
-            self.table_el.classList.toggle('metadata-hidden');
-        }},
-    ];
+    this.table_opts.dom = 'ritp';
     this.table_opts.ajax = function (params, callback, settings) {
         self.reload_data(self.page_opts).then(function (data) {
             callback(data);
@@ -51,15 +45,19 @@ PageTable.prototype.reload = function reload(page_opts) {
             resolve(data);
         }
 
+        self.table_el.classList.toggle('metadata-hidden', (page_opts['table-metadata'] || []).length === 0);
+
         // Make available for ajax / reload_data
         self.page_opts = page_opts;
         self.ajax_reject = reject;
 
         if (self.table) {
+            self.table.search((page_opts['table-filter'] || []).join(""));
             self.table.reload(resolve_second);
         } else {
             table_opts = self.table_opts;
             table_opts.fnInitComplete = resolve_second;
+            table_opts.search = { search: (page_opts['table-filter'] || []).join("") };
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             // TODO: This relies on column definition in lib/page_concordance.js
