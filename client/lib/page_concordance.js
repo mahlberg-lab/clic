@@ -4,6 +4,7 @@
 var api = require('./api.js');
 var PageTable = require('./page_table.js');
 var dt_utils = require('./dt_utils.js');
+var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 function isWord(s) {
     return (/\w/).test(s);
@@ -104,10 +105,10 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     api_opts.type = this.page_opts['conc-type'] || ['whole'];
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
-        throw new Error("Please select a corpora to search in");
+        throw new DisplayError("Please select a corpora to search in", "warn");
     }
-    if (!api_opts.q) {
-        throw new Error("Please provide some terms to search for");
+    if (!api_opts.q || api_opts.q.join("") === "") {
+        throw new DisplayError("Please provide some terms to search for", "warn");
     }
 
     return api.get('concordance', api_opts).then(function (data) {

@@ -4,6 +4,7 @@
 require('./polyfill.js');
 var parse_qs = require('./parse_qs.js').parse_qs;
 var ControlBar = require('./controlbar.js');
+var Alerts = require('./alerts.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
@@ -15,14 +16,16 @@ var page_classes = {
     },
 };
 
-var page, cb, current_page = null;
+var page, cb, alerts, current_page = null;
 
 function page_load(e) {
     var page_opts = parse_qs(document.location),
+        alerts = new Alerts(document.getElementById('alerts')),
         PageConstructor = page_classes[page_opts.doc] || page_classes[''];
 
     return Promise.resolve(page_opts).then(function (page_opts) {
-        document.getElementById('errors').innerText = "";
+        alerts.clear();
+
         if (!page || page_opts.doc !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
         }
@@ -36,9 +39,8 @@ function page_load(e) {
         ]);
     }).then(function (rvs) {
         rvs.forEach(function (rv) {
-            // TODO: Display messages, etc.
             if (rv && rv.message) {
-                console.log(rv);
+                alerts.show(rv.message);
             }
         });
 
@@ -47,8 +49,10 @@ function page_load(e) {
         }
         return;
     }).catch(function (err) {
-        document.getElementById('errors').innerText = err;
-        throw err;
+        alerts.error(err);
+        if (!err.level) {
+            throw err;
+        }
     });
 }
 

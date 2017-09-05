@@ -35,11 +35,18 @@ header .sponsors {
     float: right;
 }
 
-#errors {
+#alerts {
+    transform: scaleY(0);
+    transform-origin: top;
+}
+#alerts:not(:empty) {
+    transition: transform ease-in 0.1s;
+    transform: scaleY(1);
+}
+#alerts > * {
     padding: 10px;
-    background: orangered;
     font-weight: bold;
 }
-#errors:empty {
-    display: none;
-}
+#alerts > .level-error { background: orangered; }
+#alerts > .level-warn { background: #f0ad4e; }
+#alerts > .level-info { background: #5bc0de; }
