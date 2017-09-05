@@ -71,7 +71,7 @@ www/js/bundle.libraries.min.js: package.json
 www/css/bundle.libraries.min.css: package.json \
     node_modules/chosen-js/chosen.css \
     node_modules/nouislider/distribute/nouislider.min.css \
-    node_modules/bootstrap/dist/css/bootstrap.min.css
+    node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 	cat $^ > $@.mktmp
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 	mv $@.mktmp $@

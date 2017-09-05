@@ -110,3 +110,11 @@
 #control-bar fieldset .noUi-horizontal {
     margin: 0 16px 3rem 16px;
 }
+
+#control-bar fieldset input[type=text] {
+    width: 100%;
+    padding: 4px 5px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    background-image: linear-gradient(#eee 1%, #fff 15%);
+}
