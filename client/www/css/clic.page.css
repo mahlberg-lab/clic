@@ -27,9 +27,18 @@ html {
 
 header {
     overflow: hidden;
+    background-image: linear-gradient(to left top, #D6E1E8 35%, #7F9AA5 100%);
 }
 header h1 {
     float: left;
+    margin: 0;
+    line-height: 35px;
+    font-size: 41px;
+    font-weight: bold;
+    color: black;
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #d6e1e8;
 }
 header .sponsors {
     float: right;
