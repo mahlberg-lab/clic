@@ -8,7 +8,11 @@ var ControlBar = require('./controlbar.js');
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
     '/subsets': require('./page_subset.js'),
-    '': require('./page_static.js'),
+    '': function (content_div) {
+        this.reload = function (page_opts) {
+            throw new Error("Unknown page: " + page_opts.doc);
+        };
+    },
 };
 
 var page, cb, current_page = null;
