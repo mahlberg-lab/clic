@@ -1,6 +1,29 @@
+#content .dataTables_info {
+    padding: 5px 1em;
+}
+#content table.dataTable th {
+    border-top: 1px solid #666;
+    border-bottom: 1px solid #666;
+    background: #eee;
+}
+#content table.dataTable td {
+    border-bottom: 1px solid #ddd;
+}
+#content table.dataTable>tbody>tr:last-child>td {
+    border-bottom: none;
+}
+
+#content table.dataTable tr>*:first-child {
+    padding-left: 1em;
+}
+#content table.dataTable tr>*:last-child {
+    padding-right: 1em;
+}
+
 #content table.dataTable>tbody>tr {
     cursor: pointer;
 }
+#content table.dataTable>tbody>tr.odd { background: #f9f9f9; }
 #content table.dataTable>tbody>tr.kwic-highlight-2 { background: #e6f5c9; }
 #content table.dataTable>tbody>tr.kwic-highlight-3 { background: #b3e2cd; }
 #content table.dataTable>tbody>tr.kwic-highlight-4 { background: #cbd5e8; }
@@ -27,6 +50,26 @@
     );
 }
 
+#content table.dataTable th {
+    padding-top: 10em;
+    overflow: hidden;
+}
+#content table.dataTable th.tagColumn {
+    position: relative;
+}
+#content table.dataTable th.tagColumn>* {
+    position: absolute;
+    right: 75%;
+    bottom: 4px;
+    transform: rotate(90deg);
+    transform-origin: 100% 100%;
+    white-space: nowrap;
+}
+
+#content table.dataTable.metadata-hidden .metadataColumn {
+    display: none;
+}
+
 #content table.dataTable td span.w {
     background: rgba(200, 200, 200, 0.33);
     padding: 0 1px;
@@ -44,14 +87,29 @@
     background: rgba(255, 59, 0, 0.45);
 }
 
-#content table.dataTable th.tagColumn {
-    transform: rotate(90deg);
-}
-#content table.dataTable td.tagColumn {
+#content .dataTables_paginate {
+    display: flex;
     text-align: center;
-    font-size: 1.5rem;
+    border-top: 1px solid #666;
 }
-
-#content table.dataTable.metadata-hidden .metadataColumn {
-    display: none;
+#content .dataTables_paginate>span {
+    display: flex;
+    flex: 1 0 auto;
+}
+#content .dataTables_paginate>span>.ellipsis {
+    flex: 1 0 auto;
+}
+#content .dataTables_paginate>span>.ellipsis,
+#content .dataTables_paginate a {
+    padding: 1em;
+    border-right: 1px solid #666;
+    background: #eee;
+    cursor: pointer;
+}
+#content .dataTables_paginate>span>a:last-child {
+    border-right: none;
+}
+#content .dataTables_paginate>a:last-child {
+    border-left: 1px solid #666;
+    border-right: none;
 }

@@ -20,23 +20,21 @@ PageSubset.prototype.init = function () {
     PageTable.prototype.init.apply(this, arguments);
 
     this.table_opts.deferRender = true;
+    this.table_opts.autoWidth = false;
     this.table_opts.non_tag_columns = [
         { data: "kwic", visible: false, sortable: false, searchable: false },
-        { title: "", defaultContent: "", sortable: false, searchable: false },
-        { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft text-right" }, // Left
-        { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode hilight" }, // Node
+        { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
+        { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft" }, // Left
+        { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode" }, // Node
         { title: "Right", data: "2", render: dt_utils.renderForwardTokenArray, class: "contextRight" }, // Right
         { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
         { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
         { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
-        { title: "In&nbsp;bk.", data: "4", render: dt_utils.renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
+        { title: "In&nbsp;bk.", data: "4", width: "52px", render: dt_utils.renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
     ];
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };
     this.table_opts.order = [[9, 'asc']];
-    this.table_opts.language = {
-        search: "Filter subset:",
-    };
 };
 
 PageSubset.prototype.reload = function reload(page_state) {
@@ -48,7 +46,7 @@ PageSubset.prototype.reload = function reload(page_state) {
 
     // Generate column list based on tag_columns
     this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_list.map(function (t) {
-        return { title: t, data: t, render: renderBoolean, class: "tagColumn" };
+        return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, class: "tagColumn" };
     }));
 
     return PageTable.prototype.reload.apply(this, arguments);

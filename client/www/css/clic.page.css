@@ -10,15 +10,6 @@ html {
     transition: margin-right 0.3s ease;
 }
 
-#content {
-    padding: 3px;
-}
-
-@media (min-width: 768px) {
-    #content {
-        padding: 10px;
-    }
-}
 @media (min-width: 960px) {
     #control-bar.in + #scrollable-body {
         margin-right: 25rem;
