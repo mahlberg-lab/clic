@@ -8,9 +8,6 @@
     background: #eee;
     text-align: center;
 }
-#content table.dataTable th:hover {
-    background: #ccc;
-}
 #content table.dataTable td {
     border-bottom: 1px solid #ddd;
 }
@@ -95,6 +92,13 @@ table.dataTable thead .sorting_desc_disabled:after {
   display: block;
   opacity: 0.8;
   font-size: 1.5rem;
+}
+#content table.dataTable thead .sorting:hover,
+#content table.dataTable thead .sorting_asc:hover,
+#content table.dataTable thead .sorting_desc:hover,
+#content table.dataTable thead .sorting_asc_disabled:hover,
+#content table.dataTable thead .sorting_desc_disabled:hover {
+    background: #ccc;
 }
 table.dataTable thead .sorting:after {
   opacity: 0.4;
