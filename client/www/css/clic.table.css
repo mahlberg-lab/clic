@@ -5,6 +5,7 @@
     border-top: 1px solid #666;
     border-bottom: 1px solid #666;
     background: #eee;
+    text-align: center;
 }
 #content table.dataTable td {
     border-bottom: 1px solid #ddd;
@@ -85,6 +86,17 @@
 #content table.dataTable tr.match-r4 > td.contextRight .node-4,
 #content table.dataTable tr.match-r5 > td.contextRight .node-5 {
     background: rgba(255, 59, 0, 0.45);
+}
+
+#content table.dataTable td.contextLeft {
+    text-align: right;
+}
+#content table.dataTable td.contextNode {
+    padding-left: 1rem;
+}
+#content table.dataTable td.tagColumn {
+    text-align: center;
+    font-size: 1.5rem;
 }
 
 #content .dataTables_paginate {
