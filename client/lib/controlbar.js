@@ -54,6 +54,8 @@ function to_options_html(opts, group_label) {
 }
 
 function ControlBar(control_bar) {
+    var self = this;
+
     this.control_bar = control_bar;
 
     control_bar.addEventListener('click', function (e) {
@@ -76,8 +78,11 @@ function ControlBar(control_bar) {
             e.preventDefault();
             e.stopPropagation();
 
-            window.history.pushState({}, "", e.target.href);
-            window.dispatchEvent(new window.CustomEvent('replacestate'));
+            self.page_state.new({
+                doc: e.target.href,
+                args: {},
+                state: {},
+            }, 'push');
             return;
         }
 
@@ -92,14 +97,19 @@ function ControlBar(control_bar) {
             window.clearTimeout(this.change_timeout);
         }
         this.change_timeout = window.setTimeout(function () {
-            var new_search = "?" + jQuery(control_bar).serialize();
+            var new_search = {};
 
-            if (document.location.pathname === new_search) {
-                return;
-            }
+            jQuery(control_bar).serializeArray().forEach(function (f) {
+                if (Array.isArray(new_search[f.name])) {
+                    new_search[f.name].push(f.value);
+                } else if (new_search.hasOwnProperty(f.name)) {
+                    new_search[f.name] = [new_search[f.name], f.value];
+                } else {
+                    new_search[f.name] = [f.value];
+                }
+            });
 
-            window.history.replaceState(window.history.state, "", new_search);
-            window.dispatchEvent(new window.CustomEvent('replacestate'));
+            self.page_state.update({args: new_search});
         }, 300);
     });
 
@@ -141,10 +151,11 @@ function ControlBar(control_bar) {
     });
 }
 
-// Refresh controls based on page_opts
-ControlBar.prototype.reload = function reload(page_opts) {
-    var self = this,
-        page_state = window.history.state || {};
+// Refresh controls based on page_state
+ControlBar.prototype.reload = function reload(page_state) {
+    var self = this;
+
+    self.page_state = page_state; // Store this for events
 
     return api.get('corpora').then(function (corpora) {
         var tag_toggles_el;
@@ -152,35 +163,33 @@ ControlBar.prototype.reload = function reload(page_opts) {
         // Enable the fieldset for the page
         Array.prototype.forEach.call(self.control_bar.elements, function (el, i) {
             if (el.tagName === 'FIELDSET') {
-                el.disabled = ('/' + el.name !== page_opts.doc);
+                el.disabled = ('/' + el.name !== page_state.doc());
             }
         });
 
         // TODO: Hard-code the tag state for now
-        if (!page_state.tag_columns) {
-            page_state.tag_columns = {
+        if (!page_state.state('tag_columns')) {
+            page_state.update({ state: { tag_columns: {
                 'Pablo-BP-CONC': {}, //TODO: Hardcoding for now
                 'MB-BP-CONC': {},
-            };
-            window.history.replaceState(page_state, "", "");
+            }}}, 'silent');
         }
 
         // Recreate tag toggles
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
         if (tag_toggles_el) {
             tag_toggles_el.innerHTML = '';
-            self.tag_toggles = Object.keys(page_state.tag_columns).map(function (t) {
+            self.tag_toggles = Object.keys(page_state.state('tag_columns', {})).map(function (t) {
                 var toggle = new TagToggle(t);
 
                 toggle.onupdate = function (tag_state) {
-                    var i, new_state = window.history.state;
+                    var i, new_columns = page_state.state('tag_columns', {});
 
                     for (i = 0; i < self.table_selection.length; i++) {
-                        new_state.tag_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
+                        new_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
                     }
 
-                    window.history.replaceState(new_state, "", "");
-                    window.dispatchEvent(new window.CustomEvent('replacestate'));
+                    page_state.update({ state: { tag_columns: new_columns }});
                 };
 
                 tag_toggles_el.appendChild(toggle.dom());
@@ -189,23 +198,23 @@ ControlBar.prototype.reload = function reload(page_opts) {
         }
 
         // Make sure we consider existing options valid
-        self.control_bar.elements['kwic-terms'].innerHTML = to_options_html(page_opts['kwic-terms'] || []);
+        self.control_bar.elements['kwic-terms'].innerHTML = to_options_html(page_state.arg('kwic-terms', []));
 
         // Populate corpora dropdowns
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('select[name=corpora]'), function (el) {
             el.innerHTML = to_options_html(corpora.corpora, 'Entire corpora') + corpora.corpora.map(function (c) {
                 return to_options_html(c.children, c.title);
             }).join("");
-            jQuery(el).val(page_opts.corpora);
+            jQuery(el).val(page_state.arg('corpora', []));
         });
 
         // Set values from page options, or defaults
-        self.control_bar.elements['conc-subset'].value = (page_opts['conc-subset'] || ["all"])[0];
-        self.control_bar.elements['subset-subset'].value = (page_opts['subset-subset'] || ["shortsus"])[0];
-        self.control_bar.elements['conc-q'].value = (page_opts['conc-q'] || [""])[0];
-        self.control_bar.elements['conc-type'].value = (page_opts['conc-type'] || ["whole"])[0];
-        self.control_bar.elements['kwic-span'].value = (page_opts['kwic-span'] || ["-5:5"])[0];
-        jQuery(self.control_bar.elements['kwic-terms']).val(page_opts['kwic-terms']);
+        self.control_bar.elements['conc-subset'].value = page_state.arg('conc-subset', 'all');
+        self.control_bar.elements['subset-subset'].value = page_state.arg('subset-subset', 'shortsus');
+        self.control_bar.elements['conc-q'].value = page_state.arg('conc-q', '');
+        self.control_bar.elements['conc-type'].value = page_state.arg('conc-type', 'whole');
+        //self.control_bar.elements['kwic-span'].value = page_state.arg('kwic-span', '-5:5');
+        jQuery(self.control_bar.elements['kwic-terms']).val(page_state.arg('kwic-terms', []));
 
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {

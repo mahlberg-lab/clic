@@ -38,9 +38,8 @@ PageSubset.prototype.init = function () {
     };
 };
 
-PageSubset.prototype.reload = function reload(page_opts) {
-    var page_state = window.history.state || {},
-        tag_list = Object.keys(page_state.tag_columns || {});
+PageSubset.prototype.reload = function reload(page_state) {
+    var tag_list = Object.keys(page_state.state('tag_columns', {}));
 
     function renderBoolean(data, type, full, meta) {
         return data ? "✓" : " ";
@@ -54,12 +53,12 @@ PageSubset.prototype.reload = function reload(page_opts) {
     return PageTable.prototype.reload.apply(this, arguments);
 };
 
-PageSubset.prototype.reload_data = function reload(page_opts) {
+PageSubset.prototype.reload_data = function reload(page_state) {
     var api_opts = {};
 
-    // Mangle page_opts into the API's required parameters
-    api_opts.corpora = this.page_opts.corpora;
-    api_opts.subset = this.page_opts['subset-subset'] || ['shortsus'];
+    // Mangle page_state into the API's required parameters
+    api_opts.corpora = page_state.arg('corpora', []);
+    api_opts.subset = page_state.arg('subset-subset', 'shortsus');
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
         throw new Error("Please select a corpora to search in");
@@ -67,7 +66,7 @@ PageSubset.prototype.reload_data = function reload(page_opts) {
 
     return api.get('subset', api_opts).then(function (data) {
         var i, j, allWords = {}, totalMatches = 0,
-            tag_state = (window.history.state || {}).tag_columns,
+            tag_state = page_state.state('tag_columns', {}),
             tag_list = Object.keys(tag_state);
 
         data = data.results;

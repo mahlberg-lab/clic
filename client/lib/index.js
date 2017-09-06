@@ -2,7 +2,7 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true */
 /*global Promise */
 require('./polyfill.js');
-var parse_qs = require('./parse_qs.js').parse_qs;
+var State = require('./state.js');
 var ControlBar = require('./controlbar.js');
 var Alerts = require('./alerts.js');
 
@@ -10,8 +10,8 @@ var page_classes = {
     '/concordance': require('./page_concordance.js'),
     '/subsets': require('./page_subset.js'),
     '': function (content_div) {
-        this.reload = function (page_opts) {
-            throw new Error("Unknown page: " + page_opts.doc);
+        this.reload = function (page_state) {
+            throw new Error("Unknown page: " + page_state.doc());
         };
     },
 };
@@ -19,14 +19,14 @@ var page_classes = {
 var page, cb, alerts, current_page = null;
 
 function page_load(e) {
-    var page_opts = parse_qs(document.location),
+    var page_state = new State(window),
         alerts = new Alerts(document.getElementById('alerts')),
-        PageConstructor = page_classes[page_opts.doc] || page_classes[''];
+        PageConstructor = page_classes[page_state.doc()] || page_classes[''];
 
-    return Promise.resolve(page_opts).then(function (page_opts) {
+    return Promise.resolve(page_state).then(function (page_state) {
         alerts.clear();
 
-        if (!page || page_opts.doc !== current_page) {
+        if (!page || page_state.doc() !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
         }
         if (!cb) {
@@ -34,8 +34,8 @@ function page_load(e) {
         }
 
         return Promise.all([
-            page.reload(page_opts),
-            cb.reload(page_opts),
+            page.reload(page_state),
+            cb.reload(page_state),
         ]);
     }).then(function (rvs) {
         rvs.forEach(function (rv) {

@@ -25,7 +25,7 @@ PageTable.prototype.init = function init() {
     this.table_opts.displayLength = 50;
     this.table_opts.dom = 'ritp';
     this.table_opts.ajax = function (params, callback, settings) {
-        self.reload_data(self.page_opts).then(function (data) {
+        self.reload_data(self.page_state).then(function (data) {
             callback(data);
         }).catch(function (err) {
             // Reject the wider promise, to send the error up
@@ -34,7 +34,7 @@ PageTable.prototype.init = function init() {
     };
 };
 
-PageTable.prototype.reload = function reload(page_opts) {
+PageTable.prototype.reload = function reload(page_state) {
     var self = this;
 
     return new Promise(function (resolve, reject) {
@@ -45,19 +45,19 @@ PageTable.prototype.reload = function reload(page_opts) {
             resolve(data);
         }
 
-        self.table_el.classList.toggle('metadata-hidden', (page_opts['table-metadata'] || []).length === 0);
+        self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-metadata', false));
 
         // Make available for ajax / reload_data
-        self.page_opts = page_opts;
+        self.page_state = page_state;
         self.ajax_reject = reject;
 
         if (self.table) {
-            self.table.search((page_opts['table-filter'] || []).join(""));
+            self.table.search(page_state.arg('table-filter', ''));
             self.table.reload(resolve_second);
         } else {
             table_opts = self.table_opts;
             table_opts.fnInitComplete = resolve_second;
-            table_opts.search = { search: (page_opts['table-filter'] || []).join("") };
+            table_opts.search = { search: page_state.arg('table-filter', '') };
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             // TODO: This relies on column definition in lib/page_concordance.js
@@ -77,8 +77,7 @@ PageTable.prototype.reload = function reload(page_opts) {
         }
     }).then(function (data) {
         var i, n,
-            page_state = (window.history.state || {}),
-            selected = page_state.selected_rows || [];
+            selected = page_state.state('selected_rows', []);
 
         // Make sure previously selected rows are still selected
         for (i = 0; i < selected.length; i++) {
@@ -98,14 +97,14 @@ PageTable.prototype.reload = function reload(page_opts) {
 };
 
 PageTable.prototype.select_rows = function () {
-    var page_state = window.history.state || {},
-        selected_data = this.table.rows('.selected').data();
+    var selected_data = this.table.rows('.selected').data();
 
     // Record selection in page state
-    page_state.selected_rows = [].concat.apply([], selected_data.map(function (d) {
-        return d.DT_RowId;
-    }));
-    window.history.replaceState(page_state, "", "");
+    this.page_state.update({state: {
+        selected_rows: [].concat.apply([], selected_data.map(function (d) {
+            return d.DT_RowId;
+        })),
+    }}, 'silent');
 
     this.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
         detail: selected_data,
@@ -113,7 +112,7 @@ PageTable.prototype.select_rows = function () {
     }));
 };
 
-PageTable.prototype.reload_data = function (page_opts) {
+PageTable.prototype.reload_data = function (page_state) {
     throw new Error("Not implemented");
 };
 

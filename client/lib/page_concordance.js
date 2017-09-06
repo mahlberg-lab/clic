@@ -39,9 +39,8 @@ PageConcordance.prototype.init = function () {
     };
 };
 
-PageConcordance.prototype.reload = function reload(page_opts) {
-    var page_state = window.history.state || {},
-        tag_list = Object.keys(page_state.tag_columns || {});
+PageConcordance.prototype.reload = function reload(page_state) {
+    var tag_list = Object.keys(page_state.state('tag_columns', {}));
 
     function renderBoolean(data, type, full, meta) {
         return data ? "✓" : " ";
@@ -55,7 +54,7 @@ PageConcordance.prototype.reload = function reload(page_opts) {
     return PageTable.prototype.reload.apply(this, arguments);
 };
 
-PageConcordance.prototype.reload_data = function reload(page_opts) {
+PageConcordance.prototype.reload_data = function reload(page_state) {
     var self = this,
         api_opts = {};
 
@@ -90,30 +89,30 @@ PageConcordance.prototype.reload_data = function reload(page_opts) {
     }
 
     this.kwicTerms = {};
-    this.kwicSpan = parseKwicSpan((this.page_opts['kwic-span'] || ['-5:5'])[0]);
+    this.kwicSpan = parseKwicSpan(page_state.arg('kwic-span', '-5:5'));
 
-    (this.page_opts['kwic-terms'] || []).map(function (t, i) {
+    (page_state.arg('kwic-terms', [])).map(function (t, i) {
         if (t) {
             self.kwicTerms[t.toLowerCase()] = i + 1;
         }
     });
 
-    // Mangle page_opts into the API's required parameters
-    api_opts.corpora = this.page_opts.corpora;
-    api_opts.subset = this.page_opts['conc-subset'] || ['all'];
-    api_opts.q = this.page_opts['conc-q'];
-    api_opts.type = this.page_opts['conc-type'] || ['whole'];
+    // Mangle page_state into the API's required parameters
+    api_opts.corpora = page_state.arg('corpora', []);
+    api_opts.subset = page_state.arg('conc-subset', 'all');
+    api_opts.q = page_state.arg('conc-q', '');
+    api_opts.type = page_state.arg('conc-type', 'whole');
 
-    if (!api_opts.corpora || api_opts.corpora.length === 0) {
+    if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpora to search in", "warn");
     }
-    if (!api_opts.q || api_opts.q.join("") === "") {
+    if (!api_opts.q) {
         throw new DisplayError("Please provide some terms to search for", "warn");
     }
 
     return api.get('concordance', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
-            tag_state = (window.history.state || {}).tag_columns,
+            tag_state = page_state.state('tag_columns', {}),
             tag_list = Object.keys(tag_state);
 
         data = data.results;
