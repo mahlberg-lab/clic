@@ -200,10 +200,14 @@ ControlBar.prototype.reload = function reload(page_state) {
                 var toggle = new TagToggle(t);
 
                 toggle.onupdate = function (tag_state) {
-                    var i, new_columns = page_state.state('tag_columns', {});
+                    var i, new_columns = JSON.parse(JSON.stringify(page_state.state('tag_columns', {})));
 
                     for (i = 0; i < self.table_selection.length; i++) {
-                        new_columns[t][self.table_selection[i].DT_RowId] = tag_state === 'yes' ? true : false;
+                        if (tag_state === 'yes') {
+                            new_columns[t][self.table_selection[i].DT_RowId] = true;
+                        } else {
+                            delete new_columns[t][self.table_selection[i].DT_RowId];
+                        }
                     }
 
                     page_state.update({ state: { tag_columns: new_columns }});
