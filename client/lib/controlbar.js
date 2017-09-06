@@ -28,6 +28,18 @@ var noUiSlider_opts = {
     },
 };
 
+var state_defaults = {
+    'corpora': [],
+    'conc-subset': 'all',
+    'conc-q': '',
+    'conc-type': 'whole',
+    'subset-subset': 'shortsus',
+    'table-filter': '',
+    'table-metadata': '',
+    'kwic-span': '-5:5',
+    'kwic-terms': [],
+};
+
 function to_options_html(opts, group_label) {
     var out;
 
@@ -107,6 +119,11 @@ function ControlBar(control_bar) {
                 } else {
                     new_search[f.name] = [f.value];
                 }
+            });
+
+            // Unchecked checkboxes should be false
+            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset:not([disabled]) input[type=checkbox]:not(:checked)'), function (el, i) {
+                new_search[el.name] = [""];
             });
 
             self.page_state.update({args: new_search});
@@ -209,12 +226,17 @@ ControlBar.prototype.reload = function reload(page_state) {
         });
 
         // Set values from page options, or defaults
-        self.control_bar.elements['conc-subset'].value = page_state.arg('conc-subset', 'all');
-        self.control_bar.elements['subset-subset'].value = page_state.arg('subset-subset', 'shortsus');
-        self.control_bar.elements['conc-q'].value = page_state.arg('conc-q', '');
-        self.control_bar.elements['conc-type'].value = page_state.arg('conc-type', 'whole');
-        //self.control_bar.elements['kwic-span'].value = page_state.arg('kwic-span', '-5:5');
-        jQuery(self.control_bar.elements['kwic-terms']).val(page_state.arg('kwic-terms', []));
+        Array.prototype.forEach.call(self.control_bar.elements, function (el) {
+            if (el.tagName === 'FIELDSET' || !state_defaults.hasOwnProperty(el.name)) {
+                Math.floor(0);
+            } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
+                el.checked = !!page_state.arg(el.name, state_defaults[el.name]);
+            } else if (el.tagName === 'SELECT') {
+                jQuery(el).val(page_state.arg(el.name, state_defaults[el.name]));
+            } else {
+                el.value = page_state.arg(el.name, state_defaults[el.name]);
+            }
+        });
 
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {

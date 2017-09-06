@@ -45,7 +45,7 @@ PageTable.prototype.reload = function reload(page_state) {
             resolve(data);
         }
 
-        self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-metadata', false));
+        self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata', ""));
 
         // Make available for ajax / reload_data
         self.page_state = page_state;
