@@ -148,6 +148,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 #content table.dataTable td.contextLeft {
     text-align: right;
+    vertical-align: top;
     padding-right: 0.3rem;
 }
 #content table.dataTable td.contextNode {
@@ -156,6 +157,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     background-color: rgba(133, 159, 170, 0.2);
 }
 #content table.dataTable td.contextRight {
+    vertical-align: bottom;
     padding-left: 1.3rem;
     text-indent: -1rem;
 }
