@@ -214,8 +214,12 @@ ControlBar.prototype.reload = function reload(page_state) {
                 };
 
                 tag_toggles_el.appendChild(toggle.dom());
+                if (self.initial_selection) {
+                    toggle.update(self.initial_selection);
+                }
                 return toggle;
             });
+            self.initial_selection = null;
         }
 
         // Make sure we consider existing options valid
@@ -273,10 +277,15 @@ ControlBar.prototype.new_data = function new_data(data) {
 ControlBar.prototype.new_selection = function new_selection(data) {
     this.table_selection = data;
 
-    // All toggles update themselves
-    this.tag_toggles.forEach(function (toggle) {
-        toggle.update(data);
-    });
+    if (!this.tag_toggles) {
+        // Store selection until we're ready
+        this.initial_selection = data;
+    } else {
+        // Tell the toggle to update itself
+        this.tag_toggles.forEach(function (toggle) {
+            toggle.update(data);
+        });
+    }
 };
 
 module.exports = ControlBar;
