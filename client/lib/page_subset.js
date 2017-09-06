@@ -4,6 +4,7 @@
 var api = require('./api.js');
 var PageTable = require('./page_table.js');
 var dt_utils = require('./dt_utils.js');
+var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 function isWord(s) {
     return (/\w/).test(s);
@@ -61,7 +62,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     api_opts.subset = page_state.arg('subset-subset', 'shortsus');
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
-        throw new Error("Please select a corpora to search in");
+        throw new DisplayError("Please select a corpora to search in", "warn");
     }
 
     return api.get('subset', api_opts).then(function (data) {
