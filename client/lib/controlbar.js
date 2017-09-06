@@ -130,7 +130,10 @@ function ControlBar(control_bar) {
         });
 
         slider_div.noUiSlider.on('update', function (values) {
-            if (el.value !== values.join(':')) {
+            if (!el.value) {
+                // Initial update, don't trigger anything
+                el.value = values.join(':');
+            } else if (el.value !== values.join(':')) {
                 el.value = values.join(':');
                 el.dispatchEvent(new window.Event('change', {"bubbles": true}));
             }
