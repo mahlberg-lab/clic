@@ -266,7 +266,7 @@ ControlBar.prototype.new_data = function new_data(data) {
         });
 
         el.innerHTML = to_options_html(Object.keys(data.allWords));
-        el.value = prevVal;
+        jQuery(el).val(prevVal);
         jQuery(el).trigger("chosen:updated");
     }
 
