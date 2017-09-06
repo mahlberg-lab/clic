@@ -8,6 +8,11 @@ function to_query_string(params) {
     }
 
     return Object.keys(params).map(function (k) {
+        if (Array.isArray(params[k])) {
+            return params[k].map(function (v) {
+                return encodeURIComponent(k) + '=' + encodeURIComponent(v);
+            }).join('&');
+        }
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
     }).join('&');
 }
