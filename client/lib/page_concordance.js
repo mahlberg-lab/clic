@@ -25,7 +25,7 @@ PageConcordance.prototype.init = function () {
         { data: "kwic", visible: false, sortable: false, searchable: false },
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
         { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft" }, // Left
-        { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode hilight" }, // Node
+        { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode" }, // Node
         { title: "Right", data: "2", render: dt_utils.renderForwardTokenArray, class: "contextRight" }, // Right
         { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter

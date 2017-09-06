@@ -142,18 +142,25 @@ table.dataTable thead .sorting_desc_disabled:after {
     background: rgba(255, 59, 0, 0.45);
 }
 
+#content table.dataTable td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
 #content table.dataTable td.contextLeft {
     text-align: right;
+    padding-right: 0.3rem;
 }
 #content table.dataTable td.contextNode {
     padding-left: 2rem;
     text-indent: -1rem;
+    background-color: rgba(133, 159, 170, 0.2);
 }
 #content table.dataTable td.contextRight {
-    padding-left: 1rem;
+    padding-left: 1.3rem;
     text-indent: -1rem;
 }
 #content table.dataTable td.tagColumn {
+    padding: 0;
     text-align: center;
     font-size: 1.5rem;
 }
