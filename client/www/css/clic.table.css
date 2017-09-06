@@ -146,7 +146,12 @@ table.dataTable thead .sorting_desc_disabled:after {
     text-align: right;
 }
 #content table.dataTable td.contextNode {
+    padding-left: 2rem;
+    text-indent: -1rem;
+}
+#content table.dataTable td.contextRight {
     padding-left: 1rem;
+    text-indent: -1rem;
 }
 #content table.dataTable td.tagColumn {
     text-align: center;
