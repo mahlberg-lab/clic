@@ -2,6 +2,7 @@
     padding: 5px 1em;
 }
 #content table.dataTable th {
+    padding-top: 2em;
     border-top: 1px solid #666;
     border-bottom: 1px solid #666;
     background: #eee;
@@ -54,7 +55,7 @@
     );
 }
 
-#content table.dataTable th {
+#content table.dataTable.hasTagColumns th {
     padding-top: 10em;
     overflow: hidden;
 }
@@ -65,6 +66,7 @@
     position: absolute;
     right: 75%;
     bottom: 4px;
+    max-width: 9em;
     transform: rotate(90deg);
     transform-origin: 100% 100%;
     white-space: nowrap;

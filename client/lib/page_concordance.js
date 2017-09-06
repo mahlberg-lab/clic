@@ -48,6 +48,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
     this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_list.map(function (t) {
         return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, class: "tagColumn" };
     }));
+    this.table_el.classList.toggle('hasTagColumns', tag_list.length > 0);
 
     return PageTable.prototype.reload.apply(this, arguments);
 };
