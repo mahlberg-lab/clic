@@ -71,7 +71,14 @@ PageTable.prototype.reload = function reload(page_state) {
             });
 
             self.table.on('click', 'tr', function () {
-                jQuery(this).toggleClass('selected');
+                if (self.initial_selection) {
+                    // Remove initial selection before continuing
+                    self.table.rows('.selected').nodes().each(function (el) {
+                        el.classList.remove('selected');
+                    });
+                    self.initial_selection = false;
+                }
+                this.classList.toggle('selected');
                 self.select_rows();
             });
         }
@@ -89,6 +96,7 @@ PageTable.prototype.reload = function reload(page_state) {
         }
         // Trigger event so controlpanel updates
         if (selected.length > 0) {
+            self.initial_selection = true;  // We want to remove this selection on next click
             self.select_rows();
         }
 
