@@ -118,8 +118,8 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
         data = data.results;
 
         for (i = 0; i < data.length; i++) {
-            // TODO: Assume book+chap+word_id is unique for now. Server-generate this
-            data[i].DT_RowId = data[i][3][0] + data[i][3][2] + ':' + data[i][3][5];
+            // TODO: Assume book+word_id is unique for now. Server-generate this
+            data[i].DT_RowId = data[i][3][0] + data[i][4][0];
 
             // Add KWICGrouper match column
             r = self.generateKwicRow(data[i], allWords);
