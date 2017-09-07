@@ -74,7 +74,7 @@ upstream uwsgi_server {
 
 server {
     listen      80;
-    server_name bham-clic.clifford.shuttlethread.com;
+    server_name ${SERVER_NAME};
     charset     utf-8;
     root "${CLIC_PATH}/client/www";
 
