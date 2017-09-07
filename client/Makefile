@@ -48,6 +48,7 @@ clean:
 	rm -- www/js/*.min.js www/css/*.min.css www/html/*.min.html www/index-md5sums.html
 
 www/js/bundle.clic.min.js: package.json lib/*
+	mkdir -p www/js
 	(cd www/js && ln -sf ../../lib .)
 	(cd www/js && ln -sf ../../node_modules .)
 	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
@@ -62,6 +63,7 @@ www/js/bundle.clic.min.js: package.json lib/*
 	mv $@.mktmp $@
 
 www/js/bundle.libraries.min.js: package.json
+	mkdir -p www/js
 	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js \
 	        $(foreach l,$(BUNDLE_LIBS),-r $(l)) \
 	        -g uglifyify \
@@ -72,6 +74,7 @@ www/css/bundle.libraries.min.css: package.json \
     node_modules/chosen-js/chosen.css \
     node_modules/nouislider/distribute/nouislider.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
+	mkdir -p www/css
 	cat $^ > $@.mktmp
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 	mv $@.mktmp $@
