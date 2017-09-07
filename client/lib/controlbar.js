@@ -255,19 +255,24 @@ ControlBar.prototype.reload = function reload(page_state) {
 
 // Apply results of any search into data
 ControlBar.prototype.new_data = function new_data(data) {
-    var prevVal, el;
-
     if (data.allWords) {
-        // Make sure values already selected stay selectable
-        el = this.control_bar.elements['kwic-terms'];
-        prevVal = jQuery(el).val() || [];
-        prevVal.map(function (t, i) {
-            data.allWords[t] = true;
-        });
+        // Make sure KWIC term values already selected stay selectable
+        Array.prototype.forEach.call(this.control_bar.elements['kwic-terms'], function (el) {
+            var prevVal = jQuery(el).val() || [];
 
-        el.innerHTML = to_options_html(Object.keys(data.allWords));
-        jQuery(el).val(prevVal);
-        jQuery(el).trigger("chosen:updated");
+            if (el.parentElement.parentElement.disabled) {
+                // The fieldset is disabled, so don't bother
+                return;
+            }
+
+            prevVal.map(function (t) {
+                data.allWords[t] = true;
+            });
+
+            el.innerHTML = to_options_html(Object.keys(data.allWords || {}));
+            jQuery(el).val(prevVal);
+            jQuery(el).trigger("chosen:updated");
+        });
     }
 
     this.control_bar.querySelectorAll("#kwic-total-matches")[0].innerText = (data.totalMatches || 0);
