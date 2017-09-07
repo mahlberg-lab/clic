@@ -22,7 +22,7 @@ all: test lint compile
 
 pre_commit: lint compile
 
-compile: $(OUT_FILES)
+compile: $(NODE_PATH) $(OUT_FILES)
 
 $(NODE_PATH): package.json
 	NODE_PATH="$(NODE_PATH)" $(YARN)
