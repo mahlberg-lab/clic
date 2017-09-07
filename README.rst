@@ -130,6 +130,12 @@ You can get at the cheshire3 objects on the command line with::
     >>> cdb = ClicDb()
     >>> cdb.c3_query(...)
 
+Favico regeneration
+^^^^^^^^^^^^^^^^^^^
+
+Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
+```client/www/index.html`` and ``client/www/iconx`` as appropriate.
+
 Acknowledgements
 ----------------
 
