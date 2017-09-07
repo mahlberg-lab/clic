@@ -7,18 +7,23 @@ bin/pip:
 
 lib/python2.7/site-packages/PyZ3950: bin/pip
 	./bin/pip install http://www.panix.com/~asl2/software/PyZ3950/PyZ3950-2.04.tar.gz
+	touch $@
 
-./lib/python2.7/site-packages/ZSI: bin/pip
+lib/python2.7/site-packages/ZSI: bin/pip
 	svn checkout svn://svn.code.sf.net/p/pywebsvcs/code/branches/v1_5 /tmp/pywebsvcs-code
 	mv /tmp/pywebsvcs-code/wstools /tmp/pywebsvcs-code/zsi/ZSI/wstools/
 	./bin/pip install /tmp/pywebsvcs-code/zsi/
 	rm -fr -- '/tmp/pywebsvcs-code'
+	touch $@
 
-lib/python2.7/site-packages/.requirements: requirements.txt bin/pip lib/python2.7/site-packages/PyZ3950 lib/python2.7/site-packages/ZSI
+lib/python2.7/site-packages/.requirements: requirements.txt \
+    lib/python2.7/site-packages/PyZ3950 \
+    lib/python2.7/site-packages/ZSI \
+    bin/pip
 	./bin/pip install -r requirements.txt
 	touch lib/python2.7/site-packages/.requirements
 
-start:
+start: lib/python2.7/site-packages/.requirements
 	./bin/uwsgi \
 	    --master \
 	    --processes=1 --threads=1 \
