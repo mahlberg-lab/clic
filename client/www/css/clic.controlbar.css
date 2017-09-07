@@ -118,3 +118,7 @@
     background-color: #fff;
     background-image: linear-gradient(#eee 1%, #fff 15%);
 }
+
+#control-bar fieldset input[type=nouislider]:disabled + .noUi-target {
+    display: none;
+}

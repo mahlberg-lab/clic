@@ -94,7 +94,6 @@
       <label>Search the corpora:</label>
       <select name="corpora" data-placeholder="" class="chosen-select" multiple style="width:100%;" tabindex="4">
       </select>
-
       <label>Show subsets:</label>
       <select name="subset-subset" data-placeholder="" class="chosen-select" style="width:100%;" tabindex="4">
         <option value="shortsus">Suspensions</option>
@@ -108,7 +107,23 @@
       <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
       <label class="radio-inline">
         <input name="table-metadata" type="checkbox" value="show" checked="">Show metadata columns
-       </label>
+      </label>
+
+      <h4><span>KWICGrouper</span></h4>
+
+      <label>Search in subset:</label>
+      <div class="optionbox" style="overflow: hidden">
+        <label style="float: left"><input type="radio" name="kwic-dir" value="start" checked="checked"/> From start</label>
+        <label style="float: right">From end <input type="radio" name="kwic-dir" value="end"/></label>
+      </div>
+      <input name="kwic-int-start" type="nouislider">
+      <input name="kwic-int-end" type="nouislider">
+      <label class="radio-inline">
+        <input type="checkbox" name="kwic-split" value="show"> Break into separate columns
+      </label>
+      <label>Search for types:</label>
+      <select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
+      <p><span id="kwic-total-matches">0</span> matching rows</p>
 
       <h4><span>Tags</span></h4>
       <label>Selected rows are part of:</label>

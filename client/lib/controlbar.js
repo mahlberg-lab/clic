@@ -26,6 +26,29 @@ var noUiSlider_opts = {
         },
         connect: true
     },
+    'kwic-int-start': {
+        start: 3,
+        range: {min: 0, max: 10},
+        step: 1,
+        pips: {
+            mode: 'steps',
+            density: 10,
+            filter: function (v, t) { return 2; },
+        },
+        connect: [true, false],
+    },
+    'kwic-int-end': {
+        start: 3,
+        range: {min: 0, max: 10},
+        step: 1,
+        direction: "rtl",
+        pips: {
+            mode: 'steps',
+            density: 10,
+            filter: function (v, t) { return 2; },
+        },
+        connect: [true, false],
+    },
 };
 
 var state_defaults = {
@@ -37,6 +60,8 @@ var state_defaults = {
     'table-filter': '',
     'table-metadata': '',
     'kwic-span': '-5:5',
+    'kwic-int-start': '3',
+    'kwic-int-end': '3',
     'kwic-terms': [],
 };
 
@@ -146,12 +171,17 @@ function ControlBar(control_bar) {
         var slider_div = document.createElement('DIV');
 
         el.style.display = 'none';
-        el.parentNode.insertBefore(slider_div, el);
+        el.parentNode.insertBefore(slider_div, el.nextSibling);
 
         noUiSlider.create(slider_div, noUiSlider_opts[el.name]);
 
         el.addEventListener('change', function (e) {
-            if (this.value !== slider_div.noUiSlider.get().join(':')) {
+            var old_value = slider_div.noUiSlider.get();
+
+            if (Array.isArray(old_value)) {
+                old_value = old_value.join(':');
+            }
+            if (this.value !== old_value) {
                 slider_div.noUiSlider.set(this.value.split(':'));
             }
         });
@@ -224,6 +254,15 @@ ControlBar.prototype.reload = function reload(page_state) {
 
         // Make sure we consider existing options valid
         self.control_bar.elements['kwic-terms'].innerHTML = to_options_html(page_state.arg('kwic-terms', []));
+
+        // Hide the KWIC direction slider we're not using
+        if (page_state.arg('kwic-dir', 'start') === 'start') {
+            self.control_bar.elements['kwic-int-start'].disabled = false;
+            self.control_bar.elements['kwic-int-end'].disabled = true;
+        } else {
+            self.control_bar.elements['kwic-int-start'].disabled = true;
+            self.control_bar.elements['kwic-int-end'].disabled = false;
+        }
 
         // Populate corpora dropdowns
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('select[name=corpora]'), function (el) {
