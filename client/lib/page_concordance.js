@@ -55,6 +55,8 @@ PageConcordance.prototype.reload = function reload(page_state) {
 
 PageConcordance.prototype.reload_data = function reload(page_state) {
     var self = this,
+        kwicTerms = {},
+        kwicSpan = [],
         api_opts = {};
 
     // Values has 2 values, "(min):(max)", which we treat to be
@@ -64,7 +66,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     // L5 : L4 : L3 : L2 : L1 | R1 : R2 : R3 : R4 : R5
     // Output a configuration suitable for testList
     function parseKwicSpan(values) {
-        var out = [{ignore: true}, {ignore: true}],
+        var out = [{ignore: true}, {ignore: true}, {ignore: true}],
             ks = values.split(':');
 
         if (ks[0] < 0) {
@@ -72,27 +74,23 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
                 start: -Math.min(ks[1], -1),
                 stop: -ks[0],
                 reverse: true,
-                prefix: 'l',
             };
         }
 
         if (ks[1] >= 0) {
-            out[1] = {
+            out[2] = {
                 start: Math.max(ks[0], 1),
                 stop: ks[1],
-                prefix: 'r',
             };
         }
 
         return out;
     }
-
-    this.kwicTerms = {};
-    this.kwicSpan = parseKwicSpan(page_state.arg('kwic-span', '-5:5'));
+    kwicSpan = parseKwicSpan(page_state.arg('kwic-span', '-5:5'));
 
     (page_state.arg('kwic-terms', [])).map(function (t, i) {
         if (t) {
-            self.kwicTerms[t.toLowerCase()] = i + 1;
+            kwicTerms[t.toLowerCase()] = i + 1;
         }
     });
 
@@ -121,7 +119,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             data[i].DT_RowId = data[i][3][0] + data[i][4][0];
 
             // Add KWICGrouper match column
-            r = self.generateKwicRow(data[i], allWords);
+            r = self.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
             data[i].kwic = r[0];
             if (r[0] > 0) {
                 totalMatches++;
@@ -150,12 +148,12 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 /*
  * Return value: [(# of unique types matched), (match position, e.g. "r1"), (match position, e.g. "r2"), ... ]
  */
-PageConcordance.prototype.generateKwicRow = function (d, allWords) {
+PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
     var matchingTypes = {}, kwic_row;
 
     // Check if list (tokens) contains any of the (terms) between (span.start) and (span.stop) inclusive
     // considering (tokens) in reverse if (span.reverse) is true
-    function testList(tokens, span, terms) {
+    function testList(tokens, span, terms, prefix) {
         var i, t, wordCount = 0, out = [];
 
         if (span.start === undefined) {
@@ -173,7 +171,7 @@ PageConcordance.prototype.generateKwicRow = function (d, allWords) {
                 if (wordCount >= span.start && terms.hasOwnProperty(t)) {
                     // Matching has started and matches a terms, return which match it is
                     matchingTypes[t] = true;
-                    out.push(span.prefix + wordCount);
+                    out.push(prefix + wordCount);
                 }
                 if (span.stop !== undefined && wordCount >= span.stop) {
                     // Finished matching now, give up.
@@ -185,10 +183,11 @@ PageConcordance.prototype.generateKwicRow = function (d, allWords) {
         return out;
     }
 
-    // Find the kwic matches in both left and right, as well as total matches
+    // Find the kwic matches in both left/node/right, as well as total matches
     kwic_row = [0].concat(
-        testList(d[0], this.kwicSpan[0], this.kwicTerms),
-        testList(d[2], this.kwicSpan[1], this.kwicTerms)
+        testList(d[0], kwicSpan[0], kwicTerms, 'l'),
+        testList(d[1], kwicSpan[1], kwicTerms, 'n'),
+        testList(d[2], kwicSpan[2], kwicTerms, 'r')
     );
     kwic_row[0] = Object.keys(matchingTypes).length;
 
