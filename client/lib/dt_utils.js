@@ -2,13 +2,13 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 
-function escapeHtml(s) {
+function escapeHtml(tag, s) {
     // https://bugs.jquery.com/ticket/11773
-    return (String(s)
+    return '<' + tag + '>' + (String(s)
         .replace(/&(?!\w+;)/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')); // "
+        .replace(/"/g, '&quot;')) + '</' + tag + '>';
 }
 
 function isWord(s) {
@@ -17,23 +17,11 @@ function isWord(s) {
 
 // Column is an array of tokens, mark these up as words, only sort on word content
 function renderTokenArray(reverseSort, data, type, full, meta) {
-    var i, t, count = 0, out = "", span_class;
+    var i, t, count = 0, out = "";
 
     if (type === 'display') {
         for (i = 0; i < data.length; i++) {
-            t = data[reverseSort ? data.length - i - 1 : i];
-            if (isWord(t)) {
-                count++;
-                span_class = "w node-" + count;
-            } else {
-                span_class = "";
-            }
-
-            if (reverseSort) {
-                out = '<span class="' + span_class + '">' + escapeHtml(t) + "</span>" + out;
-            } else {
-                out = out + '<span class="' + span_class + '">' + escapeHtml(t) + "</span>";
-            }
+            out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
         }
     } else {
         for (i = 0; i < data.length; i++) {

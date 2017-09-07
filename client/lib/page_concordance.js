@@ -125,10 +125,8 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
                 totalMatches++;
 
                 // Add classes for row highlighting
-                data[i].DT_RowClass = 'kwic-highlight-' + (r[0] % 4 + 1);
-                for (j = 1; j < r.length; j++) {
-                    data[i].DT_RowClass += ' match-' + r[j];
-                }
+                r[0] = 'kwic-highlight-' + (r[0] % 4 + 1);
+                data[i].DT_RowClass = r.join(' ');
             }
 
             // Add tag columns
@@ -185,9 +183,9 @@ PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, al
 
     // Find the kwic matches in both left/node/right, as well as total matches
     kwic_row = [0].concat(
-        testList(d[0], kwicSpan[0], kwicTerms, 'l'),
-        testList(d[1], kwicSpan[1], kwicTerms, 'n'),
-        testList(d[2], kwicSpan[2], kwicTerms, 'r')
+        testList(d[0], kwicSpan[0], kwicTerms, kwicSpan[0].reverse ? 'revmatch-l' : 'match-l'),
+        testList(d[1], kwicSpan[1], kwicTerms, kwicSpan[1].reverse ? 'revmatch-n' : 'match-n'),
+        testList(d[2], kwicSpan[2], kwicTerms, kwicSpan[2].reverse ? 'revmatch-r' : 'match-r')
     );
     kwic_row[0] = Object.keys(matchingTypes).length;
 

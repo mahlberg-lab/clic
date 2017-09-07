@@ -125,30 +125,41 @@ table.dataTable thead .sorting_desc_disabled:after {
     display: none;
 }
 
-#content table.dataTable td span.w {
+#content table.dataTable td mark {
     background: rgba(200, 200, 200, 0.33);
+    color: inherit;
     padding: 0 1px;
 }
-#content table.dataTable tr.match-l1 > td.contextLeft .node-1,
-#content table.dataTable tr.match-l2 > td.contextLeft .node-2,
-#content table.dataTable tr.match-l3 > td.contextLeft .node-3,
-#content table.dataTable tr.match-l4 > td.contextLeft .node-4,
-#content table.dataTable tr.match-l5 > td.contextLeft .node-5,
-#content table.dataTable tr.match-n1 > td.contextNode .node-1,
-#content table.dataTable tr.match-n2 > td.contextNode .node-2,
-#content table.dataTable tr.match-n3 > td.contextNode .node-3,
-#content table.dataTable tr.match-n4 > td.contextNode .node-4,
-#content table.dataTable tr.match-n5 > td.contextNode .node-5,
-#content table.dataTable tr.match-n6 > td.contextNode .node-6,
-#content table.dataTable tr.match-n7 > td.contextNode .node-7,
-#content table.dataTable tr.match-n8 > td.contextNode .node-8,
-#content table.dataTable tr.match-n9 > td.contextNode .node-9,
-#content table.dataTable tr.match-n10> td.contextNode .node-10,
-#content table.dataTable tr.match-r1 > td.contextRight .node-1,
-#content table.dataTable tr.match-r2 > td.contextRight .node-2,
-#content table.dataTable tr.match-r3 > td.contextRight .node-3,
-#content table.dataTable tr.match-r4 > td.contextRight .node-4,
-#content table.dataTable tr.match-r5 > td.contextRight .node-5 {
+#content table.dataTable tr.revmatch-l1 > td.contextLeft mark:nth-last-of-type(0n+1),
+#content table.dataTable tr.revmatch-l2 > td.contextLeft mark:nth-last-of-type(0n+2),
+#content table.dataTable tr.revmatch-l3 > td.contextLeft mark:nth-last-of-type(0n+3),
+#content table.dataTable tr.revmatch-l4 > td.contextLeft mark:nth-last-of-type(0n+4),
+#content table.dataTable tr.revmatch-l5 > td.contextLeft mark:nth-last-of-type(0n+5),
+#content table.dataTable tr.match-n1 > td.contextNode mark:nth-of-type(0n+1),
+#content table.dataTable tr.match-n2 > td.contextNode mark:nth-of-type(0n+2),
+#content table.dataTable tr.match-n3 > td.contextNode mark:nth-of-type(0n+3),
+#content table.dataTable tr.match-n4 > td.contextNode mark:nth-of-type(0n+4),
+#content table.dataTable tr.match-n5 > td.contextNode mark:nth-of-type(0n+5),
+#content table.dataTable tr.match-n6 > td.contextNode mark:nth-of-type(0n+6),
+#content table.dataTable tr.match-n7 > td.contextNode mark:nth-of-type(0n+7),
+#content table.dataTable tr.match-n8 > td.contextNode mark:nth-of-type(0n+8),
+#content table.dataTable tr.match-n9 > td.contextNode mark:nth-of-type(0n+9),
+#content table.dataTable tr.match-n10> td.contextNode mark:nth-of-type(0n+10),
+#content table.dataTable tr.revmatch-n1 > td.contextNode mark:nth-last-of-type(0n+1),
+#content table.dataTable tr.revmatch-n2 > td.contextNode mark:nth-last-of-type(0n+2),
+#content table.dataTable tr.revmatch-n3 > td.contextNode mark:nth-last-of-type(0n+3),
+#content table.dataTable tr.revmatch-n4 > td.contextNode mark:nth-last-of-type(0n+4),
+#content table.dataTable tr.revmatch-n5 > td.contextNode mark:nth-last-of-type(0n+5),
+#content table.dataTable tr.revmatch-n6 > td.contextNode mark:nth-last-of-type(0n+6),
+#content table.dataTable tr.revmatch-n7 > td.contextNode mark:nth-last-of-type(0n+7),
+#content table.dataTable tr.revmatch-n8 > td.contextNode mark:nth-last-of-type(0n+8),
+#content table.dataTable tr.revmatch-n9 > td.contextNode mark:nth-last-of-type(0n+9),
+#content table.dataTable tr.revmatch-n10> td.contextNode mark:nth-last-of-type(0n+10),
+#content table.dataTable tr.match-r1 > td.contextRight mark:nth-of-type(0n+1),
+#content table.dataTable tr.match-r2 > td.contextRight mark:nth-of-type(0n+2),
+#content table.dataTable tr.match-r3 > td.contextRight mark:nth-of-type(0n+3),
+#content table.dataTable tr.match-r4 > td.contextRight mark:nth-of-type(0n+4),
+#content table.dataTable tr.match-r5 > td.contextRight mark:nth-of-type(0n+5) {
     background: rgba(255, 59, 0, 0.45);
 }
 
