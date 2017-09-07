@@ -1,3 +1,5 @@
+/.local-conf
+
 *.mktmp
 /client/coverage
 /client/doc

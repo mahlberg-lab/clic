@@ -1,6 +1,6 @@
-all: install test
+all: compile test
 
-install: lib/python2.7/site-packages/.requirements
+compile: lib/python2.7/site-packages/.requirements
 
 bin/pip:
 	/usr/bin/virtualenv .
@@ -19,7 +19,14 @@ lib/python2.7/site-packages/.requirements: requirements.txt bin/pip lib/python2.
 	touch lib/python2.7/site-packages/.requirements
 
 start:
-	PYTHONPATH=. ./bin/python -m clic.web
+	./bin/uwsgi \
+	    --master \
+	    --processes=1 --threads=1 \
+	    --enable-threads --thunder-lock \
+	    --honour-stdin \
+	    --mount /=clic.web:app \
+	    --chmod-socket=666 \
+	    -s /tmp/clic_uwsgi.development.sock
 
 clean:
 	rm -rf -- ./bin ./include ./lib ./local ./share
@@ -28,4 +35,4 @@ clean:
 test: lib/python2.7/site-packages/.requirements
 	./bin/py.test tests/
 
-.PHONY: install test start
+.PHONY: compile test start
