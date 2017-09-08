@@ -22,7 +22,7 @@ OUTPUT_DIR=$2
 cd $OUTPUT_DIR && OUTPUT_DIR=$( pwd ) && cd $SCRIPT_DIR
 
 # Make sure all output dirs exist
-mkdir -p $OUTPUT_DIR/{tmp-paragraphs,paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions}
+mkdir -p $OUTPUT_DIR/{paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions,final}
 
 # Run the scripts for each file in the INPUT_DIR
 cd $INPUT_DIR
@@ -34,11 +34,8 @@ for i in $( ls | grep ".txt" ); do
 	nf=$i
 	nf=${nf/.txt/.xml}
 
-	echo "Stage 1a -- basic paragraph extraction: $OUTPUT_DIR/tmp-paragraphs/$nf"
-	${PYTHON} $SCRIPT_DIR/paragraphs.py $i > $OUTPUT_DIR/tmp-paragraphs/$nf
-
-	echo "Stage 1b -- numbering paragraphs and finding parts of the title: $OUTPUT_DIR/paragraphs/$nf"
-	${PYTHON} $SCRIPT_DIR/paragraphs_find_extra_chapter_titles.py $OUTPUT_DIR/tmp-paragraphs/$nf > $OUTPUT_DIR/paragraphs/$nf
+	echo "Stage 1 -- paragraph extraction: $OUTPUT_DIR/paragraphs/$nf"
+	${PYTHON} $SCRIPT_DIR/paragraphs.py $i > $OUTPUT_DIR/paragraphs/$nf
 
 	echo "Stage 2 -- extracting sentences: $OUTPUT_DIR/sentences/$nf"
 	${PYTHON} $SCRIPT_DIR/sentences.py $OUTPUT_DIR/paragraphs/$nf > $OUTPUT_DIR/sentences/$nf
@@ -60,7 +57,6 @@ for i in $( ls | grep ".txt" ); do
 done
 
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'
-cd $SCRIPT_DIR && rm tmp*.xml
 
 ENDTIME=$(date +%s)
 echo "It took $(($ENDTIME - $STARTTIME)) seconds to complete this annotation."
