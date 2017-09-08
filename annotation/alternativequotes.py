@@ -3,6 +3,8 @@ import re
 
 from lxml import etree
 
+import common
+
 
 class QuoteTokenizer:
 
@@ -58,45 +60,6 @@ class QuoteTokenizer:
         # print self.tree
         # print self.tree.xpath('//p')[0:10]
 
-        # 2) hard-code books with double quotations:
-        # NOTE - Look into Frankenstein: Normally double, but single when inside written texts
-        # any new books with double quotation marks must be added to this list
-        self.double = [
-            'bh',
-            'cc',
-            'ge',
-            'hm',
-            'ttc',
-            'na',
-            'ss',
-            'per',
-            'prpr',
-            'mp',
-            'emma',
-            'wwhite',
-            'viviang',
-            'vanity',
-            'tess',
-            'sybil',
-            'prof',
-            'pride',
-            'persuasion',
-            'native',
-            'mill',
-            'mary',
-            'ladyaud',
-            'jude',
-            'jekyll',
-            'jane',
-            'frank',
-            'dracula',
-            'dorian',
-            'deronda',
-            'cran',
-            'basker',
-            'arma',
-            'alli']
-
     def compute_quote_consistence(self):
         """
         Shows a number of examples where quotes might have been
@@ -104,31 +67,12 @@ class QuoteTokenizer:
         """
         raise NotImplementedError
 
-    def single_or_double(self):
-
-        # TODO only get the first paragraph element
-        # this need not be repeated for every paragraph
-        for paragraph in self.tree.xpath('//p'):
-            id = paragraph.get('id')
-            # get id name until first '.' - find() looks for matching string
-            # position
-            book = id[:id.find('.')]
-            if book.lower() in self.double:
-                # this is thus the opposite because embedded quotes use the
-                # different quote style
-                quote_style = 'single'
-            else:
-                # idem
-                quote_style = 'double'
-        self.quote_style = quote_style
-        return quote_style
-
     def annotate_quotes(self, text, quote_style):
         # 3) function for tagging quotes
         # deals only with quote pairs within paragraphs
         # quotes that extend across paragraphs are dealt with in
-        self.single_or_double()
-        if self.quote_style == 'single':
+        quote_style = common.single_or_double(self.tree.xpath('/div0')[0].get('id'))
+        if quote_style == 'single':
             # replace location following the first matched group with <qs/>,
             # etc.
             return re.sub(self.quote_regex_single, '\\1<alt-qs/>\\2<alt-qe/>\\4', text)
@@ -156,8 +100,8 @@ class QuoteTokenizer:
     def first_run(self):
         # print "starting the first run"
         # FIXME weird to call it here:
-        self.single_or_double()
-        # print self.quote_style
+        quote_style = common.single_or_double(self.tree.xpath('/div0')[0].get('id'))
+        # print quote_style
         # 4) Apply function in 3) to each paragraph
         # a) Each paragraph is processed as text string
         for paragraph in self.tree.xpath('//p'):
@@ -168,7 +112,7 @@ class QuoteTokenizer:
             text = text[text.find('>') + 1:text.rfind('<')]
             # print text
             # Tag text string according to function 3)
-            tagged = self.annotate_quotes(text, self.quote_style)
+            tagged = self.annotate_quotes(text, quote_style)
             # print tagged
 
             # b) process paragraph as xml and insert new tagged paragraph content
