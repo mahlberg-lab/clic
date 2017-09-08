@@ -847,34 +847,6 @@
 			</options>
 		</subConfig>
 
-		<subConfig type="index" id="novel-idx">
-			<objectType>cheshire3.index.SimpleIndex</objectType>
-			<paths>
-				<object type="indexStore" ref="indexStore"/>
-			</paths>
-			<source>
-				<xpath ref="bookXPath"/>
-				<process>
-					<object type="extractor" ref="SimpleExtractor"/>
-					<object type="tokenizer" ref="SimpleTokenizer"/>
-					<object type="tokenMerger" ref="SimpleTokenMerger"/>
-					<object type="normalizer" ref="NovelNormalizer"/>
-				</process>
-			</source>
-			<source mode="any|all|=|exact|window">
-				<process>
-					<object type="extractor" ref="SimpleExtractor"/>
-					<object type="tokenizer" ref="SimpleTokenizer"/>
-					<object type="tokenMerger" ref="SimpleTokenMerger"/>
-					<object type="normalizer" ref="CaseNormalizer"/>
-				</process>
-			</source>
-			<options>
-				<setting type="longSize">4</setting>
-			</options>
-		</subConfig>
-
-
 		<subConfig type="index" id="subCorpus-idx">
 			<objectType>cheshire3.index.SimpleIndex</objectType>
 			<paths>
