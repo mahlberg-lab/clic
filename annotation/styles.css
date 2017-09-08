@@ -45,7 +45,7 @@ div0 > div[type=chapter] > p {
 }
 div0 > div[type=chapter]:before,
 div0 > div[type=chapter] > p:before {
-  content: "chapter";
+  content: "chapter: " attr(id);
   display: block;
   position: absolute;
   top: -1.25em;
@@ -55,7 +55,7 @@ div0 > div[type=chapter] > p:before {
   font-size: 80%;
 }
 div0 > div[type=chapter] > p:before {
-  content: "paragraph";
+  content: "paragraph: " attr(id);
   top: -1em;
 }
 
