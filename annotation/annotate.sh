@@ -7,6 +7,9 @@
 #     ./annotate.sh input output
 #
 # where input and output are the names of a directory (without a backslash at the end)
+# 
+# The input directory should have the same name as the subcorpus you are importing, e.g.
+# ntc / dickens / ChiLit
 
 STARTTIME=$(date +%s)
 

@@ -24,17 +24,19 @@ A book divided into parts has the part title appended to each chapter title.
 Parts will be ignored when it comes to chapter numbering in CLiC.
 '''
 import cgi
+import os.path
 import sys
 import re
 
 PART_BREAK = re.compile(r'^PART ([0-9IVXLC]+)\.(.*)')
 CHAPTER_BREAK = re.compile(r'^(?:CHAPTER|BOOK) ([0-9IVXLC]+)\.(.*)|^MORAL.(.*)')
 
-lines = open(sys.argv[1]).readlines()
 filename = sys.argv[1]
-book_abbreviation = filename.split('/')[-1].replace('.txt', '')
+lines = open(filename).readlines()
+book_abbreviation = os.path.basename(filename).replace('.txt', '')
+subcorpus = os.path.basename(os.path.dirname(os.path.abspath(filename)))
 
-print "<div0 id=\"%s\" type=\"book\" filename=\"%s\">\n\n" % (book_abbreviation, filename)
+print "<div0 id=\"%s\" type=\"book\" subcorpus=\"%s\" filename=\"%s\">\n\n" % (book_abbreviation, subcorpus, filename)
 
 part_prefix = ""
 current_chapter = 0
@@ -44,6 +46,16 @@ paragraph_text = ""
 # TODO: Read title and author lines, put them in their own tags?
 
 for index, line in enumerate(lines):
+    # Title
+    if index == 0 and line.strip() != '':
+        print '<title>%s</title>' % cgi.escape(line.strip())
+        continue
+
+    # Author
+    if index == 1 and line.strip() != '':
+        print '<author>%s</author>' % cgi.escape(line.strip())
+        continue
+
     m = PART_BREAK.match(line)
     if m:
         part_prefix = line.strip() + ' '

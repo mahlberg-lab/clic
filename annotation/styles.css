@@ -21,6 +21,17 @@ Long suspensions - orange\00000a";
   text-align: right;
 }
 
+div0 > title,
+div0 > author {
+  display: block;
+  font-size: 1.4rem;
+  text-align: center;
+}
+div0 > author {
+  font-size: 1.3rem;
+  margin-bottom: 4rem;
+}
+
 div0 > div[type=chapter],
 div0 > div[type=chapter] > p {
   display: block;
