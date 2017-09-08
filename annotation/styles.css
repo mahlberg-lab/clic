@@ -5,6 +5,17 @@ div0 {
   font-size: 1.1em;
 }
 
+div0:before {
+  content: "id: " attr(id)
+      " | type: " attr(type)
+      " | subcorpus: " attr(subcorpus)
+      " | filename: " attr(filename);
+  display: block;
+  text-align: center;
+  font-size: small;
+  font-family: monospace;
+}
+
 div0:after {
   content: "quotes - red\00000a
 Alternative quotes - yellow\00000a
