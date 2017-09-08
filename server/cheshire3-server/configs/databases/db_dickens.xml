@@ -66,10 +66,6 @@
 		     </imports>
 		   </subConfig>
 
-	<subConfig type="normalizer" id="SubCorpusNormalizer">
-		<objectType>clic.normalizer.CorpusNormalizer</objectType>
-	</subConfig>
-
 	<subConfig type="transformer" id="geniaTransformer">
 		<objectType>cheshire3.textmining.tmTransformer.GeniaTransformer</objectType>
 		<paths>

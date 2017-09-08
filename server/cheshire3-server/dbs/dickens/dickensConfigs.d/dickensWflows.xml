@@ -39,7 +39,6 @@
 							<object type="index" ref="book-idx"/>
 						</split>
 						<split>
-							<object type="normalizer" ref="SubCorpusNormalizer"/>
 							<object type="index" ref="subCorpus-idx"/>
 						</split>
 					</fork>

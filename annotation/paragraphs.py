@@ -42,12 +42,14 @@ part_prefix = ""
 current_chapter = 0
 current_paragraph = 1
 paragraph_text = ""
+book_title = ""
 
 # TODO: Read title and author lines, put them in their own tags?
 
 for index, line in enumerate(lines):
     # Title
     if index == 0 and line.strip() != '':
+        book_title = line.strip()
         print '<title>%s</title>' % cgi.escape(line.strip())
         continue
 
@@ -68,8 +70,9 @@ for index, line in enumerate(lines):
         current_chapter += 1
         current_paragraph = 1
         paragraph_text = "" # TODO: What if there's remaining paragraph?
-        print '<div id="%s.%d" book="%s" type="chapter" num="%d">' % (
+        print '<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">' % (
             book_abbreviation, current_chapter,
+            subcorpus, book_title,
             book_abbreviation, current_chapter,
         )
         print '<title>%s%s</title>' % (

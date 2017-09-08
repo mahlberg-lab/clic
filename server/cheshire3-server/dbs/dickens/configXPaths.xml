@@ -51,6 +51,13 @@
 			</source>
 		</subConfig>
 
+		<subConfig type="xpathProcessor" id="subcorpusXPath">
+			<objectType>cheshire3.xpathProcessor.SimpleXPathProcessor</objectType>
+			<source>
+				<xpath>/div[@type="chapter"]/@subcorpus</xpath>
+			</source>
+		</subConfig>
+
 		<subConfig type="xpathProcessor" id="quoteXPath">
 			<objectType>cheshire3.xpathProcessor.SpanXPath</objectType>
 			<source>

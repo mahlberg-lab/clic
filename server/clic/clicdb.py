@@ -27,6 +27,11 @@ class ClicDb():
 
         self.rdb = sqlite3.connect(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'c3.sqlite'))
 
+        # Extra lookup tables not available from cheshire data
+        with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
+            self.extra_data = json.load(f)
+
+
     def close(self):
         self.rdb.close()
 
@@ -82,7 +87,49 @@ class ClicDb():
         c = self.rdb.cursor()
         return c.execute(*args)
 
-    def recreate_rdb(self):
+    def store_documents(self, doc_dir):
+        """
+        Store all XML files in (doc_dir) into cheshire3
+
+        doc_dir should be absolute
+        """
+        db = self.db
+        geniaTxr = db.get_object(self.session, 'corpusTransformer')
+        indexWF = db.get_object(self.session, 'indexWorkflow')
+        recStore = db.get_object(self.session, 'recordStore')
+        ampPreP = db.get_object(self.session, 'AmpPreParser')
+        xmlp = db.get_object(self.session, 'LxmlParser')
+        df = db.get_object(self.session, 'SimpleDocumentFactory')
+
+        df.load(self.session, doc_dir)
+        recStore.begin_storing(self.session)
+        db.begin_indexing(self.session)
+        errorCount= 0
+        for i, d in enumerate(df, start=1):
+            doc = ampPreP.process_document(self.session, d)
+            try:
+                rec = xmlp.process_document(self.session, doc)
+                genia = geniaTxr.process_record(self.session, rec)
+                rec2 = xmlp.process_document(self.session, genia)
+                recStore.create_record(self.session, rec2)
+                db.add_record(self.session, rec2)
+                indexWF.process(self.session, rec2)
+
+                # Index new record in RDB
+                self.rdb_index_record(self.recStore.fetch_record(self.session, rec2.id))
+            except Exception as e:
+                raise
+                errorCount += 1
+                traceback.print_exc(file=sys.stdout)
+        recStore.commit_storing(self.session)
+        db.commit_indexing(self.session)
+        self.rdb.commit()
+
+    def rdb_index_record(self, record):
+        """
+        Index the record object within the relational database
+        Transactions are not handled, caller is responsible for commits
+        """
         def _rdb_insert(c, table, rec, ignoreDuplicate=True):
             try:
                 c.execute("INSERT INTO %s VALUES (%s)" % (
@@ -93,6 +140,76 @@ class ClicDb():
                 if not ignoreDuplicate or not e.message.startswith('UNIQUE constraint'):
                     raise
 
+        c = self.rdb.cursor()
+
+        chapter_id = record.id
+        dom = record.dom
+        ch_node = dom.xpath('/div')[0]
+        chapter_num = int(ch_node.get('num'))
+        book_id = ch_node.get('book')
+        corpus_id = ch_node.get('subcorpus', '') or self.extra_data['book_corpus'][book_id]
+        book_title = ch_node.get('booktitle', '') or self.extra_data['book_titles'][book_id]
+        word_count = int(ch_node.xpath("count(descendant::w)"))
+
+        # Insert book-level metadata into DB
+        _rdb_insert(c, "corpus", (
+            corpus_id,
+            self.extra_data['corpus_titles'][corpus_id],
+        ));
+        _rdb_insert(c, "book", (
+            book_id,
+            book_title,
+            corpus_id,
+        ));
+        _rdb_insert(c, "chapter", (
+            chapter_id,
+            book_id,
+            chapter_num,
+            record.digest,
+            word_count,
+        ));
+
+        # Index locations of all subsets
+        node = dict()
+        for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: int(n.attrib['wordOffset'])):
+            node[n.tag] = n
+            if n.tag in ['qs']:
+                # Start of a quote, thus up to the last qe is a non-quote
+                start_node = node.get('qe', None)
+            elif n.tag.endswith('e'):
+                # End of a subset
+                start_node = node.get(n.tag[0:-1] + 's', None)
+            else:
+                # Not the end of a subset, move on
+                continue
+
+            _rdb_insert(c, "subset", (
+                chapter_id,
+                n.attrib['eid'],
+                dict(
+                    qs='nonquote',
+                    qe='quote',
+                    sle='longsus',
+                    sse='shortsus',
+                )[n.tag],
+                0 if start_node is None else int(start_node.attrib['wordOffset']),
+                int(n.attrib['wordOffset']),
+            ))
+
+        # Trigger chapter indexing
+        self.get_chapter(chapter_id)
+
+        if 'qe' in node:
+            # End of quote up until end of text is non-quote
+            _rdb_insert(c, "subset", (
+                chapter_id,
+                node['qe'].attrib['eid'],
+                'nonquote',
+                node['qe'].attrib['wordOffset'],
+                word_count,
+            ))
+
+    def recreate_rdb(self):
         c = self.rdb.cursor()
         c.execute('''CREATE TABLE corpus (
             corpus_id TEXT,
@@ -125,76 +242,13 @@ class ClicDb():
             PRIMARY KEY (chapter_id, eid)
         )''')
 
-        # Extra lookup tables not available from cheshire data
-        with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
-            extra_data = json.load(f)
-
         chapter_id = 0
         while True:
             try:
                 record = self.recStore.fetch_record(self.session, chapter_id)
             except ObjectDoesNotExistException:
                 break
-            dom = record.dom
-            ch_node = dom.xpath('/div')[0]
-            chapter_num = int(ch_node.get('num'))
-            book_id = ch_node.get('book')
-            corpus_id = ch_node.get('corpus', extra_data['book_corpus'][book_id])
-            word_count = int(ch_node.xpath("count(descendant::w)"))
-
-            _rdb_insert(c, "corpus", (
-                corpus_id,
-                extra_data['corpus_titles'][corpus_id],
-            ));
-            _rdb_insert(c, "book", (
-                book_id,
-                extra_data['book_titles'][book_id],
-                corpus_id,
-            ));
-            _rdb_insert(c, "chapter", (
-                chapter_id,
-                book_id,
-                chapter_num,
-                record.digest,
-                word_count,
-            ));
-
-            node = dict()
-            for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: int(n.attrib['wordOffset'])):
-                node[n.tag] = n
-                if n.tag in ['qs']:
-                    # Start of a quote, thus up to the last qe is a non-quote
-                    start_node = node.get('qe', None)
-                elif n.tag.endswith('e'):
-                    # End of a subset
-                    start_node = node.get(n.tag[0:-1] + 's', None)
-                else:
-                    # Not the end of a subset, move on
-                    continue
-
-                _rdb_insert(c, "subset", (
-                    chapter_id,
-                    n.attrib['eid'],
-                    dict(
-                        qs='nonquote',
-                        qe='quote',
-                        sle='longsus',
-                        sse='shortsus',
-                    )[n.tag],
-                    0 if start_node is None else int(start_node.attrib['wordOffset']),
-                    int(n.attrib['wordOffset']),
-                ))
-
-            if node.get('qe', None):
-                # End of quote up until end of text is non-quote
-                _rdb_insert(c, "subset", (
-                    chapter_id,
-                    node['qe'].attrib['eid'],
-                    'nonquote',
-                    node['qe'].attrib['wordOffset'],
-                    word_count,
-                ))
-
+            self.index_record(record)
             yield "Cached %d %s %s chapter %d" % (chapter_id, corpus_id, book_id, chapter_num)
             chapter_id += 1
         yield "Committing..."
