@@ -85,8 +85,9 @@ def keyword(
             p_value=pvalue,
         ).to_records()
     except:
-        header = {
-            message: '''
+        yield dict(message=dict(
+            level='warn',
+            message='''
 CliC was not able to generate a keyword list for you. Please check your search settings. 
 Because short suspensions are limited to 4 tokens, no 5-grams are available for short suspensions.
 Please note that the target text/corpus and the reference text/corpus should be different.
@@ -94,29 +95,18 @@ Please note that the target text/corpus and the reference text/corpus should be 
 It is also possible that there are no keywords with the parameters you specified. In that case
 increasing the p-value might be an option.
             '''.strip(),
-        }
-        raise  # TODO:
+        ))
+        return
+        # TODO: What about the actual error? Log it?
 
-    # TODO: format message nicely, is some of this redundant / error?
     # Return header message
     if total_analysis:
-        yield {
-            'message': '''
- <dl>
-   <dt>Target text/corpus</dt>
-     <dd>{{subset_analysis|capitalize}} in {{subcorpora_analysis|upper}} with a total of {{ total_analysis }} clusters ({{clusterlength}}-grams).</dd>
- </dl>
- <dl>
-   <dt>Reference text/corpus (the text you compare the target text with)</dt>
-     <dd>{{subset_reference|capitalize}} in {{subcorpora_reference|upper}} with a total of {{total_reference}} clusters ({{clusterlength}}-grams).</dd>
- </dl>
- <dl>
-   <dt>P-value and display</dt>
-     <dd>The p-value cut-off you set is {{ pvalue }} (which has to be one of the following: 0.05, 0.01, 0.001, or 0.0001). 
-       The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed.</dd>
- </dl>
+        yield dict(message=dict(
+            level='info',
+            message='''
+The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed.
             '''.strip()
-        }
+        ))
     else:
         yield {}
 
