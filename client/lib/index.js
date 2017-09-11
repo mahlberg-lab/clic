@@ -8,6 +8,7 @@ var Alerts = require('./alerts.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
+    '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
     '': function (content_div) {

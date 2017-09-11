@@ -192,7 +192,30 @@
   <fieldset name="clusters" disabled="disabled">
     <legend><a href="/clusters">Clusters</a></legend>
     <div>
-      <p>options go here</p>
+      <label>Search the corpora:</label>
+      <select name="corpora" class="chosen-select" multiple>
+      </select>
+      <label>Only in subsets:</label>
+      <select name="subset" class="chosen-select">
+        <option value="all" selected="selected">All text</option>
+        <option value="shortsus">Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+
+      <label>n-gram:</label>
+      <select name="clusterlength" class="chosen-select">
+        <option value="1" selected="selected">1-gram</option>
+        <option value="3">3-gram</option>
+        <option value="4">4-gram</option>
+        <option value="5">5-gram</option>
+      </select>
+
+      <h4><span>Table</span></h4>
+      <label>Filter rows:</label>
+      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+
     </div>
   </fieldset>
 
