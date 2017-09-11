@@ -11,6 +11,7 @@ class Test_get_corpus_structure(unittest.TestCase):
         # Corpora in alphabetical order
         self.assertEqual([(x['id'], x['title']) for x in out], [
             (u'ntc', u'19th Century Novels'),
+            (u'ChiLit', u"Children's Literature"),  # NB: Alphabetical by title
             (u'dickens', u'Novels by Charles Dickens'),
         ])
         # Each corpora has some books
