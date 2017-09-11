@@ -73,6 +73,14 @@ def keyword():
     out = clic.keyword.keyword(clicdb(), **request.args)
     return Response(stream_json(out), content_type='application/json')
 
+# ==== Cluster routes =====================================
+import clic.cluster
+
+@app.route('/api/cluster', methods=['GET'])
+def cluster():
+    out = clic.cluster.cluster(clicdb(), **request.args)
+    return Response(stream_json(out), content_type='application/json')
+
 # ==== Admin routes =======================================
 import clic.c3chapter
 
