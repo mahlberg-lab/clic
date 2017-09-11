@@ -12,6 +12,7 @@ from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
 from clic.c3chapter import get_chapter
+from clic.c3wordlist import facets_to_df
 
 class ClicDb():
     def __init__(self):
@@ -112,6 +113,28 @@ class ClicDb():
 
     def get_chapter(self, chapter_id):
         return get_chapter(self.session, self.recStore, chapter_id)
+
+    def get_word_list(self, subset, cluster_length, corpora):
+        """
+        Build a Cheshire3WordList word list data frame
+        - (subset, cluster_length) form the index to use, e.g.
+          'quote', 3 --> 'quote-3-gram-idx'
+          '', 1 --> 'chapter-idx'
+          'quote', 1 -> 'quote-idx'
+        - corpora: Combination of subcorpus names and book names
+        """
+        if cluster_length > 1:
+            if subset:
+                index_name = '%s-%dgram-idx' % (subset, cluster_length)
+            else:
+                '%d-gram-idx' % (cluster_length)
+        else:
+            index_name = '%s-idx' % (subset or 'chapter')
+
+        results = self.c3_query(self.corpora_list_to_query(corpora))
+        facets = self.db.get_object(self.session, index_name).facets(self.session, results)
+
+        return facets_to_df(facets)
 
     def c3_query(self, query):
         return self.db.search(self.session, self.qf.get_query(self.session, query))
