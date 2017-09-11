@@ -20,6 +20,7 @@
 /server/lib
 /server/local
 /server/share
+/server/.cache
 /server/booklist.json
 /server/cheshire3-server/dbs/c3.sqlite
 /server/cheshire3-server/dbs/c3.sqlite-journal
