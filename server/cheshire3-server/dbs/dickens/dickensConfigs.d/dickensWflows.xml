@@ -26,22 +26,25 @@
 			</workflow>
 		</subConfig>
 
-		
 		<subConfig type="workflow" id="bookWorkflow">
 			<objectType>cheshire3.workflow.CachingWorkflow</objectType>
 			<workflow>
 				<object type="xpathProcessor" ref="bookXPath"/>
 				<object type="extractor" ref="SimpleExtractor"/>
-					<object type="tokenizer" ref="SimpleTokenizer"/>
-					<object type="tokenMerger" ref="SimpleTokenMerger"/>
-					<fork>
-						<split>
-							<object type="index" ref="book-idx"/>
-						</split>
-						<split>
-							<object type="index" ref="subCorpus-idx"/>
-						</split>
-					</fork>
+				<object type="tokenizer" ref="SimpleTokenizer"/>
+				<object type="tokenMerger" ref="SimpleTokenMerger"/>
+				<object type="index" ref="book-idx"/>
+			</workflow>
+		</subConfig>
+
+		<subConfig type="workflow" id="subcorpusWorkflow">
+			<objectType>cheshire3.workflow.CachingWorkflow</objectType>
+			<workflow>
+				<object type="xpathProcessor" ref="subcorpusXPath"/>
+				<object type="extractor" ref="SimpleExtractor"/>
+				<object type="tokenizer" ref="SimpleTokenizer"/>
+				<object type="tokenMerger" ref="SimpleTokenMerger"/>
+				<object type="index" ref="subCorpus-idx"/>
 			</workflow>
 		</subConfig>
 		
@@ -279,6 +282,9 @@
 					<split>
 						<object type="workflow" ref="bookWorkflow"/>
 					</split>	
+					<split>
+						<object type="workflow" ref="subcorpusWorkflow"/>
+					</split>
 				</fork>
 			</workflow>
 		</subConfig>

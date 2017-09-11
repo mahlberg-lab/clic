@@ -828,7 +828,6 @@
 		</subConfig>
 
 
-		<!-- corpus level indexes -->
 		<subConfig type="index" id="book-idx">
 			<!-- Book short name, e.g. 'AgnesG', 'BH' -->
 			<objectType>cheshire3.index.SimpleIndex</objectType>
