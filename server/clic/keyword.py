@@ -162,10 +162,7 @@ def log_likelihood(counts):
     # counts.loc[:,'LL'] = 2*((a * np.log(a/exp_a)) + (b * np.log(b/exp_b)))
     counts.loc[(b != 0) & (exp_b != 0), 'LL'] = 2*((a * np.log(a/exp_a)) + (b * np.log(b/exp_b)))
     
-    # sort the results
-    keywords = counts.sort_values('LL', ascending=False)
-    
-    return keywords
+    return counts
 
 
 def extract_keywords(wordlist_analysis, 
