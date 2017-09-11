@@ -26,16 +26,16 @@ def stream_json(generator):
     Turn a generator's output into JSON
     First item has to be an object, and will be used as the initial
     header structure,
-    All other items will be added to a "results" array
+    All other items will be added to a "data" array
     """
     # Initial JSON object based on first item returned
     header = json.dumps(generator.next(), separators=(',', ':'))
     if header[-1] != '}':
         raise ValueError("Initial item not a JSON object: %s" % header)
     if header == '{}':
-        yield '{"results":['
+        yield '{"data":['
     else:
-        yield header[:-1] + ',"results":['
+        yield header[:-1] + ',"data":['
 
     separator = '\n'
     for x in generator:

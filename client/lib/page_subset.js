@@ -48,7 +48,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
             tag_state = page_state.state('tag_columns', {}),
             tag_list = Object.keys(tag_state);
 
-        data = data.results;
+        data = data.data;
 
         for (i = 0; i < data.length; i++) {
             // TODO: Assume book+word_id is unique for now. Server-generate this

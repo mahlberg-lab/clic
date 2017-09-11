@@ -49,11 +49,7 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a reference corpora", "warn");
     }
 
-    return api.get('keyword', api_opts).then(function (data) {
-        return {
-            data: data.results,
-        };
-    });
+    return api.get('keyword', api_opts);
 };
 
 module.exports = PageKeyword;
