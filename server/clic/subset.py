@@ -26,6 +26,7 @@ def subset(cdb, corpora=['dickens'], subset=['quote']):
     ))
     params = subset + corpus + books
 
+    yield {} # Return empty header
     cur_chapter = None
     for (chapter_id, offset_start, offset_end) in cdb.rdb_query(query, params):
         if not cur_chapter or cur_chapter != chapter_id:

@@ -94,6 +94,9 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
     if sum(len(result.proxInfo) for result in result_set) > 10000:
         raise ValueError("This query returns over 10 000 results, please try some other search terms using less-common words.")
 
+    # Empty heading
+    yield {}
+
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
         ch = cdb.get_chapter(result.id)

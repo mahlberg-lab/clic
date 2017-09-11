@@ -22,8 +22,21 @@ def close_db(exception):
         g.clicdb.close()
 
 def stream_json(generator):
-    """Helper to turn a generator's output into JSON"""
-    yield '{"results":['
+    """
+    Turn a generator's output into JSON
+    First item has to be an object, and will be used as the initial
+    header structure,
+    All other items will be added to a "results" array
+    """
+    # Initial JSON object based on first item returned
+    header = json.dumps(generator.next(), separators=(',', ':'))
+    if header[-1] != '}':
+        raise ValueError("Initial item not a JSON object: %s" % header)
+    if header == '{}':
+        yield '{"results":['
+    else:
+        yield header[:-1] + ',"results":['
+
     separator = '\n'
     for x in generator:
         yield separator + json.dumps(x, separators=(',', ':'))
