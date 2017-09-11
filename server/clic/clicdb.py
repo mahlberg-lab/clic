@@ -114,6 +114,16 @@ class ClicDb():
     def get_chapter(self, chapter_id):
         return get_chapter(self.session, self.recStore, chapter_id)
 
+    def get_subset_index(self, subset):
+        """Return the index associated with a subset"""
+        return dict(
+            shortsus='shortsus-idx',
+            longsus='longsus-idx',
+            nonquote='non-quote-idx',
+            quote='quote-idx',
+            all='chapter-idx',
+        )[subset]
+
     def get_word_list(self, subset, cluster_length, corpora):
         """
         Build a Cheshire3WordList word list data frame
@@ -123,13 +133,12 @@ class ClicDb():
           'quote', 1 -> 'quote-idx'
         - corpora: Combination of subcorpus names and book names
         """
+        index_name = self.get_subset_index(subset)
         if cluster_length > 1:
-            if subset:
-                index_name = '%s-%dgram-idx' % (subset, cluster_length)
+            if index_name == 'chapter-idx':
+                index_name = '%dgram-idx' % (cluster_length)
             else:
-                '%d-gram-idx' % (cluster_length)
-        else:
-            index_name = '%s-idx' % (subset or 'chapter')
+                index_name = '%s-%dgram-idx' % (index_name[:-4], cluster_length)
 
         results = self.c3_query(self.corpora_list_to_query(corpora))
         facets = self.db.get_object(self.session, index_name).facets(self.session, results)

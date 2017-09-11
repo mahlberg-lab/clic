@@ -13,13 +13,7 @@ def concordance(cdb, corpora=['dickens'], subset='all', type='whole', q=None):
     return create_concordance(
         cdb,
         q[0],
-        dict(
-            shortsus='shortsus-idx',
-            longsus='longsus-idx',
-            nonquote='non-quote-idx',
-            quote='quote-idx',
-            all='chapter-idx',
-        )[subset[0]],
+        cdb.get_subset_index(subset[0]),
         corpora,
         type[0],
     )
