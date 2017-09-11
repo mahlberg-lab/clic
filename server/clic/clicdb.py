@@ -11,11 +11,15 @@ from cheshire3.baseObjects import Session
 from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
-from clic.c3chapter import get_chapter
+from clic.c3chapter import get_chapter, restore_chapter_cache
 from clic.c3wordlist import facets_to_df
 
 class ClicDb():
     def __init__(self):
+        """
+        Create a CLiC DB instance, connecting to both cheshire3 and the
+        relational database.
+        """
         self.session = Session()
         self.session.database = 'db_dickens'
         server = SimpleServer(
@@ -33,9 +37,15 @@ class ClicDb():
         with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
             self.extra_data = json.load(f)
 
-
     def close(self):
         self.rdb.close()
+
+    def warm_cache(self):
+        """
+        Load chapters into RAM, this takes ~20s but improves query times
+        dramatically
+        """
+        restore_chapter_cache()
 
     def get_corpus_names(self):
         """Return a list of valid corpus names"""

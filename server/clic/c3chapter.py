@@ -191,4 +191,3 @@ def restore_chapter_cache():
     if os.path.exists(chapter_pickle_file) and os.path.getsize(chapter_pickle_file) > 0:
         with open(chapter_pickle_file, 'rb') as f:
             chapter_cache = pickle.load(f)
-restore_chapter_cache()  # Restore cache on module load, NB: this takes ~20s

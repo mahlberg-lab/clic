@@ -16,6 +16,10 @@ def clicdb():
         g._clicdb = ClicDb()
     return g._clicdb
 
+@app.before_first_request
+def warm_cache():
+    clicdb().warm_cache()
+
 @app.teardown_appcontext
 def close_db(exception):
     if getattr(g, 'clicdb', None):
