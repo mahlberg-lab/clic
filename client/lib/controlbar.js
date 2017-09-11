@@ -155,6 +155,11 @@ function ControlBar(control_bar) {
                 new_search[el.name] = [""];
             });
 
+            // Empty select boxes should be empty
+            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset:not([disabled]) select[multiple]'), function (el, i) {
+                new_search[el.name] = jQuery(el).val();
+            });
+
             self.page_state.update({args: new_search});
         }, 300);
     });
