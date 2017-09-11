@@ -60,15 +60,16 @@ PageTable.prototype.reload = function reload(page_state) {
             table_opts.search = { search: page_state.arg('table-filter', '') };
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
-            // TODO: This relies on column definition in lib/page_concordance.js
-            self.table.on('draw.dt', function () {
-                var pageStart = self.table.page.info().start,
-                    pageCells = self.table.cells(null, 1, {page: 'current', order: 'applied', search: 'applied'});
+            if (self.hasOwnProperty('table_count_column')) {
+                self.table.on('draw.dt', function () {
+                    var pageStart = self.table.page.info().start,
+                        pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});
 
-                pageCells.nodes().each(function (cell, i) {
-                    cell.innerHTML = pageStart + i + 1;
+                    pageCells.nodes().each(function (cell, i) {
+                        cell.innerHTML = pageStart + i + 1;
+                    });
                 });
-            });
+            }
 
             self.table.on('click', 'tr', function () {
                 if (self.initial_selection) {

@@ -33,6 +33,7 @@ PageConcordance.prototype.init = function () {
         { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
         { title: "In&nbsp;bk.", data: "4", width: "52px", render: dt_utils.renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
     ];
+    this.table_count_column = 1;
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };
     this.table_opts.order = [[9, 'asc']];
 };
