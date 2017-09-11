@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 import json
 import os
 import sqlite3
@@ -59,6 +60,38 @@ class ClicDb():
                 out.append(dict(id=c_id, title=c_title, children=[]))
             out[-1]['children'].append(dict(id=b_id, title=b_title))
         return out
+
+    def corpora_list_to_query(self, corpora, db='cheshire'):
+        """
+        Given a list of books / entire subcorpora, return a query clause
+        - db == 'cheshire': Return a CQL where clause string
+        - db == 'rdb': Return (SQL where clause, params)
+        """
+        corpus_names = self.get_corpus_names()
+        subcorpus = []
+        books = []
+        for m in corpora:
+            if m in corpus_names:
+                subcorpus.append(m)
+            else:
+                books.append(m)
+
+        if db == 'cheshire':
+            return '(' + ' OR '.join(itertools.chain(
+                ('c3.subCorpus-idx = "%s"' % s for s in subcorpus),
+                ('c3.book-idx = "%s"' % s for s in books),
+            )) + ')'
+
+        if db == 'rdb':
+            return (" ".join((
+                "(",
+                "c.book_id IN (SELECT book_id FROM book WHERE corpus_id IN (", ",".join("?" for x in xrange(len(subcorpus))), "))",
+                "OR",
+                "c.book_id IN (", ",".join("?" for x in xrange(len(books))), ")",
+                ")",
+            )), subcorpus + books)
+
+        raise ValueError("Unknown db type %s" % db)
 
     def get_chapter_word_counts(self, book_id, chapter_num):
         """

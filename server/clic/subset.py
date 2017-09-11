@@ -4,27 +4,15 @@ def subset(cdb, corpora=['dickens'], subset=['quote']):
     - corpora: List of corpora / book names
     - subset: Subset(s) to search for.
     """
-    # Split materials into corpus names and book names
-    cnames = cdb.get_corpus_names() 
-    corpus, books = [], []
-    for m in corpora:
-        if m in cnames:
-            corpus.append(m)
-        else:
-            books.append(m)
-
+    (where, params) = cdb.corpora_list_to_query(corpora, db='rdb')
     query = " ".join((
         "SELECT s.chapter_id, s.offset_start, s.offset_end",
         "FROM subset s, chapter c",
         "WHERE s.chapter_id = c.chapter_id",
+        "AND ", where,
         "AND s.subset_type IN (", ",".join("?" for x in xrange(len(subset))), ")",
-        "AND (",
-            "c.book_id IN (SELECT book_id FROM book WHERE corpus_id IN (", ",".join("?" for x in xrange(len(corpus))), "))",
-            "OR",
-            "c.book_id IN (", ",".join("?" for x in xrange(len(books))), ")"
-        ")",
     ))
-    params = subset + corpus + books
+    params.extend(subset)
 
     yield {} # Return empty header
     cur_chapter = None

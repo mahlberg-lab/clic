@@ -36,15 +36,6 @@ def build_query(cdb, terms, idxName, Materials, selectWords):
     Its output is a tuple of which the first element is a query.
     the second element is number of search terms in the query.
     '''
-
-    subcorpus = []
-    corpus_names = cdb.get_corpus_names()
-    for m in Materials:
-        subcorpus.append('c3.{0} = "{1}"'.format(
-            'subCorpus-idx' if m in corpus_names else 'book-idx',
-            m,
-        ))
-
     ## search whole phrase or individual words?
     if selectWords == "whole":
         # for historic purposes: number_of_search_terms was originally nodeLength
@@ -63,7 +54,7 @@ def build_query(cdb, terms, idxName, Materials, selectWords):
     ## conduct database search
     ## note: /proxInfo needed to search individual books
     query = '(%s) and/proxInfo (%s)' % (
-        ' or '.join(subcorpus),
+        cdb.corpora_list_to_query(Materials),
         ' or '.join(term_clauses),
     )
 
