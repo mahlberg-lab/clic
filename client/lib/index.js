@@ -9,6 +9,7 @@ var Alerts = require('./alerts.js');
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
     '/subsets': require('./page_subset.js'),
+    '/keywords': require('./page_keyword.js'),
     '': function (content_div) {
         this.reload = function (page_state) {
             throw new Error("Unknown page: " + page_state.doc());

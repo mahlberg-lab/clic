@@ -63,6 +63,10 @@ var state_defaults = {
     'kwic-int-start': '3',
     'kwic-int-end': '3',
     'kwic-terms': [],
+    'refcorpora': [],
+    'refsubset': 'all',
+    'clusterlength': 1,
+    'pvalue': 0.0001,
 };
 
 function to_options_html(opts, group_label) {
@@ -265,11 +269,11 @@ ControlBar.prototype.reload = function reload(page_state) {
         }
 
         // Populate corpora dropdowns
-        Array.prototype.forEach.call(self.control_bar.querySelectorAll('select[name=corpora]'), function (el) {
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('select[name=corpora],select[name=refcorpora]'), function (el) {
             el.innerHTML = to_options_html(corpora.corpora, 'Entire corpora') + corpora.corpora.map(function (c) {
                 return to_options_html(c.children, c.title);
             }).join("");
-            jQuery(el).val(page_state.arg('corpora', []));
+            jQuery(el).val(page_state.arg(el.name, []));
         });
 
         // Set values from page options, or defaults

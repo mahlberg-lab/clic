@@ -187,6 +187,9 @@ table.dataTable thead .sorting_desc_disabled:after {
     text-align: center;
     font-size: 1.5rem;
 }
+#content table.dataTable td.nowrapColumn {
+    white-space: nowrap;
+}
 
 #content .dataTables_paginate {
     display: flex;
