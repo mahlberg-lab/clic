@@ -287,6 +287,8 @@ ControlBar.prototype.reload = function reload(page_state) {
                 Math.floor(0);
             } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
                 el.checked = !!page_state.arg(el.name, state_defaults[el.name]);
+            } else if (el.tagName === 'INPUT' && el.type === "radio") {
+                el.setAttribute("checked", page_state.arg(el.name, state_defaults[el.name]) === el.value ? 'checked' : '');
             } else if (el.tagName === 'SELECT') {
                 jQuery(el).val(page_state.arg(el.name, state_defaults[el.name]));
             } else {
