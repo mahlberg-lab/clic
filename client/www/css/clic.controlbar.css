@@ -3,7 +3,6 @@
     top: 0;
     right: 0;
     bottom: -1px;
-    overflow-y: auto;
     transition: right 0.3s ease;
     min-height: 100%;
     z-index: 2;
@@ -25,11 +24,28 @@
     right: 20px;
 }
 
-#control-bar form {
+#control-bar > form {
     display: flex;
     flex-flow: column;
     position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
+    top: 0; right: 0; left: 0;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1;
+}
+#control-bar > form.panel {
+    top: -100%;
+    transition: top 0.3s ease;
+}
+#control-bar form.panel,
+#control-bar form.panel h4 span {
+    background: #dcd5d5;
+}
+#control-bar > form.panel.in {
+    top: 0px;
+}
+#control-bar form.panel >*:not(.header) {
+    padding: 5px;
 }
 
 #control-bar fieldset {
@@ -127,4 +143,25 @@
 
 #control-bar input[type=nouislider]:disabled + .noUi-target {
     display: none;
+}
+
+#control-bar .tag-list {
+    height: 15em;
+    overflow-y: scroll;
+    margin: 1em 0;
+    padding: 0;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    background-image: linear-gradient(#eee 1%, #fff 15%);
+    user-select: none; -ms-user-select: none; -moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    cursor: pointer;
+}
+#control-bar .tag-list > li {
+    padding: 4px 5px;
+    list-style-type: none;
+}
+#control-bar .tag-list > li.selected:active,
+#control-bar .tag-list > li.selected {
+    outline: none;
+    background: yellow;
 }

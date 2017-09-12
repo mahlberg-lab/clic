@@ -6,6 +6,7 @@ var noUiSlider = require('nouislider');
 global.jQuery = jQuery;  // So chosen-js can find it
 var chosen = require('chosen-js');
 var api = require('./api.js');
+var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
 
 var noUiSlider_opts = {
@@ -132,6 +133,15 @@ function ControlBar(control_bar) {
             control_bar.classList.toggle('in');
             return;
         }
+
+        if (clickedOn(null, 'toggle-panel')) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            document.getElementById('panel-' + e.target.getAttribute('data-panel')).classList.toggle('in');
+
+            return;
+        }
     });
 
     control_bar.addEventListener('keypress', function (e) {
@@ -216,6 +226,11 @@ function ControlBar(control_bar) {
             }
         });
     });
+
+    // Init extra panels
+    this.panels = {
+        'tag-columns': new PanelTagColumns(window.document.getElementById('panel-tag-columns')),
+    };
 }
 
 // Refresh controls based on page_state
@@ -233,14 +248,6 @@ ControlBar.prototype.reload = function reload(page_state) {
                 el.disabled = ('/' + el.name !== page_state.doc());
             }
         });
-
-        // TODO: Hard-code the tag state for now
-        if (!page_state.state('tag_columns')) {
-            page_state.update({ state: { tag_columns: {
-                'Pablo-BP-CONC': {}, //TODO: Hardcoding for now
-                'MB-BP-CONC': {},
-            }}}, 'silent');
-        }
 
         // Recreate tag toggles
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
@@ -310,6 +317,10 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
             jQuery(el).trigger("chosen:updated");
+        });
+    }).then(function (data) {
+        return Promise.all(Object.values(self.panels).map(function (p) { p.reload(page_state); })).then(function () {
+            return data;
         });
     });
 };
