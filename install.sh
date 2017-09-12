@@ -99,7 +99,7 @@ server {
 
     # We're a single-page-app, all URLs lead to index.html
     location ~ ^/[0-9a-zA-Z_-]+\$ {
-        try_files \$uri /index.html;
+        try_files \$uri \$uri.html /index.html;
     }
 
     location /api/ {

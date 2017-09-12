@@ -1,0 +1,92 @@
+#content {
+  max-width: 960px;
+  margin: 10px auto;
+  font-family: serif;
+  font-size: 1.1em;
+}
+
+.legend {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: #f5f5f5;
+  padding: 3px;
+  border: 1px solid black;
+  border-radius: 3px;
+  box-shadow: 0px 0px 3px 2px rgba(255,255,255,1);
+  text-align: center;
+}
+.legend s {
+  float: left;
+  clear: both;
+  margin-bottom: 3px;
+}
+
+#content txt {
+  display: none;
+}
+
+#content > div[type=chapter],
+#content > div[type=chapter] > p {
+  display: block;
+  position: relative;
+  margin-top: 3em;
+  border-top: 5px solid #333;
+}
+#content > div[type=chapter] > p {
+  margin-top: 1em;
+  border-top: 1px solid #333;
+}
+#content > div[type=chapter]:before,
+#content > div[type=chapter] > p:before {
+  content: "chapter: " attr(id);
+  display: block;
+  position: absolute;
+  top: -1.25em;
+  right: 3em;
+  line-height: 1em;
+  color: #666;
+  font-size: 80%;
+}
+#content > div[type=chapter] > p:before {
+  content: "paragraph: " attr(id);
+  top: -1em;
+}
+
+#content > div[type=chapter] > title {
+  display: block;
+  font-weight: bold;
+}
+
+s {
+  border: 1px solid #999;
+  background: #eee;
+  margin-right: 0.3em;
+  line-height: 1.4em;
+  text-decoration: none;
+}
+
+qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
+   display: inline-block;
+   vertical-align: text-top;
+   width: 10px;
+   height: 1.2em;
+   text-align: center;
+   font-weight: bold;
+}
+qs:after, alt-qs:after, sss:after, sls:after { content: "<" }
+qe:after, alt-qe:after, sse:after, sle:after { content: ">" }
+
+#content w[selected],
+#content w[selected] + n,
+#content w[selected] + n + n,
+#content w[selected] + n + n + n,
+#content w[selected] + n + n + n + n {
+  background: yellow;
+  font-weight: bold;
+}
+
+qs,qe { background-color: red; }
+alt-qs,alt-qe { background-color: yellow; }
+sss,sse { background-color: mediumspringgreen; }
+sls,sle { background-color: orange; }

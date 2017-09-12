@@ -7,6 +7,7 @@ NODE_PATH = node_modules
 NODE_CMD = NODE_PATH="$(NODE_PATH)" $(NODE)
 OUT_FILES = \
     www/js/bundle.clic.min.js \
+    www/js/bundle.chapter.min.js \
     www/js/bundle.libraries.min.js \
     www/css/bundle.libraries.min.css \
 
@@ -55,6 +56,21 @@ www/js/bundle.clic.min.js: package.json lib/*
 	        $(foreach l,$(BUNDLE_LIBS),-x $(l)) \
 	        -g uglifyify \
 	        lib/index.js \
+	    | $(NODE_CMD) $(NODE_PATH)/exorcist/bin/exorcist.js $@.map \
+	        --base . \
+	        --root /js/ \
+	        --url /js/$(notdir $@).map \
+	    > $@.mktmp
+	mv $@.mktmp $@
+
+www/js/bundle.chapter.min.js: package.json lib/*
+	mkdir -p www/js
+	(cd www/js && ln -sf ../../lib .)
+	(cd www/js && ln -sf ../../node_modules .)
+	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
+	        $(foreach l,$(BUNDLE_LIBS),-x $(l)) \
+	        -g uglifyify \
+	        lib/index-chapter.js \
 	    | $(NODE_CMD) $(NODE_PATH)/exorcist/bin/exorcist.js $@.map \
 	        --base . \
 	        --root /js/ \
