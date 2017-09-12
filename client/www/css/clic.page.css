@@ -18,6 +18,8 @@ html {
 }
 
 header {
+    padding: 20px 10px 10px 20px;
+    border-bottom: 1px solid black;
     overflow: hidden;
     background-image: linear-gradient(to left top, #D6E1E8 35%, #7F9AA5 100%);
 }
