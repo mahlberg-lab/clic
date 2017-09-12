@@ -92,7 +92,7 @@ def create_concordance(cdb, terms, idxName, Materials, selectWords):
 
             conc_line = ch.get_conc_line(word_id, number_of_search_terms, word_window) + [
                 [ch.book, ch.chapter, str(para_chap), str(sent_chap)],
-                [count_prev_chap + int(word_id), total_word],
+                [count_prev_chap + int(word_id), total_word, result.id, word_id, word_id + number_of_search_terms],
             ]
 
             yield conc_line

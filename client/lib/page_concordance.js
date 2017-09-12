@@ -53,7 +53,8 @@ function renderPosition(data, type, full, meta) {
     }
 
     xVal = (data[0] / data[1]) * 50; // word in book / total word count
-    return '<a href="#" class="bookLink" title="Click to display concordance in book" target="_blank">' +
+    return '<a class="bookLink" title="Click to display concordance in book" target="_blank"' +
+           ' href="/chapter?chapter_id=' + data[2] + '&start=' + data[3] + '&end=' + data[4] + '" >' +
            '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
            '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
            '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +

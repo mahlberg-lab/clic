@@ -24,5 +24,5 @@ def subset(cdb, corpora=['dickens'], subset=['quote']):
 
         yield ch.get_conc_line(offset_start, offset_end - offset_start, 3) + [
                 [ch.book, ch.chapter, 0, 0], # TODO: Paragraph / sentence counts
-                [count_prev_chap + int(offset_start), total_word],
+                [count_prev_chap + int(offset_start), total_word, chapter_id, offset_start, offset_end],
         ]
