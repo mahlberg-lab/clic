@@ -85,6 +85,14 @@ def cluster():
     out = clic.cluster.cluster(clicdb(), **request.args)
     return Response(stream_json(out), content_type='application/json')
 
+# ==== Chapter routes =====================================
+import clic.chapter
+
+@app.route('/api/chapter', methods=['GET'])
+def chapter():
+    out = clic.chapter.chapter(clicdb(), **request.args)
+    return Response(out, content_type='application/xml')
+
 # ==== Admin routes =======================================
 import clic.c3chapter
 
