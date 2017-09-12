@@ -3,7 +3,6 @@
 /*global Promise */
 var api = require('./api.js');
 var PageTable = require('./page_table.js');
-var dt_utils = require('./dt_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 // PageKeyword inherits PageTable

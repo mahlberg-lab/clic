@@ -3,11 +3,61 @@
 /*global Promise */
 var api = require('./api.js');
 var PageTable = require('./page_table.js');
-var dt_utils = require('./dt_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
+
+function escapeHtml(tag, s) {
+    // https://bugs.jquery.com/ticket/11773
+    return '<' + tag + '>' + (String(s)
+        .replace(/&(?!\w+;)/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')) + '</' + tag + '>';
+}
 
 function isWord(s) {
     return (/\w/).test(s);
+}
+
+// Column is an array of tokens, mark these up as words, only sort on word content
+function renderTokenArray(reverseSort, data, type, full, meta) {
+    var i, t, count = 0, out = "";
+
+    if (type === 'display') {
+        for (i = 0; i < data.length; i++) {
+            out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
+        }
+    } else {
+        for (i = 0; i < data.length; i++) {
+            t = data[reverseSort ? data.length - i - 1 : i];
+            if (isWord(t)) {
+                count++;
+                out += t + ":";
+                if (count >= 3) {
+                    return out;
+                }
+            }
+        }
+    }
+
+    return out;
+}
+var renderForwardTokenArray = renderTokenArray.bind(null, false);
+var renderReverseTokenArray = renderTokenArray.bind(null, true);
+
+/* Column represents a fractional position in book */
+function renderPosition(data, type, full, meta) {
+    var xVal;
+
+    if (type !== 'display') {
+        return data[0];
+    }
+
+    xVal = (data[0] / data[1]) * 50; // word in book / total word count
+    return '<a href="#" class="bookLink" title="Click to display concordance in book" target="_blank">' +
+           '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
+           '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
+           '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
+           '</svg></a>';
 }
 
 // PageConcordance inherits PageTable
@@ -24,14 +74,14 @@ PageConcordance.prototype.init = function () {
     this.table_opts.non_tag_columns = [
         { data: "kwic", visible: false, sortable: false, searchable: false },
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "Left", data: "0", render: dt_utils.renderReverseTokenArray, class: "contextLeft" }, // Left
-        { title: "Node", data: "1", render: dt_utils.renderForwardTokenArray, class: "contextNode" }, // Node
-        { title: "Right", data: "2", render: dt_utils.renderForwardTokenArray, class: "contextRight" }, // Right
+        { title: "Left", data: "0", render: renderReverseTokenArray, class: "contextLeft" }, // Left
+        { title: "Node", data: "1", render: renderForwardTokenArray, class: "contextNode" }, // Node
+        { title: "Right", data: "2", render: renderForwardTokenArray, class: "contextRight" }, // Right
         { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
         { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
         { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
-        { title: "In&nbsp;bk.", data: "4", width: "52px", render: dt_utils.renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
+        { title: "In&nbsp;bk.", data: "4", width: "52px", render: renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
     ];
     this.table_count_column = 1;
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };
