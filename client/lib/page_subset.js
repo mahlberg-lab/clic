@@ -46,7 +46,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     return api.get('subset', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
             tag_state = page_state.state('tag_columns', {}),
-            tag_list = Object.keys(tag_state);
+            tag_column_order = page_state.state('tag_column_order', []);
 
         data = data.data;
 
@@ -66,8 +66,8 @@ PageSubset.prototype.reload_data = function reload(page_state) {
             }
 
             // Add tag columns
-            for (j = 0; j < tag_list.length; j++) {
-                data[i][tag_list[j]] = !!tag_state[tag_list[j]][data[i].DT_RowId];
+            for (j = 0; j < tag_column_order.length; j++) {
+                data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
             }
         }
 

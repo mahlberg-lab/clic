@@ -39,17 +39,17 @@ PageConcordance.prototype.init = function () {
 };
 
 PageConcordance.prototype.reload = function reload(page_state) {
-    var tag_list = Object.keys(page_state.state('tag_columns', {}));
+    var tag_column_order = page_state.state('tag_column_order', []);
 
     function renderBoolean(data, type, full, meta) {
         return data ? "✓" : " ";
     }
 
     // Generate column list based on tag_columns
-    this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_list.map(function (t) {
+    this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_column_order.map(function (t) {
         return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, class: "tagColumn" };
     }));
-    this.table_el.classList.toggle('hasTagColumns', tag_list.length > 0);
+    this.table_el.classList.toggle('hasTagColumns', tag_column_order.length > 0);
 
     return PageTable.prototype.reload.apply(this, arguments);
 };
@@ -111,7 +111,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     return api.get('concordance', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
             tag_state = page_state.state('tag_columns', {}),
-            tag_list = Object.keys(tag_state);
+            tag_column_order = page_state.state('tag_column_order', []);
 
         data = data.data;
 
@@ -131,8 +131,8 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             }
 
             // Add tag columns
-            for (j = 0; j < tag_list.length; j++) {
-                data[i][tag_list[j]] = !!tag_state[tag_list[j]][data[i].DT_RowId];
+            for (j = 0; j < tag_column_order.length; j++) {
+                data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
             }
         }
 
