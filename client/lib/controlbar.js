@@ -133,6 +133,16 @@ function ControlBar(control_bar) {
         }
     });
 
+    control_bar.addEventListener('keypress', function (e) {
+        if (e.keyCode === 13) {
+            // Don't submit on enter, change instead
+            e.preventDefault();
+            if (e.target.tagName === "INPUT") {
+                e.target.dispatchEvent(new window.Event('change', {"bubbles": true}));
+            }
+        }
+    });
+
     control_bar.addEventListener('change', function (e) {
         if (this.change_timeout) {
             window.clearTimeout(this.change_timeout);
