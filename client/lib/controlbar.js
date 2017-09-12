@@ -98,6 +98,7 @@ function ControlBar(control_bar) {
     var self = this;
 
     this.control_bar = control_bar;
+    this.form = control_bar.getElementsByTagName('FORM')[0];
 
     control_bar.addEventListener('click', function (e) {
         function clickedOn(tagName, className) {
@@ -143,14 +144,14 @@ function ControlBar(control_bar) {
         }
     });
 
-    control_bar.addEventListener('change', function (e) {
+    self.form.addEventListener('change', function (e) {
         if (this.change_timeout) {
             window.clearTimeout(this.change_timeout);
         }
         this.change_timeout = window.setTimeout(function () {
             var new_search = {};
 
-            jQuery(control_bar).serializeArray().forEach(function (f) {
+            jQuery(self.form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
                     new_search[f.name].push(f.value);
                 } else if (new_search.hasOwnProperty(f.name)) {
@@ -227,7 +228,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         var tag_toggles_el;
 
         // Enable the fieldset for the page
-        Array.prototype.forEach.call(self.control_bar.elements, function (el, i) {
+        Array.prototype.forEach.call(self.form.elements, function (el, i) {
             if (el.tagName === 'FIELDSET') {
                 el.disabled = ('/' + el.name !== page_state.doc());
             }
@@ -272,15 +273,15 @@ ControlBar.prototype.reload = function reload(page_state) {
         }
 
         // Make sure we consider existing options valid
-        self.control_bar.elements['kwic-terms'].innerHTML = to_options_html(page_state.arg('kwic-terms', []));
+        self.form.elements['kwic-terms'].innerHTML = to_options_html(page_state.arg('kwic-terms', []));
 
         // Hide the KWIC direction slider we're not using
         if (page_state.arg('kwic-dir', 'start') === 'start') {
-            self.control_bar.elements['kwic-int-start'].disabled = false;
-            self.control_bar.elements['kwic-int-end'].disabled = true;
+            self.form.elements['kwic-int-start'].disabled = false;
+            self.form.elements['kwic-int-end'].disabled = true;
         } else {
-            self.control_bar.elements['kwic-int-start'].disabled = true;
-            self.control_bar.elements['kwic-int-end'].disabled = false;
+            self.form.elements['kwic-int-start'].disabled = true;
+            self.form.elements['kwic-int-end'].disabled = false;
         }
 
         // Populate corpora dropdowns
@@ -292,7 +293,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         });
 
         // Set values from page options, or defaults
-        Array.prototype.forEach.call(self.control_bar.elements, function (el) {
+        Array.prototype.forEach.call(self.form.elements, function (el) {
             if (el.tagName === 'FIELDSET' || !state_defaults.hasOwnProperty(el.name)) {
                 Math.floor(0);
             } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
@@ -317,7 +318,7 @@ ControlBar.prototype.reload = function reload(page_state) {
 ControlBar.prototype.new_data = function new_data(data) {
     if (data.allWords) {
         // Make sure KWIC term values already selected stay selectable
-        Array.prototype.forEach.call(this.control_bar.elements['kwic-terms'], function (el) {
+        Array.prototype.forEach.call(this.form.elements['kwic-terms'], function (el) {
             var prevVal = jQuery(el).val() || [];
 
             if (el.parentElement.parentElement.disabled) {

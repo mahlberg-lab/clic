@@ -1,6 +1,4 @@
 #control-bar {
-    display: flex;
-    flex-flow: column;
     position: fixed;
     top: 0;
     right: 0;
@@ -13,7 +11,7 @@
     border-left: 1px solid #AAA;
 }
 
-#control-bar > .handle {
+#control-bar .header {
     padding: 20px;
     border-bottom: 1px solid #AAA;
     font-size: inherit;
@@ -21,10 +19,17 @@
     cursor: pointer;
 }
 
-#control-bar > .handle .icon {
+#control-bar .header > .handle {
     position: fixed;
     top: 8px;
     right: 20px;
+}
+
+#control-bar form {
+    display: flex;
+    flex-flow: column;
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
 }
 
 #control-bar fieldset {
@@ -86,32 +91,33 @@
     }
 }
 
-#control-bar fieldset h4 {
+#control-bar h4 {
     height: 0.65rem;
     overflow: visible;
     margin-top: 1rem;
     margin-bottom: 1.35rem;
+    clear: both;
     font-size: 1rem;
     border-bottom: 1px solid #AAA;
 }
-#control-bar fieldset h4 span {
+#control-bar h4 span {
     position: relative;
     background: #f5f5f5;
     margin-left: 0.7rem;
     padding: 0 0.3rem;
 }
 
-#control-bar fieldset label {
+#control-bar label {
     display: block;
 }
-#control-bar fieldset select {
+#control-bar select {
     width: 100%;
 }
-#control-bar fieldset .noUi-horizontal {
+#control-bar .noUi-horizontal {
     margin: 0 16px 3rem 16px;
 }
 
-#control-bar fieldset input[type=text] {
+#control-bar input[type=text] {
     width: 100%;
     padding: 4px 5px;
     border: 1px solid #aaa;
@@ -119,6 +125,6 @@
     background-image: linear-gradient(#eee 1%, #fff 15%);
 }
 
-#control-bar fieldset input[type=nouislider]:disabled + .noUi-target {
+#control-bar input[type=nouislider]:disabled + .noUi-target {
     display: none;
 }
