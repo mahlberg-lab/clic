@@ -22,11 +22,7 @@ function isWord(s) {
 function renderTokenArray(data, type, full, meta) {
     var i, t, count = 0, out = "";
 
-    if (type === 'display') {
-        for (i = 0; i < data.length; i++) {
-            out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
-        }
-    } else {
+    if (type !== 'display') {
         for (i = 0; i < data.length; i++) {
             t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
             if (isWord(t)) {
@@ -37,6 +33,11 @@ function renderTokenArray(data, type, full, meta) {
                 }
             }
         }
+        return out;
+    }
+
+    for (i = 0; i < data.length; i++) {
+        out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
     }
 
     return '<div class="' +
