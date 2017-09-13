@@ -27,6 +27,7 @@ function page_load(e) {
 
     return Promise.resolve(page_state).then(function (page_state) {
         alerts.clear();
+        document.body.classList.toggle('loading', true);
 
         if (!page || page_state.doc() !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
@@ -51,7 +52,10 @@ function page_load(e) {
             return cb.new_data(rvs[0]);
         }
         return;
+    }).then(function () {
+        document.body.classList.toggle('loading', false);
     }).catch(function (err) {
+        document.body.classList.toggle('loading', false);
         alerts.error(err);
         if (!err.level) {
             throw err;

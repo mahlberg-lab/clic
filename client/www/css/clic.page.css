@@ -23,6 +23,9 @@ header {
     overflow: hidden;
     background-image: linear-gradient(to left top, #D6E1E8 35%, #7F9AA5 100%);
 }
+body.loading header {
+    background-image: linear-gradient(to left top, pink 35%, red 100%);
+}
 header h1 {
     float: left;
     margin: 0;
