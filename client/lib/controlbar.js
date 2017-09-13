@@ -192,7 +192,7 @@ function ControlBar(control_bar) {
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
         jQuery(el).chosen().change(function (e) {
             // Chosen's change event isn't bubbling to the form, do it ourselves.
-            control_bar.dispatchEvent(new window.Event('change', {"bubbles": true}));
+            self.form.dispatchEvent(new window.Event('change', {"bubbles": true}));
         });
     });
 
