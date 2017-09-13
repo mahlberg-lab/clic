@@ -73,18 +73,30 @@ State.prototype.update = function (changes, notify) {
         hist_state = this.win.history.state || {},
         modified = false;
 
+    function compare(existing, change) {
+        if (existing === undefined) {
+            // An empty array is a missing item in URL speak
+            existing = [];
+        }
+
+        if (JSON.stringify(change) !== JSON.stringify(existing)) {
+            return false;
+        }
+        return true;
+    }
+
     if (changes.hasOwnProperty('doc') && changes.doc !== self._doc) {
         self._doc = changes.doc;
         modified = true;
     }
     Array.prototype.forEach.call(Object.keys(changes.args || {}), function (k) {
-        if (changes.args.hasOwnProperty(k) && JSON.stringify(changes.args[k]) !== JSON.stringify(new_args[k])) {
+        if (!compare(new_args[k], changes.args[k])) {
             new_args[k] = changes.args[k];
             modified = true;
         }
     });
     Array.prototype.forEach.call(Object.keys(changes.state || {}), function (k) {
-        if (changes.state.hasOwnProperty(k) && JSON.stringify(changes.state[k]) !== JSON.stringify(hist_state[k])) {
+        if (!compare(hist_state[k], changes.state[k])) {
             hist_state[k] = changes.state[k];
             modified = true;
         }
