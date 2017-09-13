@@ -239,8 +239,12 @@ ControlBar.prototype.reload = function reload(page_state) {
 
     self.page_state = page_state; // Store this for events
 
-    return api.get('corpora').then(function (corpora) {
+    return Promise.resolve().then(function () {
+        return self.corpora || api.get('corpora');
+    }).then(function (corpora) {
         var tag_toggles_el;
+
+        self.corpora = corpora;
 
         // Enable the fieldset for the page
         Array.prototype.forEach.call(self.form.elements, function (el, i) {
