@@ -30,6 +30,7 @@ function page_load(e) {
 
         if (!page || page_state.doc() !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
+            current_page = page_state.doc();
         }
         if (!cb) {
             cb = new ControlBar(document.getElementById('control-bar'));

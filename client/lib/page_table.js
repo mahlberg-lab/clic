@@ -7,6 +7,25 @@ if (window && window.document) {
     dataTablesNet(window, jQuery);
 }
 
+function columns_string(columns) {
+    return columns.map(function (c) {
+        return c.data || '';
+    }).join(':');
+}
+
+function shallow_clone(obj) {
+    var out = obj.constructor(),
+        attr;
+
+    for (attr in obj) {
+        if (obj.hasOwnProperty(attr)) {
+            out[attr] = obj[attr];
+        }
+    }
+
+    return out;
+}
+
 function PageTable(content_el) {
     content_el.innerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
     this.table_el = content_el.children[0];
@@ -37,12 +56,18 @@ PageTable.prototype.reload = function reload(page_state) {
 
         self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata', ""));
 
-
-        if (self.table) {
+        if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
             self.table.search(page_state.arg('table-filter', ''));
-            self.table.reload(resolve_second);
+            self.table.ajax.reload(resolve_second);
         } else {
-            table_opts = self.table_opts;
+            if (self.table) {
+                // Re-create table so we can add extra columns
+                self.table.destroy();
+                self.table_el.innerHTML = "";
+            }
+            self.init_cols = columns_string(self.table_opts.columns);
+
+            table_opts = shallow_clone(self.table_opts);
             table_opts.fnInitComplete = resolve_second;
             table_opts.search = { search: page_state.arg('table-filter', '') };
             table_opts.ajax = function (params, callback, settings) {
