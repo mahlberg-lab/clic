@@ -16,22 +16,12 @@ function PageTable(content_el) {
 }
 
 PageTable.prototype.init = function init() {
-    var self = this;
-
     this.table_opts.deferRender = true;
     this.table_opts.filter = true;
     this.table_opts.sort = true;
     this.table_opts.paginate = true;
     this.table_opts.displayLength = 50;
     this.table_opts.dom = 'ritp';
-    this.table_opts.ajax = function (params, callback, settings) {
-        self.reload_data(self.page_state).then(function (data) {
-            callback(data);
-        }).catch(function (err) {
-            // Reject the wider promise, to send the error up
-            self.ajax_reject(err);
-        });
-    };
 };
 
 PageTable.prototype.reload = function reload(page_state) {
@@ -47,9 +37,6 @@ PageTable.prototype.reload = function reload(page_state) {
 
         self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata', ""));
 
-        // Make available for ajax / reload_data
-        self.page_state = page_state;
-        self.ajax_reject = reject;
 
         if (self.table) {
             self.table.search(page_state.arg('table-filter', ''));
@@ -58,6 +45,14 @@ PageTable.prototype.reload = function reload(page_state) {
             table_opts = self.table_opts;
             table_opts.fnInitComplete = resolve_second;
             table_opts.search = { search: page_state.arg('table-filter', '') };
+            table_opts.ajax = function (params, callback, settings) {
+                self.reload_data(page_state).then(function (data) {
+                    callback(data);
+                }).catch(function (err) {
+                    // Reject the wider promise, to send the error up
+                    reject(err);
+                });
+            };
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             if (self.hasOwnProperty('table_count_column')) {
