@@ -46,6 +46,8 @@ PageTable.prototype.init = function init() {
 PageTable.prototype.reload = function reload(page_state) {
     var self = this;
 
+    self.page_state = page_state;
+
     return new Promise(function (resolve, reject) {
         var table_opts;
 
