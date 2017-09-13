@@ -105,13 +105,21 @@ def concordance_warm():
 # ==== Error handlers =====================================
 @app.errorhandler(404)
 def handle_404(error):
-    response = jsonify(dict(error=str(error)))
+    response = jsonify(dict(
+        error="NotFound",
+        message="This endpoint does not exist",
+    ))
     response.status_code = 404
     return response
 
 @app.errorhandler(500)
 def handle_500(error):
-    response = jsonify(dict(error=str(error)))
+    import traceback
+    response = jsonify(dict(
+        error=error.__class__.__name__,
+        message=error.message,
+        additional=traceback.format_exc(),
+    ))
     response.status_code = 500
     return response
 

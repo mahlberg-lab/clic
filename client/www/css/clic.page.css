@@ -53,3 +53,5 @@ header .sponsors {
 #alerts > .level-error { background: orangered; }
 #alerts > .level-warn { background: #f0ad4e; }
 #alerts > .level-info { background: #5bc0de; }
+#alerts pre { font-size: xx-small; }
+#alerts pre:empty { display: none; }

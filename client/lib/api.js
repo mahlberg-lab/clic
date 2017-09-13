@@ -55,7 +55,11 @@ module.exports.get = function (endpoint, qs) {
             throw new Error("Failed to fetch data: Could not communicate with server (" + response.statusText + ")");
         }).then(function (data) {
             console.log("API Debug info: " + JSON.stringify(data, null, 2));
-            throw new Error("API failed to communicate with server: " + data.message);
+            throw {
+                level: 'error',
+                message: "Failed to fetch data: " + data.message,
+                stack: data.additional,
+            };
         });
     });
 };

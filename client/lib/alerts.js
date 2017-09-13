@@ -32,7 +32,8 @@ Alerts.prototype.show = function (msg) {
 Alerts.prototype.error = function (err) {
     return this.show({
         level: err.level || 'error',
-        message: err.message,
+        message: '<div>' + new Option(err.message).innerHTML + '</div><pre>' + new Option(err.stack).innerHTML + '</pre>',
+        is_html: true,
     });
 };
 
