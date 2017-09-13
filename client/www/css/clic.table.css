@@ -25,6 +25,7 @@
 #content table.dataTable>tbody>tr {
     cursor: pointer;
 }
+#content table.dataTable>tbody>tr { background: #ffffff; }
 #content table.dataTable>tbody>tr.odd { background: #f9f9f9; }
 #content table.dataTable>tbody>tr.kwic-highlight-2 { background: #e6f5c9; }
 #content table.dataTable>tbody>tr.kwic-highlight-3 { background: #b3e2cd; }
@@ -168,9 +169,19 @@ table.dataTable thead .sorting_desc_disabled:after {
     padding-bottom: 6px;
 }
 #content table.dataTable td.contextLeft {
-    text-align: right;
+    position: relative;
+    max-width: 20vw;
     vertical-align: top;
     padding-right: 0.3rem;
+    overflow-x: hidden;
+    background: inherit;
+}
+#content table.dataTable td.contextLeft > div,
+#content table.dataTable td.contextRight > div {
+    white-space: nowrap;
+}
+#content table.dataTable td.contextLeft > div {
+    float: right;
 }
 #content table.dataTable td.contextNode {
     padding-left: 2rem;
@@ -178,10 +189,32 @@ table.dataTable thead .sorting_desc_disabled:after {
     background-color: rgba(133, 159, 170, 0.2);
 }
 #content table.dataTable td.contextRight {
+    position: relative;
+    max-width: 20vw;
     vertical-align: bottom;
     padding-left: 1.3rem;
     text-indent: -1rem;
+    overflow-x: hidden;
+    background: inherit;
 }
+#content table.dataTable td.contextLeft:after,
+#content table.dataTable td.contextRight:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: 5px;
+    pointer-events: none;
+    background: inherit;
+    opacity: 0.7;
+}
+#content table.dataTable td.contextRight:after {
+    left: auto;
+    right: 0;
+}
+
 #content table.dataTable td.tagColumn {
     padding: 0;
     text-align: center;

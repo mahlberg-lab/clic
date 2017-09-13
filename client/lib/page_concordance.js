@@ -39,7 +39,7 @@ function renderTokenArray(reverseSort, data, type, full, meta) {
         }
     }
 
-    return out;
+    return '<div>' + out + '</div>';
 }
 var renderForwardTokenArray = renderTokenArray.bind(null, false);
 var renderReverseTokenArray = renderTokenArray.bind(null, true);
