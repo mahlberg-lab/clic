@@ -23,7 +23,9 @@ function Chapter(content_el) {
         for (i = start_node; i < end_node; i++) {
             word_nodes[i].setAttribute('selected', 'selected');
         }
-        word_nodes[start_node].scrollIntoView();
+        window.scrollTo(0, word_nodes[start_node].getBoundingClientRect().top
+                           + window.pageYOffset
+                           - (window.innerHeight / 2));
     };
 
     /**
