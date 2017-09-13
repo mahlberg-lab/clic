@@ -14,7 +14,7 @@ PageSubset.prototype = Object.create(PageConcordance.prototype);
 PageSubset.prototype.reload_data = function reload(page_state) {
     var self = this,
         kwicTerms = {},
-        kwicSpan = [{ignore: true}, {}, {ignore: true}],
+        kwicSpan = [{reverse: true, ignore: true}, {}, {ignore: true}],
         api_opts = {};
 
     // We only parse the KWIC node
@@ -56,13 +56,11 @@ PageSubset.prototype.reload_data = function reload(page_state) {
 
             // Add KWICGrouper match column
             r = self.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
-            data[i].kwic = r[0];
-            if (r[0] > 0) {
+            if (r > 0) {
                 totalMatches++;
 
                 // Add classes for row highlighting
-                r[0] = 'kwic-highlight-' + (r[0] % 4 + 1);
-                data[i].DT_RowClass = r.join(' ');
+                data[i].DT_RowClass = 'kwic-highlight-' + (r % 4 + 1);
             }
 
             // Add tag columns

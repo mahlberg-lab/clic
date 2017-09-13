@@ -131,36 +131,26 @@ table.dataTable thead .sorting_desc_disabled:after {
     color: inherit;
     padding: 0 1px;
 }
-#content table.dataTable tr.revmatch-l1 > td.contextLeft mark:nth-last-of-type(0n+1),
-#content table.dataTable tr.revmatch-l2 > td.contextLeft mark:nth-last-of-type(0n+2),
-#content table.dataTable tr.revmatch-l3 > td.contextLeft mark:nth-last-of-type(0n+3),
-#content table.dataTable tr.revmatch-l4 > td.contextLeft mark:nth-last-of-type(0n+4),
-#content table.dataTable tr.revmatch-l5 > td.contextLeft mark:nth-last-of-type(0n+5),
-#content table.dataTable tr.match-n1 > td.contextNode mark:nth-of-type(0n+1),
-#content table.dataTable tr.match-n2 > td.contextNode mark:nth-of-type(0n+2),
-#content table.dataTable tr.match-n3 > td.contextNode mark:nth-of-type(0n+3),
-#content table.dataTable tr.match-n4 > td.contextNode mark:nth-of-type(0n+4),
-#content table.dataTable tr.match-n5 > td.contextNode mark:nth-of-type(0n+5),
-#content table.dataTable tr.match-n6 > td.contextNode mark:nth-of-type(0n+6),
-#content table.dataTable tr.match-n7 > td.contextNode mark:nth-of-type(0n+7),
-#content table.dataTable tr.match-n8 > td.contextNode mark:nth-of-type(0n+8),
-#content table.dataTable tr.match-n9 > td.contextNode mark:nth-of-type(0n+9),
-#content table.dataTable tr.match-n10> td.contextNode mark:nth-of-type(0n+10),
-#content table.dataTable tr.revmatch-n1 > td.contextNode mark:nth-last-of-type(0n+1),
-#content table.dataTable tr.revmatch-n2 > td.contextNode mark:nth-last-of-type(0n+2),
-#content table.dataTable tr.revmatch-n3 > td.contextNode mark:nth-last-of-type(0n+3),
-#content table.dataTable tr.revmatch-n4 > td.contextNode mark:nth-last-of-type(0n+4),
-#content table.dataTable tr.revmatch-n5 > td.contextNode mark:nth-last-of-type(0n+5),
-#content table.dataTable tr.revmatch-n6 > td.contextNode mark:nth-last-of-type(0n+6),
-#content table.dataTable tr.revmatch-n7 > td.contextNode mark:nth-last-of-type(0n+7),
-#content table.dataTable tr.revmatch-n8 > td.contextNode mark:nth-last-of-type(0n+8),
-#content table.dataTable tr.revmatch-n9 > td.contextNode mark:nth-last-of-type(0n+9),
-#content table.dataTable tr.revmatch-n10> td.contextNode mark:nth-last-of-type(0n+10),
-#content table.dataTable tr.match-r1 > td.contextRight mark:nth-of-type(0n+1),
-#content table.dataTable tr.match-r2 > td.contextRight mark:nth-of-type(0n+2),
-#content table.dataTable tr.match-r3 > td.contextRight mark:nth-of-type(0n+3),
-#content table.dataTable tr.match-r4 > td.contextRight mark:nth-of-type(0n+4),
-#content table.dataTable tr.match-r5 > td.contextRight mark:nth-of-type(0n+5) {
+#content table.dataTable td.context > div.l.m1 > mark:nth-of-type(0n+1),
+#content table.dataTable td.context > div.l.m2 > mark:nth-of-type(0n+2),
+#content table.dataTable td.context > div.l.m3 > mark:nth-of-type(0n+3),
+#content table.dataTable td.context > div.l.m4 > mark:nth-of-type(0n+4),
+#content table.dataTable td.context > div.l.m5 > mark:nth-of-type(0n+5),
+#content table.dataTable td.context > div.l.m6 > mark:nth-of-type(0n+6),
+#content table.dataTable td.context > div.l.m7 > mark:nth-of-type(0n+7),
+#content table.dataTable td.context > div.l.m8 > mark:nth-of-type(0n+8),
+#content table.dataTable td.context > div.l.m9 > mark:nth-of-type(0n+9),
+#content table.dataTable td.context > div.l.m10 > mark:nth-of-type(0n+10),
+#content table.dataTable td.context > div.r.m1 > mark:nth-last-of-type(0n+1),
+#content table.dataTable td.context > div.r.m2 > mark:nth-last-of-type(0n+2),
+#content table.dataTable td.context > div.r.m3 > mark:nth-last-of-type(0n+3),
+#content table.dataTable td.context > div.r.m4 > mark:nth-last-of-type(0n+4),
+#content table.dataTable td.context > div.r.m5 > mark:nth-last-of-type(0n+5),
+#content table.dataTable td.context > div.r.m6 > mark:nth-last-of-type(0n+6),
+#content table.dataTable td.context > div.r.m7 > mark:nth-last-of-type(0n+7),
+#content table.dataTable td.context > div.r.m8 > mark:nth-last-of-type(0n+8),
+#content table.dataTable td.context > div.r.m9 > mark:nth-last-of-type(0n+9),
+#content table.dataTable td.context > div.r.m10 > mark:nth-last-of-type(0n+10) {
     background: rgba(255, 59, 0, 0.45);
 }
 
@@ -168,37 +158,31 @@ table.dataTable thead .sorting_desc_disabled:after {
     padding-top: 6px;
     padding-bottom: 6px;
 }
-#content table.dataTable td.contextLeft {
+#content table.dataTable td.context {
     position: relative;
     max-width: 20vw;
     vertical-align: top;
     padding-right: 0.3rem;
     overflow-x: hidden;
     background: inherit;
-}
-#content table.dataTable td.contextLeft > div,
-#content table.dataTable td.contextRight > div {
     white-space: nowrap;
 }
-#content table.dataTable td.contextLeft > div {
+#content table.dataTable td.context > div.r {
     float: right;
 }
-#content table.dataTable td.contextNode {
+#content table.dataTable td.context.node {
     padding-left: 2rem;
     text-indent: -1rem;
     background-color: rgba(133, 159, 170, 0.2);
+    white-space: initial; /*TODO: Correct? */
 }
-#content table.dataTable td.contextRight {
-    position: relative;
-    max-width: 20vw;
+#content table.dataTable td.context.right {
     vertical-align: bottom;
     padding-left: 1.3rem;
     text-indent: -1rem;
-    overflow-x: hidden;
-    background: inherit;
 }
-#content table.dataTable td.contextLeft:after,
-#content table.dataTable td.contextRight:after {
+#content table.dataTable td.context.left:after,
+#content table.dataTable td.context.right:after {
     content: "";
     position: absolute;
     top: 0;
@@ -210,7 +194,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     background: inherit;
     opacity: 0.7;
 }
-#content table.dataTable td.contextRight:after {
+#content table.dataTable td.context.right:after {
     left: auto;
     right: 0;
 }

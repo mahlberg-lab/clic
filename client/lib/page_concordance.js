@@ -19,7 +19,7 @@ function isWord(s) {
 }
 
 // Column is an array of tokens, mark these up as words, only sort on word content
-function renderTokenArray(reverseSort, data, type, full, meta) {
+function renderTokenArray(data, type, full, meta) {
     var i, t, count = 0, out = "";
 
     if (type === 'display') {
@@ -28,7 +28,7 @@ function renderTokenArray(reverseSort, data, type, full, meta) {
         }
     } else {
         for (i = 0; i < data.length; i++) {
-            t = data[reverseSort ? data.length - i - 1 : i];
+            t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
             if (isWord(t)) {
                 count++;
                 out += t + ":";
@@ -39,10 +39,11 @@ function renderTokenArray(reverseSort, data, type, full, meta) {
         }
     }
 
-    return '<div>' + out + '</div>';
+    return '<div class="' +
+        'm' + (data.matches[0] || '0') +
+        (data.kwicSpan.reverse ? ' r' : ' l') +
+        '">' + out + '</div>';
 }
-var renderForwardTokenArray = renderTokenArray.bind(null, false);
-var renderReverseTokenArray = renderTokenArray.bind(null, true);
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
@@ -75,9 +76,9 @@ PageConcordance.prototype.init = function () {
     this.table_opts.non_tag_columns = [
         { data: "kwic", visible: false, sortable: false, searchable: false },
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "Left", data: "0", render: renderReverseTokenArray, class: "contextLeft" }, // Left
-        { title: "Node", data: "1", render: renderForwardTokenArray, class: "contextNode" }, // Node
-        { title: "Right", data: "2", render: renderForwardTokenArray, class: "contextRight" }, // Right
+        { title: "Left", data: "0", render: renderTokenArray, class: "context left" }, // Left
+        { title: "Node", data: "1", render: renderTokenArray, class: "context node" }, // Node
+        { title: "Right", data: "2", render: renderTokenArray, class: "context right" }, // Right
         { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
         { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
@@ -172,13 +173,11 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 
             // Add KWICGrouper match column
             r = self.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
-            data[i].kwic = r[0];
-            if (r[0] > 0) {
+            if (r > 0) {
                 totalMatches++;
 
                 // Add classes for row highlighting
-                r[0] = 'kwic-highlight-' + (r[0] % 4 + 1);
-                data[i].DT_RowClass = r.join(' ');
+                data[i].DT_RowClass = 'kwic-highlight-' + (r % 4 + 1);
             }
 
             // Add tag columns
@@ -196,14 +195,20 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 };
 
 /*
- * Return value: [(# of unique types matched), (match position, e.g. "r1"), (match position, e.g. "r2"), ... ]
+ * Annotate rows with KWICGrouper information, specifically:
+ * For each column...
+ * - matches: Array of KWIC match positions
+ * - kwicSpan: The kwicSpan settings used
+ * For the entire row...
+ * - kwic: Overall match count
+ * Return Overall match count
  */
 PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
-    var matchingTypes = {}, kwic_row;
+    var matchingTypes = {};
 
-    // Check if list (tokens) contains any of the (terms) between (span.start) and (span.stop) inclusive
+    // Check if list (tokens) contains any of the (kwicTerms) between (span.start) and (span.stop) inclusive
     // considering (tokens) in reverse if (span.reverse) is true
-    function testList(tokens, span, terms, prefix) {
+    function testList(tokens, span) {
         var i, t, wordCount = 0, out = [];
 
         if (span.start === undefined) {
@@ -218,10 +223,10 @@ PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, al
                 t = t.toLowerCase();
                 wordCount++;
                 allWords[t] = true;
-                if (wordCount >= span.start && terms.hasOwnProperty(t)) {
+                if (wordCount >= span.start && kwicTerms.hasOwnProperty(t)) {
                     // Matching has started and matches a terms, return which match it is
                     matchingTypes[t] = true;
-                    out.push(prefix + wordCount);
+                    out.push(wordCount);
                 }
                 if (span.stop !== undefined && wordCount >= span.stop) {
                     // Finished matching now, give up.
@@ -233,15 +238,15 @@ PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, al
         return out;
     }
 
-    // Find the kwic matches in both left/node/right, as well as total matches
-    kwic_row = [0].concat(
-        testList(d[0], kwicSpan[0], kwicTerms, kwicSpan[0].reverse ? 'revmatch-l' : 'match-l'),
-        testList(d[1], kwicSpan[1], kwicTerms, kwicSpan[1].reverse ? 'revmatch-n' : 'match-n'),
-        testList(d[2], kwicSpan[2], kwicTerms, kwicSpan[2].reverse ? 'revmatch-r' : 'match-r')
-    );
-    kwic_row[0] = Object.keys(matchingTypes).length;
-
-    return kwic_row;
+    // Annotate left/node/right with matches, and the span information used
+    d[0].matches = testList(d[0], kwicSpan[0]);
+    d[1].matches = testList(d[1], kwicSpan[1]);
+    d[2].matches = testList(d[2], kwicSpan[2]);
+    d[0].kwicSpan = kwicSpan[0];
+    d[1].kwicSpan = kwicSpan[1];
+    d[2].kwicSpan = kwicSpan[2];
+    d.kwic = Object.keys(matchingTypes).length;
+    return d.kwic;
 };
 
 module.exports = PageConcordance;
