@@ -51,32 +51,45 @@ PageTable.prototype.reload = function reload(page_state) {
     return new Promise(function (resolve, reject) {
         var table_opts;
 
-        function resolve_second(table, data) {
-            // Ditch the first argument, resolve with the data
-            resolve(data);
-        }
-
         self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata', ""));
 
         if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
             self.table.search(page_state.arg('table-filter', ''));
-            self.table.ajax.reload(resolve_second);
+            self.table.ajax.reload(function () {
+                // We don't have a separate success / fail callback, so switch
+                // on the data type
+                if (self.last_fetched_data instanceof Error) {
+                    reject(self.last_fetched_data);
+                } else {
+                    resolve(self.last_fetched_data);
+                }
+            });
         } else {
             if (self.table) {
                 // Re-create table so we can add extra columns
                 self.table.destroy();
                 self.table_el.innerHTML = "";
             }
-            self.init_cols = columns_string(self.table_opts.columns);
 
             table_opts = shallow_clone(self.table_opts);
-            table_opts.fnInitComplete = resolve_second;
+            table_opts.fnInitComplete = function (table, data) {
+                self.init_cols = columns_string(self.table_opts.columns);
+                resolve(data);
+            };
             table_opts.search = { search: page_state.arg('table-filter', '') };
             table_opts.ajax = function (params, callback, settings) {
-                self.reload_data(page_state).then(function (data) {
+                new Promise(function (resolve) {
+                    // NB: This has to be self.page_state, otherwise we make a closure
+                    // around the initial page_state
+                    resolve(self.reload_data(self.page_state));
+                }).then(function (data) {
+                    self.last_fetched_data = data;
                     callback(data);
                 }).catch(function (err) {
                     // Reject the wider promise, to send the error up
+                    self.last_fetched_data = err;
+                    // Clear any old data in the table
+                    self.table.clear().draw();
                     reject(err);
                 });
             };
