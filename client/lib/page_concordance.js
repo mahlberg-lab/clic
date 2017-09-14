@@ -33,6 +33,9 @@ function renderTokenArray(data, type, full, meta) {
             '">' + out + '</div>';
     }
 
+    if (type === 'export') {
+        return data.join("");
+    }
 
     for (i = 0; i < data.length; i++) {
         t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
@@ -59,6 +62,10 @@ function renderPosition(data, type, full, meta) {
                '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
                '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
                '</svg></a>';
+    }
+
+    if (type === 'export') {
+        return data[0] + '/' + data[1];
     }
 
     return data[0];

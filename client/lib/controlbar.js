@@ -8,6 +8,7 @@ var chosen = require('chosen-js');
 var api = require('./api.js');
 var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
+var filesystem = require('./filesystem.js');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -131,6 +132,21 @@ function ControlBar(control_bar) {
 
         if (clickedOn(e, null, 'handle')) {
             control_bar.classList.toggle('in');
+            return;
+        }
+
+        if (clickedOn(e, 'A', 'action')) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (clickedOn(e, 'A', 'clear')) {
+                self.page_state.new({ args: {}, state: {}, }, 'push');
+            } else if (clickedOn(e, 'A', 'save')) {
+                filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
+            } else {
+                throw new Error("Unknown action '" + e.target.className + "'");
+            }
+
             return;
         }
 
