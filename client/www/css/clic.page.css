@@ -17,17 +17,22 @@ body.loading #scrollable-body {
 body.loading #scrollable-body:after {
   content: '';
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
-  width: 20rem;
-  height: 20rem;
-  margin-top: -10rem;
-  margin-left: -10rem;
+  width: 20vw;
+  height: 20vw;
+  margin-top: -10vw;
+  margin-left: -10vw;
   border-radius: 50%;
   border: 5px solid #ccc;
   border-top-color: #333;
   animation: spinner .6s linear infinite;
+}
+@media (min-width: 768px) {
+  body.loading #scrollable-body:after {
+      margin-left: -20rem;
+  }
 }
 
 @media (min-width: 960px) {
