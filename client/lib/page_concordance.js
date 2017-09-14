@@ -22,45 +22,46 @@ function isWord(s) {
 function renderTokenArray(data, type, full, meta) {
     var i, t, count = 0, out = "";
 
-    if (type !== 'display') {
+    if (type === 'display') {
         for (i = 0; i < data.length; i++) {
-            t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
-            if (isWord(t)) {
-                count++;
-                out += t + ":";
-                if (count >= 3) {
-                    return out;
-                }
-            }
+            out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
         }
-        return out;
+
+        return '<div class="' +
+            'm' + (data.matches[0] || '0') +
+            (data.kwicSpan.reverse ? ' r' : ' l') +
+            '">' + out + '</div>';
     }
+
 
     for (i = 0; i < data.length; i++) {
-        out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
+        t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
+        if (isWord(t)) {
+            count++;
+            out += t + ":";
+            if (count >= 3) {
+                return out;
+            }
+        }
     }
-
-    return '<div class="' +
-        'm' + (data.matches[0] || '0') +
-        (data.kwicSpan.reverse ? ' r' : ' l') +
-        '">' + out + '</div>';
+    return out;
 }
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
     var xVal;
 
-    if (type !== 'display') {
-        return data[0];
+    if (type === 'display') {
+        xVal = (data[0] / data[1]) * 50; // word in book / total word count
+        return '<a class="bookLink" title="Click to display concordance in book" target="_blank"' +
+               ' href="/chapter?chapter_id=' + data[2] + '&start=' + data[3] + '&end=' + data[4] + '" >' +
+               '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
+               '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
+               '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
+               '</svg></a>';
     }
 
-    xVal = (data[0] / data[1]) * 50; // word in book / total word count
-    return '<a class="bookLink" title="Click to display concordance in book" target="_blank"' +
-           ' href="/chapter?chapter_id=' + data[2] + '&start=' + data[3] + '&end=' + data[4] + '" >' +
-           '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
-           '<rect x="0" y="4" width="50" height="7" fill="#ccc"/>' +
-           '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
-           '</svg></a>';
+    return data[0];
 }
 
 // PageConcordance inherits PageTable
