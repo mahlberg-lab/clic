@@ -10,6 +10,25 @@ html {
     margin-right: 0;
     transition: margin-right 0.3s ease;
 }
+@keyframes spinner { to {transform: rotate(360deg);} }
+body.loading #scrollable-body {
+    opacity: .6;
+}
+body.loading #scrollable-body:after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20rem;
+  height: 20rem;
+  margin-top: -10rem;
+  margin-left: -10rem;
+  border-radius: 50%;
+  border: 5px solid #ccc;
+  border-top-color: #333;
+  animation: spinner .6s linear infinite;
+}
 
 @media (min-width: 960px) {
     #control-bar.in + #scrollable-body {
@@ -22,9 +41,6 @@ header {
     border-bottom: 1px solid black;
     overflow: hidden;
     background-image: linear-gradient(to left top, #D6E1E8 35%, #7F9AA5 100%);
-}
-body.loading header {
-    background-image: linear-gradient(to left top, pink 35%, red 100%);
 }
 header h1 {
     float: left;
