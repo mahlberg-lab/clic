@@ -95,6 +95,21 @@ function to_options_html(opts, group_label) {
     return out;
 }
 
+/** Was the click event somewhere on an element with (tagName) or (className)? */
+function clickedOn(e, tagName, className) {
+    var el = e.target;
+
+    while (el) {
+        if (!tagName || el.tagName === tagName) {
+            if (!className || el.classList.contains(className)) {
+                return true;
+            }
+        }
+        el = el.parentElement;
+    }
+    return false;
+}
+
 function ControlBar(control_bar) {
     var self = this;
 
@@ -102,22 +117,7 @@ function ControlBar(control_bar) {
     this.form = control_bar.getElementsByTagName('FORM')[0];
 
     control_bar.addEventListener('click', function (e) {
-        function clickedOn(tagName, className) {
-            var el = e.target;
-
-            while (el.parentElement) {
-                if (tagName && el.tagName === tagName) {
-                    return true;
-                }
-                if (className && el.classList.contains(className)) {
-                    return true;
-                }
-                el = el.parentElement;
-            }
-            return false;
-        }
-
-        if (clickedOn('LEGEND', null)) {
+        if (clickedOn(e, 'LEGEND', null)) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -129,12 +129,12 @@ function ControlBar(control_bar) {
             return;
         }
 
-        if (clickedOn(null, 'handle')) {
+        if (clickedOn(e, null, 'handle')) {
             control_bar.classList.toggle('in');
             return;
         }
 
-        if (clickedOn(null, 'toggle-panel')) {
+        if (clickedOn(e, null, 'toggle-panel')) {
             e.preventDefault();
             e.stopPropagation();
 
