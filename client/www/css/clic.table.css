@@ -54,20 +54,29 @@
 }
 
 #content table.dataTable.hasTagColumns th {
-    padding-top: 10em;
-    overflow: hidden;
+    padding-top: 70px;
 }
 #content table.dataTable th.tagColumn {
     position: relative;
 }
 #content table.dataTable th.tagColumn>* {
     position: absolute;
+    z-index: 1;
     right: 75%;
     bottom: 4px;
-    max-width: 9em;
+    max-width: 60px;
+    transition: max-width 0.3s ease;
+    transition-delay: 0.3s;
+    line-height: 1.5rem;
+    overflow: hidden;
     transform: rotate(90deg);
     transform-origin: 100% 100%;
+    background: inherit;
     white-space: nowrap;
+    direction: rtl;
+}
+#content table.dataTable th.tagColumn:hover>* {
+    max-width: 200px;
 }
 
 table.dataTable thead > tr > th:active,
