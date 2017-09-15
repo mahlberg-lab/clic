@@ -62,6 +62,7 @@ var state_defaults = {
     'table-filter': '',
     'table-metadata': '',
     'kwic-span': '-5:5',
+    'kwic-dir': 'start',
     'kwic-int-start': '3',
     'kwic-int-end': '3',
     'kwic-terms': [],
@@ -316,7 +317,7 @@ ControlBar.prototype.reload = function reload(page_state) {
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
                     el.checked = !!page_state.arg(el.name, state_defaults[el.name]);
                 } else if (el.tagName === 'INPUT' && el.type === "radio") {
-                    el.setAttribute("checked", page_state.arg(el.name, state_defaults[el.name]) === el.value ? 'checked' : '');
+                    el.checked = page_state.arg(el.name, state_defaults[el.name]) === el.value;
                 } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
                     // nouisliders need to be told that something happened
                     el.value = page_state.arg(el.name, state_defaults[el.name]);
