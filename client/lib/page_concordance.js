@@ -163,7 +163,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.type = page_state.arg('conc-type', 'whole');
 
     if (api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select a corpora to search in", "warn");
+        throw new DisplayError("Please select a corpus to search in", "warn");
     }
     if (!api_opts.q) {
         throw new DisplayError("Please provide some terms to search for", "warn");

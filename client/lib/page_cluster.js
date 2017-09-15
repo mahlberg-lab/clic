@@ -35,7 +35,7 @@ PageCluster.prototype.reload_data = function reload(page_state) {
     api_opts.clusterlength = page_state.arg('clusterlength', '1');
 
     if (api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select a corpora", "warn");
+        throw new DisplayError("Please select a corpus", "warn");
     }
 
     return api.get('cluster', api_opts);

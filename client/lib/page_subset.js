@@ -40,7 +40,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     api_opts.subset = page_state.arg('subset-subset', 'shortsus');
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select a corpora to search in", "warn");
+        throw new DisplayError("Please select a corpus to search in", "warn");
     }
 
     return api.get('subset', api_opts).then(function (data) {
