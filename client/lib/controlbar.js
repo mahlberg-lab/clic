@@ -124,7 +124,7 @@ function ControlBar(control_bar) {
 
             self.page_state.new({
                 doc: e.target.href,
-                args: {},
+                args: { corpora: self.page_state.arg('corpora', state_defaults.corpora) },
                 state: {},
             }, 'push');
             return;
