@@ -20,6 +20,13 @@ def clicdb():
 def warm_cache():
     clicdb().warm_cache()
 
+@app.after_request
+def add_header(response):
+    # Everything can be cached for up to an hour
+    response.cache_control.max_age = 3600
+    response.cache_control.public = True
+    return response
+
 @app.teardown_appcontext
 def close_db(exception):
     if getattr(g, 'clicdb', None):
