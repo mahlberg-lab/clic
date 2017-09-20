@@ -71,9 +71,9 @@ for index, line in enumerate(lines):
         current_paragraph = 1
         paragraph_text = "" # TODO: What if there's remaining paragraph?
         print '<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">' % (
-            book_abbreviation, current_chapter,
-            subcorpus, book_title,
-            book_abbreviation, current_chapter,
+            cgi.escape(book_abbreviation, quote=True), current_chapter,
+            cgi.escape(subcorpus, quote=True), cgi.escape(book_title, quote=True),
+            cgi.escape(book_abbreviation, quote=True), current_chapter,
         )
         print '<title>%s%s</title>' % (
             cgi.escape(part_prefix),
@@ -85,7 +85,7 @@ for index, line in enumerate(lines):
         # TODO: What about chapter 0 content? We're not wrapping that.
         print '<p pid="%d" id="%s.c%d.p%d">\n%s</p>\n' % (
             current_paragraph,
-            book_abbreviation,
+            cgi.escape(book_abbreviation, quote=True),
             current_chapter,
             current_paragraph,
             cgi.escape(paragraph_text[1:]), # NB: Remove initial space
