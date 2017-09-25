@@ -160,13 +160,18 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.corpora = page_state.arg('corpora', []);
     api_opts.subset = page_state.arg('conc-subset', 'all');
     api_opts.q = page_state.arg('conc-q', '');
-    api_opts.type = page_state.arg('conc-type', 'whole');
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpus to search in", "warn");
     }
     if (!api_opts.q) {
         throw new DisplayError("Please provide some terms to search for", "warn");
+    }
+
+    if (page_state.arg('conc-type', 'whole') === 'any') {
+        api_opts.q = api_opts.q.split(/(\s+)/).filter(function (t) {
+            return (/\w/).test(t);
+        });
     }
 
     return api.get('concordance', api_opts).then(function (data) {
