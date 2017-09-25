@@ -33,6 +33,10 @@ cd $INPUT_DIR
 for i in $( ls | grep ".txt" ); do
 	echo '--------------------------------------------------'
 	echo 'Creating Base XML: ' $i
+	[ $i = "wind.txt" ] && {
+	    echo "Broken. Skipping..."
+	    continue
+	}
 
 	nf=$i
 	nf=${nf/.txt/.xml}
