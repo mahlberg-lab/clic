@@ -179,7 +179,6 @@ class ClicDb():
         df.load(self.session, doc_dir)
         recStore.begin_storing(self.session)
         db.begin_indexing(self.session)
-        errorCount= 0
         for i, d in enumerate(df, start=1):
             doc = ampPreP.process_document(self.session, d)
             try:
@@ -193,9 +192,7 @@ class ClicDb():
                 # Index new record in RDB
                 self.rdb_index_record(self.recStore.fetch_record(self.session, rec2.id))
             except Exception as e:
-                raise
-                errorCount += 1
-                traceback.print_exc(file=sys.stdout)
+                raise # TODO: Log what went wrong? Go to end then roll back?
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
@@ -323,8 +320,8 @@ class ClicDb():
                 record = self.recStore.fetch_record(self.session, chapter_id)
             except ObjectDoesNotExistException:
                 break
-            self.index_record(record)
-            yield "Cached %d %s %s chapter %d" % (chapter_id, corpus_id, book_id, chapter_num)
+            self.rdb_index_record(record)
+            yield "Cached %d" % chapter_id
             chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
