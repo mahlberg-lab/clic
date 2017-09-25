@@ -230,7 +230,7 @@ PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, al
         for (i = 0; i < word_indices.length; i++) {
             t = tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]].toLowerCase();
             allWords[t] = true;
- 
+
             if ((i + 1) >= span.start && kwicTerms.hasOwnProperty(t)) {
                 // Matching has started and matches a terms, return which match it is
                 matchingTypes[t] = true;
