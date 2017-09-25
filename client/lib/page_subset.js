@@ -38,6 +38,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora', []);
     api_opts.subset = page_state.arg('subset-subset', 'shortsus');
+    api_opts.contextsize = 5;
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpus to search in", "warn");
