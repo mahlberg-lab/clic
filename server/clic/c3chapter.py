@@ -130,40 +130,41 @@ class Chapter():
           - (node_size) word tokens within match
           - (word_window) word tokens after match, if word_window > 0
         """
-        def find_split(left_pos, right_pos):
+        def find_split(start_pos, end_pos):
             # Match start starts at the final left word, and advances until either:
-            #  (a) We get to node_start
+            #  (a) We get to end_pos (the next word)
             #  (b) We find a space, in which case we use the token after
             # <minute> <!> [Come] . . .
             # <minute> <!> <?> [Come] . . .
             # <girls> <,> < > ["] <Come> . . . .
-            i = left_pos
-            while i < right_pos:
+            i = start_pos
+            step = 1 if end_pos > start_pos else -1
+
+            while i != end_pos:
                 if self.tokens[i].isspace():
                     return i + 1
-                i += 1
+                i += step
             return i
 
-        # First, work out word positions in left/node/right sections
-        max_word_map = len(self.word_map) - 1
-        left_start = self.word_map[max(0, word_id - word_window)]
-        left_end = self.word_map[max(0, word_id - 1)]
-        node_start = self.word_map[word_id]
-        node_end = self.word_map[min(max_word_map, word_id + node_size - 1)]
-        right_start = self.word_map[min(max_word_map, word_id + node_size)]
-        right_end = self.word_map[min(max_word_map, word_id + node_size + word_window)]
-
-        # Then adjust node_start and right_start to take into account associated non-word tokens
-        node_start = find_split(left_end, node_start)
-        right_start = find_split(node_end, right_start)
+        # Get list of word positions within our range
+        node_words = self.word_map[word_id : word_id + node_size]
+        # Fine tune start/end to match spaces
+        node_start = find_split(node_words[0], self.word_map[word_id - 1]) if word_id > 0 else node_words[0]
+        node_end = find_split(node_words[-1], self.word_map[word_id + node_size])
 
         if word_window == 0:
-            return [self.tokens[node_start:right_start]]
+            return [
+                self.tokens[node_start:node_end] + [[x - node_start for x in node_words]],
+            ]
+
+        # Get word positions for the context also
+        left_words = self.word_map[max(0, word_id - word_window) : word_id]
+        right_words = self.word_map[word_id + node_size : word_id + node_size + word_window]
 
         return [
-            self.tokens[left_start:node_start],
-            self.tokens[node_start:right_start],
-            self.tokens[right_start:right_end],
+            self.tokens[left_words[0]:node_start] + [[x - left_words[0] for x in left_words]] if len(left_words) > 0 else [[]],
+            self.tokens[node_start:node_end] + [[x - node_start for x in node_words]],
+            self.tokens[node_end:right_words[-1] + 1] + [[x - node_end for x in right_words]] if len(right_words) > 0 else [[]],
         ]
 
 chapter_cache = {}

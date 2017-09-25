@@ -14,17 +14,13 @@ function escapeHtml(tag, s) {
         .replace(/"/g, '&quot;')) + '</' + tag + '>';
 }
 
-function isWord(s) {
-    return (/\w/).test(s);
-}
-
 // Column is an array of tokens, mark these up as words, only sort on word content
 function renderTokenArray(data, type, full, meta) {
-    var i, t, count = 0, out = "";
+    var i, t, count = 0, out = "", word_indices = data[data.length - 1];
 
     if (type === 'display') {
-        for (i = 0; i < data.length; i++) {
-            out += escapeHtml(isWord(data[i]) ? 'mark' : 'span', data[i]);
+        for (i = 0; i < data.length - 1; i++) {
+            out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i]);
         }
 
         return '<div class="' +
@@ -37,9 +33,9 @@ function renderTokenArray(data, type, full, meta) {
         return data.join("");
     }
 
-    for (i = 0; i < data.length; i++) {
+    for (i = 0; i < data.length - 1; i++) {
         t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
-        if (isWord(t)) {
+        if (word_indices.indexOf(i) > -1) {
             count++;
             out += t + ":";
             if (count >= 3) {
@@ -224,29 +220,25 @@ PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, al
     // Check if list (tokens) contains any of the (kwicTerms) between (span.start) and (span.stop) inclusive
     // considering (tokens) in reverse if (span.reverse) is true
     function testList(tokens, span) {
-        var i, t, wordCount = 0, out = [];
+        var i, t, out = [], word_indices = tokens[tokens.length - 1];
 
         if (span.start === undefined) {
             // Ignoring this row
             return out;
         }
 
-        for (i = 0; i < tokens.length; i++) {
-            t = tokens[span.reverse ? tokens.length - i - 1 : i];
-
-            if (isWord(t)) {
-                t = t.toLowerCase();
-                wordCount++;
-                allWords[t] = true;
-                if (wordCount >= span.start && kwicTerms.hasOwnProperty(t)) {
-                    // Matching has started and matches a terms, return which match it is
-                    matchingTypes[t] = true;
-                    out.push(wordCount);
-                }
-                if (span.stop !== undefined && wordCount >= span.stop) {
-                    // Finished matching now, give up.
-                    break;
-                }
+        for (i = 0; i < word_indices.length; i++) {
+            t = tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]].toLowerCase();
+            allWords[t] = true;
+ 
+            if ((i + 1) >= span.start && kwicTerms.hasOwnProperty(t)) {
+                // Matching has started and matches a terms, return which match it is
+                matchingTypes[t] = true;
+                out.push(i + 1);
+            }
+            if (span.stop !== undefined && (i + 1) >= span.stop) {
+                // Finished matching now, give up.
+                break;
             }
         }
 

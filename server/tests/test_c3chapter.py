@@ -1,7 +1,17 @@
+import re
 import unittest
 from lxml import etree
 
 from clic.c3chapter import Chapter
+
+def word_indices(l):
+    """Return indicies of an array which contain word-y strings"""
+    out = []
+    for i, x in enumerate(l):
+        if re.match(r'\w', x):
+            out.append(i)
+    return out
+
 
 class TestChapter(unittest.TestCase):
     def test_get_conc_line(self):
@@ -20,24 +30,33 @@ class TestChapter(unittest.TestCase):
             </div>
         ''')
         ch = Chapter(dom, "digest")
-        self.assertEqual(ch.get_conc_line(0, 3, 0), [
+
+        def conc_line(*args):
+            out = []
+            for l in ch.get_conc_line(*args):
+                # Check the word indices match
+                self.assertEqual(word_indices(l[:-1]), l[-1])
+                out.append(l[:-1])
+            return out
+
+        self.assertEqual(conc_line(0, 3, 0), [
             ["You'll", ' ', 'BOTH', ' ', 'stay', ' '],
         ])
-        self.assertEqual(ch.get_conc_line(3, 3, 0), [
+        self.assertEqual(conc_line(3, 3, 0), [
             ['while', ' ', 'this', ' ', 'shower', ' '],
         ])
 
         # We prefer to split the node on the nearest space
-        self.assertEqual(ch.get_conc_line(0, 8, 0), [
+        self.assertEqual(conc_line(0, 8, 0), [
             ["You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
         ])
-        self.assertEqual(ch.get_conc_line(0, 8, 3), [
+        self.assertEqual(conc_line(0, 8, 3), [
             [],
             ["You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
-            ['said', ' ', 'Nancy', ',', ' ', 'as', ' '],
+            ['said', ' ', 'Nancy', ',', ' ', 'as'],
         ])
-        self.assertEqual(ch.get_conc_line(3, 5, 3), [
+        self.assertEqual(conc_line(3, 5, 3), [
             ["You'll", ' ', 'BOTH', ' ', 'stay', ' '],
             ['while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
-            ['said', ' ', 'Nancy', ',', ' ', 'as', ' '],
+            ['said', ' ', 'Nancy', ',', ' ', 'as'],
         ])
