@@ -136,6 +136,20 @@ Favico regeneration
 Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
 ```client/www/index.html`` and ``client/www/iconx`` as appropriate.
 
+Uploading new texts
+-------------------
+
+From the ``annotation`` directory::
+
+    ./annotate.sh ../corpora/ChiLit ./ChiLit_out
+
+From the ``server`` directory::
+
+    ./bin/python
+    >>> from clic.clicdb import ClicDb ; cdb = ClicDb()
+    >>> cdb.store_documents('/srv/devel/bham.clic/annotation/ChiLit_out/final/')
+
+
 Acknowledgements
 ----------------
 
