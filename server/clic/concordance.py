@@ -1,10 +1,74 @@
 # -*- coding: utf-8 -*-
 import os
 import os.path
+"""Concordance endpoint
 
+Searches texts for given phrase(s).
 
+- corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
+- subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
+- q: 1+ string to search for. If multiple terms are provided, they will be OR'ed together (i.e. we search for either)
+- contextsize: Size of context window around search results. Default 0.
+
+Parameters should be provided in querystring format, for example::
+
+    ?corpora=dickens&corpora=AgnesG&q=my+hands&q=my+feet
+
+Returns a ``data`` array, one entry per result. Each item is an array with the following items:
+
+* The left context window (if ``contextsize`` > 0, otherwise omitted)
+* The node (i.e. the text searched for)
+* The right context window (if ``contextsize`` > 0, otherwise omitted)
+* Result metadata
+* Position-in-book metadata
+
+Each of left/node/right context window is an array of word/non-word tokens, with the final item
+indicating which of the tokens are word tokens. For example::
+
+    [
+        'while',
+        ' ',
+        'this',
+        ' ',
+        'shower',
+        ' ',
+        'gets',
+        ' ',
+        'owered',
+        ",'",
+        ' ',
+        [0, 2, 4, 6, 8],
+    ]
+
+Result metadata and Position-in-book metadata are currently subject to change.
+
+Examples:
+
+/api/concordance?corpora=AgnesG&q=his+hands&q=his+feet&contextsize=3::
+
+    {"data":[
+      [
+        ["to"," ","put"," ","into"," ",[0,2,4]],
+        ["his"," ","hands",","," ",[0,2]],
+        ["it"," ","should"," ","bring",[0,2,4]],
+         . . .
+      ], [
+        ["the"," ","fire",","," ","with"," ",[0,2,5]],
+        ["his"," ","hands"," ",[0,2]],
+        ["behind"," ","his"," ","back",[0,2,4]],
+         . . .
+      ], [
+        ["was"," ","frisking"," ","at"," ",[0,2,4]],
+        ["his"," ","feet",","," ",[0,2]],
+        ["and"," ","finally"," ","upon",[0,2,4]],
+         . . .
+      ],
+    ]}
+"""
 def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0']):
     """
+    Main entry function for concordance search
+
     - corpora: List of corpora / book names
     - subset: Subset to search within, or 'all'
     - q: Quer(ies) to search for, results will contain one of the given expressions
