@@ -52,7 +52,7 @@ def stream_json(generator):
     for x in generator:
         yield separator + json.dumps(x, separators=(',', ':'))
         separator = ',\n'
-    yield ']}'
+    yield '\n]}'
 
 # ==== Metadata routes ====================================
 @app.route('/api/corpora', methods=['GET'])
