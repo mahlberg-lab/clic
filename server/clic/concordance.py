@@ -3,7 +3,7 @@ import os
 import os.path
 
 
-def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=[0]):
+def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0']):
     """
     - corpora: List of corpora / book names
     - subset: Subset to search within, or 'all'
@@ -11,7 +11,7 @@ def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=[0])
     - contextsize: Size of context window, defaults to none.
     """
     idx = cdb.get_subset_index(subset[0])
-    contextsize = contextsize[0]
+    contextsize = int(contextsize[0])
 
     query = build_query(cdb, q, idx, corpora)
     result_set = cdb.c3_query(query)

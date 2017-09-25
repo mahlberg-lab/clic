@@ -160,6 +160,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.corpora = page_state.arg('corpora', []);
     api_opts.subset = page_state.arg('conc-subset', 'all');
     api_opts.q = page_state.arg('conc-q', '');
+    api_opts.contextsize = 10;
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpus to search in", "warn");
