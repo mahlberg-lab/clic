@@ -13,7 +13,7 @@ test('renderTokenArray:display', function (t) {
 
     // Words are marks, space is span, HTML is quoted
     t.equal(concordance_utils.renderTokenArray(data, 'display'),
-            '<div class="m0 l">' +
+            '<div class="l">' +
             '<mark>and</mark>' +
             '<span> </span>' +
             '<mark>the</mark>' +
@@ -31,7 +31,7 @@ test('renderTokenArray:display', function (t) {
     // Reverse mode just changes the div class
     data.kwicSpan = { reverse: true };
     t.equal(concordance_utils.renderTokenArray(data, 'display'),
-            '<div class="m0 r">' +
+            '<div class="r">' +
             '<mark>and</mark>' +
             '<span> </span>' +
             '<mark>the</mark>' +
@@ -48,9 +48,9 @@ test('renderTokenArray:display', function (t) {
 
     // Matches get added to class
     data.matches = [1, 3];
-    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="m1 r">');
+    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="r m1 m3">');
     data.kwicSpan = {};
-    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="m1 l">');
+    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="l m1 m3">');
 
 
     t.end();

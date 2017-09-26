@@ -16,14 +16,17 @@ module.exports.renderTokenArray = function renderTokenArray(data, type, full, me
     var i, t, count = 0, out = "", word_indices = data[data.length - 1];
 
     if (type === 'display') {
+        out = '<div class="' + (data.kwicSpan.reverse ? 'r' : 'l');
+        for (i = 0; i < data.matches.length; i++) {
+            out += ' m' + data.matches[i];
+        }
+        out += '">';
+
         for (i = 0; i < data.length - 1; i++) {
             out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i]);
         }
 
-        return '<div class="' +
-            'm' + (data.matches[0] || '0') +
-            (data.kwicSpan.reverse ? ' r' : ' l') +
-            '">' + out + '</div>';
+        return out + '</div>';
     }
 
     if (type === 'export') {
