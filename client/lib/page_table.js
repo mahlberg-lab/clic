@@ -76,7 +76,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 self.init_cols = columns_string(self.table_opts.columns);
                 resolve(data);
             };
-            table_opts.search = { search: page_state.arg('table-filter', '') };
+            table_opts.search = { search: page_state.arg('table-filter', ''), smart: false };
             table_opts.ajax = function (params, callback, settings) {
                 new Promise(function (resolve) {
                     // NB: This has to be self.page_state, otherwise we make a closure
