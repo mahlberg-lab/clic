@@ -58,19 +58,19 @@ class QuoteTokenizer:
         self.quote_regex_double = re.compile(
             "(^| |--|<s[^>]+>|\(|,)" + # Pre-quote ($1)
             "(" + # ($2)
-                "(&quot;)" + # Quote-mark ($3)
+                "&quot;" + # Quote-mark
                 "(?:<s[^>]+>|.(?!quot;))+" + # Body of quote
-                "(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3)" + # Quote ending + mark
+                "(?:&quot;(?= --)|&quot;(?=--)|[,?.!-;_]&quot;)" + # Quote ending + mark
             ")" +
-            "( |--|</s>|$|[\w]|\))") # Post-quote ($4)
+            "( |--|</s>|$|[\w]|\))") # Post-quote ($3)
         self.quote_regex_single = re.compile(
             "(^| |--|<s[^>]+>|\(|,)" + # pre-quote ($1)
             "(" + # ($2)
-                "(['])" +  # Quote-mark ($3)
+                "[']" +  # Quote-mark
                 "(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+" + # Body of quote
-                "(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3)" + # Quote ending + mark
+                "(?:'(?= --)|'(?=--)|[,?.!-;_]')" + # Quote ending + mark
             ")" +
-            "( |--|</s>|$|[\w]|\))") # Post-quote ($4)
+            "( |--|</s>|$|[\w]|\))") # Post-quote ($3)
         # This tree is modified by the tokenizer.
         self.tree = tree
 
@@ -93,14 +93,14 @@ class QuoteTokenizer:
         if quote_style == 'single':
             # replace location following the first matched group with <qs/>,
             # etc.
-            return re.sub(self.quote_regex_single, '\\1<qs/>\\2<qe/>\\4', text)
+            return re.sub(self.quote_regex_single, '\\1<qs/>\\2<qe/>\\3', text)
         else:
             # deal with the problem of xml attributes containing " in double
             # quoted books
             # replace each in-text " with '&quot'. Regular expression says that if " precedes < before the occurrence of any >
             # then label '&quot'. This excludes any " in attributes.
             s = re.sub('"(?=[^>]*<)', '&quot;', text)
-            t = re.sub(self.quote_regex_double, '\\1<qs/>\\2<qe/>\\4', s)
+            t = re.sub(self.quote_regex_double, '\\1<qs/>\\2<qe/>\\3', s)
             return t.replace('&quot;', '"')
 
             # FIXME does this add <qs/> to open quotes (paragraphs that only have an opening quote)?
@@ -109,7 +109,7 @@ class QuoteTokenizer:
 
             # NEW: we can disregard paragraph if there is only one &quot; label (these are dealt with below)
             # if len(re.findall('&quot;', s)) != 1:
-            #    t = re.sub(quoteD,'\\1<qs/>\\2<qe/>\\4', s)
+            #    t = re.sub(quoteD,'\\1<qs/>\\2<qe/>\\3', s)
             #    return t.replace('&quot;', '"')
             # else:
             # return s.replace('&quot;', '"') # return string with quotation
