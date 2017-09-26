@@ -13,7 +13,7 @@ function escapeHtml(tag, s) {
 
 // Column is an array of tokens, mark these up as words, only sort on word content
 module.exports.renderTokenArray = function renderTokenArray(data, type, full, meta) {
-    var i, t, count = 0, out = "", word_indices = data[data.length - 1];
+    var i, t, out = "", word_indices = data[data.length - 1];
 
     if (type === 'display') {
         out = '<div class="' + (data.kwicSpan.reverse ? 'r' : 'l');
@@ -29,21 +29,16 @@ module.exports.renderTokenArray = function renderTokenArray(data, type, full, me
         return out + '</div>';
     }
 
-    if (type === 'export') {
-        return data.join("");
+    if (type === 'sort') {
+        for (i = 0; i < Math.min(word_indices.length, 3); i++) {
+            t = data[word_indices[data.kwicSpan.reverse ? word_indices.length - i - 1 : i]];
+            out += t + ":";
+        }
+        return out;
     }
 
-    for (i = 0; i < data.length - 1; i++) {
-        t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
-        if (word_indices.indexOf(i) > -1) {
-            count++;
-            out += t + ":";
-            if (count >= 3) {
-                return out;
-            }
-        }
-    }
-    return out;
+    // type === filter/type/(undefined)/export: Just return string
+    return data.slice(0, -1).join("");
 };
 
 /*
