@@ -17,29 +17,22 @@ SCRIPT_DIR=$( pwd )
 
 PYTHON="$(pwd)/bin/python"
 
-# Convert the relatives path into absolute ones by moving in the dir and running pwd
-INPUT_DIR=$1
-cd $INPUT_DIR && INPUT_DIR=$( pwd ) && cd $SCRIPT_DIR
-
-OUTPUT_DIR=$2
-cd $OUTPUT_DIR && OUTPUT_DIR=$( pwd ) && cd $SCRIPT_DIR
+# Convert the relatives path into absolute ones, dereference globs, input directories
+INPUT=$([ -d "$1" ] && readlink -f "$1/*.txt" || readlink -f "$1")
+OUTPUT_DIR=$(readlink -f "$2")
 
 # Make sure all output dirs exist
 mkdir -p $OUTPUT_DIR/{paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions,final}
 
-# Run the scripts for each file in the INPUT_DIR
-cd $INPUT_DIR
-
-for i in $( ls | grep ".txt" ); do
-	echo '--------------------------------------------------'
-	echo 'Creating Base XML: ' $i
-	[ $i = "wind.txt" ] && {
-	    echo "Broken. Skipping..."
+for i in ${INPUT}; do
+	nf="$(basename $i .txt).xml"
+	[ "$nf" = "wind.xml" ] && {
+	    echo "$nf is broken. Skipping..."
 	    continue
 	}
 
-	nf=$i
-	nf=${nf/.txt/.xml}
+	echo '--------------------------------------------------'
+	echo "Input -- $i"
 
 	echo "Stage 1 -- paragraph extraction: $OUTPUT_DIR/paragraphs/$nf"
 	${PYTHON} $SCRIPT_DIR/paragraphs.py $i > $OUTPUT_DIR/paragraphs/$nf
