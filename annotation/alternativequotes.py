@@ -55,9 +55,21 @@ class QuoteTokenizer:
         # 1) Define quotations
         # Uses double quotation marks (")
         self.quote_regex_double = re.compile(
-            "(^| |--|<s[^>]+>|\(|,|\')((&quot;)(?:<s[^>]+>|.(?!quot;))+(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3))( |--|</s>|$|[\w]|\))")
+            "(^| |--|<s[^>]+>|\(|,|\')" + # Pre-quote ($1)
+            "(" + # ($2)
+                "(&quot;)" + # Quote-mark ($3)
+                "(?:<s[^>]+>|.(?!quot;))+" + # Body of quote
+                "(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3)" + # Quote ending + mark
+            ")" +
+            "( |--|</s>|$|[\w]|\))") # Post-quote ($4)
         self.quote_regex_single = re.compile(
-            "(^| |--|<qs/>\"|<s[^>]+>|\(|,)((['])(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3))( |--|</s>|$|[\w]|\))")
+            "(^| |--|<qs/>\"|<s[^>]+>|\(|,)" + # pre-quote ($1)
+            "(" + # ($2)
+                "(['])" +  # Quote-mark ($3)
+                "(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+" + # Body of quote
+                "(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3)" + # Quote ending + mark
+            ")" +
+            "( |--|</s>|$|[\w]|\))") # Post-quote ($4)
         # This tree is modified by the tokenizer.
         self.tree = tree
 
