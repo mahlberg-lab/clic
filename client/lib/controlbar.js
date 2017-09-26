@@ -67,6 +67,7 @@ var state_defaults = {
     'kwic-int-end': '3',
     'kwic-terms': [],
     'refcorpora': [],
+    'subset': 'all',
     'refsubset': 'all',
     'clusterlength': 1,
     'pvalue': 0.0001,
