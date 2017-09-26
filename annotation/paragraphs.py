@@ -36,7 +36,7 @@ lines = open(filename).readlines()
 book_abbreviation = os.path.basename(filename).replace('.txt', '')
 subcorpus = os.path.basename(os.path.dirname(os.path.abspath(filename)))
 
-print "<div0 id=\"%s\" type=\"book\" subcorpus=\"%s\" filename=\"%s\">\n\n" % (book_abbreviation, subcorpus, filename)
+print "<div0 id=\"%s\" type=\"book\" subcorpus=\"%s\" filename=\"%s\">\n\n" % (book_abbreviation, subcorpus, os.path.basename(filename))
 
 part_prefix = ""
 current_chapter = 0
