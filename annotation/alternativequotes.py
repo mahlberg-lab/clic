@@ -6,6 +6,12 @@ from lxml import etree
 import common
 
 
+def alternativequotes(tree):
+    tokenizer = QuoteTokenizer(tree)
+    tokenizer.first_run()
+    return tokenizer.tree
+
+
 class QuoteTokenizer:
 
     """
@@ -44,7 +50,7 @@ class QuoteTokenizer:
     - Make definition of pid in 6d.1 more readable?
     """
 
-    def __init__(self, text):
+    def __init__(self, tree):
 
         # 1) Define quotations
         # Uses double quotation marks (")
@@ -52,9 +58,8 @@ class QuoteTokenizer:
             "(^| |--|<s[^>]+>|\(|,|\')((&quot;)(?:<s[^>]+>|.(?!quot;))+(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3))( |--|</s>|$|[\w]|\))")
         self.quote_regex_single = re.compile(
             "(^| |--|<qs/>\"|<s[^>]+>|\(|,)((['])(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+(?:\\3(?= --)|\\3(?=--)|[,?.!-;_]\\3))( |--|</s>|$|[\w]|\))")
-        self.text = text
         # This tree is modified by the tokenizer.
-        self.tree = etree.fromstring(self.text)
+        self.tree = tree
 
         # print self.text[0:100]
         # print self.tree
@@ -133,12 +138,7 @@ class QuoteTokenizer:
 
         # print self.tree
 
-    def tokenize(self):
-        self.first_run()
-        return etree.tostring(self.tree)
 
 if __name__ == "__main__":
-    with open(sys.argv[1], 'r') as a_file:
-        text = a_file.read()
-    tokenizer = QuoteTokenizer(text)
-    print tokenizer.tokenize()
+    tree = etree.parse(sys.argv[1])
+    print etree.tostring(alternativequotes(tree))
