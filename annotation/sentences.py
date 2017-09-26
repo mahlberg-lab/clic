@@ -5,13 +5,12 @@ from lxml import etree
 
 class SentenceTokenizer(object):
 
-    def __init__(self, text):
+    def __init__(self, tree):
         """
         :param text: a string that one wants to analyze
         """
 
-        self.text = text  #TODO unicode(text)?
-        self.tree = etree.fromstring(self.text)
+        self.tree = tree
 
         # Regexes
         # (?:[\.!?:]|--) changed to (?:[\.!?:]|--|$) by Cat 11/10/08
@@ -105,17 +104,12 @@ class SentenceTokenizer(object):
                 scount += 1
 
     def tokenize(self):
-        """
-        Printing the output because the bash scripts uses the printed output.
-        """
         self.update_tree()
         self.add_sentence_ids()
-        printable_tree = etree.tostring(self.tree)
-        print printable_tree
-        return printable_tree
+        return self.tree
 
 if __name__ == "__main__":
-    with open(sys.argv[1], 'r') as a_file:
-        a_text = a_file.read()
-    tokenizer = SentenceTokenizer(a_text)
-    tokenizer.tokenize()
+    tree = etree.parse(sys.argv[1])
+    tokenizer = SentenceTokenizer(tree)
+    tree = tokenizer.tokenize()
+    tree.write(sys.argv[2])

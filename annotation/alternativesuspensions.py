@@ -86,8 +86,7 @@ for p in tree.xpath('//p[s/qe]'):
     for n in nodetree:
         p.append(n)
 
-new_tree = etree.tostring(tree)
-print new_tree
+tree.write(sys.argv[2])
 
 #==============================================================================
       # Rein's alternative:

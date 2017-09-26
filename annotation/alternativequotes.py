@@ -155,4 +155,5 @@ class QuoteTokenizer:
 
 if __name__ == "__main__":
     tree = etree.parse(sys.argv[1])
-    print etree.tostring(alternativequotes(tree))
+    tree = alternativequotes(tree)
+    tree.write(sys.argv[2])

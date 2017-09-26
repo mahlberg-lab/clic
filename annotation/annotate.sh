@@ -38,19 +38,19 @@ for i in ${INPUT}; do
 	${PYTHON} $SCRIPT_DIR/paragraphs.py $i > $OUTPUT_DIR/paragraphs/$nf
 
 	echo "Stage 2 -- extracting sentences: $OUTPUT_DIR/sentences/$nf"
-	${PYTHON} $SCRIPT_DIR/sentences.py $OUTPUT_DIR/paragraphs/$nf > $OUTPUT_DIR/sentences/$nf
+	${PYTHON} $SCRIPT_DIR/sentences.py $OUTPUT_DIR/paragraphs/$nf $OUTPUT_DIR/sentences/$nf
 
 	echo "Stage 3 -- adding milestones for quotes: $OUTPUT_DIR/quotes/$nf"
-	${PYTHON} $SCRIPT_DIR/quotes.py $OUTPUT_DIR/sentences/$nf > $OUTPUT_DIR/quotes/$nf
+	${PYTHON} $SCRIPT_DIR/quotes.py $OUTPUT_DIR/sentences/$nf $OUTPUT_DIR/quotes/$nf
 
 	echo "Stage 4 -- adding milestones for suspensions: $OUTPUT_DIR/suspensions/$nf"
-	${PYTHON} $SCRIPT_DIR/suspensions.py $OUTPUT_DIR/quotes/$nf > $OUTPUT_DIR/suspensions/$nf
+	${PYTHON} $SCRIPT_DIR/suspensions.py $OUTPUT_DIR/quotes/$nf $OUTPUT_DIR/suspensions/$nf
 
 	echo "Stage 5 -- adding milestones for alternative quotes: $OUTPUT_DIR/alternativequotes/$nf"
-	${PYTHON} $SCRIPT_DIR/alternativequotes.py $OUTPUT_DIR/suspensions/$nf > $OUTPUT_DIR/alternativequotes/$nf
+	${PYTHON} $SCRIPT_DIR/alternativequotes.py $OUTPUT_DIR/suspensions/$nf $OUTPUT_DIR/alternativequotes/$nf
 
 	echo "Stage 6 -- adding milestones for alternative suspensions: $OUTPUT_DIR/alternativesuspensions/$nf"
-	${PYTHON} $SCRIPT_DIR/alternativesuspensions.py $OUTPUT_DIR/alternativequotes/$nf > $OUTPUT_DIR/alternativesuspensions/$nf
+	${PYTHON} $SCRIPT_DIR/alternativesuspensions.py $OUTPUT_DIR/alternativequotes/$nf $OUTPUT_DIR/alternativesuspensions/$nf
 
 	echo "Final -- adding stylesheet declaration: $OUTPUT_DIR/final/$nf"
 	echo '<?xml-stylesheet href="/styles.css"?>' | cat - $OUTPUT_DIR/alternativesuspensions/$nf > $OUTPUT_DIR/final/$nf

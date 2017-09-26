@@ -93,7 +93,8 @@ def suspensions(tree):
 
 if __name__ == '__main__':
     tree = etree.parse(sys.argv[1])
-    print etree.tostring(tree)
+    tree = suspensions(tree)
+    tree.write(sys.argv[2])
 
 #==============================================================================
       # Rein's alternative:
