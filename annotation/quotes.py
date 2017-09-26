@@ -66,7 +66,7 @@ class QuoteTokenizer:
         self.quote_regex_single = re.compile(
             "(^| |--|<s[^>]+>|\(|,)" + # pre-quote ($1)
             "(" + # ($2)
-                "[']" +  # Quote-mark
+                "['`]" +  # Quote-mark
                 "(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+" + # Body of quote
                 "(?:'(?= --)|'(?=--)|[,?.!-;_]')" + # Quote ending + mark
             ")" +
