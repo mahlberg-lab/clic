@@ -4,47 +4,7 @@
 var api = require('./api.js');
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
-
-function escapeHtml(tag, s) {
-    // https://bugs.jquery.com/ticket/11773
-    return '<' + tag + '>' + (String(s)
-        .replace(/&(?!\w+;)/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')) + '</' + tag + '>';
-}
-
-// Column is an array of tokens, mark these up as words, only sort on word content
-function renderTokenArray(data, type, full, meta) {
-    var i, t, count = 0, out = "", word_indices = data[data.length - 1];
-
-    if (type === 'display') {
-        for (i = 0; i < data.length - 1; i++) {
-            out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i]);
-        }
-
-        return '<div class="' +
-            'm' + (data.matches[0] || '0') +
-            (data.kwicSpan.reverse ? ' r' : ' l') +
-            '">' + out + '</div>';
-    }
-
-    if (type === 'export') {
-        return data.join("");
-    }
-
-    for (i = 0; i < data.length - 1; i++) {
-        t = data[data.kwicSpan.reverse ? data.length - i - 1 : i];
-        if (word_indices.indexOf(i) > -1) {
-            count++;
-            out += t + ":";
-            if (count >= 3) {
-                return out;
-            }
-        }
-    }
-    return out;
-}
+var concordance_utils = require('./concordance_utils.js');
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
@@ -81,9 +41,9 @@ PageConcordance.prototype.init = function () {
     this.table_opts.non_tag_columns = [
         { data: "kwic", visible: false, sortable: false, searchable: false },
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "Left", data: "0", render: renderTokenArray, class: "context left" }, // Left
-        { title: "Node", data: "1", render: renderTokenArray, class: "context node" }, // Node
-        { title: "Right", data: "2", render: renderTokenArray, class: "context right" }, // Right
+        { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
+        { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
+        { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
         { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
         { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
@@ -112,8 +72,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
 };
 
 PageConcordance.prototype.reload_data = function reload(page_state) {
-    var self = this,
-        kwicTerms = {},
+    var kwicTerms = {},
         kwicSpan = [],
         api_opts = {};
 
@@ -183,7 +142,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             data[i].DT_RowId = data[i][3][0] + data[i][4][0];
 
             // Add KWICGrouper match column
-            r = self.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
+            r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
             if (r > 0) {
                 totalMatches++;
 
@@ -203,57 +162,6 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             data: data,
         };
     });
-};
-
-/*
- * Annotate rows with KWICGrouper information, specifically:
- * For each column...
- * - matches: Array of KWIC match positions
- * - kwicSpan: The kwicSpan settings used
- * For the entire row...
- * - kwic: Overall match count
- * Return Overall match count
- */
-PageConcordance.prototype.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
-    var matchingTypes = {};
-
-    // Check if list (tokens) contains any of the (kwicTerms) between (span.start) and (span.stop) inclusive
-    // considering (tokens) in reverse if (span.reverse) is true
-    function testList(tokens, span) {
-        var i, t, out = [], word_indices = tokens[tokens.length - 1];
-
-        if (span.start === undefined) {
-            // Ignoring this row
-            return out;
-        }
-
-        for (i = 0; i < word_indices.length; i++) {
-            t = tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]].toLowerCase();
-            allWords[t] = true;
-
-            if ((i + 1) >= span.start && kwicTerms.hasOwnProperty(t)) {
-                // Matching has started and matches a terms, return which match it is
-                matchingTypes[t] = true;
-                out.push(i + 1);
-            }
-            if (span.stop !== undefined && (i + 1) >= span.stop) {
-                // Finished matching now, give up.
-                break;
-            }
-        }
-
-        return out;
-    }
-
-    // Annotate left/node/right with matches, and the span information used
-    d[0].matches = testList(d[0], kwicSpan[0]);
-    d[1].matches = testList(d[1], kwicSpan[1]);
-    d[2].matches = testList(d[2], kwicSpan[2]);
-    d[0].kwicSpan = kwicSpan[0];
-    d[1].kwicSpan = kwicSpan[1];
-    d[2].kwicSpan = kwicSpan[2];
-    d.kwic = Object.keys(matchingTypes).length;
-    return d.kwic;
 };
 
 module.exports = PageConcordance;

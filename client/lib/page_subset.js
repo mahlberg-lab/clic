@@ -4,6 +4,7 @@
 var api = require('./api.js');
 var PageConcordance = require('./page_concordance.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
+var concordance_utils = require('./concordance_utils.js');
 
 // PageSubset inherits PageConcordance
 function PageSubset() {
@@ -12,8 +13,7 @@ function PageSubset() {
 PageSubset.prototype = Object.create(PageConcordance.prototype);
 
 PageSubset.prototype.reload_data = function reload(page_state) {
-    var self = this,
-        kwicTerms = {},
+    var kwicTerms = {},
         kwicSpan = [{reverse: true, ignore: true}, {}, {ignore: true}],
         api_opts = {};
 
@@ -56,7 +56,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
             data[i].DT_RowId = data[i][3][0] + data[i][4][0];
 
             // Add KWICGrouper match column
-            r = self.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
+            r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
             if (r > 0) {
                 totalMatches++;
 
