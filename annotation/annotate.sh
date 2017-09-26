@@ -26,10 +26,6 @@ mkdir -p $OUTPUT_DIR/{paragraphs,sentences,quotes,suspensions,alternativequotes,
 
 for i in ${INPUT}; do
 	nf="$(basename $i .txt).xml"
-	[ "$nf" = "wind.xml" ] && {
-	    echo "$nf is broken. Skipping..."
-	    continue
-	}
 
 	echo '--------------------------------------------------'
 	echo "Input -- $i"

@@ -100,7 +100,11 @@ class QuoteTokenizer:
             # replace each in-text " with '&quot'. Regular expression says that if " precedes < before the occurrence of any >
             # then label '&quot'. This excludes any " in attributes.
             s = re.sub('"(?=[^>]*<)', '&quot;', text)
-            t = re.sub(self.quote_regex_double, '\\1<qs/>\\2<qe/>\\3', s)
+            if s.count('&quot;') > 1:
+                t = re.sub(self.quote_regex_double, '\\1<qs/>\\2<qe/>\\3', s)
+            else:
+                # Regular expression won't find anything, so don't bother
+                t = s
             return t.replace('&quot;', '"')
 
             # FIXME does this add <qs/> to open quotes (paragraphs that only have an opening quote)?
