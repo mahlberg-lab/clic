@@ -89,6 +89,7 @@ class QuoteTokenizer:
         # deals only with quote pairs within paragraphs
         # quotes that extend across paragraphs are dealt with in
         quote_style = common.single_or_double(self.tree.xpath('/div0')[0].get('id'))
+        quote_style = 'double' if quote_style == 'single' else 'single' # We check the opposite
         if quote_style == 'single':
             # replace location following the first matched group with <qs/>,
             # etc.
@@ -118,6 +119,7 @@ class QuoteTokenizer:
         # print "starting the first run"
         # FIXME weird to call it here:
         quote_style = common.single_or_double(self.tree.xpath('/div0')[0].get('id'))
+        quote_style = 'double' if quote_style == 'single' else 'single'
         # print quote_style
         # 4) Apply function in 3) to each paragraph
         # a) Each paragraph is processed as text string
