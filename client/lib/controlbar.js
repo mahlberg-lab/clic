@@ -129,6 +129,11 @@ function ControlBar(control_bar) {
                 args: { corpora: self.page_state.arg('corpora', state_defaults.corpora) },
                 state: {},
             }, 'push');
+
+            // Wait until animation has finished, then scroll viewport
+            window.setTimeout(function () {
+                e.target.scrollIntoView({ behavior: "smooth" });
+            }, 300);
             return;
         }
 
