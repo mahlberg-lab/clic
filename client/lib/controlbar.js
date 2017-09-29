@@ -53,26 +53,6 @@ var noUiSlider_opts = {
     },
 };
 
-var state_defaults = {
-    'corpora': [],
-    'conc-subset': 'all',
-    'conc-q': '',
-    'conc-type': 'whole',
-    'subset-subset': 'shortsus',
-    'table-filter': '',
-    'table-metadata': '',
-    'kwic-span': '-5:5',
-    'kwic-dir': 'start',
-    'kwic-int-start': '3',
-    'kwic-int-end': '3',
-    'kwic-terms': [],
-    'refcorpora': [],
-    'subset': 'all',
-    'refsubset': 'all',
-    'clusterlength': 1,
-    'pvalue': 0.0001,
-};
-
 function to_options_html(opts, group_label) {
     var out;
 
@@ -126,7 +106,7 @@ function ControlBar(control_bar) {
 
             self.page_state.new({
                 doc: e.target.href,
-                args: { corpora: self.page_state.arg('corpora', state_defaults.corpora) },
+                args: { corpora: self.page_state.arg('corpora') },
                 state: {},
             }, 'push');
 
@@ -280,11 +260,11 @@ ControlBar.prototype.reload = function reload(page_state) {
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
         if (tag_toggles_el) {
             tag_toggles_el.innerHTML = '';
-            self.tag_toggles = Object.keys(page_state.state('tag_columns', {})).map(function (t) {
+            self.tag_toggles = Object.keys(page_state.state('tag_columns')).map(function (t) {
                 var toggle = new TagToggle(t);
 
                 toggle.onupdate = function (tag_state) {
-                    var i, new_columns = JSON.parse(JSON.stringify(page_state.state('tag_columns', {})));
+                    var i, new_columns = JSON.parse(JSON.stringify(page_state.state('tag_columns')));
 
                     for (i = 0; i < self.table_selection.length; i++) {
                         if (tag_state === 'yes') {
@@ -307,7 +287,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         }
 
         // Hide the KWIC direction slider we're not using
-        if (page_state.arg('kwic-dir', 'start') === 'start') {
+        if (page_state.arg('kwic-dir') === 'start') {
             self.form.elements['kwic-int-start'].disabled = false;
             self.form.elements['kwic-int-end'].disabled = true;
         } else {
@@ -318,29 +298,29 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Set values from page options, or defaults
         Array.prototype.forEach.call(self.form.elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
-                if (el.tagName === 'FIELDSET' || !state_defaults.hasOwnProperty(el.name)) {
+                if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
                     Math.floor(0);
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
-                    el.checked = !!page_state.arg(el.name, state_defaults[el.name]);
+                    el.checked = !!page_state.arg(el.name);
                 } else if (el.tagName === 'INPUT' && el.type === "radio") {
-                    el.checked = page_state.arg(el.name, state_defaults[el.name]) === el.value;
+                    el.checked = page_state.arg(el.name) === el.value;
                 } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
                     // nouisliders need to be told that something happened
-                    el.value = page_state.arg(el.name, state_defaults[el.name]);
+                    el.value = page_state.arg(el.name);
                     el.dispatchEvent(new window.Event('change', {"bubbles": false}));
                 } else if (el.tagName === 'SELECT') {
                     if (el.name === "kwic-terms") {
                         // Make sure we consider existing options valid
-                        el.innerHTML = to_options_html(page_state.arg('kwic-terms', []));
+                        el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
                     } else if (el.name === "corpora" || el.name === "refcorpora") {
                         // Populate corpora dropdowns
                         el.innerHTML = to_options_html(corpora.corpora, 'Entire corpora') + corpora.corpora.map(function (c) {
                             return to_options_html(c.children, c.title);
                         }).join("");
                     }
-                    jQuery(el).val(page_state.arg(el.name, state_defaults[el.name]));
+                    jQuery(el).val(page_state.arg(el.name));
                 } else {
-                    el.value = page_state.arg(el.name, state_defaults[el.name]);
+                    el.value = page_state.arg(el.name);
                 }
             });
         });

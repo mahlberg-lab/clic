@@ -35,12 +35,12 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
     var api_opts = {};
 
     // Mangle page_state into the API's required parameters
-    api_opts.corpora = page_state.arg('corpora', []);
-    api_opts.subset = page_state.arg('subset', 'all');
-    api_opts.refcorpora = page_state.arg('refcorpora', []);
-    api_opts.refsubset = page_state.arg('refsubset', 'all');
-    api_opts.clusterlength = page_state.arg('clusterlength', '1');
-    api_opts.pvalue = page_state.arg('pvalue', '0.0001');
+    api_opts.corpora = page_state.arg('corpora');
+    api_opts.subset = page_state.arg('subset');
+    api_opts.refcorpora = page_state.arg('refcorpora');
+    api_opts.refsubset = page_state.arg('refsubset');
+    api_opts.clusterlength = page_state.arg('clusterlength');
+    api_opts.pvalue = page_state.arg('pvalue');
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a target corpora", "warn");

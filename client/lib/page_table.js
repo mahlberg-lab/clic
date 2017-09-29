@@ -51,10 +51,10 @@ PageTable.prototype.reload = function reload(page_state) {
     return new Promise(function (resolve, reject) {
         var table_opts;
 
-        self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata', ""));
+        self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata'));
 
         if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
-            self.table.search(page_state.arg('table-filter', ''));
+            self.table.search(page_state.arg('table-filter'));
             self.table.ajax.reload(function () {
                 // We don't have a separate success / fail callback, so switch
                 // on the data type
@@ -76,7 +76,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 self.init_cols = columns_string(self.table_opts.columns);
                 resolve(data);
             };
-            table_opts.search = { search: page_state.arg('table-filter', ''), smart: false };
+            table_opts.search = { search: page_state.arg('table-filter'), smart: false };
             table_opts.ajax = function (params, callback, settings) {
                 new Promise(function (resolve) {
                     // NB: This has to be self.page_state, otherwise we make a closure
@@ -120,7 +120,7 @@ PageTable.prototype.reload = function reload(page_state) {
         }
     }).then(function (data) {
         var i, n,
-            selected = page_state.state('selected_rows', []);
+            selected = page_state.state('selected_rows');
 
         // Make sure previously selected rows are still selected
         for (i = 0; i < selected.length; i++) {

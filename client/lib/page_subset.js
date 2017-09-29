@@ -21,14 +21,13 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     kwicSpan[1] = {
         start: 0,
         stop: parseInt(page_state.arg(
-            page_state.arg('kwic-dir', 'start') === 'start' ? 'kwic-int-start' : 'kwic-int-end',
-            3
+            page_state.arg('kwic-dir') === 'start' ? 'kwic-int-start' : 'kwic-int-end'
         ), 10),
-        reverse: (page_state.arg('kwic-dir', 'start') !== 'start'),
+        reverse: (page_state.arg('kwic-dir') !== 'start'),
     };
 
     // Lower-case all terms, put them in object
-    (page_state.arg('kwic-terms', [])).map(function (t, i) {
+    (page_state.arg('kwic-terms')).map(function (t, i) {
         if (t) {
             kwicTerms[t.toLowerCase()] = i + 1;
         }
@@ -36,8 +35,8 @@ PageSubset.prototype.reload_data = function reload(page_state) {
 
 
     // Mangle page_state into the API's required parameters
-    api_opts.corpora = page_state.arg('corpora', []);
-    api_opts.subset = page_state.arg('subset-subset', 'shortsus');
+    api_opts.corpora = page_state.arg('corpora');
+    api_opts.subset = page_state.arg('subset-subset');
     api_opts.contextsize = 5;
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
@@ -46,8 +45,8 @@ PageSubset.prototype.reload_data = function reload(page_state) {
 
     return api.get('subset', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
-            tag_state = page_state.state('tag_columns', {}),
-            tag_column_order = page_state.state('tag_column_order', []);
+            tag_state = page_state.state('tag_columns'),
+            tag_column_order = page_state.state('tag_column_order');
 
         data = data.data;
 

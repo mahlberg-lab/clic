@@ -18,10 +18,36 @@ var page_classes = {
     },
 };
 
+var state_defaults = {
+    'corpora': [],
+    'conc-subset': 'all',
+    'conc-q': '',
+    'conc-type': 'whole',
+    'subset-subset': 'shortsus',
+    'kwic-span': '-5:5',
+    'kwic-dir': 'start',
+    'kwic-int-start': '3',
+    'kwic-int-end': '3',
+    'kwic-terms': [],
+    'refcorpora': [],
+    'subset': 'all',
+    'refsubset': 'all',
+    'clusterlength': 1,
+    'pvalue': '0.0001',
+
+    'tag_columns': {},
+    'tag_column_order': [],
+    'tag_column_selected': '',
+
+    'table-metadata': '',
+    'table-filter': '',
+    'selected_rows': [],
+};
+
 var page, cb, alerts, current_page = null;
 
 function page_load(e) {
-    var page_state = new State(window),
+    var page_state = new State(window, state_defaults),
         alerts = new Alerts(document.getElementById('alerts')),
         PageConstructor = page_classes[page_state.doc()] || page_classes[''];
 

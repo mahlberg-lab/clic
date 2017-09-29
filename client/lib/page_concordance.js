@@ -56,7 +56,7 @@ PageConcordance.prototype.init = function () {
 };
 
 PageConcordance.prototype.reload = function reload(page_state) {
-    var tag_column_order = page_state.state('tag_column_order', []);
+    var tag_column_order = page_state.state('tag_column_order');
 
     function renderBoolean(data, type, full, meta) {
         return data ? "✓" : " ";
@@ -103,18 +103,18 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 
         return out;
     }
-    kwicSpan = parseKwicSpan(page_state.arg('kwic-span', '-5:5'));
+    kwicSpan = parseKwicSpan(page_state.arg('kwic-span'));
 
-    (page_state.arg('kwic-terms', [])).map(function (t, i) {
+    (page_state.arg('kwic-terms')).map(function (t, i) {
         if (t) {
             kwicTerms[t.toLowerCase()] = i + 1;
         }
     });
 
     // Mangle page_state into the API's required parameters
-    api_opts.corpora = page_state.arg('corpora', []);
-    api_opts.subset = page_state.arg('conc-subset', 'all');
-    api_opts.q = page_state.arg('conc-q', '');
+    api_opts.corpora = page_state.arg('corpora');
+    api_opts.subset = page_state.arg('conc-subset');
+    api_opts.q = page_state.arg('conc-q');
     api_opts.contextsize = 10;
 
     if (api_opts.corpora.length === 0) {
@@ -124,7 +124,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please provide some terms to search for", "warn");
     }
 
-    if (page_state.arg('conc-type', 'whole') === 'any') {
+    if (page_state.arg('conc-type') === 'any') {
         api_opts.q = api_opts.q.split(/(\s+)/).filter(function (t) {
             return (/\w/).test(t);
         });
@@ -132,8 +132,8 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 
     return api.get('concordance', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,
-            tag_state = page_state.state('tag_columns', {}),
-            tag_column_order = page_state.state('tag_column_order', []);
+            tag_state = page_state.state('tag_columns'),
+            tag_column_order = page_state.state('tag_column_order');
 
         data = data.data;
 

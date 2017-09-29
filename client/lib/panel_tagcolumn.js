@@ -40,9 +40,9 @@ function PanelTagColumns(panel_el) {
 
 PanelTagColumns.prototype.do = function (action, e) {
     var self = this,
-        tag_columns = self.page_state.state('tag_columns', {}),
-        tag_column_order = self.page_state.state('tag_column_order', []),
-        tag_column_selected = self.page_state.state('tag_column_selected', ''),
+        tag_columns = self.page_state.state('tag_columns'),
+        tag_column_order = self.page_state.state('tag_column_order'),
+        tag_column_selected = self.page_state.state('tag_column_selected'),
         new_tag_name;
 
     e.preventDefault();
@@ -90,8 +90,8 @@ PanelTagColumns.prototype.do = function (action, e) {
 // Refresh controls based on page_state
 PanelTagColumns.prototype.reload = function reload(page_state) {
     var self = this,
-        tag_column_order = page_state.state('tag_column_order', []),
-        tag_column_selected = page_state.state('tag_column_selected', '');
+        tag_column_order = page_state.state('tag_column_order'),
+        tag_column_selected = page_state.state('tag_column_selected');
 
     self.page_state = page_state;
 

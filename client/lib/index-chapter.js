@@ -6,13 +6,19 @@ var api = require('./api.js');
 var Alerts = require('./alerts.js');
 var State = require('./state.js');
 
+var state_defaults = {
+    'start': 0,
+    'end': 0,
+    'chapter_id': 0,
+};
+
 function Chapter(content_el) {
     /**
       * Highlight terms between start and end, if args provided
       */
     this.highlight = function highlight(page_opts) {
-        var start_node = parseInt(page_opts.arg('start', 0), 10),
-            end_node = parseInt(page_opts.arg('end', 0), 10),
+        var start_node = parseInt(page_opts.arg('start'), 10),
+            end_node = parseInt(page_opts.arg('end'), 10),
             word_nodes,
             i;
 
@@ -33,7 +39,7 @@ function Chapter(content_el) {
       */
     this.reload = function reload(page_opts) {
         var self = this,
-            chapter_id = page_opts.arg('chapter_id', 0);
+            chapter_id = page_opts.arg('chapter_id');
 
         if (!chapter_id) {
             throw new Error("No chapter ID provided");
@@ -49,7 +55,7 @@ function Chapter(content_el) {
 var page;
 
 function page_load(e) {
-    var page_state = new State(window),
+    var page_state = new State(window, state_defaults),
         alerts = new Alerts(document.getElementById('alerts'));
 
     return Promise.resolve(page_state).then(function (page_state) {

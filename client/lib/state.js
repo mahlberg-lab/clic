@@ -34,8 +34,9 @@ function obj_to_search(obj) {
     }).join('&');
 }
 
-function State(win) {
+function State(win, defaults) {
     this.win = win;
+    this.defaults = defaults;
     this._args = search_to_obj(win.location.search.replace(/^\?/, ''));
 }
 
@@ -44,19 +45,28 @@ State.prototype.doc = function () {
 };
 
 /** Fetch named a named argument (i.e. querystring), or all positional args */
-State.prototype.arg = function (name, def) {
+State.prototype.arg = function (name) {
     if (!name) {
         return this.args('#', []);
     }
-    if (Array.isArray(def)) {
-        return this._args[name] || def;
+
+    if (!this.defaults.hasOwnProperty(name)) {
+        throw new Error("Unknown arg " + name);
     }
-    return (this._args[name] || []).join("") || def;
+
+    if (Array.isArray(this.defaults[name])) {
+        return this._args[name] || this.defaults[name];
+    }
+    return (this._args[name] || []).join("") || this.defaults[name];
 };
 
 /** Fetch key out of window.history.state object */
-State.prototype.state = function (name, def) {
-    return (this.win.history.state || {})[name] || def;
+State.prototype.state = function (name) {
+    if (!this.defaults.hasOwnProperty(name)) {
+        throw new Error("Unknown state variable " + name);
+    }
+
+    return (this.win.history.state || {})[name] || this.defaults[name];
 };
 
 /**
