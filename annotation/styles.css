@@ -18,9 +18,11 @@ div0:before {
 
 div0:after {
   content: "quotes - red\00000a
-Alternative quotes - yellow\00000a
+Embedded quotes - yellow\00000a
 Short suspensions - green\00000a
-Long suspensions - orange\00000a";
+Long suspensions - orange\00000a
+Embedded short suspensions - dark blue\00000a
+Embedded long suspensions - light blue\00000a";
   position: fixed;
   white-space: pre;
   top: 10px;
@@ -82,7 +84,7 @@ div0 s {
   line-height: 1.4em;
 }
 
-qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
+qs, qe, alt-qs, alt-qe, sss, sse, sls, sle, alt-sss, alt-sse, alt-sls, alt-sle {
    display: inline-block;
    vertical-align: text-top;
    width: 10px;
@@ -90,10 +92,12 @@ qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
    text-align: center;
    font-weight: bold;
 }
-qs:after, alt-qs:after, sss:after, sls:after { content: "<" }
-qe:after, alt-qe:after, sse:after, sle:after { content: ">" }
+qs:after, alt-qs:after, sss:after, sls:after, alt-sss:after, alt-sls:after { content: "<" }
+qe:after, alt-qe:after, sse:after, sle:after, alt-sse:after, alt-sle:after  { content: ">" }
 
 qs,qe { background-color: red; }
 alt-qs,alt-qe { background-color: yellow; }
 sss,sse { background-color: mediumspringgreen; }
 sls,sle { background-color: orange; }
+alt-sss,alt-sse { background-color: deepskyblue; }
+alt-sls,alt-sle { background-color: lightskyblue; }

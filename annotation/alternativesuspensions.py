@@ -65,12 +65,12 @@ for p in tree.xpath('//p[s/qe]'):
 
                     # add sls to <qe> tag
                     # sls following qe, sle preceding qs
-                    wlist[i] = '<alt-qe/><sls/>'
-                    wlist[i + 2] = '<sle/><alt-qs/>'
+                    wlist[i] = '<alt-qe/><alt-sls/><sls/>'
+                    wlist[i + 2] = '<sle/><alt-sle/><alt-qs/>'
 
                 elif wordCount > 0 and tag == False:
-                    wlist[i] = '<alt-qe/><sss/>'
-                    wlist[i + 2] = '<sse/><alt-qs/>'
+                    wlist[i] = '<alt-qe/><alt-sss/><sss/>'
+                    wlist[i + 2] = '<sse/><alt-sse/><alt-qs/>'
 
 #    e = etree.fromstring(''.join(wlist))
 #    p.getparent().replace(p, e)

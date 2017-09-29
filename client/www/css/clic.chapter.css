@@ -66,7 +66,7 @@ s {
   text-decoration: none;
 }
 
-qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
+qs, qe, alt-qs, alt-qe, sss, sse, sls, sle, alt-sss, alt-sse, alt-sls, alt-sle {
    display: inline-block;
    vertical-align: text-top;
    width: 10px;
@@ -74,8 +74,8 @@ qs, qe, alt-qs, alt-qe, sss, sse, sls, sle {
    text-align: center;
    font-weight: bold;
 }
-qs:after, alt-qs:after, sss:after, sls:after { content: "<" }
-qe:after, alt-qe:after, sse:after, sle:after { content: ">" }
+qs:after, alt-qs:after, sss:after, sls:after, alt-sss:after, alt-sls:after { content: "<" }
+qe:after, alt-qe:after, sse:after, sle:after, alt-sse:after, alt-sle:after  { content: ">" }
 
 #content w[selected],
 #content w[selected] + n,
@@ -90,3 +90,5 @@ qs,qe { background-color: red; }
 alt-qs,alt-qe { background-color: yellow; }
 sss,sse { background-color: mediumspringgreen; }
 sls,sle { background-color: orange; }
+alt-sss,alt-sse { background-color: deepskyblue; }
+alt-sls,alt-sle { background-color: lightskyblue; }
