@@ -34,10 +34,9 @@ function obj_to_search(obj) {
     }).join('&');
 }
 
-function State(win, use_hash) {
+function State(win) {
     this.win = win;
-    this._args = search_to_obj(use_hash ? win.location.hash.replace(/^\#!?/, '') : win.location.search.replace(/^\?/, ''));
-    this._use_hash = use_hash;
+    this._args = search_to_obj(win.location.search.replace(/^\?/, ''));
 }
 
 State.prototype.doc = function () {
