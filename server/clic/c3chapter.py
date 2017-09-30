@@ -132,7 +132,7 @@ class Chapter():
         """
         def find_split(start_pos, end_pos):
             # Match start starts at the final left word, and advances until either:
-            #  (a) We get to end_pos (the next word)
+            #  (a) We get to end_pos (the next word or the end of the array)
             #  (b) We find a space, in which case we use the token after
             # <minute> <!> [Come] . . .
             # <minute> <!> <?> [Come] . . .
@@ -142,15 +142,28 @@ class Chapter():
 
             while i != end_pos:
                 if self.tokens[i].isspace():
-                    return i + 1
+                    return i
+                    # + step if i + step != end_pos else i
                 i += step
             return i
 
-        # Get list of word positions within our range
-        node_words = self.word_map[word_id : word_id + node_size]
-        # Fine tune start/end to match spaces
-        node_start = find_split(node_words[0], self.word_map[word_id - 1]) if word_id > 0 else node_words[0]
-        node_end = find_split(node_words[-1], self.word_map[word_id + node_size])
+        if word_id < len(self.word_map):
+            # Get list of word positions within our range
+            node_words = self.word_map[word_id : word_id + node_size]
+            # Fine tune start/end to match spaces
+            node_start = find_split(
+                node_words[0],
+                self.word_map[word_id - 1] + 1 if word_id > 0 else 0
+            )
+            node_end = find_split(
+                node_words[-1],
+                self.word_map[word_id + node_size] if word_id + node_size < len(self.word_map) else len(self.tokens)
+            )
+        else:
+            # What we want is outside the edge of this chapter
+            node_words = []
+            node_start = len(self.tokens)
+            node_end = len(self.tokens)
 
         if word_window == 0:
             return [

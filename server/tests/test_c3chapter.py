@@ -25,7 +25,7 @@ class TestChapter(unittest.TestCase):
                 <w>stirred</w><n> </n><w>the</w><n> </n><w>fire</w><n>,</n><n> </n><w>and</w><n> </n><w>placed</w><n> </n>
                 <w>another</w><n> </n><w>chair</w><n> </n><w>beside</w><n> </n><w>it</w><sle/>
 
-                <qs/><n>;</n><n> </n><n>'</n><w>what</w><n>!</n><n> </n><w>there's</w><n> </n><w>room</w><n> </n>
+                <qs/><n>;</n><n> </n><n>'</n><w>what</w><n>!</n><w>there's</w><n> </n><w>room</w><n> </n>
                 <w>for</w><n> </n><w>all</w><n>.'</n></toks>
             </div>
         ''')
@@ -40,23 +40,46 @@ class TestChapter(unittest.TestCase):
             return out
 
         self.assertEqual(conc_line(0, 3, 0), [
-            ["You'll", ' ', 'BOTH', ' ', 'stay', ' '],
+            ["'", "You'll", ' ', 'BOTH', ' ', 'stay'],
         ])
         self.assertEqual(conc_line(3, 3, 0), [
-            ['while', ' ', 'this', ' ', 'shower', ' '],
+            [' ', 'while', ' ', 'this', ' ', 'shower'],
         ])
 
         # We prefer to split the node on the nearest space
         self.assertEqual(conc_line(0, 8, 0), [
-            ["You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
+            ["'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
         ])
         self.assertEqual(conc_line(0, 8, 3), [
             [],
-            ["You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
-            ['said', ' ', 'Nancy', ',', ' ', 'as'],
+            ["'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
+            [' ', 'said', ' ', 'Nancy', ',', ' ', 'as'],
         ])
         self.assertEqual(conc_line(3, 5, 3), [
-            ["You'll", ' ', 'BOTH', ' ', 'stay', ' '],
-            ['while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'", ' '],
-            ['said', ' ', 'Nancy', ',', ' ', 'as'],
+            ["You'll", ' ', 'BOTH', ' ', 'stay'],
+            [' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
+            [' ', 'said', ' ', 'Nancy', ',', ' ', 'as'],
+        ])
+
+        # A concordance starting at the end is dumb, but certainly possible as chapters end with <qs/>
+        self.assertEqual(conc_line(22, 3, 0), [
+            # NB: There's no space between there's and the previous word, just exclamation.
+            ['!', "there's", ' ', 'room', ' ', 'for']
+        ])
+        self.assertEqual(conc_line(23, 3, 0), [
+            [' ', 'room', ' ', 'for', ' ', 'all', ".'"],
+        ])
+        self.assertEqual(conc_line(24, 3, 0), [
+            [' ', 'for', ' ', 'all', ".'"],
+        ])
+        self.assertEqual(conc_line(25, 3, 0), [
+            [' ', 'all', ".'"],
+        ])
+        self.assertEqual(conc_line(26, 3, 0), [
+            [],
+        ])
+        self.assertEqual(conc_line(26, 3, 3), [
+            ['room', ' ', 'for', ' ', 'all', ".'"],
+            [],
+            [],
         ])
