@@ -33,6 +33,29 @@ from lxml import etree
 PART_BREAK = re.compile(r'^PART ([0-9IVXLC]+)\.(.*)')
 CHAPTER_BREAK = re.compile(r'^(?:CHAPTER|BOOK) ([0-9IVXLC]+)\.(.*)|^MORAL.(.*)')
 
+def chapter_break(line, state, xml_out):
+    """If line is a chapter break, start new chapter, return True"""
+    m = CHAPTER_BREAK.match(line)
+    if not m:
+        return False
+
+    paragraph_break("", state, xml_out)
+    if state['current_chapter'] > 0:
+        xml_out.write(u'</div>\n')
+    state['current_chapter'] += 1
+    state['current_paragraph'] = 1
+    xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">\n' % (
+        cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
+        cgi.escape(state['subcorpus'], quote=True), cgi.escape(state['book_title'], quote=True),
+        cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
+    ))
+    xml_out.write(u'<title>%s%s</title>\n' % (
+        cgi.escape(state['part_prefix']),
+        cgi.escape(line.strip()),
+    ))
+    return True
+
+
 def paragraph_break(line, state, xml_out):
     """If line is empty, state has paragraph content, write a paragraph break, return True"""
     if line.strip() != '':
@@ -88,22 +111,7 @@ def paragraphs(lines, filename):
             state['part_prefix'] = line.strip() + ' '
             continue
 
-        m = CHAPTER_BREAK.match(line)
-        if m:
-            paragraph_break("", state, xml_out)
-            if state['current_chapter'] > 0:
-                xml_out.write(u'</div>\n')
-            state['current_chapter'] += 1
-            state['current_paragraph'] = 1
-            xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">\n' % (
-                cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
-                cgi.escape(state['subcorpus'], quote=True), cgi.escape(state['book_title'], quote=True),
-                cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
-            ))
-            xml_out.write(u'<title>%s%s</title>\n' % (
-                cgi.escape(state['part_prefix']),
-                cgi.escape(line.strip()),
-            ))
+        if chapter_break(line, state, xml_out):
             continue
 
         if paragraph_break(line, state, xml_out):
