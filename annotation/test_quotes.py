@@ -5,6 +5,8 @@ from lxml import etree
 from quotes import quotes
 
 class TestQuotes(unittest.TestCase):
+    maxDiff = None
+
     def test_shortphrase(self):
         out = quotes(etree.fromstring("""
 <div0 id="canada" type="book" subcorpus="ChiLit" filename="canada.txt">
@@ -51,6 +53,10 @@ class TestQuotes(unittest.TestCase):
   <s sid="2" id="singlequote.c1.s2">'It's H. O.'s fault as much as mine, anyhow.</s> <s sid="8" id="seekers.c4.s8">Why shouldn't he pay?'</s>
 </p>
 
+<p pid="2" id="singlequote.c1.p3">
+  <s sid="1" id="singlequote.c1.s1">'she's so extremely--' Just then she noticed that the Queen was close behind her, listening: so she went on, '--likely to win, that it's hardly worth while finishing the game.'</s>
+</p>
+
 </div>
 </div0>
         """))
@@ -59,6 +65,8 @@ class TestQuotes(unittest.TestCase):
             "<qs/>'Are you sure?'<qe/>",
             "<qs/>`Are you sure?'<qe/>",
             '<qs/>\'It\'s H. O.\'s fault as much as mine, anyhow.</s> <s sid="8" id="seekers.c4.s8">Why shouldn\'t he pay?\'<qe/>',
+            "<qs/>'she's so extremely--'<qe/>",
+            "<qs/>'--likely to win, that it's hardly worth while finishing the game.'<qe/>",
         ])
 
 
