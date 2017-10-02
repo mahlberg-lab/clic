@@ -20,14 +20,19 @@ class TestQuotes(unittest.TestCase):
 <p pid="1" id="canada.c1.p1"><s sid="1" id="canada.c1.s1">She would have Sophie to look over all her "toilettes," as she called frocks; to furbish up any that were "passees," and to air and arrange the new.</s></p>
 <p pid="2" id="canada.c1.p2"><s sid="2" id="canada.c1.s2">My Lady Dedlock has been down at what she calls, in familiar conversation, her "place" in Lincolnshire.</s></p>
 
+<p pid="3" id="canada.c1.p3"><s sid="3" id="canada.c1.s3">"Because"--"because father and mamma have to go away," I was going to say, when suddenly the full meaning of the words seemed to rush over me.</s></p>
 </div>
 </div0>
         """))
         out_string = etree.tostring(out)
+
         # 2 of the quoted short-phrases have been picked out
-        self.assertEqual(len(out_string.split('<qs/>')), 3)
-        self.assertTrue('<qs/>"toilettes,"<qe/>' in out_string)
-        self.assertTrue('<qs/>"passees,"<qe/>' in out_string)
+        self.assertEqual(re.findall(r'<qs/>.*?<qe/>', out_string), [
+            '<qs/>"toilettes,"<qe/>',
+            '<qs/>"passees,"<qe/>',
+            '<qs/>"Because"<qe/>',
+            '<qs/>"because father and mamma have to go away,"<qe/>',
+        ])
 
     def test_single(self):
         out = quotes(etree.fromstring("""

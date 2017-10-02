@@ -63,6 +63,12 @@ class QuoteTokenizer:
                 "(?:&quot;(?= --)|&quot;(?=--)|[,?.!-;_]&quot;)" + # Quote ending + mark
             ")" +
             "( |--|</s>|$|[\w]|\))") # Post-quote ($3)
+        self.quote_regex_double_nopunctuation = re.compile(
+            "(" + # ($1)
+                "(?<!<qs/>)&quot;(?!<qe/>)" # Not-yet-recognised quote mark
+                "(?:\w+[^\w&]+){5,}" + # Body of quote with 5 or more words
+                "(?<!<qs/>)&quot;(?!<qe/>)" # Not-yet-recognised quote mark
+            ")")
         self.quote_regex_single = re.compile(
             "(^| |--|<s[^>]+>|\(|,)" + # pre-quote ($1)
             "(" + # ($2)
@@ -102,6 +108,7 @@ class QuoteTokenizer:
             s = re.sub('"(?=[^>]*<)', '&quot;', text)
             if s.count('&quot;') > 1:
                 t = re.sub(self.quote_regex_double, '\\1<qs/>\\2<qe/>\\3', s)
+                t = re.sub(self.quote_regex_double_nopunctuation, '<qs/>\\1<qe/>', t)
             else:
                 # Regular expression won't find anything, so don't bother
                 t = s
