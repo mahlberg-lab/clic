@@ -31,7 +31,7 @@ for i in ${INPUT}; do
 	echo "Input -- $i"
 
 	echo "Stage 1 -- paragraph extraction: $OUTPUT_DIR/paragraphs/$nf"
-	${PYTHON} $SCRIPT_DIR/paragraphs.py $i > $OUTPUT_DIR/paragraphs/$nf
+	${PYTHON} $SCRIPT_DIR/paragraphs.py $i $OUTPUT_DIR/paragraphs/$nf
 
 	echo "Stage 2 -- extracting sentences: $OUTPUT_DIR/sentences/$nf"
 	${PYTHON} $SCRIPT_DIR/sentences.py $OUTPUT_DIR/paragraphs/$nf $OUTPUT_DIR/sentences/$nf
