@@ -314,7 +314,7 @@ ControlBar.prototype.reload = function reload(page_state) {
                         el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
                     } else if (el.name === "corpora" || el.name === "refcorpora") {
                         // Populate corpora dropdowns
-                        el.innerHTML = to_options_html(corpora.corpora, 'Entire corpora') + corpora.corpora.map(function (c) {
+                        el.innerHTML = to_options_html(corpora.corpora, 'Selected subcorpora') + corpora.corpora.map(function (c) {
                             return to_options_html(c.children, c.title);
                         }).join("");
                     }
