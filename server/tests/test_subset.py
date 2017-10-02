@@ -5,7 +5,8 @@ from clic.clicdb import ClicDb
 from clic.subset import subset
 
 def only_word(l):
-    return [x for x in l if re.match(r'\w', x)]
+    """Use final word-position-index to filter array"""
+    return [l[i] for i in l[-1]]
 
 class TestSubset(unittest.TestCase):
     def test_subset(self):
@@ -39,12 +40,12 @@ class TestSubset(unittest.TestCase):
 
         # We don't include empty context columns
         self.assertEqual(
-            set(["".join(l[0]) for l in out_nocontext[1:]]),
-            set(["".join(l[1]) for l in out_context3[1:]]),
+            set(["".join(l[0][:-1]) for l in out_nocontext[1:]]),
+            set(["".join(l[1][:-1]) for l in out_context3[1:]]),
         )
         self.assertEqual(
-            set(["".join(l[1]) for l in out_context3[1:]]),
-            set(["".join(l[1]) for l in out_context5[1:]]),
+            set(["".join(l[1][:-1]) for l in out_context3[1:]]),
+            set(["".join(l[1][:-1]) for l in out_context5[1:]]),
         )
 
         # Context length is configurable
