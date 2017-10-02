@@ -23,6 +23,11 @@ class TestQuotes(unittest.TestCase):
 <p pid="2" id="canada.c1.p2"><s sid="2" id="canada.c1.s2">My Lady Dedlock has been down at what she calls, in familiar conversation, her "place" in Lincolnshire.</s></p>
 
 <p pid="3" id="canada.c1.p3"><s sid="3" id="canada.c1.s3">"Because"--"because father and mamma have to go away," I was going to say, when suddenly the full meaning of the words seemed to rush over me.</s></p>
+
+<p pid="38" id="treasure.c2.p38">
+  <s sid="92" id="treasure.c2.s92">"Here's luck," "A fair wind," and "Billy Bones his fancy," were very neatly and clearly executed on the forearm; and up near the shoulder there was a sketch of a gallows and a man hanging from it--done, as I thought, with great spirit.</s>
+</p>
+
 </div>
 </div0>
         """))
@@ -34,6 +39,9 @@ class TestQuotes(unittest.TestCase):
             '<qs/>"passees,"<qe/>',
             '<qs/>"Because"<qe/>',
             '<qs/>"because father and mamma have to go away,"<qe/>',
+            '<qs/>"Here\'s luck,"<qe/>',
+            '<qs/>"A fair wind,"<qe/>',  #NB: There's only once space between this quote and the previous
+            '<qs/>"Billy Bones his fancy,"<qe/>',
         ])
 
     def test_single(self):

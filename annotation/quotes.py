@@ -56,7 +56,7 @@ class QuoteTokenizer:
         # 1) Define quotations
         # Uses double quotation marks (")
         self.quote_regex_double = re.compile(
-            "(^| |--|<s[^>]+>|\(|,)" + # Pre-quote ($1)
+            "(^| |--|<s[^>]+>|\(|,|(?<= ))" + # Pre-quote ($1)
             "(" + # ($2)
                 "&quot;" + # Quote-mark
                 "(?:<s[^>]+>|.(?!quot;))+" + # Body of quote
