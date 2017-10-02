@@ -97,6 +97,16 @@ for index, line in enumerate(lines):
     if line.strip() != '':
         paragraph_text += ' ' + line.strip()
 
+if paragraph_text != '':
+    print '<p pid="%d" id="%s.c%d.p%d">\n%s</p>\n' % (
+        current_paragraph,
+        cgi.escape(book_abbreviation, quote=True),
+        current_chapter,
+        current_paragraph,
+        cgi.escape(paragraph_text[1:]), # NB: Remove initial space
+    )
+    current_paragraph += 1
+    paragraph_text = ""
 if current_chapter > 0:
     print '</div>'
 print "\n\n</div0>"
