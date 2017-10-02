@@ -43,18 +43,16 @@ class TestQuotes(unittest.TestCase):
 
 <p pid="1" id="singlequote.c1.p1">
   <s sid="1" id="singlequote.c1.s1">'Are you sure?' she said.</s>
-  <s sid="1" id="singlequote.c1.s1">`Are you sure?' she said.</s>
+  <s sid="2" id="singlequote.c1.s2">`Are you sure?' she said.</s>
 </p>
 
 </div>
 </div0>
         """))
         out_string = etree.tostring(out)
-        self.assertEqual(re.split(r'<qs/>|<qe/>', out_string)[1:], [
-            "'Are you sure?'",
-            ' she said.</s>\n  <s sid="1" id="singlequote.c1.s1">',
-            "`Are you sure?'",
-            ' she said.</s>\n</p>\n\n</div>\n</div0>'
+        self.assertEqual(re.findall(r'<qs/>.*?<qe/>', out_string), [
+            "<qs/>'Are you sure?'<qe/>",
+            "<qs/>`Are you sure?'<qe/>",
         ])
 
 
