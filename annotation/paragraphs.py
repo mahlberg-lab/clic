@@ -31,7 +31,12 @@ import re
 from lxml import etree
 
 PART_BREAK = re.compile(r'^PART ([0-9IVXLC]+)\.(.*)')
-CHAPTER_BREAK = re.compile(r'^(?:CHAPTER|BOOK) ([0-9IVXLC]+)\.(.*)|^MORAL.(.*)')
+CHAPTER_BREAK = re.compile(
+    '^' +
+    '(INTRODUCTION|PREFACE|BOOK|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)' +
+    '\s?' +
+    '([0-9IVXLC]*)\.'
+)
 
 def chapter_break(line, state, xml_out):
     """If line is a chapter break, start new chapter, return True"""
@@ -40,9 +45,15 @@ def chapter_break(line, state, xml_out):
         return False
 
     paragraph_break("", state, xml_out)
-    if state['current_chapter'] > 0:
+
+    if state['current_chapter'] is not None:
         xml_out.write(u'</div>\n')
-    state['current_chapter'] += 1
+        state['current_chapter'] += 1
+    elif line.startswith('INTRODUCTION') or line.startswith('PREFACE'):
+        state['current_chapter'] = 0
+    else:
+        state['current_chapter'] = 1
+
     state['current_paragraph'] = 1
     xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">\n' % (
         cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
@@ -69,7 +80,7 @@ def paragraph_break(line, state, xml_out):
     xml_out.write(u'<p pid="%d" id="%s.c%d.p%d">\n%s</p>\n\n' % (
         state['current_paragraph'],
         cgi.escape(state['book_abbreviation'], quote=True),
-        state['current_chapter'],
+        state['current_chapter'] or 0,
         state['current_paragraph'],
         cgi.escape(state['paragraph_text'][1:]), # NB: Remove initial space
     ))
@@ -84,7 +95,7 @@ def paragraphs(lines, filename):
     # Define all useful state in a dict so we can pass-by-reference
     state = dict(
         part_prefix="",
-        current_chapter=0,
+        current_chapter=None,
         current_paragraph=1,
         paragraph_text="",
         book_title="",
@@ -122,7 +133,7 @@ def paragraphs(lines, filename):
             state['paragraph_text'] += ' ' + line.strip()
 
     paragraph_break("", state, xml_out)
-    if state['current_chapter'] > 0:
+    if state['current_chapter'] is not None:
         xml_out.write(u'</div>\n')
     xml_out.write(u"\n\n</div0>\n")
 
