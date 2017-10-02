@@ -46,6 +46,11 @@ class TestQuotes(unittest.TestCase):
   <s sid="2" id="singlequote.c1.s2">`Are you sure?' she said.</s>
 </p>
 
+<p pid="2" id="singlequote.c1.p2">
+  <s sid="1" id="singlequote.c1.s1">Yet 'twas this very errand, namely, to fix with the _Bonaventure_'s men.</s>
+  <s sid="2" id="singlequote.c1.s2">'It's H. O.'s fault as much as mine, anyhow.</s> <s sid="8" id="seekers.c4.s8">Why shouldn't he pay?'</s>
+</p>
+
 </div>
 </div0>
         """))
@@ -53,6 +58,7 @@ class TestQuotes(unittest.TestCase):
         self.assertEqual(re.findall(r'<qs/>.*?<qe/>', out_string), [
             "<qs/>'Are you sure?'<qe/>",
             "<qs/>`Are you sure?'<qe/>",
+            '<qs/>\'It\'s H. O.\'s fault as much as mine, anyhow.</s> <s sid="8" id="seekers.c4.s8">Why shouldn\'t he pay?\'<qe/>',
         ])
 
 

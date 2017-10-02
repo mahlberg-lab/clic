@@ -73,8 +73,8 @@ class QuoteTokenizer:
             "(^| |--|<s[^>]+>|\(|,)" + # pre-quote ($1)
             "(" + # ($2)
                 "['`]" +  # Quote-mark
-                "(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^'])+" + # Body of quote
-                "(?:'(?= --)|'(?=--)|[,?.!-;_]')" + # Quote ending + mark
+                "(?:(?<![,?.!])'[ edstvyrlamoEDSTVYRLAMO]|[^']|'s)+" + # Body of quote
+                "(?:'(?= --)|'(?=--)|[,?.!-;_]'(?!s))" + # Quote ending + mark
             ")" +
             "( |--|</s>|$|[\w]|\))") # Post-quote ($3)
         # This tree is modified by the tokenizer.
