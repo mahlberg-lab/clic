@@ -32,15 +32,14 @@ def close_db(exception):
     if getattr(g, 'clicdb', None):
         g.clicdb.close()
 
-def stream_json(generator):
+def stream_json(generator, header={}):
     """
-    Turn a generator's output into JSON
-    First item has to be an object, and will be used as the initial
-    header structure,
-    All other items will be added to a "data" array
+    Stream output of generator as JSON.
+    header is used as the containing dict,
+    all other items will be added to a "data" array within it
     """
     # Initial JSON object based on first item returned
-    header = json.dumps(generator.next(), separators=(',', ':'))
+    header = json.dumps(header, separators=(',', ':'))
     if header[-1] != '}':
         raise ValueError("Initial item not a JSON object: %s" % header)
     if header == '{}':
@@ -66,7 +65,8 @@ import clic.concordance
 @app.route('/api/concordance', methods=['GET'])
 def concordances():
     out = clic.concordance.concordance(clicdb(), **request.args)
-    return Response(stream_json(out), content_type='application/json')
+    header = out.next()
+    return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Subset routes ======================================
 import clic.subset
@@ -74,7 +74,8 @@ import clic.subset
 @app.route('/api/subset', methods=['GET'])
 def subset():
     out = clic.subset.subset(clicdb(), **request.args)
-    return Response(stream_json(out), content_type='application/json')
+    header = out.next()
+    return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Keyword routes =====================================
 import clic.keyword
@@ -82,7 +83,8 @@ import clic.keyword
 @app.route('/api/keyword', methods=['GET'])
 def keyword():
     out = clic.keyword.keyword(clicdb(), **request.args)
-    return Response(stream_json(out), content_type='application/json')
+    header = out.next()
+    return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Cluster routes =====================================
 import clic.cluster
@@ -90,7 +92,8 @@ import clic.cluster
 @app.route('/api/cluster', methods=['GET'])
 def cluster():
     out = clic.cluster.cluster(clicdb(), **request.args)
-    return Response(stream_json(out), content_type='application/json')
+    header = out.next()
+    return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Chapter routes =====================================
 import clic.chapter
