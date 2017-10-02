@@ -10,7 +10,7 @@ class Test_get_corpus_structure(unittest.TestCase):
         out = ClicDb().get_corpus_structure()
         # Corpora in alphabetical order
         self.assertEqual([(x['id'], x['title']) for x in out], [
-            (u'ntc', u'19th Century Novels'),
+            (u'ntc', u'19th Century Reference Corpus'),
             (u'ChiLit', u"Children's Literature"),  # NB: Alphabetical by title
             (u'dickens', u'Novels by Charles Dickens'),
         ])
