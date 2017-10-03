@@ -30,10 +30,14 @@ import sys
 import re
 from lxml import etree
 
-PART_BREAK = re.compile(r'^PART ([0-9IVXLC]+)\.(.*)')
+PART_BREAK = re.compile(
+    '^' +
+    '(PART|BOOK)' +
+    ' ([0-9IVXLC]+)\.'
+)
 CHAPTER_BREAK = re.compile(
     '^' +
-    '(INTRODUCTION|PREFACE|BOOK|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)' +
+    '(INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)' +
     '\s?' +
     '([0-9IVXLC]*)\.'
 )
@@ -44,14 +48,18 @@ def end_chapter(state, xml_out):
         xml_out.write(u'</div>\n')
         state['in_chapter'] = False
 
-def chapter_break(line, state, xml_out):
+def chapter_break(line, state, xml_out, force=False):
     """If line is a chapter break, start new chapter, return True"""
-    m = CHAPTER_BREAK.match(line)
-    if not m:
+    if not(force or CHAPTER_BREAK.match(line)):
         return False
 
-    end_chapter(state, xml_out)
-    if not(line.startswith('INTRODUCTION') or line.startswith('PREFACE')):
+    if state['current_chapter'] == 0 and (force == 'preface' or line.startswith('INTRODUCTION') or line.startswith('PREFACE')):
+        if state['in_chapter']:
+            # We're already in a chapter 0, ignore the extra chapter 0 marker
+            return False
+        end_chapter(state, xml_out)
+    else:
+        end_chapter(state, xml_out)
         state['current_chapter'] += 1
     state['in_chapter'] = True
     state['current_paragraph'] = 1
@@ -61,8 +69,9 @@ def chapter_break(line, state, xml_out):
         cgi.escape(state['subcorpus'], quote=True), cgi.escape(state['book_title'], quote=True),
         cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
     ))
-    xml_out.write(u'<title>%s%s</title>\n' % (
+    xml_out.write(u'<title>%s%s%s</title>\n' % (
         cgi.escape(state['part_prefix']),
+        ' ' if state['part_prefix'] and line.strip() else '',
         cgi.escape(line.strip()),
     ))
     return True
@@ -122,7 +131,7 @@ def paragraphs(lines, filename):
         m = PART_BREAK.match(line)
         if m:
             end_chapter(state, xml_out)
-            state['part_prefix'] = line.strip() + ' '
+            state['part_prefix'] = line.strip()
             continue
 
         if chapter_break(line, state, xml_out):
@@ -133,6 +142,10 @@ def paragraphs(lines, filename):
             continue
 
         if line.strip() != '':
+            if not state['in_chapter']:
+                # Didn't find a chapter marker. Add an implicit PREFACE or CHAPTER,
+                # depending on if we've already seen a part marker
+                chapter_break("", state, xml_out, force="chapter" if state['part_prefix'] else "preface")
             state['paragraph_text'] += ' ' + line.strip()
 
     end_chapter(state, xml_out)
