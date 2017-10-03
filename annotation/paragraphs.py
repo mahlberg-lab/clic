@@ -38,23 +38,24 @@ CHAPTER_BREAK = re.compile(
     '([0-9IVXLC]*)\.'
 )
 
+def end_chapter(state, xml_out):
+    paragraph_break("", state, xml_out)
+    if state['in_chapter']:
+        xml_out.write(u'</div>\n')
+        state['in_chapter'] = False
+
 def chapter_break(line, state, xml_out):
     """If line is a chapter break, start new chapter, return True"""
     m = CHAPTER_BREAK.match(line)
     if not m:
         return False
 
-    paragraph_break("", state, xml_out)
-
-    if state['current_chapter'] is not None:
-        xml_out.write(u'</div>\n')
+    end_chapter(state, xml_out)
+    if not(line.startswith('INTRODUCTION') or line.startswith('PREFACE')):
         state['current_chapter'] += 1
-    elif line.startswith('INTRODUCTION') or line.startswith('PREFACE'):
-        state['current_chapter'] = 0
-    else:
-        state['current_chapter'] = 1
-
+    state['in_chapter'] = True
     state['current_paragraph'] = 1
+
     xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">\n' % (
         cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
         cgi.escape(state['subcorpus'], quote=True), cgi.escape(state['book_title'], quote=True),
@@ -95,7 +96,8 @@ def paragraphs(lines, filename):
     # Define all useful state in a dict so we can pass-by-reference
     state = dict(
         part_prefix="",
-        current_chapter=None,
+        current_chapter=0,
+        in_chapter=False,
         current_paragraph=1,
         paragraph_text="",
         book_title="",
@@ -119,6 +121,7 @@ def paragraphs(lines, filename):
 
         m = PART_BREAK.match(line)
         if m:
+            end_chapter(state, xml_out)
             state['part_prefix'] = line.strip() + ' '
             continue
 
@@ -132,9 +135,7 @@ def paragraphs(lines, filename):
         if line.strip() != '':
             state['paragraph_text'] += ' ' + line.strip()
 
-    paragraph_break("", state, xml_out)
-    if state['current_chapter'] is not None:
-        xml_out.write(u'</div>\n')
+    end_chapter(state, xml_out)
     xml_out.write(u"\n\n</div0>\n")
 
     # Return a parsed tree of the output
