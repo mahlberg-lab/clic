@@ -10,7 +10,7 @@ class Test_get_corpus_structure(unittest.TestCase):
         out = ClicDb().get_corpus_structure()
         # Corpora in alphabetical order
         self.assertEqual([(x['id'], x['title']) for x in out], [
-            (u'ntc', u'19th Century Reference Corpus'),
+            (u'ntc', u'19th century reference corpus'),
             (u'ChiLit', u"Children's Literature"),  # NB: Alphabetical by title
             (u'dickens', u'Novels by Charles Dickens'),
         ])
@@ -21,17 +21,21 @@ class Test_get_corpus_structure(unittest.TestCase):
                 self.assertEqual(c['children'][0], dict(
                     id='AgnesG',
                     title='Agnes Grey',
+                    author=u'Anne Bront\xeb',
                 ))
                 self.assertEqual(c['children'][-1], dict(
                     id='wh',
                     title='Wuthering Heights',
+                    author=u'Emily Bront\xeb',
                 ))
             if c['id'] == 'dickens':
                 self.assertEqual(c['children'][0], dict(
                     id='TTC',
                     title='A Tale of Two Cities',
+                    author=u'Charles Dickens',
                 ))
                 self.assertEqual(c['children'][-1], dict(
                     id='OCS',
                     title='The Old Curiosity Shop',
+                    author=u'Charles Dickens',
                 ))

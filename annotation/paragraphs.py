@@ -64,9 +64,10 @@ def chapter_break(line, state, xml_out, force=False):
     state['in_chapter'] = True
     state['current_paragraph'] = 1
 
-    xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" book="%s" type="chapter" num="%d">\n' % (
+    xml_out.write(u'<div id="%s.%d" subcorpus="%s" booktitle="%s" bookauthor="%s" book="%s" type="chapter" num="%d">\n' % (
         cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
         cgi.escape(state['subcorpus'], quote=True), cgi.escape(state['book_title'], quote=True),
+        cgi.escape(state['book_author'], quote=True),
         cgi.escape(state['book_abbreviation'], quote=True), state['current_chapter'],
     ))
     xml_out.write(u'<title>%s%s%s</title>\n' % (
@@ -125,6 +126,7 @@ def paragraphs(lines, filename):
 
         # Author
         if index == 1 and line.strip() != '':
+            state['book_author'] = line.strip()
             xml_out.write(u'<author>%s</author>\n' % cgi.escape(line.strip()))
             continue
 

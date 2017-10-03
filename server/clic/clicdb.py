@@ -60,16 +60,16 @@ class ClicDb():
         Return a list of dicts containing:
         - id: corpus short name
         - title: corpus title
-        - children: [{id: book id, title: book title}, ...]
+        - children: [{id: book id, title: book title, author: book author}, ...]
         """
         c = self.rdb.cursor()
-        c.execute("SELECT c.corpus_id, c.title, b.book_id, b.title FROM corpus c, book b WHERE b.corpus_id = c.corpus_id ORDER BY c.title, b.title")
+        c.execute("SELECT c.corpus_id, c.title, b.book_id, b.title, b.author FROM corpus c, book b WHERE b.corpus_id = c.corpus_id ORDER BY c.title, b.title")
 
         out = []
-        for (c_id, c_title, b_id, b_title) in c.fetchall():
+        for (c_id, c_title, b_id, b_title, b_author) in c:
             if len(out) == 0 or out[-1]['id'] != c_id:
                 out.append(dict(id=c_id, title=c_title, children=[]))
-            out[-1]['children'].append(dict(id=b_id, title=b_title))
+            out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author))
         return out
 
     def corpora_list_to_query(self, corpora, db='cheshire'):
@@ -221,6 +221,7 @@ class ClicDb():
         book_id = ch_node.get('book')
         corpus_id = ch_node.get('subcorpus', '') or self.extra_data['book_corpus'][book_id]
         book_title = ch_node.get('booktitle', '') or self.extra_data['book_titles'][book_id]
+        book_author = ch_node.get('bookauthor', '') or self.extra_data['book_authors'].get(book_id, '')
         word_count = int(ch_node.xpath("count(descendant::w)"))
 
         # Insert book-level metadata into DB
@@ -231,6 +232,7 @@ class ClicDb():
         _rdb_insert(c, "book", (
             book_id,
             book_title,
+            book_author,
             corpus_id,
         ));
         _rdb_insert(c, "chapter", (
@@ -291,6 +293,7 @@ class ClicDb():
         c.execute('''CREATE TABLE book (
             book_id,
             title TEXT NOT NULL,
+            author TEXT NOT NULL,
             corpus_id TEXT,
             FOREIGN KEY(corpus_id) REFERENCES corpus(corpus_id),
             PRIMARY KEY (book_id)

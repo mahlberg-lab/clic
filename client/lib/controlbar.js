@@ -314,8 +314,10 @@ ControlBar.prototype.reload = function reload(page_state) {
                         el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
                     } else if (el.name === "corpora" || el.name === "refcorpora") {
                         // Populate corpora dropdowns
-                        el.innerHTML = to_options_html(corpora.corpora, 'Selected subcorpora') + corpora.corpora.map(function (c) {
-                            return to_options_html(c.children, c.title);
+                        el.innerHTML = to_options_html(self.corpora.corpora, 'Selected subcorpora') + self.corpora.corpora.map(function (c) {
+                            return to_options_html(c.children.map(function (child) {
+                                return { id: child.id, title: child.title + (child.author ? ', ' + child.author : '') };
+                            }), c.title);
                         }).join("");
                     }
                     jQuery(el).val(page_state.arg(el.name));
