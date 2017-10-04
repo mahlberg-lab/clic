@@ -104,6 +104,29 @@ DOUBLE_QUOTEMARKS += [
     'woodmagic',
 ]
 
+# Other corpus books
+DOUBLE_QUOTEMARKS += [
+    'awakening',
+    'carol',
+    'heart',
+    'huckleberry',
+    'ladysusan',
+    'maisie',
+    'mansfield',
+    'middlemarch',
+    'moonstone',
+    'northanger',
+    'room',
+    'sense',
+    'signfour',
+    'silas',
+    'soldier',
+    'thejungle',
+    'twelveyears',
+    'war',
+    'yellow',
+]
+
 def single_or_double(book):
     """
     Look up whether the book uses single or double quotation marks
