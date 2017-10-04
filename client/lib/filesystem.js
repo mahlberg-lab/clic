@@ -5,15 +5,19 @@ var FileSaver = require('file-saver');
 
 module.exports.format_dt = function (dt) {
     var out = [], row = [],
+        row_ids = dt.rows().ids().toArray(),
         include_column = dt.columns().visible().toArray();
 
     // Format header row
-    row = [];
+    row = ['ID'];
     dt.columns().header().map(function (el, i) {
         if (include_column[i]) {
             if (el.classList.contains('sorting_disabled')) {
                 // It's the count column, ignore that
                 include_column[i] = false;
+            } else if (el.classList.contains('tagColumn')) {
+                // Tag columns need a prefix
+                row.push("tag:" + el.innerText);
             } else {
                 row.push(el.innerText);
             }
@@ -23,7 +27,7 @@ module.exports.format_dt = function (dt) {
     out.push(row);
 
     // Format each cell, skipping over the ones we don't care about.
-    row = [];
+    row = [row_ids[0]];
     dt.cells().render('export').map(function (c, i) {
         var col = i % include_column.length;
 
@@ -34,7 +38,7 @@ module.exports.format_dt = function (dt) {
         if (col === (include_column.length - 1)) {
             // End of a row, start a new one.
             out.push(row);
-            row = [];
+            row = [row_ids[Math.floor((i + 1) / include_column.length)]];
         }
     });
 
