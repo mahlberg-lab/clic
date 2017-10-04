@@ -22,7 +22,7 @@ INPUT=$([ -d "$1" ] && readlink -f "$1/*.txt" || readlink -f "$1")
 OUTPUT_DIR=$(readlink -f "$2")
 
 # Make sure all output dirs exist
-mkdir -p $OUTPUT_DIR/{paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions,final}
+mkdir -p $OUTPUT_DIR/{ascii,paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions,final}
 
 for i in ${INPUT}; do
 	nf="$(basename $i .txt).xml"
@@ -30,8 +30,11 @@ for i in ${INPUT}; do
 	echo '--------------------------------------------------'
 	echo "Input -- $i"
 
+	echo "Stage 1 -- ascii7: $OUTPUT_DIR/ascii/$nf"
+	perl -C -MText::Unidecode -n -e'print unidecode($_)' $i > $OUTPUT_DIR/ascii/$nf
+
 	echo "Stage 1 -- paragraph extraction: $OUTPUT_DIR/paragraphs/$nf"
-	${PYTHON} $SCRIPT_DIR/paragraphs.py $i $OUTPUT_DIR/paragraphs/$nf
+	${PYTHON} $SCRIPT_DIR/paragraphs.py $OUTPUT_DIR/ascii/$nf $OUTPUT_DIR/paragraphs/$nf
 
 	echo "Stage 2 -- extracting sentences: $OUTPUT_DIR/sentences/$nf"
 	${PYTHON} $SCRIPT_DIR/sentences.py $OUTPUT_DIR/paragraphs/$nf $OUTPUT_DIR/sentences/$nf
