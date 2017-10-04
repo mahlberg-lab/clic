@@ -128,7 +128,7 @@ State.prototype.new = function (new_state, notify) {
     this.win.history.pushState(
         new_state.state || {},
         "",
-        (new_state.doc || '') + '?' + obj_to_search(new_state.args || {})
+        new_state.url || ((new_state.doc || '') + '?' + obj_to_search(new_state.args || {}))
     );
     if (notify !== 'silent') {
         this.win.dispatchEvent(new this.win.CustomEvent('replacestate'));

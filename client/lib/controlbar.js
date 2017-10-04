@@ -130,6 +130,8 @@ function ControlBar(control_bar) {
                 self.page_state.new({ args: {}, state: {}, }, 'push');
             } else if (clickedOn(e, 'A', 'save')) {
                 filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
+            } else if (clickedOn(e, 'A', 'load')) {
+                self.file_loader.trigger('load');
             } else {
                 throw new Error("Unknown action '" + e.target.className + "'");
             }
@@ -234,6 +236,13 @@ function ControlBar(control_bar) {
     this.panels = {
         'tag-columns': new PanelTagColumns(window.document.getElementById('panel-tag-columns')),
     };
+
+    // Add file loader
+    this.file_loader = filesystem.file_loader(document, function (file, load_mode) {
+        var new_state = filesystem.file_to_state(file);
+
+        self.page_state.new(new_state, 'push');
+    });
 }
 
 // Refresh controls based on page_state
