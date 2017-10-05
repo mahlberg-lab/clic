@@ -14,6 +14,7 @@ class Test_get_corpus_structure(unittest.TestCase):
             (u'ntc', u'19th century reference corpus'),
             (u'ChiLit', u"Children's Literature"),  # NB: Alphabetical by title
             (u'dickens', u'Novels by Charles Dickens'),
+            (u'Other', u'Other'),
         ])
         # Each corpora has some books
         for c in out:
