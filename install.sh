@@ -131,7 +131,7 @@ server {
 
         # All API results are deterministic, cache them
         uwsgi_cache ${UWSGI_CACHE_ZONE};
-        uwsgi_cache_key \$uri;
+        uwsgi_cache_key \$uri?\$args;
         uwsgi_cache_valid 200 302 ${UWSGI_API_CACHE_TIME};
         expires ${UWSGI_API_CACHE_TIME};
     }
