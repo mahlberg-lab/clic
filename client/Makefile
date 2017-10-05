@@ -21,6 +21,8 @@ BUNDLE_LIBS = \
 
 all: test lint compile
 
+start: all
+
 pre_commit: lint compile
 
 compile: $(NODE_PATH) $(OUT_FILES)
@@ -95,4 +97,4 @@ www/css/bundle.libraries.min.css: package.json \
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 	mv $@.mktmp $@
 
-.PHONY: pre_commit compile test browser_test lint clean
+.PHONY: pre_commit compile test start browser_test lint clean
