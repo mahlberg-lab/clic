@@ -33,10 +33,20 @@ return new Promise(function (resolve) {
     return Promise.all($("link[rel=stylesheet],script").toArray().map(function (el) {
         var attr = el.tagName === 'script' ? 'src' : 'href';
 
+        if (!$(el).attr(attr) || $(el).attr(attr).indexOf("/") !== 0) {
+            return "";
+        }
+
         return file_hash("www/" + $(el).attr(attr)).then(function (hash) {
             $(el).attr(attr, $(el).attr(attr) + hash);
         });
     })).then(function () {
+        var ga_script = $("#google-analytics-init");
+
+        ga_script.html(
+            ga_script.html().replace('UA-XXXXX-Y', process.env.GA_KEY)
+        );
+
         process.stdout.write($.html());
     });
 });

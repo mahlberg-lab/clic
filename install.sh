@@ -20,6 +20,7 @@ UWSGI_SOCKET=/tmp/${SERVICE_NAME}_uwsgi.${CLIC_MODE}.sock
 UWSGI_TIMEOUT="5m"
 UWSGI_PROCESSES="4"
 UWSGI_THREADS="4"
+GA_KEY=""  # NB: This is used by the makefile, not here
 
 [ -e "${CLIC_PATH}/.local-conf" ] && . "${CLIC_PATH}/.local-conf" 
 

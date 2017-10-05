@@ -101,8 +101,9 @@ www/css/bundle.libraries.min.css: package.json \
 
 www/%.html: html/%.html \
     build/html_compile.js \
+    ../.local-conf \
     package.json
-	$(NODE_CMD) build/html_compile.js $< > $@.mktmp
+	[ -e "../.local-conf" ] && . ../.local-conf ; export GA_KEY ; $(NODE_CMD) build/html_compile.js $< > $@.mktmp
 	mv $@.mktmp $@
 
 .PHONY: pre_commit compile test start browser_test lint clean

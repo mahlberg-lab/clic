@@ -55,6 +55,11 @@ function page_load(e) {
         alerts.clear();
         document.body.classList.toggle('loading', true);
 
+        if (window.ga) {
+            window.ga('set', 'page', window.location.href);
+            window.ga('send', 'pageview');
+        }
+
         if (!page || page_state.doc() !== current_page) {
             page = new PageConstructor(document.getElementById('content'));
             current_page = page_state.doc();

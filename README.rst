@@ -37,6 +37,19 @@ which is available internally. Untar the cheshire3 stores/indexes (NB: this will
 Production installation
 -----------------------
 
+There a host of variables that can be customised in  ``.local-conf``. The
+options will depend on your environment, the following is a minimal example::
+
+    cat <<EOF > .local-conf
+    CLIC_MODE="production"
+    SERVER_NAME="clic.bham.ac.uk"
+    GA_KEY="UA-XXXXX-Y"
+    EOF
+
+Generally, the only one to override is SERVER_NAME, which controls what DNS
+names the server will respond to. Multiple server names can be used,
+separated by spaces. For futher options, read the source of ``install.sh``.
+
 Download dependencies and compile both server/client by running::
 
     make
@@ -47,20 +60,7 @@ The ``install.sh`` script automates the following steps:
 * Create / update an NGINX site config to use CLiC, and get NGINX to reload
   the config.
 
-There a host of variables that can be customised, see the top of the script.
-Generally, the only one to override is SERVER_NAME, which controls what DNS
-names the server will respond to. Multiple server names can be used,
-separated by spaces.
-
-Write any customisation to ``.local-conf``. The options will depend on your
-environment, the following is a minimal example::
-
-    cat <<EOF > .local-conf
-    CLIC_MODE="production"
-    SERVER_NAME="clic.bham.ac.uk"
-    EOF
-
-For futher options, read the source of ``install.sh``. Finally, run the script::
+Run with the following::
 
     sudo ./install.sh
 
