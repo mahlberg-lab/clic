@@ -130,6 +130,18 @@
     padding: 0 0.3rem;
 }
 
+#control-bar input[type=radio],
+#control-bar input[type=checkbox] {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+#control-bar .conc-type {
+    margin: 1em;
+}
+#control-bar .conc-type:first-child { float: left; }
+#control-bar .conc-type:last-child { float: right; }
+
 #control-bar label {
     display: block;
 }
@@ -138,6 +150,9 @@
 }
 #control-bar .noUi-horizontal {
     margin: 0 16px 3rem 16px;
+}
+#control-bar .noUi-horizontal .noUi-value-horizontal {
+    top: 1rem;
 }
 
 #control-bar input[type=text] {
