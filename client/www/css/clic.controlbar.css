@@ -115,7 +115,7 @@
 }
 
 #control-bar h4 {
-    height: 0.65rem;
+    height: 0.8rem;
     overflow: visible;
     margin-top: 1rem;
     margin-bottom: 1.35rem;
@@ -134,6 +134,10 @@
 #control-bar input[type=checkbox] {
     margin-right: 5px;
     vertical-align: middle;
+}
+#control-bar input[type=radio]:last-child,
+#control-bar input[type=checkbox]:last-child {
+    margin-left: 5px;
 }
 
 #control-bar .conc-type {
