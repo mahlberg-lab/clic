@@ -93,7 +93,7 @@ To avoid this, you can force CLiC to read in every chapter in turn, so everythin
 is ready in memory, and dump this to ``clic-chapter-cache.pickle``, which will be
 automatically read when CLiC restarts. To (re)generate this file do the following:
 * Start CLiC, either in production or development
-* Visit ``http://(server_name)/api/concordance-warm/``, make a cup of tea. You can use
+* Visit ``http://(server_name)/api/warm/``, make a cup of tea. You can use
   ``curl`` to run this command on the server to avoid network issues.
 * Once it is finished, verify ``clic-chapter-cache.pickle`` exists and restart CLiC
   so all processes use the same cache file.

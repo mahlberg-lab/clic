@@ -110,7 +110,7 @@ import clic.c3chapter
 
 @app.route('/api/warm/', methods=['GET'])
 def concordance_warm():
-    out = clic.c3chapter.warm_cache()
+    out = clic.c3chapter.warm_cache(clicdb())
     return Response(out, mimetype='text/plain')
 
 

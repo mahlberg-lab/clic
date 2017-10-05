@@ -11,7 +11,7 @@ from cheshire3.baseObjects import Session
 from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
-from clic.c3chapter import get_chapter, restore_chapter_cache
+from clic.c3chapter import get_chapter, restore_chapter_cache, dump_chapter_cache
 from clic.c3wordlist import facets_to_df
 
 class ClicDb():
@@ -179,6 +179,7 @@ class ClicDb():
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
+        dump_chapter_cache()
 
     def rdb_index_record(self, record):
         """
