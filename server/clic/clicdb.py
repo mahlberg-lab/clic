@@ -269,6 +269,8 @@ class ClicDb():
 
     def recreate_rdb(self):
         c = self.rdb.cursor()
+        c.execute('''PRAGMA page_size = 4096;''')
+        c.execute('''VACUUM;''')
         c.execute('''CREATE TABLE corpus (
             corpus_id TEXT,
             title TEXT NOT NULL,
