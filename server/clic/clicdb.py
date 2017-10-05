@@ -31,10 +31,10 @@ class ClicDb():
         self.recStore = self.db.get_object(self.session, 'recordStore')
         self.idxStore = self.db.get_object(self.session, 'indexStore')
 
-        self.rdb = sqlite3.connect(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'c3.sqlite'))
+        self.rdb = sqlite3.connect("%s" % os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'c3.sqlite'))
 
         # Extra lookup tables not available from cheshire data
-        with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'extra_data.json')) as f:
+        with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'extra_data.json')) as f:
             self.extra_data = json.load(f)
 
     def close(self):
