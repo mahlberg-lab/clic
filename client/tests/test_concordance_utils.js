@@ -79,3 +79,47 @@ test('renderTokenArray', function (t) {
 
     t.end();
 });
+
+test('merge_tags', function (t) {
+    function mt(old_tc, old_tc_order, new_tc, new_tc_order) {
+        return concordance_utils.merge_tags({
+            tag_columns: old_tc,
+            tag_column_order: old_tc_order,
+        }, {
+            tag_columns: new_tc,
+            tag_column_order: new_tc_order,
+        });
+    }
+
+    t.deepEqual(mt({}, [], {}, []), {
+        tag_columns: {},
+        tag_column_order: [],
+    }, "Both states empty");
+
+    t.deepEqual(mt({a: {x: 1}}, ['a'], {}, []), {
+        tag_columns: {a: {x: 1}},
+        tag_column_order: ['a'],
+    }, "Empty new_state");
+
+    t.deepEqual(mt({}, [], {a: {x: 1}}, ['a']), {
+        tag_columns: {a: {x: 1}},
+        tag_column_order: ['a'],
+    }, "Empty old_state");
+
+    t.deepEqual(mt({a: {x: 1}}, ['a'], {b: {y: 1}, c: {z: 1}}, ['b', 'c']), {
+        tag_columns: {a: {x: 1}, b: {y: 1}, c: {z: 1}},
+        tag_column_order: ['a', 'b', 'c'],
+    }, "Merge old and new state");
+
+    t.deepEqual(mt({e: {x: 1}}, ['e'], {b: {y: 1}, c: {z: 1}}, ['b', 'c']), {
+        tag_columns: {e: {x: 1}, b: {y: 1}, c: {z: 1}},
+        tag_column_order: ['e', 'b', 'c'],
+    }, "Merge old and new state, ordering preserved");
+
+    t.deepEqual(mt({e: {x: 1}}, ['e'], {b: {y: 1}, c: {z: 1}, e: {x: 2}}, ['b', 'c', 'e']), {
+        tag_columns: {e: {x: 1}, b: {y: 1}, c: {z: 1}, "e-1": {x: 2}},
+        tag_column_order: ['e', 'b', 'c', 'e-1'],
+    }, "Merge old and new state, ordering preserved, non-unique columns renumbered");
+
+    t.end();
+});

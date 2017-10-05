@@ -2,6 +2,16 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 
+function choose_name(tag_columns, base_tag_name) {
+    var new_tag_name = base_tag_name,
+        i = 1;
+
+    while (tag_columns[new_tag_name]) {
+        new_tag_name = base_tag_name + "-" + i++;
+    }
+    return new_tag_name;
+}
+
 function escapeHtml(tag, s) {
     // https://bugs.jquery.com/ticket/11773
     return '<' + tag + '>' + (String(s)
@@ -90,5 +100,21 @@ module.exports.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
     d[2].kwicSpan = kwicSpan[2];
     d.kwic = Object.keys(matchingTypes).length;
     return d.kwic;
+};
+
+/** Merge tags in old and new state, old state gets to keep it's original names */
+module.exports.merge_tags = function (old_state, new_state) {
+    var i, new_name,
+        out_state = JSON.parse(JSON.stringify(old_state));
+
+    for (i = 0; i < new_state.tag_column_order.length; i++) {
+        new_name = choose_name(out_state.tag_columns, new_state.tag_column_order[i]);
+
+        // Using new name, append tag column to the end of existing ones
+        out_state.tag_column_order.push(new_name);
+        out_state.tag_columns[new_name] = new_state.tag_columns[new_state.tag_column_order[i]];
+    }
+
+    return out_state;
 };
 

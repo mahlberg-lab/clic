@@ -9,6 +9,7 @@ var api = require('./api.js');
 var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
 var filesystem = require('./filesystem.js');
+var concordance_utils = require('./concordance_utils.js');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -132,6 +133,8 @@ function ControlBar(control_bar) {
                 filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
             } else if (clickedOn(e, 'A', 'load')) {
                 self.file_loader.trigger('load');
+            } else if (clickedOn(e, 'A', 'merge')) {
+                self.file_loader.trigger('merge');
             } else {
                 throw new Error("Unknown action '" + e.target.className + "'");
             }
@@ -240,6 +243,13 @@ function ControlBar(control_bar) {
     // Add file loader
     this.file_loader = filesystem.file_loader(document, function (file, load_mode) {
         var new_state = filesystem.file_to_state(file);
+
+        if (load_mode === 'merge') {
+            new_state.state = concordance_utils.merge_tags({
+                tag_columns: self.page_state.state('tag_columns'),
+                tag_column_order: self.page_state.state('tag_column_order'),
+            }, new_state.state);
+        }
 
         self.page_state.new(new_state, 'push');
     });
