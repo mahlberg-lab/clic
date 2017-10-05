@@ -55,23 +55,6 @@ class ClicDb():
             in self.idxStore.get_object(self.idxStore.session, 'subCorpus-idx')
         ]
 
-    def get_corpus_structure(self):
-        """
-        Return a list of dicts containing:
-        - id: corpus short name
-        - title: corpus title
-        - children: [{id: book id, title: book title, author: book author}, ...]
-        """
-        c = self.rdb.cursor()
-        c.execute("SELECT c.corpus_id, c.title, b.book_id, b.title, b.author FROM corpus c, book b WHERE b.corpus_id = c.corpus_id ORDER BY c.title, b.title")
-
-        out = []
-        for (c_id, c_title, b_id, b_title, b_author) in c:
-            if len(out) == 0 or out[-1]['id'] != c_id:
-                out.append(dict(id=c_id, title=c_title, children=[]))
-            out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author))
-        return out
-
     def corpora_list_to_query(self, corpora, db='cheshire'):
         """
         Given a list of books / entire subcorpora, return a query clause

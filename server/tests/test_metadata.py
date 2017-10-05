@@ -1,13 +1,14 @@
 import unittest
 
 from clic.clicdb import ClicDb
+from clic.metadata import get_corpus_structure
 
 class Test_get_corpus_structure(unittest.TestCase):
     def test_call(self):
         """
         get_corpus_structure should return a sorted deep structure
         """
-        out = ClicDb().get_corpus_structure()
+        out = get_corpus_structure(ClicDb())
         # Corpora in alphabetical order
         self.assertEqual([(x['id'], x['title']) for x in out], [
             (u'ntc', u'19th century reference corpus'),

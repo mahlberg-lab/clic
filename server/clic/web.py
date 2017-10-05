@@ -54,9 +54,11 @@ def stream_json(generator, header={}):
     yield '\n]}'
 
 # ==== Metadata routes ====================================
+import clic.metadata
+
 @app.route('/api/corpora', methods=['GET'])
 def corpora():
-    out = clicdb().get_corpus_structure()
+    out = clic.metadata.get_corpus_structure(clicdb())
     return jsonify(dict(corpora=out))
 
 # ==== Concordance routes =================================
