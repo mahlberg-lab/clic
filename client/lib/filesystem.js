@@ -98,7 +98,7 @@ module.exports.file_to_state = function (file) {
     });
 
     return {
-        url: '?' + header.slice(-1)[0].split('?').slice(-1)[0],
+        url: header.slice(-1)[0].replace(/^.*\/(\w+\?)/, "$1"),
         state: {
             tag_columns: tag_columns,
             tag_column_order: tag_column_order,
