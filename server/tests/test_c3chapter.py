@@ -40,46 +40,46 @@ class TestChapter(unittest.TestCase):
             return out
 
         self.assertEqual(conc_line(0, 3, 0), [
-            ["'", "You'll", ' ', 'BOTH', ' ', 'stay'],
+            ("'", "You'll", ' ', 'BOTH', ' ', 'stay'),
         ])
         self.assertEqual(conc_line(3, 3, 0), [
-            [' ', 'while', ' ', 'this', ' ', 'shower'],
+            (' ', 'while', ' ', 'this', ' ', 'shower'),
         ])
 
         # We prefer to split the node on the nearest space
         self.assertEqual(conc_line(0, 8, 0), [
-            ["'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
+            ("'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"),
         ])
         self.assertEqual(conc_line(0, 8, 3), [
-            [],
-            ["'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
-            [' ', 'said', ' ', 'Nancy', ',', ' ', 'as'],
+            (),
+            ("'", "You'll", ' ', 'BOTH', ' ', 'stay', ' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"),
+            (' ', 'said', ' ', 'Nancy', ',', ' ', 'as'),
         ])
         self.assertEqual(conc_line(3, 5, 3), [
-            ["You'll", ' ', 'BOTH', ' ', 'stay'],
-            [' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"],
-            [' ', 'said', ' ', 'Nancy', ',', ' ', 'as'],
+            ("You'll", ' ', 'BOTH', ' ', 'stay'),
+            (' ', 'while', ' ', 'this', ' ', 'shower', ' ', 'gets', ' ', 'owered', ",'"),
+            (' ', 'said', ' ', 'Nancy', ',', ' ', 'as'),
         ])
 
         # A concordance starting at the end is dumb, but certainly possible as chapters end with <qs/>
         self.assertEqual(conc_line(22, 3, 0), [
             # NB: There's no space between there's and the previous word, just exclamation.
-            ['!', "there's", ' ', 'room', ' ', 'for']
+            ('!', "there's", ' ', 'room', ' ', 'for'),
         ])
         self.assertEqual(conc_line(23, 3, 0), [
-            [' ', 'room', ' ', 'for', ' ', 'all', ".'"],
+            (' ', 'room', ' ', 'for', ' ', 'all', ".'"),
         ])
         self.assertEqual(conc_line(24, 3, 0), [
-            [' ', 'for', ' ', 'all', ".'"],
+            (' ', 'for', ' ', 'all', ".'"),
         ])
         self.assertEqual(conc_line(25, 3, 0), [
-            [' ', 'all', ".'"],
+            (' ', 'all', ".'"),
         ])
         self.assertEqual(conc_line(26, 3, 0), [
-            [],
+            (),
         ])
         self.assertEqual(conc_line(26, 3, 3), [
-            ['room', ' ', 'for', ' ', 'all', ".'"],
-            [],
-            [],
+            ('room', ' ', 'for', ' ', 'all', ".'"),
+            (),
+            (),
         ])

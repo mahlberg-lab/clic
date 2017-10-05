@@ -60,6 +60,8 @@ class Chapter():
             self.tokens.append(n.text)
             if n.tag == 'w':
                 self.word_map.append(len(self.tokens) - 1)
+        self.tokens = tuple(self.tokens)
+        self.word_map = tuple(self.word_map)
 
         self.para_words = []
         self.sentence_words = []
@@ -67,6 +69,8 @@ class Chapter():
             self.para_words.append(int(para_node.xpath("count(descendant::w)")))
             for sentence_node in para_node.xpath("s"):
                 self.sentence_words.append(int(sentence_node.xpath("count(descendant::w)")))
+        self.para_words = tuple(self.para_words)
+        self.sentence_words = tuple(self.sentence_words)
 
         self.eid_pos = {}
         for eid_node in dom.xpath("//*[@eid]"):
@@ -167,7 +171,7 @@ class Chapter():
 
         if word_window == 0:
             return [
-                self.tokens[node_start:node_end] + [[x - node_start for x in node_words]],
+                self.tokens[node_start:node_end] + ([x - node_start for x in node_words],),
             ]
 
         # Get word positions for the context also
@@ -175,9 +179,9 @@ class Chapter():
         right_words = self.word_map[word_id + node_size : word_id + node_size + word_window]
 
         return [
-            self.tokens[left_words[0]:node_start] + [[x - left_words[0] for x in left_words]] if len(left_words) > 0 else [[]],
-            self.tokens[node_start:node_end] + [[x - node_start for x in node_words]],
-            self.tokens[node_end:right_words[-1] + 1] + [[x - node_end for x in right_words]] if len(right_words) > 0 else [[]],
+            self.tokens[left_words[0]:node_start] + ([x - left_words[0] for x in left_words],) if len(left_words) > 0 else ([],),
+            self.tokens[node_start:node_end] + ([x - node_start for x in node_words],),
+            self.tokens[node_end:right_words[-1] + 1] + ([x - node_end for x in right_words],) if len(right_words) > 0 else ([],),
         ]
 
 chapter_cache = {}
