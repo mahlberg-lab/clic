@@ -100,7 +100,7 @@ def paragraph_break(line, state, xml_out):
     return True
 
 
-def paragraphs(lines, filename):
+def paragraphs(lines, filename, subcorpus):
     xml_out = io.StringIO()
 
     # Define all useful state in a dict so we can pass-by-reference
@@ -112,7 +112,7 @@ def paragraphs(lines, filename):
         paragraph_text="",
         book_title="",
         book_abbreviation=os.path.basename(filename).replace('.txt', ''),
-        subcorpus=os.path.basename(os.path.dirname(os.path.abspath(filename))),
+        subcorpus=subcorpus,
     )
 
     xml_out.write(u"<div0 id=\"%s\" type=\"book\" subcorpus=\"%s\" filename=\"%s\">\n\n\n" % (state['book_abbreviation'], state['subcorpus'], os.path.basename(filename)))
@@ -160,5 +160,5 @@ def paragraphs(lines, filename):
 
 if __name__ == "__main__":
     filename = sys.argv[1]
-    tree = paragraphs(open(filename).readlines(), filename)
-    tree.write(sys.argv[2])
+    tree = paragraphs(open(filename).readlines(), filename, subcorpus=sys.argv[2])
+    tree.write(sys.argv[3])
