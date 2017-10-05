@@ -6,24 +6,26 @@ set -ex
 #
 # It is tested on Debian, but should hopefully work on anything systemd-based.
 
+[ -e ".local-conf" ] && . ./.local-conf
+
 # ---------------------------
 # Config options, to override any of these, set them in .local.conf
-CLIC_MODE="${CLIC_MODE-development}" # or "production"
-CLIC_PATH="$(dirname "$(readlink -f "$0")")"
-SERVER_NAME="$(hostname --fqdn)"
-SERVICE_NAME="clic"
-SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
-UWSGI_BIN="${CLIC_PATH}/server/bin/uwsgi"
-UWSGI_USER="nobody"
-UWSGI_GROUP="nogroup"
-UWSGI_SOCKET=/tmp/${SERVICE_NAME}_uwsgi.${CLIC_MODE}.sock
-UWSGI_TIMEOUT="5m"
-UWSGI_PROCESSES="4"
-UWSGI_THREADS="4"
-UWSGI_API_CACHE_TIME="60m"
-GA_KEY=""  # NB: This is used by the makefile, not here
 
-[ -e "${CLIC_PATH}/.local-conf" ] && . "${CLIC_PATH}/.local-conf" 
+CLIC_PATH="${CLIC_PATH-$(dirname "$(readlink -f "$0")")}"
+SERVER_NAME="${SERVER_NAME-$(hostname --fqdn)}"
+SERVICE_NAME="${SERVICE_NAME-clic}"
+SERVICE_FILE="${SERVICE_FILE-/etc/systemd/system/${SERVICE_NAME}.service}"
+UWSGI_BIN="${UWSGI_BIN-${CLIC_PATH}/server/bin/uwsgi}"
+UWSGI_USER="${UWSGI_USER-nobody}"
+UWSGI_GROUP="${UWSGI_GROUP-nogroup}"
+UWSGI_SOCKET="${UWSGI_SOCKET-/tmp/${SERVICE_NAME}_uwsgi.${CLIC_MODE}.sock}"
+UWSGI_TIMEOUT="${UWSGI_TIMEOUT-5m}"
+UWSGI_PROCESSES="${UWSGI_PROCESSES-4}"
+UWSGI_THREADS="${UWSGI_THREADS-4}"
+UWSGI_API_CACHE_TIME="${UWSGI_API_CACHE_TIME-60m}"
+GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
+
+set | grep -E 'CLIC|UWSGI|SERVICE'
 
 # ---------------------------
 # Ownership of server config / cache files
