@@ -12,6 +12,12 @@ Prerequisites
 
 First, configure your system to include the Yarn repository: https://yarnpkg.com/lang/en/docs/install/
 
+...then the nodejs repository::
+
+    curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+    echo "deb https://deb.nodesource.com/node_6.x xenial main" > /etc/apt/sources.list.d/nodesource.list
+    apt-get update
+
 Then install the following from your system repositories::
 
     # Server prerequisites
@@ -34,8 +40,8 @@ which is available internally. Untar the cheshire3 stores/indexes (NB: this will
     chmod o+w server/cheshire3-server/dbs/dickens/stores/*
     chmod o+w server/cheshire3-server/dbs/dickens/indexes/*
 
-Production installation
------------------------
+Configuration & compilation
+---------------------------
 
 There a host of variables that can be customised in  ``.local-conf``. The
 options will depend on your environment, the following is a minimal example::
@@ -54,7 +60,7 @@ Download dependencies and compile both server/client by running::
 
     make
 
-The ``install.sh`` script automates the following steps:
+Next, install using ``install.sh`` as root. This script automates the following steps:
 
 * Configure systemd to launch the UWSGI process running CLiC, and start it
 * Create / update an NGINX site config to use CLiC, and get NGINX to reload
