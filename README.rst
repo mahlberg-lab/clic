@@ -37,8 +37,7 @@ You need to pre-populate your CLiC instance. This requires ``cheshire3.db_dicken
 which is available internally. Untar the cheshire3 stores/indexes (NB: this will take some time)::
 
     tar -C server/cheshire3-server/dbs/dickens -jxf cheshire3.db_dickens.tar.bz2
-    chmod o+w server/cheshire3-server/dbs/dickens/stores/*
-    chmod o+w server/cheshire3-server/dbs/dickens/indexes/*
+    chmod -R o+rw server/cheshire3-server/dbs/dickens/{indexes,stores,c3.sqlite}
 
 Configuration & compilation
 ---------------------------
