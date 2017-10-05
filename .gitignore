@@ -13,6 +13,7 @@
 /client/www/js/lib
 /client/www/js/lib-ace
 /client/www/js/node_modules
+/client/www/*.html
 
 *.pyc
 /server/bin

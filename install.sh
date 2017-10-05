@@ -84,6 +84,13 @@ server {
     # Emergency CLiC disabling rewrite rule, uncomment to disable clic access
     # rewrite ^(.*) /error/maintenance.html;
 
+    # Versioned resources can be cached forever
+    location ~ ^(.*)\.r\w+\$ {
+        try_files \$1 =404;
+        expires 30d;
+        add_header Vary Accept-Encoding;
+    }
+
     location / {
         # Default page
         rewrite ^/\$ /concordance permanent;

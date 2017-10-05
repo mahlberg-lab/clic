@@ -10,6 +10,8 @@ OUT_FILES = \
     www/js/bundle.chapter.min.js \
     www/js/bundle.libraries.min.js \
     www/css/bundle.libraries.min.css \
+    www/chapter.html \
+    www/index.html
 
 BUNDLE_LIBS = \
     chosen-js \
@@ -95,6 +97,12 @@ www/css/bundle.libraries.min.css: package.json \
 	mkdir -p www/css
 	cat $^ > $@.mktmp
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
+	mv $@.mktmp $@
+
+www/%.html: html/%.html \
+    build/html_compile.js \
+    package.json
+	$(NODE_CMD) build/html_compile.js $< > $@.mktmp
 	mv $@.mktmp $@
 
 .PHONY: pre_commit compile test start browser_test lint clean

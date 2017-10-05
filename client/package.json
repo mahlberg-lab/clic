@@ -28,6 +28,7 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "browserify": "^14.4.0",
+    "cheerio": "^1.0.0-rc.2",
     "exorcist": "^0.4.0",
     "jslint": "^0.11.0",
     "tape": "^4.8.0",
