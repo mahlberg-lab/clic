@@ -148,7 +148,7 @@ def create_concordance(cdb, q, result_set, contextsize):
             (word_id, para_chap, sent_chap) = ch.get_word(match)
 
             conc_line = ch.get_conc_line(word_id, node_size, contextsize) + [
-                [ch.book, ch.chapter, str(para_chap), str(sent_chap)],
+                [ch.book, ch.chapter, para_chap, sent_chap],
                 [count_prev_chap + int(word_id), total_word, result.id, word_id, word_id + node_size],
             ]
 
