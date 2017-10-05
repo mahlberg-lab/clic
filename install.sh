@@ -20,6 +20,7 @@ UWSGI_SOCKET=/tmp/${SERVICE_NAME}_uwsgi.${CLIC_MODE}.sock
 UWSGI_TIMEOUT="5m"
 UWSGI_PROCESSES="4"
 UWSGI_THREADS="4"
+UWSGI_API_CACHE_TIME="60m"
 GA_KEY=""  # NB: This is used by the makefile, not here
 
 [ -e "${CLIC_PATH}/.local-conf" ] && . "${CLIC_PATH}/.local-conf" 
@@ -68,10 +69,16 @@ fi
 # ---------------------------
 # NGINX config for serving clientside
 
+mkdir -p ${CLIC_PATH}/uwsgi_cache
+chown ${UWSGI_USER} ${CLIC_PATH}/uwsgi_cache
+[ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="api_cache" || UWSGI_CACHE_ZONE="off"
+
 cat <<EOF > /etc/nginx/sites-available/${SERVICE_NAME}
 upstream uwsgi_server {
     server unix://${UWSGI_SOCKET};
 }
+
+uwsgi_cache_path ${CLIC_PATH}/uwsgi_cache levels=1:2 keys_zone=api_cache:8m;
 
 server {
     listen      80;
@@ -119,8 +126,15 @@ server {
         include uwsgi_params;
         uwsgi_pass  uwsgi_server;
         uwsgi_read_timeout ${UWSGI_TIMEOUT};
+
+        # All API results are deterministic, cache them
+        uwsgi_cache ${UWSGI_CACHE_ZONE};
+        uwsgi_cache_key \$uri;
+        uwsgi_cache_valid 200 302 ${UWSGI_API_CACHE_TIME};
+        expires ${UWSGI_API_CACHE_TIME};
     }
 }
 EOF
 ln -fs /etc/nginx/sites-available/${SERVICE_NAME} /etc/nginx/sites-enabled/${SERVICE_NAME}
+nginx -t
 systemctl reload nginx.service
