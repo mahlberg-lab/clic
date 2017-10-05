@@ -30,6 +30,11 @@ for i in ${INPUT}; do
 	echo '--------------------------------------------------'
 	echo "Input -- $i"
 
+        [ "$nf" = "heart.xml" -o "$nf" = "thejungle.xml" ] && {
+            echo "$nf is broken. Skipping..."
+            continue
+        }
+
 	echo "Stage 1 -- ascii7: $OUTPUT_DIR/ascii/$nf"
 	perl -C -MText::Unidecode -n -e'print unidecode($_)' $i > $OUTPUT_DIR/ascii/$(basename $i)
 
