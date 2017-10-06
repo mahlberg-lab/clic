@@ -42,6 +42,9 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpus to search in", "warn");
     }
+    if (!api_opts.subset) {
+        throw new DisplayError("Please select a subset", "warn");
+    }
 
     return api.get('subset', api_opts).then(function (data) {
         var i, j, r, allWords = {}, totalMatches = 0,

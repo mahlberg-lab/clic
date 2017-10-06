@@ -123,6 +123,9 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     if (!api_opts.q) {
         throw new DisplayError("Please provide some terms to search for", "warn");
     }
+    if (!api_opts.subset) {
+        throw new DisplayError("Please select a subset", "warn");
+    }
 
     if (page_state.arg('conc-type') === 'any') {
         api_opts.q = api_opts.q.split(/(\s+)/).filter(function (t) {

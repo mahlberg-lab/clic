@@ -36,6 +36,9 @@ PageCluster.prototype.reload_data = function reload(page_state) {
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select a corpus", "warn");
     }
+    if (!api_opts.subset) {
+        throw new DisplayError("Please select a subset", "warn");
+    }
 
     return api.get('cluster', api_opts);
 };

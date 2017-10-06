@@ -48,6 +48,12 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
     if (api_opts.refcorpora.length === 0) {
         throw new DisplayError("Please select a reference corpora", "warn");
     }
+    if (!api_opts.subset) {
+        throw new DisplayError("Please select a subset", "warn");
+    }
+    if (!api_opts.refsubset) {
+        throw new DisplayError("Please select a reference subset", "warn");
+    }
 
     return api.get('keyword', api_opts);
 };
