@@ -42,17 +42,29 @@ def get_corpus_details(cdb):
     for (c_id, c_title, b_id, b_title, b_author, ch_id, ch_chapter_num, ch_word_total) in c:
         # If we haven't added the current corpora, insert new record
         if len(out) == 0 or out[-1]['id'] != c_id:
-            out.append(dict(id=c_id, title=c_title, children=[]))
+            out.append(dict(id=c_id, title=c_title, subset_info={}, children=[]))
 
         # If we haven't added the current book, insert new record
         if len(out[-1]['children']) == 0 or out[-1]['children'][-1]['id'] != b_id:
-            out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author, children=[]))
+            out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author, subset_info={}, children=[]))
 
+        ch_subsets = subset_info.get(ch_id, {})
+        ch_subsets['all'] = ch_word_total
         # Insert current chapter of current book
         out[-1]['children'][-1]['children'].append(dict(
             id=ch_id,
             chapter_num = ch_chapter_num,
-            word_total = ch_word_total,
-            subset_info = subset_info.get(ch_id, {}),
+            title = "Chapter %d" % ch_chapter_num,  # TODO: We should have parsed the chapter title
+            subset_info = ch_subsets,
         ))
+
+        for (k, v) in ch_subsets.items():
+            # Add to book totals
+            if k not in out[-1]['children'][-1]['subset_info']:
+                out[-1]['children'][-1]['subset_info'][k] = 0
+            out[-1]['children'][-1]['subset_info'][k] += v
+            # Add to corpus totals
+            if k not in out[-1]['subset_info']:
+                out[-1]['subset_info'][k] = 0
+            out[-1]['subset_info'][k] += v
     return out
