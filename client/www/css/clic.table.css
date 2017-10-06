@@ -216,7 +216,9 @@ table.dataTable thead .sorting_desc_disabled:after {
 #content table.dataTable td.nowrapColumn {
     white-space: nowrap;
 }
-
+#content table.dataTable a.bookLink:hover line {
+    stroke: #ffa033;
+}
 #content .dataTables_paginate {
     display: flex;
     text-align: center;
