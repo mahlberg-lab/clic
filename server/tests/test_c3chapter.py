@@ -61,6 +61,13 @@ class TestChapter(unittest.TestCase):
             (' ', 'said', ' ', 'Nancy', ',', ' ', 'as'),
         ])
 
+        # We can request a zero-length node
+        self.assertEqual(conc_line(3, 0, 3), [
+            ("You'll", ' ', 'BOTH', ' ', 'stay', ' '),
+            (),
+            ('while', ' ', 'this', ' ', 'shower'),
+        ])
+
         # A concordance starting at the end is dumb, but certainly possible as chapters end with <qs/>
         self.assertEqual(conc_line(22, 3, 0), [
             # NB: There's no space between there's and the previous word, just exclamation.

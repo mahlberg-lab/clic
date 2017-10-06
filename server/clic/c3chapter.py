@@ -151,7 +151,17 @@ class Chapter():
                 i += step
             return i
 
-        if word_id < len(self.word_map):
+        if word_id >= len(self.word_map):
+            # What we want is outside the edge of this chapter
+            node_words = []
+            node_start = len(self.tokens)
+            node_end = len(self.tokens)
+        elif node_size == 0:
+            # Zero-length node requested
+            node_words = []
+            node_start = self.word_map[word_id]
+            node_end = self.word_map[word_id]
+        else:
             # Get list of word positions within our range
             node_words = self.word_map[word_id : word_id + node_size]
             # Fine tune start/end to match spaces
@@ -163,11 +173,6 @@ class Chapter():
                 node_words[-1],
                 self.word_map[word_id + node_size] if word_id + node_size < len(self.word_map) else len(self.tokens)
             )
-        else:
-            # What we want is outside the edge of this chapter
-            node_words = []
-            node_start = len(self.tokens)
-            node_end = len(self.tokens)
 
         if word_window == 0:
             return [
