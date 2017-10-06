@@ -101,6 +101,8 @@ www/css/bundle.libraries.min.css: package.json \
 
 www/%.html: html/%.html \
     build/html_compile.js \
+    www/css/clic.*.css \
+    www/js/*.js \
     ../.local-conf \
     package.json
 	[ -e "../.local-conf" ] && . ../.local-conf ; export GA_KEY ; $(NODE_CMD) build/html_compile.js $< > $@.mktmp
