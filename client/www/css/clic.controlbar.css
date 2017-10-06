@@ -15,13 +15,14 @@
     border-bottom: 1px solid #AAA;
     font-size: inherit;
     line-height: 0;
-    cursor: pointer;
 }
 
-#control-bar .header > .handle {
+#control-bar + .handle {
     position: fixed;
+    z-index: 10;
     top: 8px;
     right: 20px;
+    cursor: pointer;
 }
 
 #control-bar > form {

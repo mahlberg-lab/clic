@@ -100,6 +100,12 @@ function ControlBar(control_bar) {
     this.control_bar = control_bar;
     this.form = control_bar.getElementsByTagName('FORM')[0];
 
+    window.document.querySelectorAll('nav + .handle')[0].addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        control_bar.classList.toggle('in');
+    });
+
     control_bar.addEventListener('click', function (e) {
         if (clickedOn(e, 'LEGEND', null)) {
             e.preventDefault();
@@ -115,11 +121,6 @@ function ControlBar(control_bar) {
             window.setTimeout(function () {
                 e.target.scrollIntoView({ behavior: "smooth" });
             }, 300);
-            return;
-        }
-
-        if (clickedOn(e, null, 'handle')) {
-            control_bar.classList.toggle('in');
             return;
         }
 

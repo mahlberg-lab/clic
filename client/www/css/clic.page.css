@@ -36,27 +36,22 @@ body.loading #scrollable-body:after {
 }
 
 @media (min-width: 960px) {
-    #control-bar.in + #scrollable-body {
+    #control-bar.in ~ #scrollable-body {
         margin-right: 25rem;
     }
 }
 
 header {
-    padding: 20px 10px 10px 20px;
-    border-bottom: 1px solid black;
+    padding: 15px 25px 10px 15px;
+    border-bottom: 5px solid #1e345e;
     overflow: hidden;
-    background-image: linear-gradient(to left top, #D6E1E8 35%, #7F9AA5 100%);
 }
 header h1 {
     float: left;
     margin: 0;
-    line-height: 35px;
+    line-height: 40px;
     font-size: 41px;
-    font-weight: bold;
-    color: black;
-    -webkit-text-fill-color: white;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: #d6e1e8;
+    font-weight: normal;
 }
 header .sponsors {
     float: right;
