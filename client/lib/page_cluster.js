@@ -19,8 +19,7 @@ PageCluster.prototype.init = function () {
     this.table_opts.columns = [
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
         { title: "Cluster", data: "0"},
-        { title: "Frequency", data: "2"},
-        { title: "%age", data: "3"},
+        { title: "Frequency", data: "1"},
     ];
     this.table_opts.order = [[2, "desc"]];
     this.table_count_column = 0;

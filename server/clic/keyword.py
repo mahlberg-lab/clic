@@ -53,6 +53,8 @@ Or using text files as input:
 import pandas as pd
 import numpy as np
 
+from clic.c3wordlist import facets_to_df
+
 
 def keyword(
         cdb,
@@ -69,10 +71,10 @@ def keyword(
     subset = subset[0]
     refsubset = refsubset[0]
 
-    wordlist_analysis = cdb.get_word_list(subset, clusterlength, corpora)
+    wordlist_analysis = facets_to_df(cdb.get_word_list(subset, clusterlength, corpora))
     total_analysis = wordlist_analysis.Count.sum()
 
-    wordlist_reference = cdb.get_word_list(refsubset, clusterlength, refcorpora)
+    wordlist_reference = facets_to_df(cdb.get_word_list(refsubset, clusterlength, refcorpora))
     total_reference = wordlist_reference.Count.sum()
 
     try:

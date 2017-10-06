@@ -12,7 +12,6 @@ from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
 from clic.c3chapter import get_chapter, restore_chapter_cache, dump_chapter_cache
-from clic.c3wordlist import facets_to_df
 
 class ClicDb():
     def __init__(self):
@@ -135,8 +134,7 @@ class ClicDb():
 
         results = self.c3_query(self.corpora_list_to_query(corpora))
         facets = self.db.get_object(self.session, index_name).facets(self.session, results)
-
-        return facets_to_df(facets)
+        return facets
 
     def c3_query(self, query):
         return self.db.search(self.session, self.qf.get_query(self.session, query))
