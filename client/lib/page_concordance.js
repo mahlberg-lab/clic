@@ -83,7 +83,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     // L5 : L4 : L3 : L2 : L1 | R1 : R2 : R3 : R4 : R5
     // Output a configuration suitable for testList
     function parseKwicSpan(values) {
-        var out = [{ignore: true}, {ignore: true}, {ignore: true}],
+        var out = [{ignore: true, reverse: true}, {ignore: true}, {ignore: true}],
             ks = values.split(':');
 
         if (ks[0] < 0) {
