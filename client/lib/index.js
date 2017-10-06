@@ -11,6 +11,7 @@ var page_classes = {
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
+    '/': require('./page_contents.js'),
     '': function (content_div) {
         this.reload = function (page_state) {
             throw new Error("Unknown page: " + page_state.doc());

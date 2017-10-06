@@ -102,9 +102,6 @@ server {
     }
 
     location / {
-        # Default page
-        rewrite ^/\$ /concordance permanent;
-
         # Downloads links
         rewrite ^/downloads/clic-1.4.zip https://github.com/birmingham-ccr/clic-legacy/archive/4370f90a753763c9c3cff50549fa3446ef650954.zip permanent;
         rewrite ^/downloads/DNOV.zip https://github.com/birmingham-ccr/clic-DNOV-xml/archive/ac4ab0ca857fc0c53899ad60af4d116252f89555.zip permanent;
