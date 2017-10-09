@@ -70,8 +70,8 @@ function page_load(e) {
         }
 
         return Promise.all([
-            page.reload(page_state).catch(function (err) { alerts.error(err); }),
-            cb.reload(page_state).catch(function (err) { alerts.error(err); }),
+            page.reload(page_state).catch(function (err) { alerts.error(err); console.log(err); }),
+            cb.reload(page_state).catch(function (err) { alerts.error(err); console.log(err); }),
         ]);
     }).then(function (rvs) {
         rvs.forEach(function (rv) {
