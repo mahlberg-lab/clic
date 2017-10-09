@@ -379,8 +379,6 @@ ControlBar.prototype.new_data = function new_data(data) {
             jQuery(el).trigger("chosen:updated");
         });
     }
-
-    this.control_bar.querySelectorAll("#kwic-total-matches")[0].innerText = (data.totalMatches || 0);
 };
 
 // New rows selected, process selection-based widgets

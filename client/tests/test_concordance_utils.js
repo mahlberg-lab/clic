@@ -123,3 +123,29 @@ test('merge_tags', function (t) {
 
     t.end();
 });
+
+test('extra_info', function (t) {
+    function ei(allBooks, allMatches) {
+        return concordance_utils.extra_info(allBooks, allMatches);
+    }
+
+    t.deepEqual(ei({}, {}), [
+        "from 0 books",
+    ], "Books / matches allowed to be empty");
+
+    t.deepEqual(ei({ "AgnesG": 304 }, {}), [
+        "from 1 book",
+    ], "We just count books");
+    t.deepEqual(ei({ "AgnesG": 304, "AgnesH": 99 }, {}), [
+        "from 2 books",
+    ], "We just count books");
+
+    t.deepEqual(ei({ "AgnesG": 304, "AgnesH": 99 }, { "1": 1, "2": 2, "3": 3  }), [
+        "from 2 books",
+        '3 entries with 3 KWIC matches',
+        '2 entries with 2 KWIC matches',
+        '1 entries with 1 KWIC match'
+    ], "We show each group of KWIC matches in reverse order");
+
+    t.end();
+});

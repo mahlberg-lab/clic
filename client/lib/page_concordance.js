@@ -72,7 +72,8 @@ PageConcordance.prototype.reload = function reload(page_state) {
 };
 
 PageConcordance.prototype.reload_data = function reload(page_state) {
-    var kwicTerms = {},
+    var self = this,
+        kwicTerms = {},
         kwicSpan = [],
         api_opts = {};
 
@@ -134,7 +135,8 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     }
 
     return api.get('concordance', api_opts).then(function (data) {
-        var i, j, r, allWords = {}, totalMatches = 0,
+        var i, j, r,
+            allBooks = {}, allWords = {}, allMatches = {},
             tag_state = page_state.state('tag_columns'),
             tag_column_order = page_state.state('tag_column_order');
 
@@ -146,7 +148,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             // Add KWICGrouper match column
             r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
             if (r > 0) {
-                totalMatches++;
+                allMatches[r] = (allMatches[r] || 0) + 1;
 
                 // Add classes for row highlighting
                 data[i].DT_RowClass = 'kwic-highlight-' + (r % 4 + 1);
@@ -156,11 +158,16 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             for (j = 0; j < tag_column_order.length; j++) {
                 data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
             }
+
+            // Count books used
+            allBooks[data[i][3][0]] = (allBooks[data[3][0]] || 0) + 1;
         }
+
+        // Update info line
+        self.extra_info = concordance_utils.extra_info(allBooks, allMatches);
 
         return {
             allWords: allWords,
-            totalMatches: totalMatches,
             data: data,
         };
     });

@@ -118,3 +118,13 @@ module.exports.merge_tags = function (old_state, new_state) {
     return out_state;
 };
 
+/** Turn allBooks, allMatches into an array of extra info strings for dataTables.net */
+module.exports.extra_info = function (allBooks, allMatches) {
+    var bookCount = Object.keys(allBooks).length;
+
+    return [
+        "from " + bookCount + " book" + (bookCount !== 1 ? "s" : ""),
+    ].concat(Object.keys(allMatches).sort(function (a, b) { return b - a; }).map(function (count) {
+        return allMatches[count] + " entries with " + count + " KWIC match" + (count !== "1" ? "es" : "");
+    }));
+};

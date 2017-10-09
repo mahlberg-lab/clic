@@ -43,6 +43,10 @@ PageTable.prototype.init = function init() {
     this.table_opts.dom = 'ritp';
 };
 
+PageTable.prototype.info_callback = function (settings, start, end, max, total, pre) {
+    return pre + " " + (this.extra_info || []).join(", ");
+};
+
 PageTable.prototype.reload = function reload(page_state) {
     var self = this;
 
@@ -97,6 +101,7 @@ PageTable.prototype.reload = function reload(page_state) {
             table_opts.order = table_opts.order.filter(function (o) {
                 return o[0] < table_opts.columns.length;
             });
+            table_opts.infoCallback = self.info_callback.bind(self);
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             if (self.hasOwnProperty('table_count_column')) {
