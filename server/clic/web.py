@@ -48,10 +48,26 @@ def stream_json(generator, header={}):
         yield header[:-1] + ',"data":['
 
     separator = '\n'
-    for x in generator:
-        yield separator + json.dumps(x, separators=(',', ':'))
-        separator = ',\n'
-    yield '\n]}'
+    footer = None
+    try:
+        for x in generator:
+            yield separator + json.dumps(x, separators=(',', ':'))
+            separator = ',\n'
+    except Exception as e:
+        import traceback
+        footer = dict(message=dict(
+            level='error',
+            error=e.__class__.__name__,
+            message=e.message,
+            stack=traceback.format_exc(),
+        ))
+
+    # End list and format footer
+    footer = json.dumps(footer, separators=(',', ':'))
+    if footer[0] == '{':
+        yield '\n], ' + footer[1:]
+    else:
+        yield '\n]}'
 
 # ==== Metadata routes ====================================
 import clic.metadata

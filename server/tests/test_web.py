@@ -45,3 +45,33 @@ class Test_stream_json(unittest.TestCase):
             yield 2
             yield 3
         self.assertEqual(self.sj(fn(), {"a":1,"b":2}), '{"a":1,"b":2,"data":[\r\n1\r,\n2\r,\n3\r\n]}')
+
+    def test_initialerror(self):
+        """Initial errors are caught"""
+        def fn():
+            raise ValueError("Erk")
+            yield 1
+            yield 2
+            yield 3
+        self.assertEqual(self.sj(fn(), {"a":1,"b":2}),
+            '{"a":1,"b":2,"data":[\r\n], "message":{' +
+            '"message":"Erk","error":"ValueError","stack":"Traceback (most recent call last):\\n' +
+            '  File \\"/srv/devel/bham.clic/server/clic/web.py\\", line 53, in stream_json\\n' +
+            '    for x in generator:\\n  File \\"/srv/devel/bham.clic/server/tests/test_web.py\\", line 52, in fn\\n' +
+            '    raise ValueError(\\"Erk\\")\\nValueError: Erk\\n","level":"error"}' +
+            '}')
+
+    def test_intermediateerror(self):
+        """Intermediate errors are caught"""
+        def fn():
+            yield 1
+            yield 2
+            raise ValueError("Erk")
+            yield 3
+        self.assertEqual(self.sj(fn(), {"a":1,"b":2}),
+            '{"a":1,"b":2,"data":[\r\n1\r,\n2\r\n], "message":{' +
+            '"message":"Erk","error":"ValueError","stack":"Traceback (most recent call last):\\n' +
+            '  File \\"/srv/devel/bham.clic/server/clic/web.py\\", line 53, in stream_json\\n' +
+            '    for x in generator:\\n  File \\"/srv/devel/bham.clic/server/tests/test_web.py\\", line 69, in fn\\n' +
+            '    raise ValueError(\\"Erk\\")\\nValueError: Erk\\n","level":"error"}' +
+            '}')
