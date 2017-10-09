@@ -93,6 +93,10 @@ PageTable.prototype.reload = function reload(page_state) {
                     reject(err);
                 });
             };
+            // Shouldn't try to order by columns that no longer exist (read: tag columns)
+            table_opts.order = table_opts.order.filter(function (o) {
+                return o[0] < table_opts.columns.length;
+            });
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             if (self.hasOwnProperty('table_count_column')) {
