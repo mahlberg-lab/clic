@@ -1,6 +1,7 @@
 all: compile test
 
 compile: lib/python2.7/site-packages/.requirements
+	./bin/pip install -e .
 
 bin/pip:
 	/usr/bin/virtualenv .

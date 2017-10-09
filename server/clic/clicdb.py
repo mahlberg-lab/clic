@@ -319,7 +319,7 @@ class ClicDb():
         self.rdb.commit()
 
 
-if __name__ == '__main__':
+def recreate_rdb():
     cdb = ClicDb()
     for o in cdb.recreate_rdb():
         print(o)
