@@ -69,8 +69,7 @@ Run with the following::
 
     sudo ./install.sh
 
-Once this is done CLiC should be available for use. Next you want to ensure
-that the cache is pre-warmed, see "Cache pre-warm".
+Once this is done CLiC should be available for use.
 
 If you need to stop/start CLiC outside this for whatever reason, use systemctl,
 e.g. ``systemctl stop clic``.
@@ -87,21 +86,9 @@ If you see the "CLiC is down for maintenance" page:
 
 * Make sure CLiC has started without errors: ``systemctl status -ln50 clic``
 
-Cache pre-warm
---------------
+If you see errors about missing tables, or queries are particularly slow:
 
-For maximum performance, CLiC stores all chapters in memory. By default these are
-read in as they are needed for concordance matches. This means that responses will
-be very slow until all chapters have been looked at at least once.
-
-To avoid this, you can force CLiC to read in every chapter in turn, so everything
-is ready in memory, and dump this to ``clic-chapter-cache.pickle``, which will be
-automatically read when CLiC restarts. To (re)generate this file do the following:
-* Start CLiC, either in production or development
-* Visit ``http://(server_name)/api/warm/``, make a cup of tea. You can use
-  ``curl`` to run this command on the server to avoid network issues.
-* Once it is finished, verify ``clic-chapter-cache.pickle`` exists and restart CLiC
-  so all processes use the same cache file.
+* The RDB and/or chapter cache files may not be created. run ``./server/bin/recreate_rdb``.
 
 Back-up / generating dumps from live instances
 ----------------------------------------------

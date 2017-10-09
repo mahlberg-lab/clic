@@ -189,6 +189,7 @@ class ClicDb():
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
+        yield "Dumping chapter cache..."
         dump_chapter_cache()
 
     def rdb_index_record(self, record):
@@ -324,6 +325,8 @@ class ClicDb():
             chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
+        yield "Dumping chapter cache..."
+        dump_chapter_cache()
 
 
 def recreate_rdb():
@@ -346,5 +349,5 @@ def store_documents():
     args = parser.parse_args()
 
     cdb = ClicDb()
-    for o in cdb.store_documents(os.path.abspath(args.path)):
+    for o in cdb.store_documents(os.path.abspath(args.path[0])):
         print(o)

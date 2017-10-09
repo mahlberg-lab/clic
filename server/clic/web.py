@@ -131,15 +131,6 @@ def chapter():
     out = clic.chapter.chapter(clicdb(), **request.args)
     return Response(out, content_type='application/xml')
 
-# ==== Admin routes =======================================
-import clic.c3chapter
-
-@app.route('/api/warm/', methods=['GET'])
-def concordance_warm():
-    out = clic.c3chapter.warm_cache(clicdb())
-    return Response(out, mimetype='text/plain')
-
-
 # ==== Error handlers =====================================
 @app.errorhandler(404)
 def handle_404(error):

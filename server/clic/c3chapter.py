@@ -9,24 +9,6 @@ BASE_DIR = os.path.dirname(__file__)
 CLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
 
 
-def warm_cache(cdb):
-    """
-    Given a Cheshire3 (session), fetch all objects in (database_name)'s (store_name),
-    and parse them as Chapters ready for use
-    """
-    i = 0
-    startTime = time.time()
-    while True:
-        try:
-            get_chapter(cdb.session, cdb.recStore, i)
-            yield "Cached item %d %f\n" % (i, time.time() - startTime);
-            i += 1
-        except ObjectDoesNotExistException:
-            dump_chapter_cache()
-            yield "Chapter cache now contains %d objects\n" % (len(chapter_cache));
-            return
-
-
 class Chapter():
     """
     Abstracts a cheshire3 Chapter record, performing all lookups CLiC needs
