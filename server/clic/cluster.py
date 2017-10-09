@@ -30,4 +30,4 @@ def cluster(
         else:
             skipped += 1
     if skipped > 0:
-        raise UserError('%d clusters with a frequency less than %d are not shown' % (freq, cutoff), 'info')
+        raise UserError('%d clusters with a frequency less than %d are not shown' % (skipped, cutoff), 'info')
