@@ -8,6 +8,8 @@ Return a word-list cluster
     Percentage,
 ]
 '''
+from clic.errors import UserError
+
 def cluster(
         cdb,
         subset=['quote'], corpora=['dickens'],
@@ -20,7 +22,12 @@ def cluster(
 
     yield dict()
 
+    skipped = 0
     wl = cdb.get_word_list(subset, clusterlength, corpora)
     for term, (termId, nRecs, freq) in wl:  # facet = (thing, thing, frequency)
         if freq >= cutoff:
             yield (term, freq)
+        else:
+            skipped += 1
+    if skipped > 0:
+        raise UserError('%d clusters with a frequency less than %d are not shown' % (freq, cutoff), 'info')
