@@ -51,4 +51,3 @@ class Test_get_corpus_details(unittest.TestCase):
 
         for c in out:
             self.assertTrue(len(c['children']) > 0)
-        import pdb ; pdb.set_trace()
