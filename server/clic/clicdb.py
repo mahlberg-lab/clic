@@ -327,6 +327,12 @@ class ClicDb():
 
 
 def recreate_rdb():
+    import argparse
+
+    parser = argparse.ArgumentParser(description='recreate the RDB, chapter cache based on cheshire3 contents')
+    args = parser.parse_args()
+
+    os.remove("%s" % os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'c3.sqlite'))
     cdb = ClicDb()
     for o in cdb.recreate_rdb():
         print(o)
