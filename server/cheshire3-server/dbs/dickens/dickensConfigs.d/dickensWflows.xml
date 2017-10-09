@@ -120,14 +120,30 @@
 		<subConfig type="workflow" id="shortsusWorkflow">
 			<objectType>cheshire3.workflow.CachingWorkflow</objectType>
 			<workflow>
-				<object type="xpathProcessor" ref="shortsusXPath"/>
-				<object type="extractor" ref="SpanXPathTaggedTermExtractor"/>
+
+					<object type="xpathProcessor" ref="shortsusXPath"/>
+
+					<object type="extractor" ref="SpanXPathTaggedTermExtractor"/>
 					<object type="tokenizer" ref="SuppliedOffsetTokenizer"/>
-					<object type="tokenMerger" ref="OffsetProxTokenMerger"/>
-					
-					<object type="normalizer" ref="CaseNormalizer"/>
-					<object type="normalizer" ref="PossessiveNormalizer"/>
-					<object type="index" ref="shortsus-idx"/>
+
+					<fork>
+						<split>
+							<object type="tokenMerger" ref="OffsetProxTokenMerger"/>
+							<object type="normalizer" ref="CaseNormalizer"/>
+							<object type="normalizer" ref="PossessiveNormalizer"/>
+							<object type="index" ref="shortsus-idx"/>
+						</split>
+						<split>
+							<object type="tokenMerger" ref="3GramTokenMerger"/>
+							<object type="normalizer" ref="CaseNormalizer"/>
+							<object type="index" ref="shortsus-3gram-idx"/>
+						</split>
+						<split>
+							<object type="tokenMerger" ref="4GramTokenMerger"/>
+							<object type="normalizer" ref="CaseNormalizer"/>
+							<object type="index" ref="shortsus-4gram-idx"/>
+						</split>
+					</fork>
 			</workflow>
 		</subConfig>
 	
