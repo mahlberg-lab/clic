@@ -6,6 +6,7 @@ import sqlite3
 
 BASE_DIR = os.path.dirname(__file__)
 CLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
+C3_SQLITE = "%s" % os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'c3.sqlite')
 
 from cheshire3.baseObjects import Session
 from cheshire3.exceptions import ObjectDoesNotExistException
@@ -32,7 +33,7 @@ class ClicDb():
         self.recStore = self.db.get_object(self.session, 'recordStore')
         self.idxStore = self.db.get_object(self.session, 'indexStore')
 
-        self.rdb = sqlite3.connect("%s" % os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'c3.sqlite'))
+        self.rdb = sqlite3.connect(C3_SQLITE)
 
         # Extra lookup tables not available from cheshire data
         with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'extra_data.json')) as f:
@@ -335,7 +336,8 @@ def recreate_rdb():
     parser = argparse.ArgumentParser(description='recreate the RDB, chapter cache based on cheshire3 contents')
     args = parser.parse_args()
 
-    os.remove("%s" % os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'c3.sqlite'))
+    if os.path.exists(C3_SQLITE):
+        os.remove(C3_SQLITE)
     cdb = ClicDb()
     for o in cdb.recreate_rdb():
         print(o)
