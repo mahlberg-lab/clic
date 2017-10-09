@@ -132,6 +132,9 @@ class ClicDb():
             else:
                 index_name = '%s-%dgram-idx' % (index_name[:-4], cluster_length)
 
+        if index_name == 'shortsus-5gram-idx':
+            raise ValueError("Short suspensions are 4 or less words, a 5gram is impossible")
+
         results = self.c3_query(self.corpora_list_to_query(corpora))
         facets = self.db.get_object(self.session, index_name).facets(self.session, results)
         return facets
