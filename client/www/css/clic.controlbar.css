@@ -144,8 +144,8 @@
 #control-bar .conc-type {
     margin: 1em;
 }
-#control-bar .conc-type:first-child { float: left; }
-#control-bar .conc-type:last-child { float: right; }
+#control-bar .conc-type > *:first-child { display: inline-block; float: left; }
+#control-bar .conc-type > *:last-child { display: inline-block; float: right; }
 
 #control-bar label {
     display: block;
