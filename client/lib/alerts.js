@@ -18,7 +18,12 @@ Alerts.prototype.show = function (msg) {
 
     // Escape HTML if necessary
     if (!msg.is_html) {
-        msg.message = new Option(msg.message).innerHTML;
+        msg.message = '<div>' + new Option(msg.message).innerHTML + '</div>';
+    }
+
+    // Append any stack output
+    if (msg.stack) {
+        msg.message += '<pre>' + new Option(msg.stack).innerHTML + '</pre>';
     }
 
     // Append to output
@@ -32,8 +37,8 @@ Alerts.prototype.show = function (msg) {
 Alerts.prototype.error = function (err) {
     return this.show({
         level: err.level || 'error',
-        message: '<div>' + new Option(err.message).innerHTML + '</div><pre>' + new Option(err.stack).innerHTML + '</pre>',
-        is_html: true,
+        message: err.message,
+        stack: err.stack,
     });
 };
 
