@@ -12,6 +12,8 @@ from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
 from clic.c3chapter import get_chapter, restore_chapter_cache, dump_chapter_cache
+from clic.errors import UserError
+
 
 class ClicDb():
     def __init__(self):
@@ -133,7 +135,7 @@ class ClicDb():
                 index_name = '%s-%dgram-idx' % (index_name[:-4], cluster_length)
 
         if index_name == 'shortsus-5gram-idx':
-            raise ValueError("Short suspensions are 4 or less words, a 5gram is impossible")
+            raise UserError("Short suspensions are 4 or less words, a 5gram is impossible", "error")
 
         results = self.c3_query(self.corpora_list_to_query(corpora))
         facets = self.db.get_object(self.session, index_name).facets(self.session, results)

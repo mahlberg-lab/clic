@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import os.path
+
+from clic.errors import UserError
 """Concordance endpoint
 
 Searches texts for given phrase(s).
@@ -94,10 +96,10 @@ def build_query(cdb, q, idxName, corpora):
     '''
     ## define search term
     if len(q) == 0:
-        raise ValueError("You must supply at least one search term")
+        raise UserError("You must supply at least one search term", "error")
 
     if len(set(len(term.split()) for term in q)) > 1:
-        raise ValueError("We don't support multiple terms of varying lengths")
+        raise UserError("We don't support multiple terms of varying lengths", "error")
 
     term_clauses = []
     for term in q:
@@ -131,7 +133,7 @@ def create_concordance(cdb, q, result_set, contextsize):
     conc_lines = [] # return concordance lines in list
 
     if sum(len(result.proxInfo) for result in result_set) > 10000:
-        raise ValueError("This query returns over 10 000 results, please try some other search terms using less-common words.")
+        raise UserError("This query returns over 10 000 results, please try some other search terms using less-common words.", "error")
 
     # Empty heading
     yield {}

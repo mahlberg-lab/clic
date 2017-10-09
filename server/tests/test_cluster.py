@@ -14,3 +14,11 @@ class TestCluster(unittest.TestCase):
         except UserError as e:
             self.assertIn("frequency less than 3", e.message)
         self.assertEqual(len(out), 11)
+
+    def test_shortsus5gram(self):
+        cdb = ClicDb()
+
+        with self.assertRaisesRegexp(UserError, "5gram"):
+            out = []
+            for x in cluster(cdb, clusterlength=[5], subset=['shortsus'], corpora=['AgnesG'], cutoff=[3]):
+                out.append(x)

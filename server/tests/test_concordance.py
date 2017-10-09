@@ -3,13 +3,14 @@ import unittest
 
 from clic.clicdb import ClicDb
 from clic.concordance import concordance
+from clic.errors import UserError
 
 class TestConcordance(unittest.TestCase):
     def test_concordance(self):
         cdb = ClicDb()
 
         # Varying node size isn't supported
-        with self.assertRaisesRegexp(ValueError, 'varying'):
+        with self.assertRaisesRegexp(UserError, 'varying'):
             out = [x for x in concordance(
                 cdb,
                 corpora=['AgnesG'],
