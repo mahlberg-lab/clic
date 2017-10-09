@@ -32,6 +32,17 @@ def close_db(exception):
     if getattr(g, 'clicdb', None):
         g.clicdb.close()
 
+def format_error(e):
+    import traceback
+
+    level = getattr(e, 'level', 'error')
+    return dict(
+        error=e.__class__.__name__,
+        level=level,
+        message=e.message,
+        stack=traceback.format_exc() if getattr(e, 'print_stack', True) else None,
+    )
+
 def stream_json(generator, header={}):
     """
     Stream output of generator as JSON.
@@ -54,13 +65,7 @@ def stream_json(generator, header={}):
             yield separator + json.dumps(x, separators=(',', ':'))
             separator = ',\n'
     except Exception as e:
-        import traceback
-        footer = dict(message=dict(
-            level='error',
-            error=e.__class__.__name__,
-            message=e.message,
-            stack=traceback.format_exc(),
-        ))
+        footer = dict(message=format_error(e))
 
     # End list and format footer
     footer = json.dumps(footer, separators=(',', ':'))
@@ -148,11 +153,7 @@ def handle_404(error):
 @app.errorhandler(500)
 def handle_500(error):
     import traceback
-    response = jsonify(dict(
-        error=error.__class__.__name__,
-        message=error.message,
-        stack=traceback.format_exc(),
-    ))
+    response = jsonify(format_error(error))
     response.status_code = 500
     return response
 
