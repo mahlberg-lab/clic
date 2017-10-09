@@ -52,11 +52,12 @@ PageContents.prototype.reload = function reload(page_state) {
     var self = this;
 
     return api.get('corpora/details').then(function (details) {
-        self.content_el.innerHTML = '<div class="clic-contents">' +
-           '<p>Welcome to CLiC. Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
-           '<p>CLiC currently contains the following texts:</p><div>' +
-           renderCorpora(details.corpora) +
-           '</div></div>';
+        self.content_el.innerHTML =
+            '<div class="clic-contents">' +
+            '<p>Welcome to CLiC. Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
+            '<p>CLiC currently contains the following texts:</p><div>' +
+            renderCorpora(details.corpora) +
+            '</div></div>';
     });
 
 };
