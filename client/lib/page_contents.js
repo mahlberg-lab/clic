@@ -32,7 +32,7 @@ function renderChapters(items) {
 
 function renderBooks(items) {
     return items.map(function (i) {
-        return "<h4>" + escapeHTML(i.title) + ": <small>" + renderSubsetInfo(i.subset_info) + "</small></h3>" +
+        return "<h4>" + escapeHTML(i.title) + " (" + escapeHTML(i.author) + "): <small>" + renderSubsetInfo(i.subset_info) + "</small></h3>" +
             renderChapters(i.children || []);
     }).join("\n");
 }
