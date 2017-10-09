@@ -2,6 +2,7 @@ import json
 import unittest
 
 import clic.web
+from clic.errors import UserError
 
 class Test_stream_json(unittest.TestCase):
     def sj(self, gen, header={}):
@@ -53,13 +54,16 @@ class Test_stream_json(unittest.TestCase):
             yield 1
             yield 2
             yield 3
-        self.assertEqual(self.sj(fn(), {"a":1,"b":2}),
-            '{"a":1,"b":2,"data":[\r\n], "message":{' +
-            '"message":"Erk","error":"ValueError","stack":"Traceback (most recent call last):\\n' +
-            '  File \\"/srv/devel/bham.clic/server/clic/web.py\\", line 53, in stream_json\\n' +
-            '    for x in generator:\\n  File \\"/srv/devel/bham.clic/server/tests/test_web.py\\", line 52, in fn\\n' +
-            '    raise ValueError(\\"Erk\\")\\nValueError: Erk\\n","level":"error"}' +
-            '}')
+
+        out = json.loads(self.sj(fn(), {"a":1,"b":2}))
+        self.assertEqual(out['data'], [])
+        self.assertEqual(out['message'], dict(
+            level="error",
+            error="ValueError",
+            message="Erk",
+            stack=out['message']['stack'],
+        ))
+        self.assertIn("ValueError: Erk", out['message']['stack'])
 
     def test_intermediateerror(self):
         """Intermediate errors are caught"""
@@ -68,10 +72,29 @@ class Test_stream_json(unittest.TestCase):
             yield 2
             raise ValueError("Erk")
             yield 3
-        self.assertEqual(self.sj(fn(), {"a":1,"b":2}),
-            '{"a":1,"b":2,"data":[\r\n1\r,\n2\r\n], "message":{' +
-            '"message":"Erk","error":"ValueError","stack":"Traceback (most recent call last):\\n' +
-            '  File \\"/srv/devel/bham.clic/server/clic/web.py\\", line 53, in stream_json\\n' +
-            '    for x in generator:\\n  File \\"/srv/devel/bham.clic/server/tests/test_web.py\\", line 69, in fn\\n' +
-            '    raise ValueError(\\"Erk\\")\\nValueError: Erk\\n","level":"error"}' +
-            '}')
+
+        out = json.loads(self.sj(fn(), {"a":1,"b":2}))
+        self.assertEqual(out['data'], [1,2])  # NB: Got some of the data
+        self.assertEqual(out['message'], dict(
+            level="error",
+            error="ValueError",
+            message="Erk",
+            stack=out['message']['stack'],
+        ))
+        self.assertIn("ValueError: Erk", out['message']['stack'])
+
+    def test_usererror(self):
+        """User errors can prettify the error message"""
+        def fn():
+            yield 1
+            yield 2
+            raise UserError("Potato!", "info")
+
+        out = json.loads(self.sj(fn(), {"a":1,"b":2}))
+        self.assertEqual(out['data'], [1,2])
+        self.assertEqual(out['message'], dict(
+            level="info",
+            error="UserError",
+            message="Potato!",
+            stack=None,
+        ))
