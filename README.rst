@@ -151,10 +151,7 @@ From the ``annotation`` directory::
 
 From the ``server`` directory::
 
-    ./bin/python
-    >>> from clic.clicdb import ClicDb ; cdb = ClicDb()
-    >>> cdb.store_documents('/srv/devel/bham.clic/annotation/ChiLit_out/final/')
-
+    ./bin/store_documents ../annotation/ChiLit_out/final/
 
 Acknowledgements
 ----------------

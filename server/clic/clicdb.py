@@ -177,8 +177,15 @@ class ClicDb():
 
                 # Index new record in RDB
                 self.rdb_index_record(self.recStore.fetch_record(self.session, rec2.id))
+                yield "Indexed %d" % i
             except Exception as e:
-                raise # TODO: Log what went wrong? Go to end then roll back?
+                import traceback
+
+                yield "Failed to index %d:-\n%s" % (
+                    i,
+                    traceback.format_exc(),
+                )
+        yield "Committing..."
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
@@ -322,4 +329,16 @@ class ClicDb():
 def recreate_rdb():
     cdb = ClicDb()
     for o in cdb.recreate_rdb():
+        print(o)
+
+
+def store_documents():
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Given a directory of XML files, import into CLiC')
+    parser.add_argument('path', nargs='+', help="Directory containing XML files")
+    args = parser.parse_args()
+
+    cdb = ClicDb()
+    for o in cdb.store_documents(os.path.abspath(args.path)):
         print(o)
