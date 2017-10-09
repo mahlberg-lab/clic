@@ -374,7 +374,7 @@ ControlBar.prototype.new_data = function new_data(data) {
                 data.allWords[t] = true;
             });
 
-            el.innerHTML = to_options_html(Object.keys(data.allWords || {}));
+            el.innerHTML = to_options_html(Object.keys(data.allWords || {}).sort());
             jQuery(el).val(prevVal);
             jQuery(el).trigger("chosen:updated");
         });
