@@ -151,7 +151,7 @@ def handle_500(error):
     response = jsonify(dict(
         error=error.__class__.__name__,
         message=error.message,
-        additional=traceback.format_exc(),
+        stack=traceback.format_exc(),
     ))
     response.status_code = 500
     return response

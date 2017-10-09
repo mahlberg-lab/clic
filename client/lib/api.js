@@ -57,7 +57,7 @@ module.exports.get = function (endpoint, qs) {
             var e = new Error("Failed to fetch data: " + data.message);
 
             console.log("API Debug info: " + JSON.stringify(data, null, 2));
-            e.stack = data.additional || '';
+            e.stack = data.stack || '';
             throw e;
         });
     });
