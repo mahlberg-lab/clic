@@ -70,8 +70,8 @@ function page_load(e) {
         }
 
         return Promise.all([
-            page.reload(page_state),
-            cb.reload(page_state),
+            page.reload(page_state).catch(function (err) { alerts.error(err); }),
+            cb.reload(page_state).catch(function (err) { alerts.error(err); }),
         ]);
     }).then(function (rvs) {
         rvs.forEach(function (rv) {
@@ -84,14 +84,13 @@ function page_load(e) {
             return cb.new_data(rvs[0]);
         }
         return;
-    }).then(function () {
-        document.body.classList.toggle('loading', false);
     }).catch(function (err) {
-        document.body.classList.toggle('loading', false);
         alerts.error(err);
         if (!err.level) {
             throw err;
         }
+    }).then(function () {
+        document.body.classList.toggle('loading', false);
     });
 }
 
