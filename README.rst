@@ -5,6 +5,8 @@ The CLiC Dickens project demonstrates through corpus stylistics how computer-ass
 
 CLiC code is divided into 2 halves, the python API server in ``server/`` and the HTML/Javascript client in ``client/``.
 
+Documentation for CLiC is stored in ``doc/``.
+
 For more information, cf. `CLiC Dickens - University of Birmingham <http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx/>`_.
 
 Prerequisites
@@ -59,9 +61,10 @@ Download dependencies and compile both server/client by running::
 
     make
 
-Next, install using ``install.sh`` as root. This script automates the following steps:
+Next, run ``install.sh`` as root. This script automates the following steps:
 
 * Configure systemd to launch the UWSGI process running CLiC, and start it
+  if in production mode.
 * Create / update an NGINX site config to use CLiC, and get NGINX to reload
   the config.
 
@@ -97,48 +100,6 @@ You can generate dumps from a running instance for backup / transfer::
 
     tar -C server/cheshire3-server/dbs/dickens -jcvf cheshire3.db_dickens.tar.bz2 \
         indexes stores extra_data.json c3.sqlite
-
-Developing the system
----------------------
-
-To speed up development, pre-warm the cache as-per the "Cache pre-warm" section.
-
-Start the webserver in debug mode::
-
-    make start
-
-To run unit tests::
-
-    make -C server test
-    make -C client test
-
-The following utilities can be useful::
-
-    sudo apt-get install db-util sqlite3
-
-You can get at the cheshire3 objects on the command line with::
-
-    ./bin/python
-    >>> from clic import ClicDb
-    >>> cdb = ClicDb()
-    >>> cdb.c3_query(...)
-
-Favico regeneration
-^^^^^^^^^^^^^^^^^^^
-
-Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
-```client/www/index.html`` and ``client/www/iconx`` as appropriate.
-
-Uploading new texts
--------------------
-
-From the ``annotation`` directory::
-
-    ./annotate.sh ../corpora/ChiLit ./ChiLit_out
-
-From the ``server`` directory::
-
-    ./bin/store_documents ../annotation/ChiLit_out/final/
 
 Acknowledgements
 ----------------
