@@ -149,34 +149,15 @@ class ClicDb():
         - word_id: word position in chapter
         - para_chap: word's paragraph position in chapter
         - sent_chap: word's sentence position in chapter
-        """
-        # Each time a search term is found in a ProximityIndex
-        # (each match) is described in terms of a proxInfo.
-        #
-        # [[[0, 169, 1033, 15292]],
-        #  [[0, 171, 1045, 15292]], etc. ]
-        #
-        # * the first item is the id of the root element from
-        #   which to start counting to find the word node
-        #   for instance, 0 for a chapter view (because the chapter
-        #   is the root element), but 151 for a search in quotes
-        #   text.
-        # * the second item in the deepest list (169, 171)
-        #   is the id of the <w> (word) node
-        # * the third element is the exact character (spaces, and
-        #   and punctuation (stored in <n> (non-word) nodes
-        #   at which the search term starts
-        # * the fourth element is the total amount of characters
-        #   in the document?
-        #
-        # See:-
-        # dbs/dickens/dickensConfigs.d/dickensIdxs.xml
-        # cheshire3.index.ProximityIndex
-        #
-        # It's [nodeIdx, wordIdx, offset, termId(?)] in transformer.py
 
-        #NB: cheshire source suggests that there's never multiple, but I can't say for sure
-        eid, word_id = match[0][0:2]
+        The match should be from result.proxInfo, an array of at least:
+        - eid (i.e. the start node index)
+        - word_offset (i.e. eid offset in chapter + word_offset = word offset in chapter)
+        The following may also exist, but are ignored:
+        - o (i.e. the o(ffset) attribute on the node word in question)
+        - Count of words in chapter(?)
+        """
+        eid, word_id = match[0:2]
         if eid > 0:
             # Look up eid offset and add it to word_id
             # TODO: The query has no index backing it

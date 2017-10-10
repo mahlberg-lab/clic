@@ -98,9 +98,6 @@ def build_query(cdb, q, idxName, corpora):
     if len(q) == 0:
         raise UserError("You must supply at least one search term", "error")
 
-    if len(set(len(term.split()) for term in q)) > 1:
-        raise UserError("We don't support multiple terms of varying lengths", "error")
-
     term_clauses = []
     for term in q:
         term_clauses.append('c3.{0} = "{1}"'.format(idxName, term))
@@ -109,7 +106,7 @@ def build_query(cdb, q, idxName, corpora):
     ## note: /proxInfo needed to search individual books
     query = '(%s) and/proxInfo (%s)' % (
         cdb.corpora_list_to_query(corpora),
-        ' or '.join(term_clauses),
+        ' or/proxInfo '.join(term_clauses),
     )
 
     return query
@@ -138,20 +135,18 @@ def create_concordance(cdb, q, result_set, contextsize):
     # Empty heading
     yield {}
 
-    # NB: We should re-calculate for each match, but we check length in build_query
-    node_size = len(q[0].split())
-
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
         ch = cdb.get_chapter(result.id)
         (book_id, chapter_num, count_prev_chap, total_word) = cdb.get_chapter_word_counts(result.id)
 
         for match in result.proxInfo:
-            (word_id, para_chap, sent_chap) = cdb.get_word(result.id, match)
+            # match contains proxInfo for each word in node, find first.
+            (word_id, para_chap, sent_chap) = cdb.get_word(result.id, match[0])
 
-            conc_line = ch.get_conc_line(word_id, node_size, contextsize) + [
+            conc_line = ch.get_conc_line(word_id, len(match), contextsize) + [
                 [book_id, chapter_num, para_chap, sent_chap],
-                [count_prev_chap + int(word_id), total_word, result.id, word_id, word_id + node_size],
+                [count_prev_chap + int(word_id), total_word, result.id, word_id, word_id + len(match)],
             ]
 
             yield conc_line

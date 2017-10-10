@@ -9,15 +9,6 @@ class TestConcordance(unittest.TestCase):
     def test_concordance(self):
         cdb = ClicDb()
 
-        # Varying node size isn't supported
-        with self.assertRaisesRegexp(UserError, 'varying'):
-            out = [x for x in concordance(
-                cdb,
-                corpora=['AgnesG'],
-                subset=['quote'],
-                q=['she was','hand'],
-            )]
-
         # If they both match then words in the node match query
         out = [x for x in concordance(
             cdb,
@@ -90,4 +81,42 @@ class TestConcordance(unittest.TestCase):
         self.assertEqual(
             set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
             set(['giddy','sure','artful','at','in','dead'])
+        )
+
+        # Can even vary query length
+        she_was_out = [x for x in concordance(
+            cdb,
+            corpora=['AgnesG'],
+            subset=['quote'],
+            q=['she was'],
+            contextsize=[1],
+        )]
+        hand_out = [x for x in concordance(
+            cdb,
+            corpora=['AgnesG'],
+            subset=['quote'],
+            q=['hand'],
+            contextsize=[1],
+        )]
+        out = [x for x in concordance(
+            cdb,
+            corpora=['AgnesG'],
+            subset=['quote'],
+            q=['she was', 'hand'],
+            contextsize=[1],
+        )]
+        self.assertEqual(
+            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
+            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
+                [":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
+        )
+        self.assertEqual(
+            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
+            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
+                [":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
+        )
+        self.assertEqual(
+            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
+            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
+                [":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
         )
