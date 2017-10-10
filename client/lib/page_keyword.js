@@ -25,7 +25,6 @@ PageKeyword.prototype.init = function () {
         { title: "Expected ref", data: "7"},
         { title: "LL", data: "8"},
         { title: "P", data: "10", class: "nowrapColumn"},
-        { title: "Over/under-used", data: "9"},
     ];
     this.table_opts.order = [[6, "desc"]];
     this.table_count_column = 0;
