@@ -28,13 +28,6 @@ GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
 set | grep -E 'CLIC|UWSGI|SERVICE'
 
 # ---------------------------
-# Ownership of server config / cache files
-
-[ -f "${CLIC_PATH}/server/clic-chapter-cache.pickle" ] || touch "${CLIC_PATH}/server/clic-chapter-cache.pickle"
-chown ${UWSGI_USER} "${CLIC_PATH}/server/clic-chapter-cache.pickle"
-chmod g+w "${CLIC_PATH}/server/clic-chapter-cache.pickle"
-
-# ---------------------------
 # Systemd unit file to run uWSGI
 
 systemctl | grep -q "${SERVICE_NAME}.service" && systemctl stop ${SERVICE_NAME}.service
