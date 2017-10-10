@@ -29,7 +29,11 @@ class TestChapter(unittest.TestCase):
                 <w>for</w><n> </n><w>all</w><n>.'</n></toks>
             </div>
         ''')
-        ch = Chapter(dom, "digest")
+        toks = dom.xpath("/div/descendant::*[self::n or self::w]")
+        ch = Chapter(
+            tuple(n.text for n in toks),
+            tuple(i for i, n in enumerate(toks) if n.tag == 'w')
+        )
 
         def conc_line(*args):
             out = []

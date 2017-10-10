@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import array
 import itertools
 import json
 import os
@@ -12,7 +13,7 @@ from cheshire3.baseObjects import Session
 from cheshire3.exceptions import ObjectDoesNotExistException
 from cheshire3.server import SimpleServer
 
-from clic.c3chapter import get_chapter, restore_chapter_cache, dump_chapter_cache
+from clic.c3chapter import Chapter
 from clic.errors import UserError
 
 
@@ -44,10 +45,9 @@ class ClicDb():
 
     def warm_cache(self):
         """
-        Load chapters into RAM, this takes ~20s but improves query times
-        dramatically
+        Any warm operations we may have in the future
         """
-        restore_chapter_cache()
+        pass
 
     def corpora_list_to_query(self, corpora, db='cheshire'):
         """
@@ -104,7 +104,14 @@ class ClicDb():
         return (book_id, chapter_num, count_prev_chap, total_word)
 
     def get_chapter(self, chapter_id):
-        return get_chapter(self.session, self.recStore, chapter_id)
+        old_text_factory = self.rdb.text_factory
+        self.rdb.text_factory = str
+        (tokens, word_map) = self.rdb_query("SELECT tokens, word_map FROM tokens WHERE chapter_id = ? ", (chapter_id,)).fetchone()
+        self.rdb.text_factory = old_text_factory
+
+        tokens = tuple(unicode(tokens).split(b'\x00'))
+        word_map = array.array('L', word_map)
+        return Chapter(tokens, word_map)
 
     def get_subset_index(self, subset):
         """Return the index associated with a subset"""
@@ -220,8 +227,6 @@ class ClicDb():
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
-        yield "Dumping chapter cache..."
-        dump_chapter_cache()
 
     def rdb_index_record(self, record):
         """
@@ -320,8 +325,13 @@ class ClicDb():
                 ))
                 total_count = total_count + word_count
 
-        # Trigger chapter indexing
-        self.get_chapter(chapter_id)
+        # Token indexing
+        toks = dom.xpath("/div/descendant::*[self::n or self::w]")
+        _rdb_insert(c, "tokens", (
+            chapter_id,
+            b'\x00'.join(n.text.encode('utf8') for n in toks),
+            array.array('L', (i for i, n in enumerate(toks) if n.tag == 'w')).tostring(),
+        ))
 
     def recreate_rdb(self):
         c = self.rdb.cursor()
@@ -367,6 +377,13 @@ class ClicDb():
             FOREIGN KEY(chapter_id) REFERENCES chapter(chapter_id),
             PRIMARY KEY (chapter_id, para_id, sent_id)
         )''')
+        c.execute('''CREATE TABLE tokens (
+            chapter_id INT,
+            tokens BLOB,
+            word_map BLOB,
+            FOREIGN KEY(chapter_id) REFERENCES chapter(chapter_id),
+            PRIMARY KEY (chapter_id)
+        )''')
 
         chapter_id = 0
         while True:
@@ -379,8 +396,6 @@ class ClicDb():
             chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
-        yield "Dumping chapter cache..."
-        dump_chapter_cache()
 
 
 def recreate_rdb():

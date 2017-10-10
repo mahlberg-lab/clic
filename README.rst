@@ -91,7 +91,7 @@ If you see the "CLiC is down for maintenance" page:
 
 If you see errors about missing tables, or queries are particularly slow:
 
-* The RDB and/or chapter cache files may not be created. run ``./server/bin/recreate_rdb``.
+* The RDB may be out of date. run ``./server/bin/recreate_rdb``.
 
 Back-up / generating dumps from live instances
 ----------------------------------------------

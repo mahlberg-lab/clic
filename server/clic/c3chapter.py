@@ -5,9 +5,6 @@ import time
 
 from cheshire3.exceptions import ObjectDoesNotExistException
 
-BASE_DIR = os.path.dirname(__file__)
-CLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
-
 
 class Chapter():
     """
@@ -16,27 +13,17 @@ class Chapter():
     Designed to be picked and re-used to save work
 
     Attributes:
-    - digest: The cheshire3 digest for the document
     - tokens: Array of word / non-word tokens
     - word_map: Array of positions in tokens that contain words, i.e. tokens[word_map[4]] is the 4th word
     """
-    def __init__(self, dom, digest):
+    def __init__(self, tokens, word_map):
         """
         Create object
         - dom: The lxml Root node for the chapter (a div)
         - digest: The record digest, used to check for updates
         """
-        self.digest = digest
-        ch_node = dom.xpath('/div')[0]
-
-        self.tokens = []
-        self.word_map = []
-        for n in dom.xpath("/div/descendant::*[self::n or self::w]"):
-            self.tokens.append(n.text)
-            if n.tag == 'w':
-                self.word_map.append(len(self.tokens) - 1)
-        self.tokens = tuple(self.tokens)
-        self.word_map = tuple(self.word_map)
+        self.tokens = tokens
+        self.word_map = word_map
 
     def get_conc_line(self, word_id, node_size, word_window):
         """
@@ -99,32 +86,3 @@ class Chapter():
             self.tokens[node_start:node_end] + ([x - node_start for x in node_words],),
             self.tokens[node_end:right_words[-1] + 1] + ([x - node_end for x in right_words],) if len(right_words) > 0 else ([],),
         ]
-
-chapter_cache = {}
-chapter_pickle_file = os.path.join(CLIC_DIR, 'clic-chapter-cache.pickle')
-def get_chapter(session, recStore, id, force=False):
-    """
-    Given a Cheshire3 (session) and (recStore) and
-    an (id) from the store,
-    return a Chapter object, either from cache or fresh.
-    """
-    if force or id not in chapter_cache:
-        record = recStore.fetch_record(session, id)
-        chapter_cache[id] = Chapter(record.dom, record.digest)
-
-    # Test checksum, if it doesn't match the load the document afresh
-    if chapter_cache[id].digest != recStore.fetch_recordMetadata(session, id, 'digest'):
-        return get_chapter(session, recStore, id, force=True)
-
-    return chapter_cache[id]
-
-def dump_chapter_cache():
-    with open(chapter_pickle_file, 'wb') as f:
-        pickle.dump(chapter_cache, f)
-
-def restore_chapter_cache():
-    global chapter_cache
-    # NB: install.sh tries to create the pickle, but leaves it empty. Ignore this
-    if os.path.exists(chapter_pickle_file) and os.path.getsize(chapter_pickle_file) > 0:
-        with open(chapter_pickle_file, 'rb') as f:
-            chapter_cache = pickle.load(f)
