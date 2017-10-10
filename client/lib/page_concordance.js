@@ -160,7 +160,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
             }
 
             // Count books used
-            allBooks[data[i][3][0]] = (allBooks[data[3][0]] || 0) + 1;
+            allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
         }
 
         // Update info line
