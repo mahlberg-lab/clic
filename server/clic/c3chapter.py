@@ -17,13 +17,8 @@ class Chapter():
 
     Attributes:
     - digest: The cheshire3 digest for the document
-    - book: The book_id this document is part of
-    - chapter: The chapter this document is part of
     - tokens: Array of word / non-word tokens
     - word_map: Array of positions in tokens that contain words, i.e. tokens[word_map[4]] is the 4th word
-    - para_words: Array of word counts in each paragraph
-    - sentence_words: Array of word counts in each sentence
-    - eid_pos: Dict of eid -> starting word id
     """
     def __init__(self, dom, digest):
         """
@@ -33,8 +28,6 @@ class Chapter():
         """
         self.digest = digest
         ch_node = dom.xpath('/div')[0]
-        self.book = ch_node.get('book')
-        self.chapter = ch_node.get('num')
 
         self.tokens = []
         self.word_map = []
@@ -44,70 +37,6 @@ class Chapter():
                 self.word_map.append(len(self.tokens) - 1)
         self.tokens = tuple(self.tokens)
         self.word_map = tuple(self.word_map)
-
-        self.para_words = []
-        self.sentence_words = []
-        for para_node in dom.xpath("/div/p"):
-            self.para_words.append(int(para_node.xpath("count(descendant::w)")))
-            for sentence_node in para_node.xpath("s"):
-                self.sentence_words.append(int(sentence_node.xpath("count(descendant::w)")))
-        self.para_words = tuple(self.para_words)
-        self.sentence_words = tuple(self.sentence_words)
-
-        self.eid_pos = {}
-        for eid_node in dom.xpath("//*[@eid]"):
-            self.eid_pos[eid_node.get('eid')] = int(eid_node.xpath('count(preceding::w)'))
-
-    def get_word(self, match):
-        """
-        Given a CLiC proxInfo match, return an array of:
-        - word_id: word position in chapter
-        - para_chap: word's paragraph position in chapter
-        - sent_chap: word's sentence position in chapter
-        """
-        # Each time a search term is found in a ProximityIndex
-        # (each match) is described in terms of a proxInfo.
-        #
-        # [[[0, 169, 1033, 15292]],
-        #  [[0, 171, 1045, 15292]], etc. ]
-        #
-        # * the first item is the id of the root element from
-        #   which to start counting to find the word node
-        #   for instance, 0 for a chapter view (because the chapter
-        #   is the root element), but 151 for a search in quotes
-        #   text.
-        # * the second item in the deepest list (169, 171)
-        #   is the id of the <w> (word) node
-        # * the third element is the exact character (spaces, and
-        #   and punctuation (stored in <n> (non-word) nodes
-        #   at which the search term starts
-        # * the fourth element is the total amount of characters
-        #   in the document?
-        #
-        # See:-
-        # dbs/dickens/dickensConfigs.d/dickensIdxs.xml
-        # cheshire3.index.ProximityIndex
-        #
-        # It's [nodeIdx, wordIdx, offset, termId(?)] in transformer.py
-        def find_position_in(list_of_counts, id):
-            # NB: We return a position 1..n, not array position
-            total = 0
-            for (i, count) in enumerate(list_of_counts):
-                total += count
-                if total > id:
-                    return i + 1
-            return len(list_of_counts)
-
-        #NB: cheshire source suggests that there's never multiple, but I can't say for sure
-        eid, word_id = match[0][0:2]
-        if eid > 0:
-            word_id += self.eid_pos[str(eid)]
-
-        return (
-            word_id,
-            find_position_in(self.para_words, word_id),
-            find_position_in(self.sentence_words, word_id),
-        )
 
     def get_conc_line(self, word_id, node_size, word_window):
         """

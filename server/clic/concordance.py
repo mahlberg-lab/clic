@@ -144,13 +144,13 @@ def create_concordance(cdb, q, result_set, contextsize):
     ## search through each record (chapter) and identify location of search term(s)
     for result in result_set:
         ch = cdb.get_chapter(result.id)
-        (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, int(ch.chapter))
+        (book_id, chapter_num, count_prev_chap, total_word) = cdb.get_chapter_word_counts(result.id)
 
         for match in result.proxInfo:
-            (word_id, para_chap, sent_chap) = ch.get_word(match)
+            (word_id, para_chap, sent_chap) = cdb.get_word(result.id, match)
 
             conc_line = ch.get_conc_line(word_id, node_size, contextsize) + [
-                [ch.book, ch.chapter, para_chap, sent_chap],
+                [book_id, chapter_num, para_chap, sent_chap],
                 [count_prev_chap + int(word_id), total_word, result.id, word_id, word_id + node_size],
             ]
 

@@ -92,10 +92,10 @@ def subset(cdb, corpora=['dickens'], subset=['quote'], contextsize=['0']):
         if not cur_chapter or cur_chapter != chapter_id:
             cur_chapter = chapter_id
             ch = cdb.get_chapter(cur_chapter)
-            (count_prev_chap, total_word) = cdb.get_chapter_word_counts(ch.book, int(ch.chapter))
+            (book_id, chapter_num, count_prev_chap, total_word) = cdb.get_chapter_word_counts(chapter_id)
 
-        (_, para_chap, sent_chap) = ch.get_word([[0, offset_start]])
+        (_, para_chap, sent_chap) = cdb.get_word(chapter_id, [[0, offset_start]])
         yield ch.get_conc_line(offset_start, offset_end - offset_start, contextsize) + [
-                [ch.book, ch.chapter, para_chap, sent_chap],
+                [book_id, chapter_num, para_chap, sent_chap],
                 [count_prev_chap + int(offset_start), total_word, chapter_id, offset_start, offset_end],
         ]

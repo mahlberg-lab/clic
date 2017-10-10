@@ -89,22 +89,23 @@ class ClicDb():
 
         raise ValueError("Unknown db type %s" % db)
 
-    def get_chapter_word_counts(self, book_id, chapter_num):
+    def get_chapter_word_counts(self, chapter_id):
         """
         For the given book id and chapter, return:
+        - book_id: The short name of the book
+        - chapter_num: The count of the chapter within the book
         - count_prev_chap: Word count for all chapters before (chapter)
         - total_word: Total word count in the book
         """
-        c = self.rdb.cursor()
-        c.execute("SELECT chapter_num, word_total FROM chapter WHERE book_id = ?", (book_id,))
+        (book_id, chapter_num) = self.rdb_query("SELECT book_id, chapter_num FROM chapter WHERE chapter_id = ? ", (chapter_id,)).fetchone()
 
         count_prev_chap = 0
         total_word = 0
-        for (c_num, ch_total) in c.fetchall():
+        for (c_num, ch_total) in self.rdb_query("SELECT chapter_num, word_total FROM chapter WHERE book_id = ?", (book_id,)):
             if c_num < chapter_num:
                 count_prev_chap += ch_total
             total_word += ch_total
-        return (count_prev_chap, total_word)
+        return (book_id, chapter_id, count_prev_chap, total_word)
 
     def get_chapter(self, chapter_id):
         return get_chapter(self.session, self.recStore, chapter_id)
@@ -141,6 +142,58 @@ class ClicDb():
         results = self.c3_query(self.corpora_list_to_query(corpora))
         facets = self.db.get_object(self.session, index_name).facets(self.session, results)
         return facets
+
+    def get_word(self, chapter_id, match):
+        """
+        Given a chapter_id and CLiC proxInfo match, return an array of:
+        - word_id: word position in chapter
+        - para_chap: word's paragraph position in chapter
+        - sent_chap: word's sentence position in chapter
+        """
+        # Each time a search term is found in a ProximityIndex
+        # (each match) is described in terms of a proxInfo.
+        #
+        # [[[0, 169, 1033, 15292]],
+        #  [[0, 171, 1045, 15292]], etc. ]
+        #
+        # * the first item is the id of the root element from
+        #   which to start counting to find the word node
+        #   for instance, 0 for a chapter view (because the chapter
+        #   is the root element), but 151 for a search in quotes
+        #   text.
+        # * the second item in the deepest list (169, 171)
+        #   is the id of the <w> (word) node
+        # * the third element is the exact character (spaces, and
+        #   and punctuation (stored in <n> (non-word) nodes
+        #   at which the search term starts
+        # * the fourth element is the total amount of characters
+        #   in the document?
+        #
+        # See:-
+        # dbs/dickens/dickensConfigs.d/dickensIdxs.xml
+        # cheshire3.index.ProximityIndex
+        #
+        # It's [nodeIdx, wordIdx, offset, termId(?)] in transformer.py
+
+        #NB: cheshire source suggests that there's never multiple, but I can't say for sure
+        eid, word_id = match[0][0:2]
+        if eid > 0:
+            # Look up eid offset and add it to word_id
+            # TODO: The query has no index backing it
+            subset_offset = self.rdb_query("SELECT offset_start, subset_type FROM subset WHERE chapter_id = ? AND eid = ?", (chapter_id, eid)).fetchone()
+            if subset_offset is None:
+                raise ValueError("No eid for %d" % eid)
+            word_id += subset_offset[0]
+
+        # Find sentence position
+        sent_pos = self.rdb_query(
+            "SELECT para_id, sent_id" +
+            " FROM sentence" +
+            " WHERE chapter_id = ?" +
+            " AND ? BETWEEN offset_start and offset_end", (chapter_id, word_id)).fetchone()
+        if sent_pos is None:
+            raise ValueError("Cannot find a sentence in chapter %d containing %d" % (chapter_id, word_id))
+        return (word_id, sent_pos[0], sent_pos[1])
 
     def c3_query(self, query):
         return self.db.search(self.session, self.qf.get_query(self.session, query))
@@ -266,6 +319,24 @@ class ClicDb():
                 int(n.attrib['wordOffset']),
             ))
 
+        # Index lengths of all paragraphs/sentences
+        para_id = 0
+        total_count = 0
+        for para_node in dom.xpath("/div/p"):
+            sent_id = 0
+            for sentence_node in para_node.xpath("s"):
+                word_count = int(sentence_node.xpath("count(descendant::w)"))
+                _rdb_insert(c, "sentence", (
+                    chapter_id,
+                    para_id,
+                    sent_id,
+                    total_count,
+                    total_count + word_count,
+                ))
+                sent_id += 1
+                total_count = total_count + word_count
+            para_id += 1
+
         # Trigger chapter indexing
         self.get_chapter(chapter_id)
 
@@ -313,6 +384,15 @@ class ClicDb():
             offset_end INT NOT NULL,
             FOREIGN KEY(chapter_id) REFERENCES chapter(chapter_id),
             PRIMARY KEY (chapter_id, eid)
+        )''')
+        c.execute('''CREATE TABLE sentence (
+            chapter_id INT,
+            para_id INT,
+            sent_id INT,
+            offset_start INT NOT NULL,
+            offset_end INT NOT NULL,
+            FOREIGN KEY(chapter_id) REFERENCES chapter(chapter_id),
+            PRIMARY KEY (chapter_id, para_id, sent_id)
         )''')
 
         chapter_id = 0
