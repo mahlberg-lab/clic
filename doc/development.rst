@@ -27,6 +27,14 @@ To run unit tests::
 
     make -C server test
 
+Exercise API integration tests
+------------------------------
+
+This repository contains some canned API calls and output that can be run against
+any server. For example::
+
+    ./exercise.sh http://cal-n-clic-01.bham.ac.uk exercise_outputs/*
+
 Useful utilities
 ----------------
 

@@ -1,0 +1,11 @@
+/api/cluster?corpora=vanity&corpora=jungle&subset=longsus&clusterlength=3
+{"data":[
+["after a pause",8],
+["said in a",6],
+["said with a",7],
+["he said to",5]
+], "message":{"message":"1767 clusters with a frequency less than 5 are not shown","level":"info","stack":null,"error":"UserError"}}
+real	0m0.123s
+user	0m0.008s
+sys	0m0.000s
+
