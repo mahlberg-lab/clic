@@ -35,6 +35,7 @@ class ClicDb():
         self.idxStore = self.db.get_object(self.session, 'indexStore')
 
         self.rdb = sqlite3.connect(C3_SQLITE)
+        self.rdb.cursor().execute('PRAGMA mmap_size = %d;' % (1024**3))
 
         # Extra lookup tables not available from cheshire data
         with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'extra_data.json')) as f:
