@@ -255,7 +255,7 @@ class ClicDb():
 
             _rdb_insert(c, "subset", (
                 chapter_id,
-                n.attrib['eid'],
+                0 if start_node is None else start_node.attrib['eid'],
                 dict(
                     qs='nonquote',
                     qe='quote',
