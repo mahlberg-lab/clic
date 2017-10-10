@@ -296,6 +296,16 @@ class ClicDb():
                 int(n.attrib['wordOffset']),
             ))
 
+        if 'qe' in node:
+            # End of quote up until end of text is non-quote
+            _rdb_insert(c, "subset", (
+                chapter_id,
+                node['qe'].attrib['eid'],
+                'nonquote',
+                node['qe'].attrib['wordOffset'],
+                word_count,
+            ))
+
         # Index lengths of all paragraphs/sentences
         total_count = 0
         for para_node in dom.xpath("/div/p"):
@@ -312,16 +322,6 @@ class ClicDb():
 
         # Trigger chapter indexing
         self.get_chapter(chapter_id)
-
-        if 'qe' in node:
-            # End of quote up until end of text is non-quote
-            _rdb_insert(c, "subset", (
-                chapter_id,
-                node['qe'].attrib['eid'],
-                'nonquote',
-                node['qe'].attrib['wordOffset'],
-                word_count,
-            ))
 
     def recreate_rdb(self):
         c = self.rdb.cursor()
