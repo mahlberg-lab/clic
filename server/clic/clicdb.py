@@ -49,21 +49,17 @@ class ClicDb():
         """
         restore_chapter_cache()
 
-    def get_corpus_names(self):
-        """Return a list of valid corpus names"""
-        return [
-            x.queryTerm
-            for x
-            in self.idxStore.get_object(self.idxStore.session, 'subCorpus-idx')
-        ]
-
     def corpora_list_to_query(self, corpora, db='cheshire'):
         """
         Given a list of books / entire subcorpora, return a query clause
         - db == 'cheshire': Return a CQL where clause string
         - db == 'rdb': Return (SQL where clause, params)
         """
-        corpus_names = self.get_corpus_names()
+        corpus_names = [
+            x.queryTerm
+            for x
+            in self.idxStore.get_object(self.idxStore.session, 'subCorpus-idx')
+        ]
         subcorpus = []
         books = []
         for m in corpora:
