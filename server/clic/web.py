@@ -10,6 +10,9 @@ from flask import Flask, request, Response, jsonify, g
 from clic.clicdb import ClicDb
 
 app = Flask(__name__)
+# Enable profiling per request
+# from werkzeug.contrib.profiler import ProfilerMiddleware
+# app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
 def clicdb():
     if not getattr(g, '_clicdb', None):
