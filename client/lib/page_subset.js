@@ -13,8 +13,7 @@ function PageSubset() {
 PageSubset.prototype = Object.create(PageConcordance.prototype);
 
 PageSubset.prototype.reload_data = function reload(page_state) {
-    var self = this,
-        kwicTerms = {},
+    var kwicTerms = {},
         kwicSpan = [{reverse: true, ignore: true}, {}, {ignore: true}],
         api_opts = {};
 
@@ -34,7 +33,6 @@ PageSubset.prototype.reload_data = function reload(page_state) {
         }
     });
 
-
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
     api_opts.subset = page_state.arg('subset-subset');
@@ -47,43 +45,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a subset", "warn");
     }
 
-    return api.get('subset', api_opts).then(function (data) {
-        var i, j, r,
-            allBooks = {}, allWords = {}, allMatches = {},
-            tag_state = page_state.state('tag_columns'),
-            tag_column_order = page_state.state('tag_column_order');
-
-        data = data.data;
-
-        for (i = 0; i < data.length; i++) {
-            data[i].DT_RowId = data[i][3][0] + data[i][4][0];
-
-            // Add KWICGrouper match column
-            r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
-            if (r > 0) {
-                allMatches[r] = (allMatches[r] || 0) + 1;
-
-                // Add classes for row highlighting
-                data[i].DT_RowClass = 'kwic-highlight-' + (r % 4 + 1);
-            }
-
-            // Add tag columns
-            for (j = 0; j < tag_column_order.length; j++) {
-                data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
-            }
-
-            // Count books used
-            allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
-        }
-
-        // Update info line
-        self.extra_info = concordance_utils.extra_info(allBooks, allMatches);
-
-        return {
-            allWords: allWords,
-            data: data,
-        };
-    });
+    return api.get('subset', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
 };
 
 module.exports = PageSubset;
