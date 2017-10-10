@@ -166,7 +166,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     }
 
     // Update info line
-    self.extra_info = concordance_utils.extra_info(allBooks, allMatches);
+    this.extra_info = concordance_utils.extra_info(allBooks, allMatches);
 
     return {
         allWords: allWords,
