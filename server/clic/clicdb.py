@@ -105,7 +105,7 @@ class ClicDb():
             if c_num < chapter_num:
                 count_prev_chap += ch_total
             total_word += ch_total
-        return (book_id, chapter_id, count_prev_chap, total_word)
+        return (book_id, chapter_num, count_prev_chap, total_word)
 
     def get_chapter(self, chapter_id):
         return get_chapter(self.session, self.recStore, chapter_id)
@@ -301,22 +301,18 @@ class ClicDb():
             ))
 
         # Index lengths of all paragraphs/sentences
-        para_id = 0
         total_count = 0
         for para_node in dom.xpath("/div/p"):
-            sent_id = 0
             for sentence_node in para_node.xpath("s"):
                 word_count = int(sentence_node.xpath("count(descendant::w)"))
                 _rdb_insert(c, "sentence", (
                     chapter_id,
-                    para_id,
-                    sent_id,
+                    int(para_node.attrib['pid']),
+                    int(sentence_node.attrib['sid']),
                     total_count,
-                    total_count + word_count,
+                    total_count + word_count - 1,
                 ))
-                sent_id += 1
                 total_count = total_count + word_count
-            para_id += 1
 
         # Trigger chapter indexing
         self.get_chapter(chapter_id)
