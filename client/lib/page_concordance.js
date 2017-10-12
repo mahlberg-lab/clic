@@ -136,13 +136,12 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     return api.get('concordance', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
 };
 
-PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, data) {
+PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
     var i, j, r,
         allBooks = {}, allWords = {}, allMatches = {},
+        data = raw_data.data,
         tag_state = page_state.state('tag_columns'),
         tag_column_order = page_state.state('tag_column_order');
-
-    data = data.data;
 
     for (i = 0; i < data.length; i++) {
         data[i].DT_RowId = data[i][3][0] + data[i][4][0];
@@ -168,10 +167,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     // Update info line
     this.extra_info = concordance_utils.extra_info(allBooks, allMatches);
 
-    return {
-        allWords: allWords,
-        data: data,
-    };
+    // Add allWords to server response
+    raw_data.allWords = allWords;
+    return raw_data;
 };
 
 module.exports = PageConcordance;
