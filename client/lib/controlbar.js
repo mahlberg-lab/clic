@@ -23,10 +23,6 @@ var noUiSlider_opts = {
             filter: function (v, t) { return v === 0 ? 1 : 2; },
             format: { to: function (v) { return (v > 0 ? 'R' : v < 0 ? 'L' : '') + Math.abs(v); } },
         },
-        format: {
-            to: function (value) { return value; },
-            from: function (value) { return value.replace('L', '-').replace('R', ''); },
-        },
         connect: true
     },
     'kwic-int-start': {
@@ -207,30 +203,17 @@ function ControlBar(control_bar) {
 
     // Turn "nouislider"-type inputs into an actual nouislider
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('input[type=nouislider]'), function (el, i) {
-        var slider_div = document.createElement('DIV');
-
+        el.slider_div = document.createElement('DIV');
         el.style.display = 'none';
-        el.parentNode.insertBefore(slider_div, el.nextSibling);
+        el.parentNode.insertBefore(el.slider_div, el.nextSibling);
 
-        noUiSlider.create(slider_div, noUiSlider_opts[el.name]);
+        noUiSlider.create(el.slider_div, noUiSlider_opts[el.name]);
 
-        el.addEventListener('change', function (e) {
-            var old_value = slider_div.noUiSlider.get();
+        el.slider_div.noUiSlider.on('update', function (values) {
+            var val_string = values.map(Math.round).join(':');
 
-            if (Array.isArray(old_value)) {
-                old_value = old_value.join(':');
-            }
-            if (this.value !== old_value) {
-                slider_div.noUiSlider.set(this.value.split(':'));
-            }
-        });
-
-        slider_div.noUiSlider.on('update', function (values) {
-            if (!el.value) {
-                // Initial update, don't trigger anything
-                el.value = values.join(':');
-            } else if (el.value !== values.join(':')) {
-                el.value = values.join(':');
+            if (el.value !== val_string) {
+                el.value = val_string;
                 el.dispatchEvent(new window.Event('change', {"bubbles": true}));
             }
         });
@@ -325,9 +308,8 @@ ControlBar.prototype.reload = function reload(page_state) {
                 } else if (el.tagName === 'INPUT' && el.type === "radio") {
                     el.checked = page_state.arg(el.name) === el.value;
                 } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
-                    // nouisliders need to be told that something happened
-                    el.value = page_state.arg(el.name);
-                    el.dispatchEvent(new window.Event('change', {"bubbles": false}));
+                    // Trigger slider update
+                    el.slider_div.noUiSlider.set(page_state.arg(el.name).split(':'));
                 } else if (el.tagName === 'SELECT') {
                     if (el.name === "kwic-terms") {
                         // Make sure we consider existing options valid
