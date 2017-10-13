@@ -201,29 +201,32 @@ class ClicDb():
         xmlp = db.get_object(self.session, 'LxmlParser')
         df = db.get_object(self.session, 'SimpleDocumentFactory')
 
-        df.load(self.session, doc_dir)
+        yield "Loading XML files..."
+        df.load(self.session, doc_dir)  # Pulls out <div> sections of every document,
         recStore.begin_storing(self.session)
         db.begin_indexing(self.session)
-        for i, d in enumerate(df, start=1):
-            doc = ampPreP.process_document(self.session, d)
+        for d in df:
+            rec2 = None
             try:
-                rec = xmlp.process_document(self.session, doc)
-                genia = geniaTxr.process_record(self.session, rec)
-                rec2 = xmlp.process_document(self.session, genia)
-                recStore.create_record(self.session, rec2)
-                db.add_record(self.session, rec2)
-                indexWF.process(self.session, rec2)
+                doc = ampPreP.process_document(self.session, d)  # Escapes ampersands
+                rec = xmlp.process_document(self.session, doc)  # LXML parser
+                genia = geniaTxr.process_record(self.session, rec) # corpusTransformer (SimpleExtractor - Mark up words / whitepace)
+                rec2 = xmlp.process_document(self.session, genia)  # LXML parser
+                recStore.create_record(self.session, rec2)  # Assign ID to record. store in recordStore BDB
+                db.add_record(self.session, rec2)  # Register document with DB
+                indexWF.process(self.session, rec2)  # Apply indexing to record
 
                 # Index new record in RDB
                 self.rdb_index_record(self.recStore.fetch_record(self.session, rec2.id))
-                yield "Indexed %d" % i
+                yield "Indexed %d - %s" % (rec2.id, d.filename)
             except Exception as e:
                 import traceback
 
-                yield "Failed to index %d:-\n%s" % (
-                    i,
+                yield "Failed to index %s:-\n%s" % (
+                    d.filename,
                     traceback.format_exc(),
                 )
+                raise e
         yield "Committing..."
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
