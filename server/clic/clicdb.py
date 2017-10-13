@@ -18,7 +18,7 @@ from clic.errors import UserError
 
 
 class ClicDb():
-    def __init__(self):
+    def __init__(self, rdb_file=C3_SQLITE):
         """
         Create a CLiC DB instance, connecting to both cheshire3 and the
         relational database.
@@ -34,7 +34,7 @@ class ClicDb():
         self.recStore = self.db.get_object(self.session, 'recordStore')
         self.idxStore = self.db.get_object(self.session, 'indexStore')
 
-        self.rdb = sqlite3.connect(C3_SQLITE)
+        self.rdb = sqlite3.connect(rdb_file)
         self.rdb.cursor().execute('PRAGMA mmap_size = %d;' % (1024**3))
 
         # Extra lookup tables not available from cheshire data
@@ -280,8 +280,15 @@ class ClicDb():
 
         # Index locations of all subsets
         node = dict()
-        for n in sorted(dom.xpath('//*[@wordOffset and @eid]'), key=lambda n: int(n.attrib['wordOffset'])):
+        subset_nodes = dom.xpath('|'.join('//%s[@eid]' % t for t in ["qs", "qe", "sls", "sle", "sss", "sse"]))
+        subset_nodes.sort(key=lambda n: int(n.attrib['eid']))
+        for n in subset_nodes:
             node[n.tag] = n
+            if 'wordOffset' not in n.attrib:
+                # NB: The top/tail qs/qe markings don't have wordOffset on older c3 entries,
+                # assume it's either the first or the last node
+                n.attrib['wordOffset'] = u'0' if n == subset_nodes[0] else unicode(word_count)
+
             if n.tag in ['qs']:
                 # Start of a quote, thus up to the last qe is a non-quote
                 start_node = node.get('qe', None)
@@ -301,7 +308,7 @@ class ClicDb():
                     sle='longsus',
                     sse='shortsus',
                 )[n.tag],
-                0 if start_node is None else int(start_node.attrib['wordOffset']),
+                int(0 if start_node is None else start_node.attrib['wordOffset']),
                 int(n.attrib['wordOffset']),
             ))
 
@@ -337,7 +344,7 @@ class ClicDb():
             array.array('L', (i for i, n in enumerate(toks) if n.tag == 'w')).tostring(),
         ))
 
-    def recreate_rdb(self):
+    def create_schema(self):
         c = self.rdb.cursor()
         c.execute('''PRAGMA page_size = 4096;''')
         c.execute('''VACUUM;''')
@@ -389,6 +396,8 @@ class ClicDb():
             PRIMARY KEY (chapter_id)
         )''')
 
+    def recreate_rdb(self):
+        self.create_schema()
         chapter_id = 0
         while True:
             try:
