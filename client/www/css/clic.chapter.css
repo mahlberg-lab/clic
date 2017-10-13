@@ -26,18 +26,21 @@
   display: none;
 }
 
-#content > div[type=chapter],
+#content > div[type=chapter][booktitle]:before {
+  content: attr(booktitle) ", by " attr(bookauthor);
+  display: block;
+  margin-top: 3rem;
+  border-bottom: 5px solid #333;
+  font-size: 2rem;
+  text-align: center;
+}
+
 #content > div[type=chapter] > p {
   display: block;
   position: relative;
-  margin-top: 3em;
-  border-top: 5px solid #333;
-}
-#content > div[type=chapter] > p {
   margin-top: 1em;
   border-top: 1px solid #333;
 }
-#content > div[type=chapter]:before,
 #content > div[type=chapter] > p:before {
   content: "chapter: " attr(id);
   display: block;
