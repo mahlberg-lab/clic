@@ -10,8 +10,18 @@ def quotes(tree):
     tokenizer = QuoteTokenizer(tree)
     tokenizer.first_run()
     tokenizer.second_run()
+    add_toptailquotes(tree)
     return tokenizer.tree
 
+
+def add_toptailquotes(tree):
+    """
+    cheshire3 relies in <qe/> and <qs/> to pick out non-quotes,
+    add some to start and end so we treat any text as non-quote
+    """
+    for ch in tree.xpath('/div0/div'):
+        ch.insert(0, etree.Element('qe'))
+        ch.append(etree.Element('qs'))
 
 class QuoteTokenizer:
 

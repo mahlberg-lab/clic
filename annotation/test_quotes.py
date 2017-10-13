@@ -77,6 +77,23 @@ class TestQuotes(unittest.TestCase):
             "<qs/>'--likely to win, that it's hardly worth while finishing the game.'<qe/>",
         ])
 
+        # We have quote end / quote start marks around chapter
+        self.assertTrue('<qe/><title>CHAPTER I.</title>' in out_string)
+        self.assertTrue('<qs/></div>\n</div0' in out_string)
+
+    def test_emptyparagraph(self):
+        """We don't fall over if there's no paragraphs at all"""
+        out = quotes(etree.fromstring("""
+<div0 id="singlequote" type="book" subcorpus="ChiLit" filename="canada.txt">
+
+<div id="singlequote.1" subcorpus="ChiLit" booktitle="The Settlers in singlequote" book="singlequote" type="chapter" num="1">
+<title>CHAPTER I.</title>
+</div>
+</div0>
+        """))
+        out_string = etree.tostring(out)
+        self.assertTrue('<qe/><title>CHAPTER I.</title>' in out_string)
+        self.assertTrue('<qs/></div>' in out_string)
 
 if __name__ == '__main__':
     unittest.main()
