@@ -112,17 +112,17 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 table.dataTable thead .sorting:after {
   opacity: 0.4;
-  content: "⇅";
+  content: "\21c5"; /* ⇅ */
   font-weight: normal
   /* sort */
 }
 table.dataTable thead .sorting_asc:after {
-  content: "⇊";
+  content: "\21ca"; /* ⇊ */
   font-weight: bold;
   /* sort-by-attributes */
 }
 table.dataTable thead .sorting_desc:after {
-  content: "⇈";
+  content: "\21c8"; /* ⇈ */
   font-weight: bold;
   /* sort-by-attributes-alt */
 }
