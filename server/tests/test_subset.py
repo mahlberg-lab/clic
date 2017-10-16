@@ -65,3 +65,25 @@ class TestSubset(unittest.TestCase):
             set([len(only_word(l[2])) for l in out_context5]),
             set([5]),
         )
+
+    def test_subset(self):
+        """Can choose what to return"""
+        cdb = ClicDb()
+
+        # The defaults are all/0
+        self.assertEqual(
+            [x for x in subset(cdb, corpora=['AgnesG'])],
+            [x for x in subset(cdb, corpora=['AgnesG'], subset=['all'], contextsize=[0])],
+        )
+
+        # Agnes grey is returned in chunks of chapter
+        self.assertEqual(
+            len([x for x in subset(cdb,corpora=['AgnesG'])]),
+            26,
+        )
+
+        # There's more long suspension though
+        self.assertEqual(
+            len([x for x in subset(cdb,corpora=['AgnesG'], subset=['longsus'])]),
+            30,
+        )

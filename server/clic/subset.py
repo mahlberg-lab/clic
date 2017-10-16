@@ -11,7 +11,8 @@ Parameters should be provided in querystring format, for example::
 
     ?corpora=dickens&corpora=AgnesG&subset=quote
 
-Returns a ``data`` array, one entry per result. Each item is an array with the following items:
+Returns a ``data`` array, one entry per result. The data array is sorted by the book id,
+then chapter number. Each item is an array with the following items:
 
 * The left context window (if ``contextsize`` > 0, otherwise omitted)
 * The node (i.e. the subset)
@@ -66,7 +67,7 @@ Examples:
     ]}
 
 """
-def subset(cdb, corpora=['dickens'], subset=['quote'], contextsize=['0']):
+def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0']):
     """
     Main entry function for subset search
 
@@ -77,14 +78,24 @@ def subset(cdb, corpora=['dickens'], subset=['quote'], contextsize=['0']):
     contextsize = int(contextsize[0])
 
     (where, params) = cdb.corpora_list_to_query(corpora, db='rdb')
-    query = " ".join((
-        "SELECT s.chapter_id, s.offset_start, s.offset_end",
-        "FROM subset s, chapter c",
-        "WHERE s.chapter_id = c.chapter_id",
-        "AND ", where,
-        "AND s.subset_type IN (", ",".join("?" for x in xrange(len(subset))), ")",
-    ))
-    params.extend(subset)
+    if 'all' in subset:
+        query = " ".join((
+            "SELECT c.chapter_id, 0 offset_start, c.word_total offset_end",
+            "FROM chapter c",
+            "WHERE 1",
+            "AND ", where,
+            "ORDER BY c.book_id, c.chapter_id"
+        ))
+    else:
+        query = " ".join((
+            "SELECT s.chapter_id, s.offset_start, s.offset_end",
+            "FROM subset s, chapter c",
+            "WHERE s.chapter_id = c.chapter_id",
+            "AND ", where,
+            "AND s.subset_type IN (", ",".join("?" for x in xrange(len(subset))), ")",
+            "ORDER BY c.book_id, c.chapter_id"
+        ))
+        params.extend(subset)
 
     yield {} # Return empty header
     cur_chapter = None
