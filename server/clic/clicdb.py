@@ -299,6 +299,11 @@ class ClicDb():
                 # Not the end of a subset, move on
                 continue
 
+            offset_start = int(0 if start_node is None else start_node.attrib['wordOffset'])
+            offset_end = int(n.attrib['wordOffset'])
+            if offset_start == offset_end:
+                # No point storing 0-length subsets
+                continue
             _rdb_insert(c, "subset", (
                 chapter_id,
                 0 if start_node is None else start_node.attrib['eid'],
@@ -308,8 +313,8 @@ class ClicDb():
                     sle='longsus',
                     sse='shortsus',
                 )[n.tag],
-                int(0 if start_node is None else start_node.attrib['wordOffset']),
-                int(n.attrib['wordOffset']),
+                offset_start,
+                offset_end,
             ))
 
         if 'qe' in node:
