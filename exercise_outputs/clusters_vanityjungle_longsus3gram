@@ -5,7 +5,7 @@
 ["said with a",7],
 ["he said to",5]
 ], "message":{"message":"1767 clusters with a frequency less than 5 are not shown","level":"info","stack":null,"error":"UserError"}}
-real	0m0.419s
-user	0m0.017s
-sys	0m0.010s
+real	0m0.255s
+user	0m0.009s
+sys	0m0.021s
 

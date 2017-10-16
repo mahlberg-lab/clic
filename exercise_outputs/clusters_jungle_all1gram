@@ -1189,7 +1189,7 @@
 ["waingunga",13],
 ["walrus",9]
 ], "message":{"message":"3592 clusters with a frequency less than 5 are not shown","level":"info","stack":null,"error":"UserError"}}
-real	0m0.542s
-user	0m0.023s
-sys	0m0.005s
+real	0m0.342s
+user	0m0.020s
+sys	0m0.011s
 
