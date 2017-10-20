@@ -24,6 +24,7 @@ UWSGI_PROCESSES="${UWSGI_PROCESSES-4}"
 UWSGI_THREADS="${UWSGI_THREADS-4}"
 UWSGI_API_CACHE_TIME="${UWSGI_API_CACHE_TIME-60m}"
 UWSGI_HARAKIRI="${UWSGI_HARAKIRI-0}"
+UWSGI_CACHE_SIZE="${UWSGI_CACHE_SIZE-1g}"
 [ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-api_cache}" || UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-off}"
 GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
 
@@ -76,7 +77,7 @@ upstream uwsgi_server {
     server unix://${UWSGI_SOCKET};
 }
 
-uwsgi_cache_path ${CLIC_PATH}/uwsgi_cache levels=1:2 keys_zone=api_cache:8m;
+uwsgi_cache_path ${CLIC_PATH}/uwsgi_cache levels=1:2 keys_zone=api_cache:8m inactive=24h max_size=${UWSGI_CACHE_SIZE};
 
 server {
     listen      80;
