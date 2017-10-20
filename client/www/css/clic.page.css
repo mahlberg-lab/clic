@@ -49,12 +49,23 @@ header {
 header h1 {
     float: left;
     margin: 0;
-    line-height: 40px;
+    line-height: 2.3rem;
     font-size: 41px;
     font-weight: normal;
 }
-header h1 a, header h1 a:active, header h1 a:hover {
+header, header h1 a, header h1 a:active, header h1 a:hover {
     color: #1e345e;
+}
+header h1 a:hover, header h1 a:active, header h1 a:visited {
+    color: #ffa033;
+    text-decoration: none;
+}
+header h1 small {
+    display: block;
+    padding-right: 0.5rem;
+    line-height: 1.1rem;
+    font-size: .8rem;
+    text-align: right;
 }
 header .sponsors {
     float: right;

@@ -47,6 +47,8 @@ return new Promise(function (resolve) {
             ga_script.html().replace('UA-XXXXX-Y', process.env.GA_KEY)
         );
 
+        $("#clic-revision").text(process.env.CUR_REV);
+
         process.stdout.write($.html());
     });
 });

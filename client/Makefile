@@ -105,7 +105,13 @@ www/%.html: html/%.html \
     www/js/*.js \
     ../.local-conf \
     package.json
-	[ -e "../.local-conf" ] && . ../.local-conf ; export GA_KEY ; $(NODE_CMD) build/html_compile.js $< > $@.mktmp
+	CURRENT_REV=
+	[ -e "../.local-conf" ] && \
+	    . ../.local-conf; \
+	    export GA_KEY; \
+	    export CUR_REV="`git describe --exact-match HEAD 2>/dev/null || echo $$(git rev-parse --abbrev-ref HEAD):$$(git rev-parse --short HEAD)`"; \
+	    $(NODE_CMD) build/html_compile.js \
+	        $< > $@.mktmp
 	mv $@.mktmp $@
 
 .PHONY: pre_commit compile test start browser_test lint clean
