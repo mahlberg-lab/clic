@@ -86,7 +86,7 @@ server {
     root "${CLIC_PATH}/client/www";
 
     proxy_intercept_errors on;
-    error_page 502 503 504 /error/maintenance.html;
+    error_page 502 503 504 /error/bad_gateway.json;
 
     # Emergency CLiC disabling rewrite rule, uncomment to disable clic access
     # rewrite ^(.*) /error/maintenance.html;
