@@ -23,6 +23,7 @@ UWSGI_TIMEOUT="${UWSGI_TIMEOUT-5m}"
 UWSGI_PROCESSES="${UWSGI_PROCESSES-4}"
 UWSGI_THREADS="${UWSGI_THREADS-4}"
 UWSGI_API_CACHE_TIME="${UWSGI_API_CACHE_TIME-60m}"
+UWSGI_HARAKIRI="${UWSGI_HARAKIRI-0}"
 [ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-api_cache}" || UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-off}"
 GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
 
@@ -44,6 +45,7 @@ ExecStart=${UWSGI_BIN} \
     --enable-threads --thunder-lock \
     --mount /=clic.web:app \
     --chmod-socket=666 \
+    --harakiri ${UWSGI_HARAKIRI} \
     -s ${UWSGI_SOCKET}
 WorkingDirectory=${CLIC_PATH}/server
 User=${UWSGI_USER}
