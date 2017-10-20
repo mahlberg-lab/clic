@@ -110,7 +110,7 @@ class ClicDb():
         (tokens, word_map) = self.rdb_query("SELECT tokens, word_map FROM tokens WHERE chapter_id = ? ", (chapter_id,)).fetchone()
         self.rdb.text_factory = old_text_factory
 
-        tokens = tuple(unicode(tokens).split(b'\x00'))
+        tokens = tuple(tokens.decode('utf8').split(b'\x00'))
         word_map = array.array('L', word_map)
         return Chapter(tokens, word_map)
 
