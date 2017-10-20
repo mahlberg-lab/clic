@@ -23,6 +23,7 @@ UWSGI_TIMEOUT="${UWSGI_TIMEOUT-5m}"
 UWSGI_PROCESSES="${UWSGI_PROCESSES-4}"
 UWSGI_THREADS="${UWSGI_THREADS-4}"
 UWSGI_API_CACHE_TIME="${UWSGI_API_CACHE_TIME-60m}"
+[ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-api_cache}" || UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-off}"
 GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
 
 set | grep -E 'CLIC|UWSGI|SERVICE'
@@ -65,8 +66,8 @@ fi
 # NGINX config for serving clientside
 
 mkdir -p ${CLIC_PATH}/uwsgi_cache
+rm -- "${CLIC_PATH}/uwsgi_cache/*" || true
 chown ${UWSGI_USER} ${CLIC_PATH}/uwsgi_cache
-[ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="api_cache" || UWSGI_CACHE_ZONE="off"
 
 cat <<EOF > /etc/nginx/sites-available/${SERVICE_NAME}
 upstream uwsgi_server {
