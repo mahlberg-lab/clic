@@ -30,13 +30,21 @@ for i in ${INPUT}; do
 	echo '--------------------------------------------------'
 	echo "Input -- $i"
 
-        [ "$nf" = "heart.xml" -o "$nf" = "thejungle.xml" ] && {
+        [ "$nf" = "thejungle.xml" ] && {
             echo "$nf is broken. Skipping..."
             continue
         }
 
 	echo "Stage 1 -- ascii7: $OUTPUT_DIR/ascii/$nf"
 	perl -C -MText::Unidecode -n -e'print unidecode($_)' $i > $OUTPUT_DIR/ascii/$(basename $i)
+
+        [ "$nf" = "heart.xml" ] && {
+            # Bodge out embedded-embedded quotes
+            sed -i 's/"Each station should be like a beacon on the/Each station should be like a beacon on the/' $OUTPUT_DIR/ascii/$(basename $i)
+            sed -i 's/humanizing, improving, instructing\."/humanizing, improving, instructing\./' $OUTPUT_DIR/ascii/$(basename $i)
+            # Bodge out extra long quotes
+            sed -i 's/^"Girl\! What/Girl\! What/' $OUTPUT_DIR/ascii/$(basename $i)
+        }
 
 	echo "Stage 1 -- paragraph extraction: $OUTPUT_DIR/paragraphs/$nf"
 	${PYTHON} $SCRIPT_DIR/paragraphs.py $OUTPUT_DIR/ascii/$(basename $i) "$(basename $(dirname $i))" $OUTPUT_DIR/paragraphs/$nf
@@ -58,6 +66,16 @@ for i in ${INPUT}; do
 
 	echo "Final -- adding stylesheet declaration: $OUTPUT_DIR/final/$nf"
 	echo '<?xml-stylesheet href="/styles.css"?>' | cat - $OUTPUT_DIR/alternativesuspensions/$nf > $OUTPUT_DIR/final/$nf
+
+        [ "$nf" = "heart.xml" ] && {
+            # Bodge back in embedded-embedded quotes
+            sed -i 's/Each station should be like a beacon on the/"Each station should be like a beacon on the/' $OUTPUT_DIR/final/$nf
+            sed -i 's/humanizing, improving, instructing\./humanizing, improving, instructing\."/' $OUTPUT_DIR/final/$nf
+            # Make extra long quote a quote again
+            # NB: This doesn't resolve the situation entirely, but close enough for cheshire3
+            sed -i 's/>Girl\!<\/s>/><qs\/>"Girl\!\<\/s>/' $OUTPUT_DIR/final/$nf
+            sed -i 's/<qs\/>"Poor fool\!<\/s>/"Poor fool\!<\/s>/' $OUTPUT_DIR/final/$nf
+        }
 done
 
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'
