@@ -84,6 +84,7 @@ server {
     server_name ${SERVER_NAME};
     charset     utf-8;
     root "${CLIC_PATH}/client/www";
+    gzip        on;
 
     proxy_intercept_errors on;
     error_page 502 503 504 /error/bad_gateway.json;
