@@ -158,6 +158,7 @@
 }
 #control-bar .noUi-horizontal .noUi-value-horizontal {
     top: 1rem;
+    margin-right: -0.4rem;
 }
 
 #control-bar input[type=text] {
