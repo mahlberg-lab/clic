@@ -142,7 +142,7 @@
 }
 
 #control-bar .conc-type {
-    margin: 1em;
+    margin: 0 1em;
 }
 #control-bar .conc-type > *:first-child { display: inline-block; float: left; }
 #control-bar .conc-type > *:last-child { display: inline-block; float: right; }
@@ -164,6 +164,7 @@
 #control-bar input[type=text] {
     width: 100%;
     padding: 4px 5px;
+    margin-bottom: 0.2rem;
     border: 1px solid #aaa;
     background-color: #fff;
     background-image: linear-gradient(#eee 1%, #fff 15%);
