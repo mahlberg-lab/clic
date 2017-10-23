@@ -10,6 +10,7 @@ from flask import Flask, request, Response, jsonify, g
 from clic.clicdb import ClicDb
 
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 # Enable profiling per request
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
