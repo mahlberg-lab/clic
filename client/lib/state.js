@@ -57,7 +57,7 @@ State.prototype.arg = function (name) {
     if (Array.isArray(this.defaults[name])) {
         return this._args[name] || this.defaults[name];
     }
-    return (this._args[name] || []).join("") || this.defaults[name];
+    return this._args.hasOwnProperty(name) ? (this._args[name] || []).join("") : this.defaults[name];
 };
 
 /** Fetch key out of window.history.state object */

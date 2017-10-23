@@ -40,7 +40,7 @@ var state_defaults = {
     'tag_column_order': [],
     'tag_column_selected': '',
 
-    'table-metadata': '',
+    'table-metadata': 'show',
     'table-filter': '',
     'selected_rows': [],
 };
