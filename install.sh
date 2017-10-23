@@ -69,7 +69,7 @@ fi
 # NGINX config for serving clientside
 
 mkdir -p ${CLIC_PATH}/uwsgi_cache
-rm -- "${CLIC_PATH}/uwsgi_cache/*" || true
+rm -r -- "${CLIC_PATH}/uwsgi_cache/*" || true
 chown ${UWSGI_USER} ${CLIC_PATH}/uwsgi_cache
 
 cat <<EOF > /etc/nginx/sites-available/${SERVICE_NAME}
