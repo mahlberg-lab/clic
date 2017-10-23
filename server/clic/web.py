@@ -153,13 +153,8 @@ def handle_500(error):
     return response
 
 # ==== Application ========================================
-def create_app():
-    return app
-
-
 if __name__ == '__main__':
-    app = create_app()
     app.run(
         port=5000,
-        debug=False,
+        debug=True,
     )
