@@ -334,7 +334,7 @@ ControlBar.prototype.reload = function reload(page_state) {
             jQuery(el).trigger("chosen:updated");
         });
     }).then(function (data) {
-        return Promise.all(Object.values(self.panels).map(function (p) { p.reload(page_state); })).then(function () {
+        return Promise.all(Object.keys(self.panels).map(function (n) { self.panels[n].reload(page_state); })).then(function () {
             return data;
         });
     });
