@@ -26,7 +26,7 @@ UWSGI_API_CACHE_TIME="${UWSGI_API_CACHE_TIME-60m}"
 UWSGI_HARAKIRI="${UWSGI_HARAKIRI-0}"
 UWSGI_CACHE_SIZE="${UWSGI_CACHE_SIZE-1g}"
 [ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-api_cache}" || UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-off}"
-GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile, not here
+GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile also
 
 set | grep -E 'CLIC|UWSGI|SERVICE'
 
@@ -68,6 +68,17 @@ fi
 # ---------------------------
 # NGINX config for serving clientside
 
+# Configure measurement protocol endpoint
+GA_API_URL="http://google-analytics.com/collect?v=1&t=pageview&tid=${GA_KEY}"
+GA_API_URL="${GA_API_URL}&uip=\$remote_addr"  # IP address
+GA_API_URL="${GA_API_URL}&dh=\$host"  # Host
+GA_API_URL="${GA_API_URL}&dp=\$request_filename"  # Document path
+GA_API_URL="${GA_API_URL}&ds=api"  # Data source
+GA_API_URL="${GA_API_URL}&dt=API"  # Page title
+GA_API_URL="${GA_API_URL}&cid=\$connection\$msec"  # Anonymous Client-ID, give a unique value
+GA_API_URL="${GA_API_URL}&an=\$http_x_clic_client"  # Application name
+[ -n "${GA_KEY}" ] && GA_API_ACTION="post_action @forward_to_ga;" || GA_API_ACTION=""
+
 mkdir -p ${CLIC_PATH}/uwsgi_cache
 rm -r -- "${CLIC_PATH}/uwsgi_cache/*" || true
 chown ${UWSGI_USER} ${CLIC_PATH}/uwsgi_cache
@@ -91,6 +102,21 @@ server {
 
     # Emergency CLiC disabling rewrite rule, uncomment to disable clic access
     # rewrite ^(.*) /error/maintenance.html;
+
+    location @forward_to_ga {
+        resolver 8.8.8.8 ipv6=off;
+        internal;
+        proxy_ignore_client_abort on;
+        proxy_next_upstream timeout;
+        valid_referers server_names;
+
+        # If the referer is valid (i.e. triggered by CLiC client), don't log to GA
+        if (\$invalid_referer = "") {
+            return 204;
+        }
+
+        proxy_pass ${GA_API_URL};
+    }
 
     # Versioned resources can be cached forever
     location ~ ^(.*)\.r\w+\$ {
@@ -129,6 +155,8 @@ server {
         uwsgi_cache_key \$uri?\$args;
         uwsgi_cache_valid 200 302 ${UWSGI_API_CACHE_TIME};
         expires ${UWSGI_API_CACHE_TIME};
+
+        ${GA_API_ACTION}
     }
 }
 EOF
