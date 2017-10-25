@@ -57,7 +57,7 @@ function page_load(e) {
         document.body.classList.toggle('loading', true);
 
         if (window.ga) {
-            window.ga('set', 'page', window.location.href);
+            window.ga('set', 'location', window.location.href);
             window.ga('send', 'pageview');
         }
 
