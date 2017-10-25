@@ -72,7 +72,7 @@ fi
 GA_API_URL="http://google-analytics.com/collect?v=1&t=pageview&tid=${GA_KEY}"
 GA_API_URL="${GA_API_URL}&uip=\$remote_addr"  # IP address
 GA_API_URL="${GA_API_URL}&dh=\$host"  # Host
-GA_API_URL="${GA_API_URL}&dp=\$request_filename"  # Document path
+GA_API_URL="${GA_API_URL}&dp=\$uri"  # Document path
 GA_API_URL="${GA_API_URL}&ds=api"  # Data source
 GA_API_URL="${GA_API_URL}&dt=API"  # Page title
 GA_API_URL="${GA_API_URL}&cid=\$connection\$msec"  # Anonymous Client-ID, give a unique value
@@ -115,6 +115,10 @@ server {
             return 204;
         }
 
+        # Some nearly-working magic to escape $url
+        # https://stackoverflow.com/questions/28995818/nginx-proxy-pass-and-url-decoding
+        # TODO: Any improvement?
+        rewrite ^ \$request_uri break;
         proxy_pass ${GA_API_URL};
     }
 
