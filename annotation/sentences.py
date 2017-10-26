@@ -3,6 +3,11 @@ import re
 from lxml import etree
 
 
+def sentences(tree):
+    tokenizer = SentenceTokenizer(tree)
+    return tokenizer.tokenize()
+
+
 class SentenceTokenizer(object):
 
     def __init__(self, tree):
@@ -23,7 +28,7 @@ class SentenceTokenizer(object):
         self.sentence_regex = re.compile("""
                                          .+?                           #
                                          (?<!\.\.)                     # disregard comments?
-                                         (?:[\.!?:]|$)                 #
+                                         (?:[\.!?:]|\W*$)              # Ends with punctuation or at the end of a line
                                          ["\'\)]{0,2}                  #
                                          (?=\s+|$)                     #
                                          (?!\s*[a-z])                  #
@@ -110,6 +115,5 @@ class SentenceTokenizer(object):
 
 if __name__ == "__main__":
     tree = etree.parse(sys.argv[1])
-    tokenizer = SentenceTokenizer(tree)
-    tree = tokenizer.tokenize()
+    tree = sentences(tree)
     tree.write(sys.argv[2])
