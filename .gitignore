@@ -40,3 +40,6 @@
 /annotation/share
 /annotation/*.out
 /annotation/tmp-*
+
+/annotationOutput/
+/corpora/

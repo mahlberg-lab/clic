@@ -65,7 +65,7 @@ for i in ${INPUT}; do
 	${PYTHON} $SCRIPT_DIR/alternativesuspensions.py $OUTPUT_DIR/alternativequotes/$nf $OUTPUT_DIR/alternativesuspensions/$nf
 
 	echo "Final -- adding stylesheet declaration: $OUTPUT_DIR/final/$nf"
-	echo '<?xml-stylesheet href="/styles.css"?>' | cat - $OUTPUT_DIR/alternativesuspensions/$nf > $OUTPUT_DIR/final/$nf
+	echo '<?xml-stylesheet href="/annotationOutput/styles.css"?>' | cat - $OUTPUT_DIR/alternativesuspensions/$nf > $OUTPUT_DIR/final/$nf
 
         [ "$nf" = "heart.xml" ] && {
             # Bodge back in embedded-embedded quotes

@@ -19,21 +19,24 @@ XML.  For example, to convert the ChiLit texts::
     cd annotation
     virtualenv .
     ./bin/pip install -r requirements.txt
-    ./annotate.sh ../corpora/ChiLit ./ChiLit_out
+    ./annotate.sh ../corpora/ChiLit ./annotationOutput/ChiLit
 
 This process will take some time, but eventually will create XML output for
 each file, as well as intermediate output for investigation. You can start a
 web server to look at the output texts:
 
-    cd annotation
     python -m SimpleHTTPServer
 
-There is a ``styles.css`` that the web browser will use to format the output.
+...and go to http://localhost:8000/annotationOutput/ There is a ``styles.css``
+that the web browser will use to format the output.
+
+Once you have pushed the changes to annotation output, you can view changes here:
+https://birmingham-ccr.github.io/annotationOutput/
 
 Once this has finished and you have confirmed the process worked, you can
 ingest the XML output into CLiC. Run the following script::
 
-    ./server/bin/store_documents annotation/ChiLit_out/final/
+    ./server/bin/store_documents annotationOutput/ChiLit/final/
 
 Restart CLiC, and you should find the new corpora available. Follow the
 instructions to upload the cheshire3 content to the live server.
