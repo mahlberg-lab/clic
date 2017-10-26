@@ -75,6 +75,16 @@ for i in ${INPUT}; do
             # NB: This doesn't resolve the situation entirely, but close enough for cheshire3
             sed -i 's/>Girl\!<\/s>/><qs\/>"Girl\!\<\/s>/' $OUTPUT_DIR/final/$nf
             sed -i 's/<qs\/>"Poor fool\!<\/s>/"Poor fool\!<\/s>/' $OUTPUT_DIR/final/$nf
+
+            # Reposition start of extended quotes at chapter-start
+            sed -i 's/"One evening as I was lying flat on the deck of my steamboat/<qs\/>"One evening as I was lying flat on the deck of my steamboat/' $OUTPUT_DIR/final/$nf
+            sed -i 's/<qs\/>"I was broad awake by this time/"I was broad awake by this time/' $OUTPUT_DIR/final/$nf
+            sed -i 's/"I looked at him, lost in astonishment\./<qs\/>"I looked at him, lost in astonishment./' $OUTPUT_DIR/final/$nf
+            sed -i 's/<qs\/>"The manager came out.<\/s>/"The manager came out.<\/s>/' $OUTPUT_DIR/final/$nf
+
+            # Remove incorrectly-detected embedded-quote
+            sed -i 's/<qs\/>"Clear this poor devil out of the country/"Clear this poor devil out of the country/' $OUTPUT_DIR/final/$nf
+            sed -i 's/the kind of men you can dispose of with me\."<qe\/>/the kind of men you can dispose of with me\."/' $OUTPUT_DIR/final/$nf
         }
 done
 
