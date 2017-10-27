@@ -51,6 +51,12 @@ ExecStart=${UWSGI_BIN} \
 WorkingDirectory=${CLIC_PATH}/server
 User=${UWSGI_USER}
 Group=${UWSGI_GROUP}
+Restart=on-failure
+RestartSec=5s
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
 
 [Install]
 WantedBy=multi-user.target
