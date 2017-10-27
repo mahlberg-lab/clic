@@ -3,8 +3,14 @@
 /*global Promise */
 
 function choose_name(tag_columns, base_tag_name) {
-    var new_tag_name = base_tag_name,
+    var new_tag_name,
         i = 1;
+
+    // Purely numeric tag names confuse datatables, so avoid them.
+    if (base_tag_name.match('^[0-9]+$')) {
+        base_tag_name = 'n' + base_tag_name;
+    }
+    new_tag_name = base_tag_name;
 
     while (tag_columns[new_tag_name]) {
         new_tag_name = base_tag_name + "-" + i++;
