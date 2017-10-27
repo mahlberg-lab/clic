@@ -116,6 +116,8 @@ DOUBLE_QUOTEMARKS += [
     'middlemarch',
     'moonstone',
     'northanger',
+    'portraitone',
+    'portraittwo',
     'room',
     'sense',
     'signfour',
