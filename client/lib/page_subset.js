@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var api = require('./api.js');
 var PageConcordance = require('./page_concordance.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
@@ -45,7 +44,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a subset", "warn");
     }
 
-    return api.get('subset', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
+    return this.cached_get('subset', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
 };
 
 module.exports = PageSubset;

@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var api = require('./api.js');
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
@@ -54,7 +53,7 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a reference subset", "warn");
     }
 
-    return api.get('keyword', api_opts);
+    return this.cached_get('keyword', api_opts);
 };
 
 module.exports = PageKeyword;

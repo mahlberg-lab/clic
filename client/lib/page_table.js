@@ -6,6 +6,7 @@ var dataTablesNet = require('datatables.net');
 if (window && window.document) {
     dataTablesNet(window, jQuery);
 }
+var api = require('./api.js');
 
 function columns_string(columns) {
     return columns.map(function (c) {
@@ -167,6 +168,33 @@ PageTable.prototype.select_rows = function () {
 
 PageTable.prototype.reload_data = function (page_state) {
     throw new Error("Not implemented");
+};
+
+/**
+  * Wrap around api.get, store result of previous query and return it if same
+  * Browser caches only work up to ~5MB, so we can't rely on them
+  */
+PageTable.prototype.cached_get = function (endpoint, qs) {
+    var self = this;
+
+    function cmp(a, b) {
+        return JSON.stringify(a, Object.keys(a).sort()) === JSON.stringify(b, Object.keys(b).sort());
+    }
+
+    if (this.prev_get && endpoint === this.prev_get.endpoint && cmp(qs, this.prev_get.qs)) {
+        return new Promise(function (resolve) {
+            // Delay it a bit so the browser has time to show the spinner
+            window.setTimeout(resolve.bind(null, self.prev_get.data), 0);
+        });
+    }
+    return api.get(endpoint, qs).then(function (data) {
+        self.prev_get = {
+            endpoint: endpoint,
+            qs: qs,
+            data: data,
+        };
+        return data;
+    });
 };
 
 module.exports = PageTable;

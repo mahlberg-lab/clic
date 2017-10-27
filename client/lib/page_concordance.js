@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var api = require('./api.js');
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
@@ -133,7 +132,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
         });
     }
 
-    return api.get('concordance', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
+    return this.cached_get('concordance', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
 };
 
 PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
