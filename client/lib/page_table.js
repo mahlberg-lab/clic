@@ -54,7 +54,7 @@ PageTable.prototype.reload = function reload(page_state) {
     self.page_state = page_state;
 
     return new Promise(function (resolve, reject) {
-        var table_opts;
+        var table_opts, add_events = true;
 
         self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata'));
 
@@ -74,6 +74,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 // Re-create table so we can add extra columns
                 self.table.destroy();
                 self.table_el.innerHTML = "";
+                add_events = false; // Events are attached to the table element, which remains
             }
 
             table_opts = shallow_clone(self.table_opts);
@@ -105,28 +106,30 @@ PageTable.prototype.reload = function reload(page_state) {
             table_opts.infoCallback = self.info_callback.bind(self);
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
-            if (self.hasOwnProperty('table_count_column')) {
-                self.table.on('draw.dt', function () {
-                    var pageStart = self.table.page.info().start,
-                        pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});
+            if (add_events) {
+                if (self.hasOwnProperty('table_count_column')) {
+                    self.table.on('draw.dt', function () {
+                        var pageStart = self.table.page.info().start,
+                            pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});
 
-                    pageCells.nodes().each(function (cell, i) {
-                        cell.innerHTML = pageStart + i + 1;
+                        pageCells.nodes().each(function (cell, i) {
+                            cell.innerHTML = pageStart + i + 1;
+                        });
                     });
+                }
+
+                self.table.on('click', 'tr', function () {
+                    if (self.initial_selection) {
+                        // Remove initial selection before continuing
+                        self.table.rows('.selected').nodes().each(function (el) {
+                            el.classList.remove('selected');
+                        });
+                        self.initial_selection = false;
+                    }
+                    this.classList.toggle('selected');
+                    self.select_rows();
                 });
             }
-
-            self.table.on('click', 'tr', function () {
-                if (self.initial_selection) {
-                    // Remove initial selection before continuing
-                    self.table.rows('.selected').nodes().each(function (el) {
-                        el.classList.remove('selected');
-                    });
-                    self.initial_selection = false;
-                }
-                this.classList.toggle('selected');
-                self.select_rows();
-            });
         }
     }).then(function (data) {
         var i, n,
