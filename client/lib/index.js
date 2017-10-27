@@ -74,6 +74,7 @@ function page_load(e) {
             cb.reload(page_state).catch(function (err) { alerts.error(err); console.log(err); }),
         ]);
     }).then(function (rvs) {
+        alerts.clear(); //NB: Just in case multiple page loads were fired
         rvs.forEach(function (rv) {
             if (rv && rv.message) {
                 alerts.show(rv.message);
