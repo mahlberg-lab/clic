@@ -238,6 +238,10 @@ table.dataTable thead .sorting_desc_disabled:after {
     background: #eee;
     cursor: pointer;
 }
+#content .dataTables_paginate a.current {
+    color: #ffa033;
+    font-weight: bold;
+}
 #content .dataTables_paginate>a:last-child {
     border-left: 1px solid #666;
     border-right: none;
