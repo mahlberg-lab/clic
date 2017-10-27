@@ -68,7 +68,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 } else {
                     resolve(self.last_fetched_data);
                 }
-            });
+            }, false); // i.e. keep the current page
         } else {
             if (self.table) {
                 // Re-create table so we can add extra columns
