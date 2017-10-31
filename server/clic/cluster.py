@@ -20,10 +20,11 @@ def cluster(
     subset = subset[0]
     cutoff = int(cutoff[0])
 
-    yield dict()
-
     skipped = 0
     wl = cdb.get_word_list(subset, clusterlength, corpora)
+
+    yield dict()
+
     for term, (termId, nRecs, freq) in wl:  # facet = (thing, thing, frequency)
         if freq >= cutoff:
             yield (term, freq)
