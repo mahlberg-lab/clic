@@ -1,4 +1,5 @@
 "use strict";
+/*jslint plusplus: true */
 /*global Promise */
 var test = require('tape');
 var proxyquire =  require('proxyquire');
@@ -54,31 +55,31 @@ test('cached_get', function (t) {
 
     }).then(function () {
         // Altering the request ups the count
-        return pt.cached_get('a', {moo: "no", oink: [1,2,3]}).then(function (data) {
+        return pt.cached_get('a', {moo: "no", oink: [1, 2, 3]}).then(function (data) {
             t.deepEqual(data, {
                 count: 2,
                 endpoint: 'a',
-                qs: {moo: 'no', oink: [1,2,3]},
+                qs: {moo: 'no', oink: [1, 2, 3]},
             });
         });
 
     }).then(function () {
         // Altering the request ups the count
-        return pt.cached_get('a', {moo: "no", oink: [1,2,4]}).then(function (data) {
+        return pt.cached_get('a', {moo: "no", oink: [1, 2, 4]}).then(function (data) {
             t.deepEqual(data, {
                 count: 3,
                 endpoint: 'a',
-                qs: {moo: 'no', oink: [1,2,4]},
+                qs: {moo: 'no', oink: [1, 2, 4]},
             });
         });
 
     }).then(function () {
         // Altering the request ups the count
-        return pt.cached_get('b', {moo: "no", oink: [1,2,4]}).then(function (data) {
+        return pt.cached_get('b', {moo: "no", oink: [1, 2, 4]}).then(function (data) {
             t.deepEqual(data, {
                 count: 4,
                 endpoint: 'b',
-                qs: {moo: 'no', oink: [1,2,4]},
+                qs: {moo: 'no', oink: [1, 2, 4]},
             });
         });
 
