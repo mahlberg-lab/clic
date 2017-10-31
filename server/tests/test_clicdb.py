@@ -43,7 +43,6 @@ class TestClicDb(unittest.TestCase):
         """))
         out = self.cdb.rdb_query("SELECT subset_type, eid, offset_start, offset_end FROM subset").fetchall()
         self.assertEqual(out, [
-            (u'quote', 0, 0, 0),
             (u'nonquote', 1, 0, 50),
             (u'quote', 6, 50, 51),  # NB: We believe the wordOffset, even though they're wrong
             (u'nonquote', 7, 51, 83),
@@ -87,6 +86,5 @@ class TestClicDb(unittest.TestCase):
         """))
         out = self.cdb.rdb_query("SELECT subset_type, eid, offset_start, offset_end FROM subset").fetchall()
         self.assertEqual(out, [
-            (u'quote', 0, 0, 0),
             (u'nonquote', 1, 0, 81),
         ])
