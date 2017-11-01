@@ -9,11 +9,11 @@ class Test_get_corpus_structure(unittest.TestCase):
         get_corpus_structure should return a sorted deep structure
         """
         out = get_corpus_structure(ClicDb())
-        # Corpora in alphabetical order
+        # Corpora in corpus_order order
         self.assertEqual([(x['id'], x['title']) for x in out], [
-            (u'ntc', u'19th century reference corpus'),
-            (u'ChiLit', u"Children's Literature"),  # NB: Alphabetical by title
             (u'dickens', u'Novels by Charles Dickens'),
+            (u'ntc', u'19th century reference corpus'),
+            (u'ChiLit', u"Children's Literature"),
             (u'Other', u'Other'),
         ])
         # Each corpora has some books

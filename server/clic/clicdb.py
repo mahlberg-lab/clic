@@ -264,6 +264,7 @@ class ClicDb():
         _rdb_insert(c, "corpus", (
             corpus_id,
             self.extra_data['corpus_titles'][corpus_id],
+            self.extra_data['corpus_order'].get(corpus_id, 999),
         ));
         _rdb_insert(c, "book", (
             book_id,
@@ -357,6 +358,7 @@ class ClicDb():
         c.execute('''CREATE TABLE corpus (
             corpus_id TEXT,
             title TEXT NOT NULL,
+            ordering INT,
             PRIMARY KEY (corpus_id)
         )''')
         c.execute('''CREATE TABLE book (

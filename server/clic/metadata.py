@@ -5,7 +5,11 @@ def get_corpus_structure(cdb):
     - title: corpus title
     - children: [{id: book id, title: book title, author: book author}, ...]
     """
-    c = cdb.rdb_query("SELECT c.corpus_id, c.title, b.book_id, b.title, b.author FROM corpus c, book b WHERE b.corpus_id = c.corpus_id ORDER BY c.title, b.title")
+    c = cdb.rdb_query(
+        "SELECT c.corpus_id, c.title, b.book_id, b.title, b.author" +
+        " FROM corpus c, book b" +
+        " WHERE b.corpus_id = c.corpus_id" +
+        " ORDER BY c.ordering, b.title")
 
     out = []
     for (c_id, c_title, b_id, b_title, b_author) in c:
@@ -36,7 +40,7 @@ def get_corpus_details(cdb):
         ", ch.chapter_id, ch.chapter_num, ch.word_total" +
         " FROM corpus c, book b, chapter ch" +
         " WHERE b.corpus_id = c.corpus_id AND ch.book_id = b.book_id" +
-        " ORDER BY c.title, b.title, ch.chapter_num")
+        " ORDER BY c.ordering, b.title, ch.chapter_num")
 
     out = []
     for (c_id, c_title, b_id, b_title, b_author, ch_id, ch_chapter_num, ch_word_total) in c:
