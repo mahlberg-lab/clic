@@ -24,7 +24,7 @@ lib/python2.7/site-packages/.requirements: requirements.txt \
 	./bin/pip install -r requirements.txt
 	touch lib/python2.7/site-packages/.requirements
 
-start: lib/python2.7/site-packages/.requirements
+start: lib/python2.7/site-packages/.requirements test
 	./bin/uwsgi \
 	    --master \
 	    --processes=1 --threads=1 \
