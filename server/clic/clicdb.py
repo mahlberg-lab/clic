@@ -37,10 +37,6 @@ class ClicDb():
         self.rdb = sqlite3.connect(rdb_file)
         self.rdb.cursor().execute('PRAGMA mmap_size = %d;' % (1024**3))
 
-        # Extra lookup tables not available from cheshire data
-        with open(os.path.join(CLIC_DIR, 'cheshire3-server', 'dbs', 'dickens', 'extra_data.json')) as f:
-            self.extra_data = json.load(f)
-
     def close(self):
         self.rdb.close()
 
@@ -246,6 +242,11 @@ class ClicDb():
             except sqlite3.IntegrityError as e:
                 if not ignoreDuplicate or not e.message.startswith('UNIQUE constraint'):
                     raise
+
+        # Extra lookup tables not available from cheshire data
+        if not hasattr(self, 'extra_data'):
+            with open(os.path.join(CLIC_DIR, '..', 'annotationOutput', 'extra_data.json')) as f:
+                self.extra_data = json.load(f)
 
         c = self.rdb.cursor()
 
