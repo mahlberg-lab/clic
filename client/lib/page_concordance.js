@@ -144,6 +144,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
 
     for (i = 0; i < data.length; i++) {
         data[i].DT_RowId = data[i][3][0] + data[i][4][0];
+        data[i].DT_RowClass = ''; // Make sure we clear any previous RowClass
 
         // Add KWICGrouper match column
         r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
