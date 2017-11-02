@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 
 from clic.clicdb import ClicDb
@@ -11,8 +12,8 @@ class Test_get_corpus_structure(unittest.TestCase):
         out = get_corpus_structure(ClicDb())
         # Corpora in corpus_order order
         self.assertEqual([(x['id'], x['title']) for x in out], [
-            (u'dickens', u'Novels by Charles Dickens'),
-            (u'ntc', u'19th century reference corpus'),
+            (u'dickens', u'Dickens\u2019s Novels'),
+            (u'ntc', u'19\u1d57\u02b0 Century Reference Corpus'),
             (u'ChiLit', u"Children's Literature"),
             (u'Other', u'Other'),
         ])
