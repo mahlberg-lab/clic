@@ -43,7 +43,7 @@ test('post_process', function (t) {
 
     return Promise.resolve(true).then(function () {
         // Ignore all columns
-        return pt.post_process(
+        var data = pt.post_process(
             mock_state({tag_columns: {}, tag_column_order: []}),
             kwic_terms('tongue'),
             [{ignore: true, reverse: true}, {ignore: true}, {ignore: true}],
@@ -57,7 +57,6 @@ test('post_process', function (t) {
                 ],
             ]}
         );
-    }).then(function (data) {
         t.deepEqual(data.data[0].DT_RowId, 'parp1234', 'Formed row ID from book/word');
         t.deepEqual(data.data[0].DT_RowClass, '', 'No matches, RowClass (explicitly) empty');
         t.deepEqual(data.data[0].kwic, 0, 'No matches, kwic 0');
@@ -66,7 +65,7 @@ test('post_process', function (t) {
 
     }).then(function () {
         // Match one
-        return pt.post_process(
+        var data = pt.post_process(
             mock_state({tag_columns: {}, tag_column_order: []}),
             kwic_terms('gotten'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {start: 0, stop: 10}],
@@ -80,7 +79,6 @@ test('post_process', function (t) {
                 ],
             ]}
         );
-    }).then(function (data) {
         t.deepEqual(data.data[0].DT_RowId, 'parp1238', 'Formed row ID from book/word');
         t.deepEqual(data.data[0].DT_RowClass, 'kwic-highlight-2', "Colour classes start at 2");
         t.deepEqual(data.data[0].kwic, 1, 'Overall 1 match');
