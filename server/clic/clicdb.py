@@ -38,7 +38,6 @@ class ClicDb():
         self.rdb.execute('PRAGMA mmap_size = %d;' % (1024**3))
         self.rdb.execute("PRAGMA foreign_keys = ON;")
         self.rdb.execute("PRAGMA page_size = 4096;")
-        self.rdb.execute("VACUUM;")
 
     def close(self):
         self.rdb.close()
@@ -230,6 +229,7 @@ class ClicDb():
         recStore.commit_storing(self.session)
         db.commit_indexing(self.session)
         self.rdb.commit()
+        self.rdb.execute("VACUUM;")
 
     def rdb_index_record(self, record):
         """
@@ -418,6 +418,7 @@ class ClicDb():
             chapter_id += 1
         yield "Committing..."
         self.rdb.commit()
+        self.rdb.execute("VACUUM;")
 
 
 def recreate_rdb():
