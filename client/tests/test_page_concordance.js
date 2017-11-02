@@ -62,6 +62,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].DT_RowClass, '', 'No matches, RowClass (explicitly) empty');
         t.deepEqual(data.data[0].kwic, 0, 'No matches, kwic 0');
         t.deepEqual(data.allWords, {}, 'Ignoring all rows, so no words found');
+        t.deepEqual(pt.extra_info, ['from 1 book'], "Extra info updated");
 
     }).then(function () {
         // Match one
@@ -84,6 +85,10 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].DT_RowClass, 'kwic-highlight-2', "Colour classes start at 2");
         t.deepEqual(data.data[0].kwic, 1, 'Overall 1 match');
         t.deepEqual(data.allWords, {'you\'ve': true, gotten: true, us: true, into: true}, 'Found words in middle, right');
+        t.deepEqual(pt.extra_info, [
+            'from 1 book',
+            '1 entries with 1 KWIC match',
+        ], "Extra info updated");
 
     }).then(function () {
         t.end();
