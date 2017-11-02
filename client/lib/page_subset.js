@@ -38,7 +38,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     api_opts.contextsize = 5;
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select a corpus to search in", "warn");
+        throw new DisplayError("Please select the corpora to search in", "warn");
     }
     if (!api_opts.subset) {
         throw new DisplayError("Please select a subset", "warn");

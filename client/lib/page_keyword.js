@@ -41,10 +41,10 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
     api_opts.pvalue = page_state.arg('pvalue');
 
     if (api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select a target corpora", "warn");
+        throw new DisplayError("Please select the target corpora", "warn");
     }
     if (api_opts.refcorpora.length === 0) {
-        throw new DisplayError("Please select a reference corpora", "warn");
+        throw new DisplayError("Please select the reference corpora", "warn");
     }
     if (!api_opts.subset) {
         throw new DisplayError("Please select a subset", "warn");
