@@ -35,7 +35,10 @@ class ClicDb():
         self.idxStore = self.db.get_object(self.session, 'indexStore')
 
         self.rdb = sqlite3.connect(rdb_file)
-        self.rdb.cursor().execute('PRAGMA mmap_size = %d;' % (1024**3))
+        self.rdb.execute('PRAGMA mmap_size = %d;' % (1024**3))
+        self.rdb.execute("PRAGMA foreign_keys = ON;")
+        self.rdb.execute("PRAGMA page_size = 4096;")
+        self.rdb.execute("VACUUM;")
 
     def close(self):
         self.rdb.close()
@@ -353,8 +356,6 @@ class ClicDb():
 
     def create_schema(self):
         c = self.rdb.cursor()
-        c.execute('''PRAGMA page_size = 4096;''')
-        c.execute('''VACUUM;''')
         c.execute('''CREATE TABLE corpus (
             corpus_id TEXT,
             title TEXT NOT NULL,
