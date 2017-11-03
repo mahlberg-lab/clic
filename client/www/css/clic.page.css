@@ -54,10 +54,10 @@ header h1 {
     font-family: Georgia, Helvetica, serif;
     font-weight: normal;
 }
-header, header h1 a, header, header h1 a:link {
+header, header h1 a, header, header h1 a:link, header h1 a:visited {
     color: #1e345e;
 }
-header h1 a:hover, header h1 a:active, header h1 a:visited {
+header h1 a:hover, header h1 a:active {
     color: #ffa033;
     text-shadow: 0 0 3px #ffce98;
     text-decoration: none;
