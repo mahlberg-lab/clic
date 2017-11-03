@@ -128,6 +128,20 @@ server {
         proxy_pass ${GA_API_URL};
     }
 
+    location /api/ {
+        include uwsgi_params;
+        uwsgi_pass  uwsgi_server;
+        uwsgi_read_timeout ${UWSGI_TIMEOUT};
+
+        # All API results are deterministic, cache them
+        uwsgi_cache ${UWSGI_CACHE_ZONE};
+        uwsgi_cache_key \$uri?\$args;
+        uwsgi_cache_valid 200 302 ${UWSGI_API_CACHE_TIME};
+        expires ${UWSGI_API_CACHE_TIME};
+
+        ${GA_API_ACTION}
+    }
+
     # Versioned resources can be cached forever
     location ~ ^(.*)\.r\w+\$ {
         try_files \$1 =404;
@@ -142,31 +156,20 @@ server {
         rewrite ^/downloads/19C.zip https://github.com/birmingham-ccr/clic-19C-xml/archive/afde3a8a21ce3689dd7dd4f1b6271eb2724c2783.zip permanent;
         rewrite ^/downloads/clic-annotation.zip https://github.com/birmingham-ccr/clic/tree/ddd9d08b8078186426fd2e253665a59e8d4a161a/annotation permanent;
         rewrite ^/downloads/clic-gold-standard.zip https://github.com/birmingham-ccr/clic-gold-standard/archive/df4ff05f18d03103cd0ad561c1ff105d49ed30c1.zip permanent;
+        rewrite ^/downloads/?$ http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/downloads.aspx;
 
-        # Caching for static resources
+        # No-longer-available pages got to the homepage
+        rewrite ^/(publications|about|documentation|definitions|events)/?$ https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/index.aspx;
+
+        # Some aliases
+        rewrite ^/subsets/?$ /subsets permanent;
+        rewrite ^/concordances/?$ /concordance permanent;
+
+        # Allow copies of index.html to be cached for a short amount of time
         expires 1m;
-    }
 
-    # We're a single-page-app, all URLs lead to index.html
-    location ~ ^/[0-9a-zA-Z_-]+\$ {
-        rewrite ^/downloads$ http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/downloads.aspx;
-        rewrite ^/concordances$ /concordance permanent;
-
+        # We're a single-page-app, all URLs lead to index.html
         try_files \$uri \$uri.html /index.html;
-    }
-
-    location /api/ {
-        include uwsgi_params;
-        uwsgi_pass  uwsgi_server;
-        uwsgi_read_timeout ${UWSGI_TIMEOUT};
-
-        # All API results are deterministic, cache them
-        uwsgi_cache ${UWSGI_CACHE_ZONE};
-        uwsgi_cache_key \$uri?\$args;
-        uwsgi_cache_valid 200 302 ${UWSGI_API_CACHE_TIME};
-        expires ${UWSGI_API_CACHE_TIME};
-
-        ${GA_API_ACTION}
     }
 }
 EOF
