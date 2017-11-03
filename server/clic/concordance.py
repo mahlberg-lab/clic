@@ -102,7 +102,7 @@ def build_query(cdb, q, idxName, corpora):
 
     term_clauses = []
     for term in q:
-        term_clauses.append(u'c3.{0} = "{1}"'.format(idxName, unicode(unidecode(term))))
+        term_clauses.append(u'c3.{0} = "{1}"'.format(idxName, unicode(unidecode(term)).replace('"', '\\"')))
 
     ## conduct database search
     ## note: /proxInfo needed to search individual books

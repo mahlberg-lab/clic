@@ -141,3 +141,18 @@ class TestConcordance(unittest.TestCase):
         # Queries both produce results and are equivalent
         self.assertTrue(len(out_ascii) > 0)
         self.assertEqual(out_fancy, out_ascii)
+
+    def test_escaping(self):
+        """We escape double quotes into something that at least doesn't cause errors"""
+        cdb = ClicDb()
+
+        out = [x for x in concordance(
+            cdb,
+            corpora=['BH'],
+            subset=['quote'],
+            q=[u'"girls are"'],
+        )]
+        self.assertEqual(
+            ["".join(x[0][:-1]) for x in out[1:]],
+            [u' girls are', u' girls are.'],
+        )
