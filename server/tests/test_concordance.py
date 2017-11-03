@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import unittest
 
@@ -14,7 +15,7 @@ class TestConcordance(unittest.TestCase):
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was', 'she said'],
+            q=[u'she was', u'she said'],
             contextsize=[5],
         )]
         self.assertEqual(
@@ -32,7 +33,7 @@ class TestConcordance(unittest.TestCase):
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was'],
+            q=[u'she was'],
             contextsize=[0],
         )]
         # NB: Node now in first row
@@ -46,7 +47,7 @@ class TestConcordance(unittest.TestCase):
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was'],
+            q=[u'she was'],
             contextsize=[3],
         )]
         self.assertEqual(
@@ -67,7 +68,7 @@ class TestConcordance(unittest.TestCase):
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was'],
+            q=[u'she was'],
             contextsize=[1],
         )]
         self.assertEqual(
@@ -88,21 +89,21 @@ class TestConcordance(unittest.TestCase):
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was'],
+            q=[u'she was'],
             contextsize=[1],
         )]
         hand_out = [x for x in concordance(
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['hand'],
+            q=[u'hand'],
             contextsize=[1],
         )]
         out = [x for x in concordance(
             cdb,
             corpora=['AgnesG'],
             subset=['quote'],
-            q=['she was', 'hand'],
+            q=[u'she was', u'hand'],
             contextsize=[1],
         )]
         self.assertEqual(
@@ -120,3 +121,23 @@ class TestConcordance(unittest.TestCase):
             set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
                 [":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
         )
+
+    def test_unidecode(self):
+        """We mush down quotes in queries to ascii characters"""
+        cdb = ClicDb()
+
+        out_fancy = [x for x in concordance(
+            cdb,
+            corpora=['BH'],
+            subset=['quote'],
+            q=[u'I don’t know'],
+        )]
+        out_ascii = [x for x in concordance(
+            cdb,
+            corpora=['BH'],
+            subset=['quote'],
+            q=[u"I don't know"],
+        )]
+        # Queries both produce results and are equivalent
+        self.assertTrue(len(out_ascii) > 0)
+        self.assertEqual(out_fancy, out_ascii)

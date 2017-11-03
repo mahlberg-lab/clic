@@ -2,6 +2,8 @@
 import os
 import os.path
 
+from unidecode import unidecode
+
 from clic.errors import UserError
 """Concordance endpoint
 
@@ -100,13 +102,13 @@ def build_query(cdb, q, idxName, corpora):
 
     term_clauses = []
     for term in q:
-        term_clauses.append('c3.{0} = "{1}"'.format(idxName, term))
+        term_clauses.append(u'c3.{0} = "{1}"'.format(idxName, unicode(unidecode(term))))
 
     ## conduct database search
     ## note: /proxInfo needed to search individual books
-    query = '(%s) and/proxInfo (%s)' % (
+    query = u'(%s) and/proxInfo (%s)' % (
         cdb.corpora_list_to_query(corpora),
-        ' or/proxInfo '.join(term_clauses),
+        u' or/proxInfo '.join(term_clauses),
     )
 
     return query

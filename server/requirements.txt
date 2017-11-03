@@ -3,5 +3,6 @@ Flask==0.12.2
 uWSGI==2.0.15
 pandas==0.20.3
 numpy==1.13.1
+unidecode==0.4.21
 
 pytest==3.2.1
