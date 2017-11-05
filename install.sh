@@ -86,7 +86,7 @@ GA_API_URL="${GA_API_URL}&an=\$http_x_clic_client"  # Application name
 [ -n "${GA_KEY}" ] && GA_API_ACTION="post_action @forward_to_ga;" || GA_API_ACTION=""
 
 mkdir -p ${CLIC_PATH}/uwsgi_cache
-rm -r -- "${CLIC_PATH}/uwsgi_cache/*" || true
+rm -r -- "${CLIC_PATH}/uwsgi_cache"/* || true
 chown ${UWSGI_USER} ${CLIC_PATH}/uwsgi_cache
 
 cat <<EOF > /etc/nginx/sites-available/${SERVICE_NAME}
