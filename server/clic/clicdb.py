@@ -246,12 +246,17 @@ class ClicDb():
                 if not ignoreDuplicate or not e.message.startswith('UNIQUE constraint'):
                     raise
 
+        c = self.rdb.cursor()
+
         # Extra lookup tables not available from cheshire data
         if not hasattr(self, 'extra_data'):
             with open(os.path.join(CLIC_DIR, '..', 'annotationOutput', 'extra_data.json')) as f:
                 self.extra_data = json.load(f)
 
-        c = self.rdb.cursor()
+            # Update the repository versions in the DB
+            for repo, version in self.extra_data["repository_versions"].items():
+                c.execute('DELETE FROM repository WHERE repository_id = ?', (repo,))
+                _rdb_insert(c, "repository", (repo, version))
 
         chapter_id = record.id
         dom = record.dom
@@ -356,6 +361,11 @@ class ClicDb():
 
     def create_schema(self):
         c = self.rdb.cursor()
+        c.execute('''CREATE TABLE repository (
+            repository_id TEXT,
+            version TEXT NOT NULL,
+            PRIMARY KEY (repository_id)
+        )''')
         c.execute('''CREATE TABLE corpus (
             corpus_id TEXT,
             title TEXT NOT NULL,
