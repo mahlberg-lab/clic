@@ -99,10 +99,8 @@ done
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'
 
 # Note which versions we processed
-VERSIONS_DIR="$SCRIPT_DIR/../annotationOutput/versions"
-mkdir -p $VERSIONS_DIR
-git_version $SCRIPT_DIR > $VERSIONS_DIR/clic
-git_version $SCRIPT_DIR/../corpora/ > $VERSIONS_DIR/corpora
+${PYTHON} $SCRIPT_DIR/repository_version.py clic $(git_version $SCRIPT_DIR)
+${PYTHON} $SCRIPT_DIR/repository_version.py corpora $(git_version $SCRIPT_DIR/../corpora/)
 
 ENDTIME=$(date +%s)
 echo "It took $(($ENDTIME - $STARTTIME)) seconds to complete this annotation."
