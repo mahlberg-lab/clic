@@ -99,7 +99,7 @@ done
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'
 
 # Note which versions we processed
-${PYTHON} $SCRIPT_DIR/repository_version.py clic $(git_version $SCRIPT_DIR)
+${PYTHON} $SCRIPT_DIR/repository_version.py clic:import $(git_version $SCRIPT_DIR)
 ${PYTHON} $SCRIPT_DIR/repository_version.py corpora $(git_version $SCRIPT_DIR/../corpora/)
 
 ENDTIME=$(date +%s)
