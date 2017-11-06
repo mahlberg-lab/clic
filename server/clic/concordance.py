@@ -46,6 +46,9 @@ indicating which of the tokens are word tokens. For example::
 
 Result metadata and Position-in-book metadata are currently subject to change.
 
+The ``version`` object gives both the current version of CLiC and the revision of the
+corpora ingested in the database.
+
 Examples:
 
 /api/concordance?corpora=AgnesG&q=his+hands&q=his+feet&contextsize=3::
@@ -67,7 +70,7 @@ Examples:
         ["and"," ","finally"," ","upon",[0,2,4]],
          . . .
       ],
-    ]}
+    ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 """
 def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0']):
     """

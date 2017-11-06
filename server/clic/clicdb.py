@@ -84,6 +84,22 @@ class ClicDb():
 
         raise ValueError("Unknown db type %s" % db)
 
+    def get_clic_version(self):
+        """
+        Get current version of CLiC code & corpora
+        """
+        out = {}
+
+        # Fetch versions from DB
+        for (repo, version) in self.rdb_query("SELECT repository_id, version FROM repository"):
+            out[repo] = version
+
+        # CLiC might have been upgraded since import
+        with open(os.path.join(CLIC_DIR, '..', 'clic_revision')) as f:
+            out['clic'] = f.read().strip()
+
+        return out
+
     def get_chapter_word_counts(self, chapter_id):
         """
         For the given book id and chapter, return:

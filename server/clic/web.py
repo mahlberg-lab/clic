@@ -20,6 +20,13 @@ def clicdb():
         g._clicdb = ClicDb()
     return g._clicdb
 
+_clic_version = None
+def clic_version():
+    global _clic_version
+    if not _clic_version:
+        _clic_version = ClicDb().get_clic_version()
+    return _clic_version
+
 @app.before_first_request
 def warm_cache():
     clicdb().warm_cache()
@@ -84,12 +91,12 @@ import clic.metadata
 @app.route('/api/corpora', methods=['GET'])
 def corpora():
     out = clic.metadata.get_corpus_structure(clicdb())
-    return jsonify(dict(corpora=out))
+    return jsonify(dict(corpora=out, version=clic_version()))
 
 @app.route('/api/corpora/details', methods=['GET'])
 def corpora_details():
     out = clic.metadata.get_corpus_details(clicdb())
-    return jsonify(dict(corpora=out))
+    return jsonify(dict(corpora=out, version=clic_version()))
 
 # ==== Concordance routes =================================
 import clic.concordance
@@ -98,6 +105,7 @@ import clic.concordance
 def concordances():
     out = clic.concordance.concordance(clicdb(), **request.args)
     header = out.next()
+    header['version'] = clic_version()
     return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Subset routes ======================================
@@ -107,6 +115,7 @@ import clic.subset
 def subset():
     out = clic.subset.subset(clicdb(), **request.args)
     header = out.next()
+    header['version'] = clic_version()
     return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Keyword routes =====================================
@@ -116,6 +125,7 @@ import clic.keyword
 def keyword():
     out = clic.keyword.keyword(clicdb(), **request.args)
     header = out.next()
+    header['version'] = clic_version()
     return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Cluster routes =====================================
@@ -125,6 +135,7 @@ import clic.cluster
 def cluster():
     out = clic.cluster.cluster(clicdb(), **request.args)
     header = out.next()
+    header['version'] = clic_version()
     return Response(stream_json(out, header), content_type='application/json')
 
 # ==== Chapter routes =====================================

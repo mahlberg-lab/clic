@@ -40,6 +40,9 @@ indicating which of the tokens are word tokens. For example::
 
 Result metadata and Position-in-book metadata are currently subject to change.
 
+The ``version`` object gives both the current version of CLiC and the revision of the
+corpora ingested in the database.
+
 Examples:
 
 /api/subset?corpora=AgnesG&subset=longsus::
@@ -48,7 +51,7 @@ Examples:
       [["observed"," ","Smith",";"," ","'","and"," ","a"," ","darksome"," ",[0,2,6,8,10]], . . .],
       [["replied"," ","she",","," ","with"," ","a"," ","short",","," ","bitter"," ","laugh",";"," ",[0,2,5,7,9,12,14]], . . .],
        . . .
-    ]}
+    ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 
 /api/subset?corpora=AgnesG&subset=longsus&contextsize=3::
 
@@ -64,7 +67,7 @@ Examples:
         ["'","killing"," ","the"," ","poor",[1,3,5]],
          . . .
       ],
-    ]}
+    ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 
 """
 def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0']):
