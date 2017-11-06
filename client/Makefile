@@ -109,7 +109,7 @@ www/%.html: html/%.html \
 	[ -e "../.local-conf" ] && \
 	    . ../.local-conf; \
 	    export GA_KEY; \
-	    export CUR_REV="`git describe --exact-match HEAD 2>/dev/null || echo $$(git rev-parse --abbrev-ref HEAD):$$(git rev-parse --short HEAD)`"; \
+	    export CUR_REV="`cat ../clic_revision`"; \
 	    $(NODE_CMD) build/html_compile.js \
 	        $< > $@.mktmp
 	mv $@.mktmp $@
