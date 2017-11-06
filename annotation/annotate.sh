@@ -24,6 +24,14 @@ OUTPUT_DIR=$(readlink -f "$2")
 # Make sure all output dirs exist
 mkdir -p $OUTPUT_DIR/{ascii,paragraphs,sentences,quotes,suspensions,alternativequotes,alternativesuspensions,final}
 
+git_version() {
+    (
+        cd $1
+        git describe --exact-match HEAD 2>/dev/null \
+            || echo $(git rev-parse --abbrev-ref HEAD):$(git rev-parse --short HEAD)
+    )
+}
+
 for i in ${INPUT}; do
 	nf="$(basename $i .txt).xml"
 
@@ -89,6 +97,12 @@ for i in ${INPUT}; do
 done
 
 echo 'Finished and now cleaning up. Find your results in the directory `final` in your output directory.'
+
+# Note which versions we processed
+VERSIONS_DIR="$SCRIPT_DIR/../annotationOutput/versions"
+mkdir -p $VERSIONS_DIR
+git_version $SCRIPT_DIR > $VERSIONS_DIR/clic
+git_version $SCRIPT_DIR/../corpora/ > $VERSIONS_DIR/corpora
 
 ENDTIME=$(date +%s)
 echo "It took $(($ENDTIME - $STARTTIME)) seconds to complete this annotation."
