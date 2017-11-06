@@ -162,7 +162,7 @@ server {
         rewrite ^/(publications|about|documentation|definitions|events)/?$ https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/index.aspx;
 
         # Some aliases
-        rewrite ^/subsets/?$ /subsets permanent;
+        rewrite ^/subsets/$ /subsets permanent;
         rewrite ^/concordances/?$ /concordance permanent;
 
         # Allow copies of index.html to be cached for a short amount of time
