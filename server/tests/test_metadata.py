@@ -14,7 +14,7 @@ class Test_get_corpus_structure(unittest.TestCase):
         self.assertEqual([(x['id'], x['title']) for x in out], [
             (u'dickens', u'Dickens\u2019s Novels'),
             (u'ntc', u'19\u1d57\u02b0 Century Reference Corpus'),
-            (u'ChiLit', u"Children's Literature"),
+            (u'ChiLit', u"19\u1d57\u02b0 Century Children\u2019s Literature"),
             (u'Other', u'Other'),
         ])
         # Each corpora has some books
