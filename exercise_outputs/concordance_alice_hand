@@ -1,5 +1,5 @@
 /api/concordance?corpora=alice&subset=all&q=hand&contextsize=10
-{"data":[
+{"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.6:6e02382"},"data":[
 [["and"," ","had"," ","just"," ","begun"," ","to"," ","dream"," ","that"," ","she"," ","was"," ","walking",[0,2,4,6,8,10,12,14,16,18]],[" ","hand",[1]],[" ","in"," ","hand"," ","with"," ","Dinah",","," ","and"," ","saying"," ","to"," ","her"," ","very"," ","earnestly",[1,3,5,7,10,12,14,16,18,20]],["alice",1,10,42],[908,26484,2130,908,909]],
 [["just"," ","begun"," ","to"," ","dream"," ","that"," ","she"," ","was"," ","walking"," ","hand"," ","in",[0,2,4,6,8,10,12,14,16,18]],[" ","hand",[1]],[" ","with"," ","Dinah",","," ","and"," ","saying"," ","to"," ","her"," ","very"," ","earnestly",","," ","'","Now",","," ","Dinah",[1,3,6,8,10,12,14,16,20,23]],["alice",1,10,42],[910,26484,2130,910,911]],
 [["said"," ","anxiously"," ","to"," ","herself",","," ","'","Which"," ","way","?","Which"," ","way","?',"," ","holding"," ","her",[0,2,4,6,10,12,14,16,19,21]],[" ","hand",[1]],[" ","on"," ","the"," ","top"," ","of"," ","her"," ","head"," ","to"," ","feel"," ","which"," ","way",[1,3,5,7,9,11,13,15,17,19]],["alice",1,26,74],[2060,26484,2130,2060,2061]],
@@ -21,7 +21,7 @@
 [["jury"," ","all"," ","looked"," ","puzzled",".)","'","He"," ","must"," ","have"," ","imitated"," ","somebody"," ","else's",[0,2,4,6,9,11,13,15,17,19]],[" ","hand",",'",[1]],[" ","said"," ","the"," ","King",".","(","The"," ","jury"," ","all"," ","brightened"," ","up"," ","again",".)","'","Please",[1,3,5,8,10,12,14,16,18,21]],["alice",12,31,40],[25097,26484,2141,733,734]],
 [["just"," ","as"," ","she"," ","left"," ","her",","," ","leaning"," ","her"," ","head"," ","on"," ","her",[0,2,4,6,8,11,13,15,17,19]],[" ","hand",",",[1]],[" ","watching"," ","the"," ","setting"," ","sun",","," ","and"," ","thinking"," ","of"," ","little"," ","Alice"," ","and",[1,3,5,7,10,12,14,16,18,20]],["alice",12,67,97],[26047,26484,2141,1683,1684]]
 ]}
-real	0m0.423s
-user	0m0.017s
-sys	0m0.013s
+real	0m0.444s
+user	0m0.016s
+sys	0m0.004s
 

@@ -1,11 +1,11 @@
 /api/concordance?corpora=alice&subset=quote&q=hand&contextsize=10
-{"data":[
+{"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.6:6e02382"},"data":[
 [["on",","," ","turning"," ","to"," ","Alice",".","'","Only"," ","a"," ","thimble",",'"," ","said"," ","Alice"," ","sadly",[0,3,5,7,10,12,14,17,19,21]],[".","'","Hand",[2]],[" ","it"," ","over"," ","here",",'"," ","said"," ","the"," ","Dodo",".","Then"," ","they"," ","all"," ","crowded",[1,3,5,8,10,12,14,16,18,20]],["alice",3,27,53],[5166,26484,2132,908,909]],
 [["at"," ","all",",'"," ","said"," ","the"," ","King",":","'","however",","," ","it"," ","may"," ","kiss"," ","my",[0,2,5,7,9,12,15,17,19,21]],[" ","hand",[1]],[" ","if"," ","it"," ","likes",".'","'","I'd"," ","rather"," ","not",",'"," ","the"," ","Cat"," ","remarked",".","'","Don't",[1,3,5,8,10,12,15,17,19,22]],["alice",8,54,93],[17536,26484,2137,1876,1877]],
 [["I"," ","wish"," ","they'd"," ","get"," ","the"," ","trial"," ","done",",'"," ","she"," ","thought",","," ","'","and",[0,2,4,6,8,10,12,15,17,21]],[" ","hand",[1]],[" ","round"," ","the"," ","refreshments","!'","But"," ","there"," ","seemed"," ","to"," ","be"," ","no"," ","chance",[1,3,5,7,9,11,13,15,17,19]],["alice",11,1,2],[22603,26484,2140,117,118]],
 [["jury"," ","all"," ","looked"," ","puzzled",".)","'","He"," ","must"," ","have"," ","imitated"," ","somebody"," ","else's",[0,2,4,6,9,11,13,15,17,19]],[" ","hand",",'",[1]],[" ","said"," ","the"," ","King",".","(","The"," ","jury"," ","all"," ","brightened"," ","up"," ","again",".)","'","Please",[1,3,5,8,10,12,14,16,18,21]],["alice",12,31,40],[25097,26484,2141,733,734]]
 ]}
-real	0m0.323s
-user	0m0.015s
-sys	0m0.012s
+real	0m0.190s
+user	0m0.013s
+sys	0m0.009s
 

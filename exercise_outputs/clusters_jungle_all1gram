@@ -1,5 +1,5 @@
 /api/cluster?corpora=jungle&subset=all&clusterlength=1
-{"data":[
+{"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.6:6e02382"},"data":[
 ["a",1093],
 ["able",6],
 ["about",65],
@@ -1189,7 +1189,7 @@
 ["waingunga",13],
 ["walrus",9]
 ], "message":{"message":"3592 clusters with a frequency less than 5 are not shown","level":"info","stack":null,"error":"UserError"}}
-real	0m0.342s
-user	0m0.020s
-sys	0m0.011s
+real	0m0.439s
+user	0m0.006s
+sys	0m0.003s
 
