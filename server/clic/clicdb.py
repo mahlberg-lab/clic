@@ -30,9 +30,6 @@ class ClicDb():
             os.path.join(CLIC_DIR, 'cheshire3-server', 'configs', 'serverConfig.xml')
         )
         self.db = server.get_object(self.session, self.session.database)
-        self.qf = self.db.get_object(self.session, 'defaultQueryFactory')
-        self.recStore = self.db.get_object(self.session, 'recordStore')
-        self.idxStore = self.db.get_object(self.session, 'indexStore')
 
         self.rdb = sqlite3.connect(rdb_file)
         self.rdb.execute('PRAGMA mmap_size = %d;' % (1024**3))
@@ -54,10 +51,12 @@ class ClicDb():
         - db == 'cheshire': Return a CQL where clause string
         - db == 'rdb': Return (SQL where clause, params)
         """
+        idxStore = self.db.get_object(self.session, 'indexStore')
+
         corpus_names = [
             x.queryTerm
             for x
-            in self.idxStore.get_object(self.idxStore.session, 'subCorpus-idx')
+            in idxStore.get_object(idxStore.session, 'subCorpus-idx')
         ]
         subcorpus = []
         books = []
@@ -195,7 +194,9 @@ class ClicDb():
         return (word_id, sent_pos[0], sent_pos[1])
 
     def c3_query(self, query):
-        return self.db.search(self.session, self.qf.get_query(self.session, query))
+        qf = self.db.get_object(self.session, 'defaultQueryFactory')
+
+        return self.db.search(self.session, qf.get_query(self.session, query))
 
     def rdb_query(self, *args):
         c = self.rdb.cursor()
@@ -231,7 +232,7 @@ class ClicDb():
                 indexWF.process(self.session, rec2)  # Apply indexing to record
 
                 # Index new record in RDB
-                self.rdb_index_record(self.recStore.fetch_record(self.session, rec2.id))
+                self.rdb_index_record(recStore.fetch_record(self.session, rec2.id))
                 yield "Indexed %d - %s" % (rec2.id, d.filename)
             except Exception as e:
                 import traceback
@@ -242,7 +243,7 @@ class ClicDb():
                 )
                 raise e
         yield "Committing..."
-        recStore.commit_storing(self.session)
+        recStore.commit_storing(self.session)  # NB: This will release .bdb file handles
         db.commit_indexing(self.session)
         self.rdb.commit()
         self.rdb.execute("VACUUM;")
@@ -432,11 +433,13 @@ class ClicDb():
         )''')
 
     def recreate_rdb(self):
+        recStore = self.db.get_object(self.session, 'recordStore')
+
         self.create_schema()
         chapter_id = 0
         while True:
             try:
-                record = self.recStore.fetch_record(self.session, chapter_id)
+                record = recStore.fetch_record(self.session, chapter_id)
             except ObjectDoesNotExistException:
                 break
             self.rdb_index_record(record)
@@ -445,6 +448,8 @@ class ClicDb():
         yield "Committing..."
         self.rdb.commit()
         self.rdb.execute("VACUUM;")
+        # Force recordStore to release .bdb file handles
+        recStore._closeAll(recStore.session)
 
 
 def recreate_rdb():

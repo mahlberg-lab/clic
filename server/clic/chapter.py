@@ -14,5 +14,11 @@ def chapter(cdb, chapter_id):
     chapter_id = chapter_id[0]
 
     # Get document and return it directly
-    rec = cdb.recStore.fetch_record(cdb.session, chapter_id, parser=np)
-    return rec.get_raw(cdb.session)
+    recStore = cdb.db.get_object(cdb.session, 'recordStore')
+    try:
+        rec = recStore.fetch_record(recStore.session, chapter_id, parser=np)
+        return rec.get_raw(recStore.session)
+    finally:
+        # Release DBD file handles, unfortunately the only public way to do this
+        # is "commit_storing", which we don't want to do
+        recStore._closeAll(recStore.session)
