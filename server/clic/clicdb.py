@@ -51,13 +51,7 @@ class ClicDb():
         - db == 'cheshire': Return a CQL where clause string
         - db == 'rdb': Return (SQL where clause, params)
         """
-        idxStore = self.db.get_object(self.session, 'indexStore')
-
-        corpus_names = [
-            x.queryTerm
-            for x
-            in idxStore.get_object(idxStore.session, 'subCorpus-idx')
-        ]
+        corpus_names = dict((x[0], True) for x in self.rdb_query("SELECT corpus_id FROM corpus"))
         subcorpus = []
         books = []
         for m in corpora:
@@ -157,8 +151,13 @@ class ClicDb():
             raise UserError("Short suspensions are 4 or less words, a 5gram is impossible", "error")
 
         results = self.c3_query(self.corpora_list_to_query(corpora))
-        facets = self.db.get_object(self.session, index_name).facets(self.session, results)
-        return facets
+        index = self.db.get_object(self.session, index_name)
+        try:
+            return index.facets(self.session, results)
+        finally:
+            # NB: Tidy up after index.py, facets calls fetch_termById which opens
+            # termId/vector/proxVector BDB connections but never closes.
+            index.indexStore._closeVectors(index.indexStore.session, index)
 
     def get_word(self, chapter_id, match):
         """
@@ -196,7 +195,19 @@ class ClicDb():
     def c3_query(self, query):
         qf = self.db.get_object(self.session, 'defaultQueryFactory')
 
-        return self.db.search(self.session, qf.get_query(self.session, query))
+        try:
+            return self.db.search(self.session, qf.get_query(self.session, query))
+        finally:
+            # Tidy up after index.py, which doesn't close it's indexStores when
+            # it's done with them.
+            # In index.py, store.fetch_termList opens a connection to the index
+            # BDB files, but nothing closes them afterwards.
+            # Find the indexes that are currently open and close them all manually
+            idxStore = self.db.get_object(self.session, 'indexStore')
+            for i in idxStore.indexCxn.keys():
+                idxStore._closeIndex(idxStore.session, i)
+
+        return results
 
     def rdb_query(self, *args):
         c = self.rdb.cursor()
