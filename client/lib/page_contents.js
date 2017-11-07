@@ -60,7 +60,9 @@ PageContents.prototype.reload = function reload(page_state) {
     return api.get('corpora/details').then(function (details) {
         self.content_el.innerHTML =
             '<div class="clic-contents">' +
-            '<p>Welcome to CLiC. Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
+            '<p>Welcome to CLiC. The CLiC web app has been developed as part of the <a href="https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/index.aspx">CLiC Dickens project</a>, ' +
+            'which demonstrates through corpus stylistics how computer-assisted methods can be used to study literary texts and lead to new insights into how readers perceive fictional characters.</p>' +
+            '<p>Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
             '<p>CLiC currently contains the following texts:</p><div>' +
             renderCorporaHeadings(details.corpora) +
             renderCorpora(details.corpora) +
