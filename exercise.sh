@@ -4,7 +4,7 @@ set -euo pipefail
 HOST="$1" ; shift
 [ $# -ge 1 ] && TESTS="$*" || TESTS=(./exercise_outputs/*)
 
-for f; do
+for f in "${TESTS[@]}"; do
     ENDPOINT="$(head -n 1 $f)"
     echo $f: $HOST$ENDPOINT
     {
