@@ -99,7 +99,7 @@ www/css/bundle.libraries.min.css: package.json \
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 	mv $@.mktmp $@
 
-www/%.html: html/%.html \
+www/%.html: html/%.html ../clic_revision \
     build/html_compile.js \
     www/css/clic.*.css \
     www/js/*.js \
