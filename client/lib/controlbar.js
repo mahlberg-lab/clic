@@ -27,7 +27,7 @@ var noUiSlider_opts = {
     },
     'kwic-int-start': {
         start: 3,
-        range: {min: 0, max: 10},
+        range: {min: 1, max: 10},
         step: 1,
         pips: {
             mode: 'steps',
@@ -38,7 +38,7 @@ var noUiSlider_opts = {
     },
     'kwic-int-end': {
         start: 3,
-        range: {min: 0, max: 10},
+        range: {min: 1, max: 10},
         step: 1,
         direction: "rtl",
         pips: {
