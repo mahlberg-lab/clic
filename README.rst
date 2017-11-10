@@ -99,7 +99,7 @@ Back-up / generating dumps from live instances
 You can generate dumps from a running instance for backup / transfer::
 
     tar -C server/cheshire3-server/dbs/dickens -jcvf cheshire3.db_dickens.tar.bz2 \
-        indexes stores extra_data.json c3.sqlite
+        indexes stores c3.sqlite
 
 Acknowledgements
 ----------------
