@@ -1,6 +1,7 @@
 /.local-conf
 /clic_revision
 /cheshire3.db_dickens*.tar.bz2
+/clic.bundle
 
 *.mktmp
 /client/coverage
