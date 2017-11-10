@@ -17,6 +17,8 @@
 /client/www/*.html
 
 *.pyc
+/server/clic.egg-info/
+/server/pip-selfcheck.json
 /server/bin
 /server/include
 /server/lib
