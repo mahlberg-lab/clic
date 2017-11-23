@@ -76,6 +76,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 self.table_el.innerHTML = "";
                 add_events = false; // Events are attached to the table element, which remains
             }
+            self.init_cols = null; // If this load fails, we should do a full redraw afterwards
 
             table_opts = shallow_clone(self.table_opts);
             table_opts.fnInitComplete = function (table, data) {
