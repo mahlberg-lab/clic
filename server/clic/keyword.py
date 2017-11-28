@@ -58,8 +58,8 @@ def keyword(
         cdb,
         clusterlength,
         pvalue,
-        subset=['quote'], corpora=['dickens'],
-        refsubset=['quote'], refcorpora=['dickens']):
+        subset=['all'], corpora=['dickens'],
+        refsubset=['all'], refcorpora=['dickens']):
     '''
     Main entry, 
     '''
