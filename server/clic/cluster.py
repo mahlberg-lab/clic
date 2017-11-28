@@ -1,16 +1,16 @@
 '''
-Return a list of n-grams, and their frequency within the given texts.
+Return a list of word clusters, and their frequency within the given texts.
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'quote' (i.e. text within quotes)
-- clusterlength: n-gram length to search for, one of 1/3/4/5 (NB: There is no 2). Default 1
-- cutoff: The cutoff frequency, if an n-gram occurs less times than this it is not returned. Default '5'
+- clusterlength: cluster length to search for, one of 1/3/4/5 (NB: There is no 2). Default 1
+- cutoff: The cutoff frequency, if an cluster occurs less times than this it is not returned. Default '5'
 
 Parameters should be provided in querystring format, for example::
 
     ?corpora=dickens&corpora=AgnesG&subset=quote&clusterlength=5
 
-Returns a ``data`` array, one entry per result. Each item is an array of ``[n-gram, frequency]``.
+Returns a ``data`` array, one entry per result. Each item is an array of ``[cluster, frequency]``.
 
 The ``version`` object gives both the current version of CLiC and the revision of the
 corpora ingested in the database.
@@ -39,6 +39,29 @@ Examples:
         ],
         "message": {
             "message":"199 clusters with a frequency less than 5 are not shown",
+            "level":"info",
+            "stack":null,
+            "error":"UserError"
+        },
+        "version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"v1.6.1"}
+    }
+
+http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
+
+    {
+        "data":[
+            ["and if you",12],
+            ["as well as",8],
+            ["i did not",7],
+            ["i don't know",10],
+            ["i should be",8],
+            ["i should like",9],
+            ["should like to",7],
+            ["you would not",9],
+             . . .
+        ],
+        "message": {
+            "message":"18667 clusters with a frequency less than 5 are not shown",
             "level":"info",
             "stack":null,
             "error":"UserError"
