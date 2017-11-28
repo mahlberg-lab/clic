@@ -8,8 +8,8 @@ something that identifies your application.
 
 For more information on particular endpoints, please see the documentation in:
 
-* ``server/clic/subset.py``: For text subsets (e.g. quotes / suspensions) or entire chapters
-* ``server/clic/cluster.py``: For clusters
+* `server/clic/subset.py <../server/clic/subset.py>`_: For text subsets (e.g. quotes / suspensions) or entire chapters
+* `server/clic/cluster.py <../server/clic/cluster.py>`_: For clusters
 
 Code examples
 =============
