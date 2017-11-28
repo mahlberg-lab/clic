@@ -2,7 +2,7 @@
 Return a list of word clusters, and their frequency within the given texts.
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
-- subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'quote' (i.e. text within quotes)
+- subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
 - clusterlength: cluster length to search for, one of 1/3/4/5 (NB: There is no 2). Default 1
 - cutoff: The cutoff frequency, if an cluster occurs less times than this it is not returned. Default '5'
 
@@ -50,18 +50,13 @@ http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
 
     {
         "data":[
-            ["and if you",12],
-            ["as well as",8],
-            ["i did not",7],
-            ["i don't know",10],
-            ["i should be",8],
-            ["i should like",9],
-            ["should like to",7],
-            ["you would not",9],
+            ["i could not",35],
+            ["as well as",21],
+            ["i did not",23],
              . . .
         ],
         "message": {
-            "message":"18667 clusters with a frequency less than 5 are not shown",
+            "message":"56566 clusters with a frequency less than 5 are not shown",
             "level":"info",
             "stack":null,
             "error":"UserError"
@@ -73,7 +68,7 @@ from clic.errors import UserError
 
 def cluster(
         cdb,
-        subset=['quote'], corpora=['dickens'],
+        subset=['all'], corpora=['dickens'],
         clusterlength=['1'],
         cutoff=['5']):
     # Defaults / dereference arrays
