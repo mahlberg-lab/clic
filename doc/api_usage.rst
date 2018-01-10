@@ -14,6 +14,140 @@ For more information on particular endpoints, please see the documentation in:
 Code examples
 =============
 
+Python 3
+--------
+
+.. code-block:: python3
+
+    import json
+    import requests
+    import pandas as pd
+
+    UA = "CLiC API Example Python3 Code"  # user agent !! CHANGE ME !!
+    HOSTNAME = "clic.bham.ac.uk"
+
+    def api_request(endpoint, query=None):
+        """
+        Makes the API requests.
+        Returns the endpoint specific data structure as a python structure.
+
+        - endpoint: see the inline docs in /server/clic
+        - query: endpoint specific parameters as a querystring
+        """
+        if query is None:
+            uri = 'http://%s/api/%s' % (HOSTNAME, endpoint)
+        else:
+            uri = 'http://%s/api/%s?%s' % (HOSTNAME, endpoint, query)
+        resp = requests.get(uri, headers={'User-agent': UA, 'Accept': 'application/json'})
+        try:
+            rv = resp.json()
+        except json.decoder.JSONDecodeError:
+            print("API request did not return valid JSON")
+        return rv
+
+    def get_lookup():
+        """
+        Returns a pandas DataFrame listing the texts for each of the available corpora.
+        """
+        rv = api_request(endpoint="corpora")
+        d = []
+        for corpus in rv['corpora']:
+            corpus_id = corpus['id']
+            for book in corpus['children']:
+                d.append({'corpus' : corpus_id, 'author' : book['author'], \
+                          'shortname' : book['id'], 'title': book['title']})
+        df = pd.DataFrame(d, columns=['corpus', 'author', 'shortname', 'title'])
+        df.sort_values(['corpus', 'author', 'title'], inplace=True, ascending=True)
+        df.reset_index(inplace=True, drop=True)
+        return df
+
+    def get_tokens(shortname, subset=None, lowercase=True, punctuation=False):
+        """
+        Fetches tokens using the 'subset' endpoint.
+        Returns a list of tokens.
+
+        - shortname: can be any value from the 'corpus' or 'shortname' columns returned
+              by get_lookup() can be a string or a list of strings
+        - subset: any one of "shortsus", "longsus", "nonquote", "quote"
+        - lowercase: boolean indicating if the tokens should be transformed to lower case
+        - punctuation: boolean indicating if punctuation tokens should be included
+        """
+        if isinstance(shortname, str):
+            shortname = [shortname]
+        query = '&'.join(["corpora=%s" % sn for sn in shortname])
+        if subset is not None:
+            if subset not in ["shortsus", "longsus", "nonquote", "quote"]:
+                raise ValueError('bad subset parameter: "%s"' % subset)
+            query = query + "&subset=%s" % subset
+        rv = api_request(endpoint="subset", query=query)
+        if punctuation:
+            tokens = [j for i in rv['data'] for j in i[0][:-1]]
+        else:
+            tokens = [j for i in rv['data'] for j in [i[0][:-1][k] for k in i[0][-1]]]
+        if lowercase:
+            return [i.lower() for i in tokens]
+        return tokens
+
+Example usage
+-------------
+Find out what texts are available::
+
+    >>> lookup = get_lookup()
+    >>> lookup.head()
+       corpus             author shortname                       title
+    0  ChiLit   Agnes Strickland     rival           The Rival Crusoes
+    1  ChiLit        Andrew Lang    prigio               Prince Prigio
+    2  ChiLit  Ann Fraser Tytler     leila               Leila at Home
+    3  ChiLit        Anna Sewell    beauty                Black Beauty
+    4  ChiLit     Beatrix Potter     bunny  The Tale Of Benjamin Bunny
+    >>> lookup.tail()
+        corpus                       author shortname                          title
+    133    ntc                 Thomas Hardy    native       The Return of the Native
+    134    ntc               Wilkie Collins    Antoni  Antonina, or the Fall of Rome
+    135    ntc               Wilkie Collins      arma                       Armadale
+    136    ntc               Wilkie Collins    wwhite             The Woman in White
+    137    ntc  William Makepeace Thackeray    vanity                    Vanity Fair
+
+Filter what is available::
+
+    >>> lookup[lookup['author'] == "Thomas Hardy"]
+        corpus        author shortname                      title
+    131    ntc  Thomas Hardy      Jude           Jude the Obscure
+    132    ntc  Thomas Hardy      Tess  Tess of the D'Urbervilles
+    133    ntc  Thomas Hardy    native   The Return of the Native
+
+Fetch the tokens for a specific text::
+
+    >>> tokens = get_tokens(shortname = 'leila')
+    >>> len(tokens)
+    63026
+    >>> tokens[0:9]
+    ['it', 'was', 'the', 'intention', 'of', 'the', 'writer', 'of', 'the']
+
+Fetch the tokens for all quotes text in novels by Jane Austen::
+
+    >>> wanted = [sn for sn in lookup[lookup['author'] == "Jane Austen"]['shortname']]
+    >>> wanted
+    ['ladysusan', 'mansfield', 'northanger', 'sense', 'emma', 'persuasion', 'pride']
+
+    >>> austin_quotes = get_tokens(shortname = wanted, subset = "quote")
+    >>> len(austin_quotes)
+    307445
+    >>> austin_quotes[0:9]
+    ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
+
+Keep each text seperate::
+
+    >>> austin_quotes = {}
+    >>> for sn in wanted:
+    ...     austin_quotes[sn] = get_tokens(shortname = sn, subset = "quote")
+    ...
+    >>> {key:len(value) for key,value in austin_quotes.items()}
+    {'ladysusan': 2791, 'mansfield': 62013, 'northanger': 28937, 'sense': 51744, \
+     'emma': 80319, 'persuasion': 28653, 'pride': 52988}
+    >>> austin_quotes['emma'][0:9]
+    ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
+
 R
 -
 
