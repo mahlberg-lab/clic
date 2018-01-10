@@ -24,6 +24,7 @@ R
     library(data.table)
 
     UA <- "CLiC API Example R Code"  # user agent !! CHANGE ME !!
+    HOSTNAME <- "clic.bham.ac.uk"
 
     # Makes the API requests.
     # Returns the endpoint specific data structure.
@@ -35,11 +36,10 @@ R
         endpoint = c("subset", "corpora"),
         query = NULL
     ) {
-        hostname = "clic.bham.ac.uk"
         endpoint <- match.arg(endpoint)
         uri <- modify_url("",
             scheme = "http",
-            hostname = hostname,
+            hostname = HOSTNAME,
             path = paste0("/api/", endpoint),
             query = ifelse(is.null(query), "", query)
         )
@@ -54,7 +54,6 @@ R
         }
         fromJSON( content(req, as = "text", encoding = "UTF-8") )
     }
-
 
     # Returns a data.frame listing the texts for each of the available corpora.
     #
@@ -71,19 +70,19 @@ R
     # Fetches tokens using the 'subset' endpoint.
     # Returns a vector of tokens.
     #
-    # - id: can be any value from the 'corpus' or 'id' columns returned by get_lookup()
-    #       can be a string or a list of strings
+    # - shortname: can be any value from the 'corpus' or 'shortname' columns returned by get_lookup()
+    #              can be a string or a list of strings
     # - subset: any one of "shortsus", "longsus", "nonquote", "quote"
     # - lowercase: boolean indicating if the tokens should be transformed to lower case
     # - punctuation: boolean indicating if punctuation tokens should be included
     #
     get_tokens <- function(
-        id,
+        shortname,
         subset = NULL,
         lowercase = TRUE,
         punctuation = FALSE  # includes whitespace
     ) {
-        query <- paste(paste0("corpora=", id), collapse = "&")
+        query <- paste(paste0("corpora=", shortname), collapse = "&")
         if(! is.null(subset)) {
             subset <- match.arg(subset, c("shortsus", "longsus", "nonquote", "quote"))
             query <- paste0(query, "&subset=", subset )
@@ -106,9 +105,7 @@ R
 
 Example usage
 -------------
-Find out what texts are available:
-
-.. code-block:: 
+Find out what texts are available::
 
     > lookup <- get_lookup()
     > lookup
@@ -125,9 +122,7 @@ Find out what texts are available:
     137:    ntc              Wilkie Collins wwhite            The Woman in White
     138:    ntc William Makepeace Thackeray vanity                   Vanity Fair
 
-Filter what is available:
-
-.. code-block:: 
+Filter what is available::
 
     > lookup[lookup$author == "Thomas Hardy", ]
        corpus       author     id                     title
@@ -135,17 +130,13 @@ Filter what is available:
     2:    ntc Thomas Hardy   Tess Tess of the D'Urbervilles
     3:    ntc Thomas Hardy native  The Return of the Native
 
-Fetch the tokens for a specific text:
-
-.. code-block:: 
+Fetch the tokens for a specific text::
 
     > tokens <- get_tokens('leila')
     > str(tokens)
-     chr [1:63026] "it" "was" "the" "intention" "of" "the" "writer" "of" "the" ...
+     chr [1:63026] "it" "was" "the" "intention" "of" "the" "writer" "of" "the" "following" "pages" "to" "have" "bid" "a" "last" "farewell" "to" ...
 
-Fetch the tokens for all quotes text in novels by Jane Austen:
-
-.. code-block:: 
+Fetch the tokens for all quotes text in novels by Jane Austen::
 
     > wanted <- lookup[lookup$author == "Jane Austen", ]$id
     > wanted
@@ -153,11 +144,9 @@ Fetch the tokens for all quotes text in novels by Jane Austen:
 
     > austin_quotes <- get_tokens(wanted, subset = "quote")
     > str(austin_quotes)
-     chr [1:307445] "poor" "miss" "taylor" "i" "wish" "she" "were" "here" "again" "what" ...
+     chr [1:307445] "poor" "miss" "taylor" "i" "wish" "she" "were" "here" "again" "what" "a" "pity" "it" "is" "that" "mr" "weston" "ever" "thought" ...
 
-Keep each text seperate:
-
-.. code-block:: 
+Keep each text seperate::
 
     > austin_quotes <- sapply(wanted, get_tokens, subset = "quote")
     > str(austin_quotes)
