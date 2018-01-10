@@ -17,7 +17,7 @@ Code examples
 Python 3
 --------
 
-.. code-block:: python3
+.. code-block:: python
 
     import json
     import requests
