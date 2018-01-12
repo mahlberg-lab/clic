@@ -1,18 +1,55 @@
-CLiC API usage
-==============
+CLiC API
+========
 
-The CLiC API can also be queried directly and JSON returned.
+Any data available through the `CLiC web interface <http://clic.bham.ac.uk/>`_ is also available by directly calling the *CLiC API*.
+The CLiC API returns a JSON representation of the CLiC data, which means that the data can be retrieved directly using any programming language.
+To get you started we have written some example code for both Python and R.
 
-For tracking purposes, please set the "User-Agent" header to
-something that identifies your application.
+The sample code is for the *corpora* and *subset* endpoints.
+The corpora endpoint is used to retrieve the list of resources available in CLiC.
+This can then be used by your code to filter or select the resources you want to fetch (see the example usage).
+In the example code the corpora endpoint is called using the ``get_lookup()`` function which returns content something like::
 
-For more information on particular endpoints, please see the documentation in:
+    > lookup
+         corpus                      author     id               title
+      1: ChiLit            Agnes Strickland  rival   The Rival Crusoes
+      2: ChiLit                 Andrew Lang prigio       Prince Prigio
+      3: ChiLit           Ann Fraser Tytler  leila       Leila at Home
+     ---                                                              
+    136:    ntc              Wilkie Collins   arma            Armadale
+    137:    ntc              Wilkie Collins wwhite  The Woman in White
+    138:    ntc William Makepeace Thackeray vanity         Vanity Fair
 
-* `server/clic/subset.py <../server/clic/subset.py>`_: For text subsets (e.g. quotes / suspensions) or entire chapters
-* `server/clic/cluster.py <../server/clic/cluster.py>`_: For clusters
+The subset endpoint is used to retrieve tokenized text for all or parts of one or more of the corpora.
+This endpoint is called 'subset' because you can restrict the retrieved tokens to a specific subset of the whole text, these subsets are: quoted text, non-quoted text, long suspensions or short suspensions.
+In the example code the subset endpoint is called using the ``get_tokens()`` function.
+The subset endpoint is documented at `server/clic/subset.py <../server/clic/subset.py>`_.
 
-Code examples
-=============
+The *cluster* endpoint is used to retrieve n-grams and their counts.
+Code examples for this endpoint will be added soon.
+The cluster endpoint is documented at `server/clic/cluster.py <../server/clic/cluster.py>`_.
+
+We would be interested to hear about how you use the CLiC API and are always happy to consider CLiC related guest posts for the `CLiC blog <https://blog.bham.ac.uk/clic-dickens/>`_.
+To let us know how you are using the CLiC API, to give us feedback, or if you need any help that you cannot find here or through the `CLiC homepage <https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/>`_ you can contact us at `clic@contacts.bham.ac.uk <clic@contacts.bham.ac.uk>`_.
+
+To help us understand who is using the API, when writing code to access the API please set the "User-Agent" header to something that identifies you or your application.
+
+The CLiC API uses the legacy names for the CLiC corpora. The following table gives the correspondence between the corpora names as seen in the CLiC web interface and those used by the CLiC API.
+
++--------------+--------------+-------------------------------------------+
+| CLiC Web     | CLiC API     | Description                               |
++==============+==============+===========================================+
+| ``DNov``     | ``dickens``  | Dickens's Novels                          |
++--------------+--------------+-------------------------------------------+
+| ``19C``      | ``ntc``      | 19th Century Reference Corpus             |
++--------------+--------------+-------------------------------------------+
+| ``ChiLit``   | ``ChiLit``   | 19th Century Children's Literature Corpus |
++--------------+--------------+-------------------------------------------+
+| ``ArTs``     | ``Other``    | Additional Requested Texts                |
++--------------+--------------+-------------------------------------------+
+
+Example code
+============
 
 Python 3
 --------
