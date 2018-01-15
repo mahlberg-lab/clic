@@ -204,7 +204,7 @@ Fetch the tokens for all quotes text in novels by Jane Austen::
     >>> austen_quotes[0:9]
     ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
 
-Keep each text seperate::
+Keep each text separate::
 
     >>> austen_quotes = {}
     >>> for sn in wanted:
@@ -405,7 +405,7 @@ Fetch the tokens for all quotes text in novels by Jane Austen::
     > str(austen_quotes)
      chr [1:307445] "poor" "miss" "taylor" "i" "wish" "she" "were" "here" "again" "what" "a" "pity" "it" "is" "that" "mr" "weston" "ever" "thought" ...
 
-Keep each text seperate::
+Keep each text separate::
 
     > austen_quotes <- sapply(wanted, get_tokens, subset = "quote")
     > str(austen_quotes)
