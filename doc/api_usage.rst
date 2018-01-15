@@ -1,6 +1,12 @@
 CLiC API
 ========
 
+.. contents::
+    :local:
+
+Overview
+--------
+
 Any data available through the `CLiC web interface <http://clic.bham.ac.uk/>`_ is also available by directly calling the *CLiC API*.
 The CLiC API returns a JSON representation of the CLiC data, which means that the data can be retrieved directly using any programming language.
 To get you started we have written some example code for both Python and R.
@@ -26,7 +32,7 @@ In the example code the subset endpoint is called using the ``get_tokens()`` fun
 The subset endpoint is documented at `server/clic/subset.py <../server/clic/subset.py>`_.
 
 The *cluster* endpoint is used to retrieve n-grams and their counts.
-Code examples for this endpoint will be added soon.
+In the example code the clusters endpoint is called using the ``get_clusters()`` function.
 The cluster endpoint is documented at `server/clic/cluster.py <../server/clic/cluster.py>`_.
 
 We would be interested to hear about how you use the CLiC API and are always happy to consider CLiC related guest posts for the `CLiC blog <https://blog.bham.ac.uk/clic-dickens/>`_.
@@ -49,14 +55,16 @@ The CLiC API uses the legacy names for the CLiC corpora. The following table giv
 +--------------+--------------+-------------------------------------------+
 
 Example code
-============
+------------
 
 Python 3
---------
+^^^^^^^^
 
 .. code-block:: python
 
     import json
+    from operator import itemgetter
+    from collections import OrderedDict
     import requests
     import pandas as pd
 
@@ -125,8 +133,31 @@ Python 3
             return [i.lower() for i in tokens]
         return tokens
 
-Example usage
--------------
+    def get_clusters(shortname, length, cutoff=5, subset=None):
+        """
+        Fetches n-grams using the 'cluster' endpoint.
+        Returns a OrderedDict of clusters to counts.
+
+        - shortname: can be any value from the 'corpus' or 'shortname' columns returned
+              by get_lookup() can be a string or a list of strings
+        - length: cluster length to search for, one of 1/3/4/5 (NB: There is no 2)
+        - cutoff: [default: 5] the cutoff frequency, if a cluster occurs less times
+              than this it is not returned
+        - subset: [optional] any one of "shortsus", "longsus", "nonquote", "quote"
+        """
+        if isinstance(shortname, str):
+            shortname = [shortname]
+        query = '&'.join(["corpora=%s" % sn for sn in shortname])
+        if subset is not None:
+            if subset not in ["shortsus", "longsus", "nonquote", "quote"]:
+                raise ValueError('bad subset parameter: "%s"' % subset)
+            query = query + "&subset=%s" % subset
+        query = query + "&clusterlength=%d&cutoff=%d" % (length, cutoff)
+        rv = api_request(endpoint="cluster", query=query)
+        clusters = OrderedDict(sorted(rv['data'], key=itemgetter(1), reverse=True))
+        return clusters
+
+
 Find out what texts are available::
 
     >>> lookup = get_lookup()
@@ -155,7 +186,7 @@ Filter what is available::
 
 Fetch the tokens for a specific text::
 
-    >>> tokens = get_tokens(shortname = 'leila')
+    >>> tokens = get_tokens(shortname='leila')
     >>> len(tokens)
     63026
     >>> tokens[0:9]
@@ -167,26 +198,52 @@ Fetch the tokens for all quotes text in novels by Jane Austen::
     >>> wanted
     ['ladysusan', 'mansfield', 'northanger', 'sense', 'emma', 'persuasion', 'pride']
 
-    >>> austin_quotes = get_tokens(shortname = wanted, subset = "quote")
-    >>> len(austin_quotes)
+    >>> austen_quotes = get_tokens(shortname=wanted, subset="quote")
+    >>> len(austen_quotes)
     307445
-    >>> austin_quotes[0:9]
+    >>> austen_quotes[0:9]
     ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
 
 Keep each text seperate::
 
-    >>> austin_quotes = {}
+    >>> austen_quotes = {}
     >>> for sn in wanted:
-    ...     austin_quotes[sn] = get_tokens(shortname = sn, subset = "quote")
+    ...     austen_quotes[sn] = get_tokens(shortname=sn, subset="quote")
     ...
-    >>> {key:len(value) for key,value in austin_quotes.items()}
-    {'ladysusan': 2791, 'mansfield': 62013, 'northanger': 28937, 'sense': 51744, \
-     'emma': 80319, 'persuasion': 28653, 'pride': 52988}
-    >>> austin_quotes['emma'][0:9]
+    >>> {key:len(value) for key,value in austen_quotes.items()}
+    >>> print(json.dumps({key:len(value) for key,value in austen_quotes.items()}))
+    {
+      "ladysusan": 2791,
+      "mansfield": 62013,
+      "northanger": 28937,
+      "sense": 51744,
+      "emma": 80319,
+      "persuasion": 28653,
+      "pride": 52988
+    }
+    >>> austen_quotes['emma'][0:9]
     ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
 
+An now lets get some clusters for the Jane Austen novels::
+
+    >>> austen_clusters = get_clusters(shortname=wanted, length=5, cutoff=5, subset="quote")
+    >>> print(json.dumps(austen_clusters, indent=2))
+    {
+      "i do not know what": 26,
+      "i am sure you will": 16,
+      "i do not know that": 16,
+      "i do not mean to": 16,
+      "and i am sure i": 16,
+      "i have no doubt of": 14,
+      "i do not think i": 14,
+      "i am sure i should": 13,
+      "i am sure i do": 11,
+      "i do not pretend to": 11,
+      ...
+
+
 R
--
+^
 
 .. code-block:: R
 
@@ -204,14 +261,14 @@ R
     # - query: endpoint specific parameters as a querystring
     #
     api_request <- function(
-        endpoint = c("subset", "corpora"),
+        endpoint = c("subset", "corpora", "cluster"),
         query = NULL
     ) {
         endpoint <- match.arg(endpoint)
         uri <- modify_url("",
             scheme = "http",
             hostname = HOSTNAME,
-            path = paste0("/api/", endpoint),
+            path = sprintf("/api/%s", endpoint),
             query = ifelse(is.null(query), "", query)
         )
         req <- GET(uri, add_headers('User-Agent' = UA, 'Accept' = "application/json"))
@@ -253,10 +310,10 @@ R
         lowercase = TRUE,
         punctuation = FALSE  # includes whitespace
     ) {
-        query <- paste(paste0("corpora=", shortname), collapse = "&")
+        query <- paste(sprintf("corpora=%s", shortname), collapse = "&")
         if(! is.null(subset)) {
             subset <- match.arg(subset, c("shortsus", "longsus", "nonquote", "quote"))
-            query <- paste0(query, "&subset=", subset )
+            query <- sprintf("%s&subset=%s", query, subset)
         }
         rv <- api_request(endpoint = "subset", query = query)
         if(punctuation) {
@@ -274,8 +331,39 @@ R
         return(tokens)
     }
 
-Example usage
--------------
+    # Fetches n-grams using the 'cluster' endpoint.
+    # Returns a data.frame of clusters to counts.
+    #
+    # - shortname: can be any value from the 'corpus' or 'shortname' columns returned
+    #       by get_lookup() can be a string or a list of strings
+    # - length: cluster length to search for, one of 1/3/4/5 (NB: There is no 2)
+    # - cutoff: [default: 5] the cutoff frequency, if a cluster occurs less times
+    #       than this it is not returned
+    # - subset: [optional] any one of "shortsus", "longsus", "nonquote", "quote"
+    #
+    get_clusters <- function(
+        shortname,
+        length,
+        cutoff = 5,
+        subset = NULL
+    ) {
+        if(! length %in% c(1, 3, 4, 5)) {
+            stop(paste0("bad length parameter: '", length, "'"))
+        }
+        query <- paste(sprintf("corpora=%s", shortname), collapse = "&")
+        query <- sprintf("%s&clusterlength=%d&cutoff=%s", query, length, cutoff)
+        if(! is.null(subset)) {
+            subset <- match.arg(subset, c("shortsus", "longsus", "nonquote", "quote"))
+            query <- sprintf("%s&subset=%s", query, subset)
+        }
+        rv <- api_request(endpoint = "cluster", query = query)
+        clusters <- data.frame("cluster" = rv$data[ , 1], "count" = as.integer(rv$data[ , 2]), stringsAsFactors = FALSE)
+        clusters <- clusters[order(clusters$count, decreasing = TRUE),]
+        rownames(clusters) <- NULL
+        return(clusters)
+    }
+
+
 Find out what texts are available::
 
     > lookup <- get_lookup()
@@ -313,14 +401,14 @@ Fetch the tokens for all quotes text in novels by Jane Austen::
     > wanted
     [1] "ladysusan"  "mansfield"  "northanger" "sense"      "emma"       "persuasion" "pride"     
 
-    > austin_quotes <- get_tokens(wanted, subset = "quote")
-    > str(austin_quotes)
+    > austen_quotes <- get_tokens(wanted, subset = "quote")
+    > str(austen_quotes)
      chr [1:307445] "poor" "miss" "taylor" "i" "wish" "she" "were" "here" "again" "what" "a" "pity" "it" "is" "that" "mr" "weston" "ever" "thought" ...
 
 Keep each text seperate::
 
-    > austin_quotes <- sapply(wanted, get_tokens, subset = "quote")
-    > str(austin_quotes)
+    > austen_quotes <- sapply(wanted, get_tokens, subset = "quote")
+    > str(austen_quotes)
     List of 7
      $ ladysusan : chr [1:2791] "i" "like" "this" "man" ...
      $ mansfield : chr [1:62013] "what" "if" "they" "were" ...
@@ -330,6 +418,22 @@ Keep each text seperate::
      $ persuasion: chr [1:28653] "elliot" "of" "kellynch" "hall" ...
      $ pride     : chr [1:52988] "my" "dear" "mr" "bennet" ...
 
-    > sum(sapply(austin_quotes, length))
+    > sum(sapply(austen_quotes, length))
     [1] 307445
+
+An now lets get some clusters for the Jane Austen novels::
+
+    > austen_clusters <- get_clusters(shortname = wanted, length = 5, cutoff = 5, subset = "quote")
+    > head(austen_clusters, 10)
+                   cluster count
+    1   i do not know what    26
+    2   i am sure you will    16
+    3   i do not know that    16
+    4     i do not mean to    16
+    5      and i am sure i    16
+    6   i have no doubt of    14
+    7     i do not think i    14
+    8   i am sure i should    13
+    9       i am sure i do    11
+    10 i do not pretend to    11
 
