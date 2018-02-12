@@ -111,7 +111,7 @@ function ControlBar(control_bar) {
                 doc: e.target.href,
                 args: { corpora: self.page_state.arg('corpora') },
                 state: {},
-            }, 'push');
+            });
 
             // Wait until animation has finished, then scroll viewport
             window.setTimeout(function () {
@@ -125,7 +125,7 @@ function ControlBar(control_bar) {
             e.stopPropagation();
 
             if (clickedOn(e, 'A', 'clear')) {
-                self.page_state.new({ args: {}, state: {}, }, 'push');
+                self.page_state.new({ args: {}, state: {}, });
             } else if (clickedOn(e, 'A', 'save')) {
                 filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
             } else if (clickedOn(e, 'A', 'load')) {
@@ -235,7 +235,7 @@ function ControlBar(control_bar) {
             }, new_state.state);
         }
 
-        self.page_state.new(new_state, 'push');
+        self.page_state.new(new_state);
     });
 }
 

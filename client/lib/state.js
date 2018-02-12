@@ -72,8 +72,7 @@ State.prototype.state = function (name) {
 /**
   * Update page state
   * - changes: contains some of doc,args,state to change
-  * - notify: 'silent', 'force' or nothing, in which case it compares first
-  * Returns true iff the state is different to before
+  * - notify: 'silent', or nothing, in which case it compares first
   */
 State.prototype.update = function (changes, notify) {
     var self = this,
@@ -112,27 +111,23 @@ State.prototype.update = function (changes, notify) {
     });
 
     self.win.history.replaceState(hist_state, "", new_doc + '?' + obj_to_search(new_args));
-    if (notify === 'force' || (!notify && modified)) {
+    if ((notify !== 'silent') && modified) {
         self.win.dispatchEvent(new self.win.CustomEvent('replacestate'));
     }
-
-    return modified;
 };
 
 /**
   * Create a new page state in history
   * new_state: contains some of doc,args,state to change
-  * - notify: 'silent', or nothing, in which case it notifies
   */
-State.prototype.new = function (new_state, notify) {
+State.prototype.new = function (new_state) {
     this.win.history.pushState(
         new_state.state || {},
         "",
         new_state.url || ((new_state.doc || '') + '?' + obj_to_search(new_state.args || {}))
     );
-    if (notify !== 'silent') {
-        this.win.dispatchEvent(new this.win.CustomEvent('replacestate'));
-    }
+
+    this.win.dispatchEvent(new this.win.CustomEvent('replacestate'));
 };
 
 module.exports = State;
