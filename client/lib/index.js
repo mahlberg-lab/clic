@@ -48,18 +48,9 @@ var state_defaults = {
 var page, cb, alerts, current_page = null;
 
 function page_load(e) {
-    var page_state = new State(window, state_defaults),
-        PageConstructor;
+    return Promise.resolve(new State(window, state_defaults)).then(function (page_state) {
+        var PageConstructor;
 
-    // If there's any state altering, do it first
-    if (e.type === 'state_alter' || e.type === 'state_update' || e.type === 'state_new') {
-        if (!page_state.alter(e.type.replace('state_', ''), e.detail)) {
-            return;
-        }
-        page_state = new State(window, state_defaults);
-    }
-
-    return Promise.resolve(page_state).then(function (page_state) {
         alerts.clear();
         document.body.classList.toggle('loading', true);
 
@@ -108,13 +99,36 @@ function table_selection(e) {
     cb.new_selection(e.detail);
 }
 
+function state_alter(e) {
+    var page_state = new State(window, state_defaults);
+
+    page_state.update(e.detail);
+    window.history.replaceState.apply(window.history, page_state.to_args());
+}
+
+function state_update(e) {
+    var modified, page_state = new State(window, state_defaults);
+
+    modified = page_state.update(e.detail);
+    window.history.replaceState.apply(window.history, page_state.to_args());
+    if (modified) { page_load(e); }
+}
+
+function state_new(e) {
+    var page_state = new State(window, state_defaults);
+
+    page_state.replace(e.detail);
+    window.history.pushState.apply(window.history, page_state.to_args());
+    page_load(e);
+}
+
 if (window) {
     alerts = new Alerts(document.getElementById('alerts'));
 
     document.addEventListener('DOMContentLoaded', page_load);
     window.addEventListener('popstate', page_load);
     window.addEventListener('tableselection', table_selection);
-    window.addEventListener('state_alter', page_load);
-    window.addEventListener('state_update', page_load);
-    window.addEventListener('state_new', page_load);
+    window.addEventListener('state_alter', state_alter);
+    window.addEventListener('state_update', state_update);
+    window.addEventListener('state_new', state_new);
 }

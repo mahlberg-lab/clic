@@ -34,14 +34,21 @@ function obj_to_search(obj) {
     }).join('&');
 }
 
+/**
+  * Create a new state object based on the current page
+  * - win: Global window object
+  * - defaults: Object containing defaults for args & state
+  */
 function State(win, defaults) {
-    this.win = win;
     this.defaults = defaults;
+    this._doc = win.location.pathname.replace(/^.*\//, '/');
+    this._state = win.history.state || {};
     this._args = search_to_obj(win.location.search.replace(/^\?/, ''));
 }
 
+/** Return the current document */
 State.prototype.doc = function () {
-    return this.win.location.pathname.replace(/^.*\//, '/');
+    return this._doc;
 };
 
 /** Fetch named a named argument (i.e. querystring), or all positional args */
@@ -66,7 +73,19 @@ State.prototype.state = function (name) {
         throw new Error("Unknown state variable " + name);
     }
 
-    return (this.win.history.state || {})[name] || this.defaults[name];
+    return this._state[name] || this.defaults[name];
+};
+
+/**
+  * Turn the state object back into argument array that can be passed to
+  * push/replaceState
+  */
+State.prototype.to_args = function () {
+    return [
+        this._state,
+        "",
+        this._doc + '?' + obj_to_search(this._args),
+    ];
 };
 
 /**
@@ -76,9 +95,6 @@ State.prototype.state = function (name) {
   */
 State.prototype.update = function (changes) {
     var self = this,
-        new_doc = self.doc(),
-        new_args = self._args,
-        hist_state = this.win.history.state || {},
         modified = false;
 
     function compare(existing, change) {
@@ -97,24 +113,21 @@ State.prototype.update = function (changes) {
         self._doc = changes.doc;
         modified = true;
     }
+
     Array.prototype.forEach.call(Object.keys(changes.args || {}), function (k) {
-        if (!compare(new_args[k], changes.args[k])) {
-            new_args[k] = changes.args[k];
-            modified = true;
-        }
-    });
-    Array.prototype.forEach.call(Object.keys(changes.state || {}), function (k) {
-        if (!compare(hist_state[k], changes.state[k])) {
-            hist_state[k] = changes.state[k];
+        if (!compare(self._args[k], changes.args[k])) {
+            self._args[k] = changes.args[k];
             modified = true;
         }
     });
 
-    self.win.history.replaceState(
-        hist_state || {},
-        "",
-        new_doc + '?' + obj_to_search(new_args || {})
-    );
+    Array.prototype.forEach.call(Object.keys(changes.state || {}), function (k) {
+        if (!compare(self._state[k], changes.state[k])) {
+            self._state[k] = changes.state[k];
+            modified = true;
+        }
+    });
+
     return modified;
 };
 
@@ -122,27 +135,18 @@ State.prototype.update = function (changes) {
   * Create a new page state in history
   * new_state: contains some of doc,args,state to change
   */
-State.prototype.new = function (new_state) {
-    this.win.history.pushState(
-        new_state.state || {},
-        "",
-        new_state.url || ((new_state.doc || '') + '?' + obj_to_search(new_state.args || {}))
-    );
-};
+State.prototype.replace = function (new_state) {
+    var parts;
 
-State.prototype.alter = function (event_type, changes) {
-    if (event_type === "new") {
-        this.new(changes);
-        return true;
+    if (new_state.url) {
+        parts = new_state.url.split('?');
+        new_state.doc = parts[0];
+        new_state.args = search_to_obj(parts[1] || "");
     }
-    if (event_type === "alter") {
-        this.update(changes);
-        return false;
-    }
-    if (event_type === "update") {
-        return this.update(changes);
-    }
-    throw new Error("Unknown state event type " + event_type);
+
+    if (new_state.doc) { this._doc = new_state.doc; }
+    if (new_state.args) { this._args = new_state.args; }
+    if (new_state.state) { this._state = new_state.state; }
 };
 
 module.exports = State;
