@@ -35,7 +35,10 @@ function PanelTagColumns(panel_el) {
         });
         self.rename_el.value = e.target.innerText;
         self.rename_el.select();
-        self.page_state.update({state: {tag_column_selected: e.target.innerText}}, 'silent');
+
+        window.dispatchEvent(new window.CustomEvent('state_alter', { detail: {
+            state: {tag_column_selected: e.target.innerText},
+        }}));
     });
 
     // The tag has been renamed
@@ -86,11 +89,13 @@ PanelTagColumns.prototype.do = function (action, e) {
         });
     }
 
-    self.page_state.update({state: {
-        tag_columns: tag_columns,
-        tag_column_order: tag_column_order,
-        tag_column_selected: '',
-    }});
+    window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+        state: {
+            tag_columns: tag_columns,
+            tag_column_order: tag_column_order,
+            tag_column_selected: '',
+        },
+    }}));
 };
 
 // Refresh controls based on page_state

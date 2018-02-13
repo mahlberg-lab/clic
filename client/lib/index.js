@@ -49,8 +49,15 @@ var page, cb, alerts, current_page = null;
 
 function page_load(e) {
     var page_state = new State(window, state_defaults),
-        alerts = new Alerts(document.getElementById('alerts')),
-        PageConstructor = page_classes[page_state.doc()] || page_classes[''];
+        PageConstructor;
+
+    // If there's any state altering, do it first
+    if (e.type === 'state_alter' || e.type === 'state_update' || e.type === 'state_new') {
+        if (!page_state.alter(e.type.replace('state_', ''), e.detail)) {
+            return;
+        }
+        page_state = new State(window, state_defaults);
+    }
 
     return Promise.resolve(page_state).then(function (page_state) {
         alerts.clear();
@@ -62,6 +69,7 @@ function page_load(e) {
         }
 
         if (!page || page_state.doc() !== current_page) {
+            PageConstructor = page_classes[page_state.doc()] || page_classes[''];
             page = new PageConstructor(document.getElementById('content'));
             current_page = page_state.doc();
         }
@@ -101,8 +109,12 @@ function table_selection(e) {
 }
 
 if (window) {
+    alerts = new Alerts(document.getElementById('alerts'));
+
     document.addEventListener('DOMContentLoaded', page_load);
     window.addEventListener('popstate', page_load);
-    window.addEventListener('replacestate', page_load);
     window.addEventListener('tableselection', table_selection);
+    window.addEventListener('state_alter', page_load);
+    window.addEventListener('state_update', page_load);
+    window.addEventListener('state_new', page_load);
 }

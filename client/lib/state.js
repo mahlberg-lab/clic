@@ -72,9 +72,9 @@ State.prototype.state = function (name) {
 /**
   * Update page state
   * - changes: contains some of doc,args,state to change
-  * - notify: 'silent', or nothing, in which case it compares first
+  * returns true iff the changes result in a different state
   */
-State.prototype.update = function (changes, notify) {
+State.prototype.update = function (changes) {
     var self = this,
         new_doc = self.doc(),
         new_args = self._args,
@@ -110,10 +110,12 @@ State.prototype.update = function (changes, notify) {
         }
     });
 
-    self.win.history.replaceState(hist_state, "", new_doc + '?' + obj_to_search(new_args));
-    if ((notify !== 'silent') && modified) {
-        self.win.dispatchEvent(new self.win.CustomEvent('replacestate'));
-    }
+    self.win.history.replaceState(
+        hist_state || {},
+        "",
+        new_doc + '?' + obj_to_search(new_args || {})
+    );
+    return modified;
 };
 
 /**
@@ -126,8 +128,21 @@ State.prototype.new = function (new_state) {
         "",
         new_state.url || ((new_state.doc || '') + '?' + obj_to_search(new_state.args || {}))
     );
+};
 
-    this.win.dispatchEvent(new this.win.CustomEvent('replacestate'));
+State.prototype.alter = function (event_type, changes) {
+    if (event_type === "new") {
+        this.new(changes);
+        return true;
+    }
+    if (event_type === "alter") {
+        this.update(changes);
+        return false;
+    }
+    if (event_type === "update") {
+        return this.update(changes);
+    }
+    throw new Error("Unknown state event type " + event_type);
 };
 
 module.exports = State;

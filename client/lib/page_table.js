@@ -158,11 +158,13 @@ PageTable.prototype.select_rows = function () {
     var selected_data = this.table.rows('.selected').data();
 
     // Record selection in page state
-    this.page_state.update({state: {
-        selected_rows: [].concat.apply([], selected_data.map(function (d) {
-            return d.DT_RowId;
-        })),
-    }}, 'silent');
+    window.dispatchEvent(new window.CustomEvent('state_alter', { detail: {
+        state: {
+            selected_rows: [].concat.apply([], selected_data.map(function (d) {
+                return d.DT_RowId;
+            })),
+        },
+    }}));
 
     this.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
         detail: selected_data,

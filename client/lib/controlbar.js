@@ -107,11 +107,11 @@ function ControlBar(control_bar) {
             e.preventDefault();
             e.stopPropagation();
 
-            self.page_state.new({
+            window.dispatchEvent(new window.CustomEvent('state_new', { detail: {
                 doc: e.target.href,
                 args: { corpora: self.page_state.arg('corpora') },
                 state: {},
-            });
+            }}));
 
             // Wait until animation has finished, then scroll viewport
             window.setTimeout(function () {
@@ -125,7 +125,7 @@ function ControlBar(control_bar) {
             e.stopPropagation();
 
             if (clickedOn(e, 'A', 'clear')) {
-                self.page_state.new({ args: {}, state: {}, });
+                window.dispatchEvent(new window.CustomEvent('state_new', { detail: { args: {}, state: {}, }}));
             } else if (clickedOn(e, 'A', 'save')) {
                 filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
             } else if (clickedOn(e, 'A', 'load')) {
@@ -186,7 +186,7 @@ function ControlBar(control_bar) {
                 new_search[el.name] = jQuery(el).val();
             });
 
-            self.page_state.update({args: new_search});
+            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {args: new_search}}));
         }, 300);
     });
 
@@ -235,7 +235,7 @@ function ControlBar(control_bar) {
             }, new_state.state);
         }
 
-        self.page_state.new(new_state);
+        window.dispatchEvent(new window.CustomEvent('state_new', { detail: new_state }));
     });
 }
 
@@ -277,7 +277,9 @@ ControlBar.prototype.reload = function reload(page_state) {
                         }
                     }
 
-                    page_state.update({ state: { tag_columns: new_columns }});
+                    window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+                        state: { tag_columns: new_columns }
+                    }}));
                 };
 
                 tag_toggles_el.appendChild(toggle.dom());
