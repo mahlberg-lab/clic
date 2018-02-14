@@ -117,7 +117,7 @@ function state_update(e) {
 function state_new(e) {
     var page_state = new State(window, state_defaults);
 
-    page_state.replace(e.detail);
+    page_state.update(e.detail, true);
     window.history.pushState.apply(window.history, page_state.to_args());
     page_load(e);
 }

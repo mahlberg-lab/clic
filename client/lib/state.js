@@ -90,11 +90,17 @@ State.prototype.to_args = function () {
 
 /**
   * Update page state
-  * - changes: contains some of doc,args,state to change
+  * - changes: Object containing any of the following optional items:
+  *   - doc: New document path, if it should change
+  *   - args: New querystring arguments
+  *   - state: New state arguments
+  *   - url: Shortcut, replaces doc/args with parsed URL before proceeding
+  * - flush: Replaces args/state rather than merging with existing
   * returns true iff the changes result in a different state
   */
-State.prototype.update = function (changes) {
+State.prototype.update = function (changes, flush) {
     var self = this,
+        parts,
         modified = false;
 
     function compare(existing, change) {
@@ -109,9 +115,21 @@ State.prototype.update = function (changes) {
         return true;
     }
 
-    if (changes.hasOwnProperty('doc') && changes.doc !== self._doc) {
+    if (changes.url) {
+        parts = changes.url.split('?');
+        changes.doc = parts[0];
+        changes.args = search_to_obj(parts[1] || "");
+    }
+
+    if (changes.doc && changes.doc !== self._doc) {
         self._doc = changes.doc;
         modified = true;
+    }
+
+    if (flush) {
+        if (changes.args) { this._args = changes.args; }
+        if (changes.state) { this._state = changes.state; }
+        return true;
     }
 
     Array.prototype.forEach.call(Object.keys(changes.args || {}), function (k) {
@@ -129,24 +147,6 @@ State.prototype.update = function (changes) {
     });
 
     return modified;
-};
-
-/**
-  * Create a new page state in history
-  * new_state: contains some of doc,args,state to change
-  */
-State.prototype.replace = function (new_state) {
-    var parts;
-
-    if (new_state.url) {
-        parts = new_state.url.split('?');
-        new_state.doc = parts[0];
-        new_state.args = search_to_obj(parts[1] || "");
-    }
-
-    if (new_state.doc) { this._doc = new_state.doc; }
-    if (new_state.args) { this._args = new_state.args; }
-    if (new_state.state) { this._state = new_state.state; }
 };
 
 module.exports = State;
