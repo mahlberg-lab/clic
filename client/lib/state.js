@@ -24,10 +24,10 @@ function search_to_obj(search) {
 }
 
 function obj_to_search(obj) {
-    return Object.keys(obj).map(function (k) {
+    return Object.keys(obj).sort().map(function (k) {
         if (Array.isArray(obj[k])) {
             return obj[k].map(function (v) {
-                return encodeURIComponent(k) + '=' + encodeURIComponent(v);
+                return (k === "#" ? '' : encodeURIComponent(k) + '=') + encodeURIComponent(v);
             }).join('&');
         }
         return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
@@ -40,8 +40,18 @@ function obj_to_search(obj) {
   * - defaults: Object containing defaults for args & state
   */
 function State(win, defaults) {
-    this.defaults = defaults;
-    this._doc = win.location.pathname.replace(/^.*\//, '/');
+    var k;
+
+    this.defaults = { '#': [] };
+    if (defaults) {
+        for (k in defaults) {
+            if (defaults.hasOwnProperty(k)) {
+                this.defaults[k] = defaults[k];
+            }
+        }
+    }
+
+    this._doc = win.location.pathname;
     this._state = win.history.state || {};
     this._args = search_to_obj(win.location.search.replace(/^\?/, ''));
 }
@@ -54,7 +64,7 @@ State.prototype.doc = function () {
 /** Fetch named a named argument (i.e. querystring), or all positional args */
 State.prototype.arg = function (name) {
     if (!name) {
-        return this.args('#', []);
+        return this.arg('#');
     }
 
     if (!this.defaults.hasOwnProperty(name)) {
@@ -81,10 +91,16 @@ State.prototype.state = function (name) {
   * push/replaceState
   */
 State.prototype.to_args = function () {
+    var querystring = obj_to_search(this._args);
+
+    if (querystring) {
+        querystring = '?' + querystring;
+    }
+
     return [
         this._state,
         "",
-        this._doc + '?' + obj_to_search(this._args),
+        this._doc + querystring,
     ];
 };
 
