@@ -17,22 +17,20 @@ def suspensions(tree):
         # a. get paragraph paragraph_string
         paragraph_string = etree.tostring(p)
 
-        # b. split by regular expression defined above
+        # b. break up paragraph into list of...
+        #    - "<qs/>"
+        #    - "... stuff ..."
+        #    - "<qe/>"
+        #    - "... stuff ..."
+        #    - "<qs/>"
         wlist = re.split(regex, paragraph_string)
 
         # c. run index over listed items in each paragraph
         for i in range(0, len(wlist)):
 
-            # CONDITION: suspensions occur latest two positions before final list
-            # item
-            # (final list item is </s> </p> and second last item is potentially
-            # qs/qe)
-            # <qe/>, xxxxxxxxxxxxxxxx, <qs/> : xxx is either a suspension or
-            # a non-suspension
+            # We look ahead 2 items, don't overflow
             if i + 2 < len(wlist):
-                # CONDITION: i is a 'qe' tag and there is only one extra list
-                # item between i and 'qs'
-                # (there might or might not be a suspension)
+                # Only consider ["<qe/>", (content), "<qs/>"] triples
                 if wlist[i] == '<qe/>' and wlist[i + 2] == '<qs/>':
 
                     # count words in string: For deciding whether to label short
@@ -46,15 +44,12 @@ def suspensions(tree):
                     # 'words')
                     for w in re.split('(<.+?>|\s)', wlist[i + 1]):
 
-                        # CONDITION: if the current <qe/> + 1 has an end sentence tag,
-                        # means i+1 is a sentence (not a suspension).
-                        if re.findall('</?s>', w):
-                            # if so don't do anything
-                            pass
-                            # set tag to True if condition is met as only False ones will be labelled
-                            # uncommented in Rein's version:
-                            tag = True
-                            break
+                        ## uncommented in Rein's version:
+                        ## CONDITION: if the current <qe/> + 1 has an end sentence tag,
+                        ## means i+1 is a sentence (not a suspension). Ignore it
+                        #if re.findall('</?s>', w):
+                        #    tag = True
+                        #    break
 
                         # search for lettered words only
                         # means i+1 is a suspension
