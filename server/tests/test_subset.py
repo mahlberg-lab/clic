@@ -66,6 +66,14 @@ class TestSubset(unittest.TestCase):
             set([5]),
         )
 
+    def test_emptychapter(self):
+        """Can fetch subset=all, even if a chapter is empty"""
+        cdb = ClicDb()
+
+        # 60 is missing from alli, since it's empty
+        rv = [x for x in subset(cdb, corpora=['alli'])]
+        self.assertEqual([x[1][1] for x in rv[1:]], range(1,60) + [61])
+
     def test_subset(self):
         """Can choose what to return"""
         cdb = ClicDb()

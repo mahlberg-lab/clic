@@ -85,7 +85,7 @@ def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0']):
         query = " ".join((
             "SELECT c.chapter_id, 0 offset_start, c.word_total offset_end",
             "FROM chapter c",
-            "WHERE 1",
+            "WHERE c.word_total > 0", # NB: We can't get_word() for an empty chapter
             "AND ", where,
             "ORDER BY c.book_id, c.chapter_id"
         ))
