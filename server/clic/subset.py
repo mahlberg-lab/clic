@@ -94,6 +94,7 @@ def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0']):
             "SELECT s.chapter_id, s.offset_start, s.offset_end",
             "FROM subset s, chapter c",
             "WHERE s.chapter_id = c.chapter_id",
+            "AND s.offset_end > s.offset_start", # NB: We can't get_word() for 0-length subsets
             "AND ", where,
             "AND s.subset_type IN (", ",".join("?" for x in xrange(len(subset))), ")",
             "ORDER BY c.book_id, c.chapter_id"

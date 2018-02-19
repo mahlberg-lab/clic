@@ -74,6 +74,12 @@ class TestSubset(unittest.TestCase):
         rv = [x for x in subset(cdb, corpora=['alli'])]
         self.assertEqual([x[1][1] for x in rv[1:]], range(1,60) + [61])
 
+        # We can also fetch nonquote subsets without falling over the empty chapter
+        rv = [x for x in subset(cdb, corpora=['alli'], subset=['nonquote'])]
+        self.assertEqual(len(rv), 2950)
+        rv = [x for x in subset(cdb, corpora=['alli'], subset=['quote'])]
+        self.assertEqual(len(rv), 5223)
+
     def test_subset(self):
         """Can choose what to return"""
         cdb = ClicDb()
