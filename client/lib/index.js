@@ -69,28 +69,30 @@ function page_load(e) {
             cb = new ControlBar(document.getElementById('control-bar'));
         }
 
-        return Promise.all([
-            page.reload(page_state).catch(function (err) { alerts.error(err); console.log(err); }),
-            cb.reload(page_state).catch(function (err) { alerts.error(err); console.log(err); }),
-        ]);
+        return Promise.all([page, cb].map(function (x) {
+            return x.reload(page_state).catch(function (err) {
+                // Turn any error output back into a level: { message: ... } object
+                var rv = { a: alerts.err_to_alert(err) };
+
+                rv[rv.a[1]] = rv.a[0];
+                return rv;
+            });
+        }));
     }).then(function (rvs) {
         rvs.forEach(function (rv) {
-            if (rv && rv.message) {
-                alerts.show(rv.message);
-            }
+            if (rv && rv.info) { alerts.show(rv.info, 'info'); }
+            if (rv && rv.warn) { alerts.show(rv.warn, 'warn'); }
+            if (rv && rv.error) { alerts.show(rv.error, 'error'); }
         });
 
         if (rvs[0]) {
-            return cb.new_data(rvs[0]);
+            cb.new_data(rvs[0]);
         }
-        return;
+        document.body.classList.toggle('loading', false);
     }).catch(function (err) {
         alerts.error(err);
-        if (!err.level) {
-            throw err;
-        }
-    }).then(function () {
         document.body.classList.toggle('loading', false);
+        throw err;
     });
 }
 

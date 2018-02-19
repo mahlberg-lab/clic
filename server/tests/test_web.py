@@ -57,13 +57,11 @@ class Test_stream_json(unittest.TestCase):
 
         out = json.loads(self.sj(fn(), {"a":1,"b":2}))
         self.assertEqual(out['data'], [])
-        self.assertEqual(out['message'], dict(
-            level="error",
-            error="ValueError",
-            message="Erk",
-            stack=out['message']['stack'],
+        self.assertEqual(out['error'], dict(
+            message="ValueError: Erk",
+            stack=out['error']['stack'],
         ))
-        self.assertIn("ValueError: Erk", out['message']['stack'])
+        self.assertIn("ValueError: Erk", out['error']['stack'])
 
     def test_intermediateerror(self):
         """Intermediate errors are caught"""
@@ -75,13 +73,11 @@ class Test_stream_json(unittest.TestCase):
 
         out = json.loads(self.sj(fn(), {"a":1,"b":2}))
         self.assertEqual(out['data'], [1,2])  # NB: Got some of the data
-        self.assertEqual(out['message'], dict(
-            level="error",
-            error="ValueError",
-            message="Erk",
-            stack=out['message']['stack'],
+        self.assertEqual(out['error'], dict(
+            message="ValueError: Erk",
+            stack=out['error']['stack'],
         ))
-        self.assertIn("ValueError: Erk", out['message']['stack'])
+        self.assertIn("ValueError: Erk", out['error']['stack'])
 
     def test_usererror(self):
         """User errors can prettify the error message"""
@@ -92,9 +88,7 @@ class Test_stream_json(unittest.TestCase):
 
         out = json.loads(self.sj(fn(), {"a":1,"b":2}))
         self.assertEqual(out['data'], [1,2])
-        self.assertEqual(out['message'], dict(
-            level="info",
-            error="UserError",
+        self.assertEqual(out['info'], dict(
             message="Potato!",
             stack=None,
         ))

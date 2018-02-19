@@ -1,5 +1,6 @@
 {
-    "error": "BadGateway",
-    "message": "The CLiC server did not respond, the query may have taken too long.",
-    "level": "error"
+    "error": {
+        "message": "The CLiC server did not respond, the query may have taken too long.",
+        "level": "error"
+    }
 }

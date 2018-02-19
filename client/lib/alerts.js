@@ -10,7 +10,7 @@ Alerts.prototype.clear = function () {
     this.alert_el.innerHTML = "";
 };
 
-Alerts.prototype.show = function (msg) {
+Alerts.prototype.show = function (msg, level) {
     // If handed an array, display all of them
     if (Array.isArray(msg)) {
         return msg.forEach(this.show.bind(this));
@@ -29,17 +29,21 @@ Alerts.prototype.show = function (msg) {
     // Append to output
     this.alert_el.insertAdjacentHTML(
         'beforeend',
-        '<div class="level-' + (msg.level || 'info') + '">' + msg.message + '</div>'
+        '<div class="level-' + (level || 'info') + '">' + msg.message + '</div>'
     );
+};
+
+/* Convert an error object into an alert / level pair */
+Alerts.prototype.err_to_alert = function (err) {
+    return [
+        { message: err.message, stack: err.stack },
+        err.level || 'error',
+    ];
 };
 
 /* Convert an error into a message, and show it */
 Alerts.prototype.error = function (err) {
-    return this.show({
-        level: err.level || 'error',
-        message: err.message,
-        stack: err.stack,
-    });
+    return this.show.apply(this, this.err_to_alert(err));
 };
 
 /* Error class to use for throwing styled errors */

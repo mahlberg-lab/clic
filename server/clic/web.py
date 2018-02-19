@@ -47,12 +47,11 @@ def format_error(e):
     import traceback
 
     level = getattr(e, 'level', 'error')
-    return dict(
-        error=e.__class__.__name__,
-        level=level,
-        message=e.message,
-        stack=traceback.format_exc() if getattr(e, 'print_stack', True) else None,
-    )
+    print_stack = getattr(e, 'print_stack', True)
+    return {level: dict(
+        message=(e.__class__.__name__ + ": " if print_stack else "") + e.message,
+        stack=traceback.format_exc() if print_stack else None,
+    )}
 
 def stream_json(generator, header={}):
     """
@@ -76,7 +75,7 @@ def stream_json(generator, header={}):
             yield separator + json.dumps(x, separators=(',', ':'))
             separator = ',\n'
     except Exception as e:
-        footer = dict(message=format_error(e))
+        footer = format_error(e)
 
     # End list and format footer
     footer = json.dumps(footer, separators=(',', ':'))
