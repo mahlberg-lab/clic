@@ -1,3 +1,4 @@
+* Make error/warning/info reporting more consistent
 * Add basic twitter, opengraph preview support
 
 ## 1.6.2 (2018-03-11)

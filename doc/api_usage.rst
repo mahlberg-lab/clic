@@ -88,6 +88,12 @@ Python 3
             rv = resp.json()
         except json.decoder.JSONDecodeError:
             print("API request did not return valid JSON")
+        if rv.get('error', False):
+            raise ValueError("API returned error: " + rv['error']['message'])
+        if rv.get('warn', False):
+            print("API returned warning: " + rv['warn']['message'])
+        if rv.get('info', False):
+            print("API returned info: " + rv['info']['message'])
         return rv
 
     def get_lookup():
@@ -280,7 +286,11 @@ R
         if (http_type(req) != "application/json") {
             stop("API did not return JSON")
         }
-        fromJSON( content(req, as = "text", encoding = "UTF-8") )
+        rv <- fromJSON( content(req, as = "text", encoding = "UTF-8") )
+        if (!is.null(rv$error)) stop("API returned error: ", rv$error$message)
+        if (!is.null(rv$warn)) cat("API returned warning: ", rv$warn$message)
+        if (!is.null(rv$info)) cat("API returned info: ", rv$info$message)
+        return(rv)
     }
 
     # Returns a data.frame listing the texts for each of the available corpora.
