@@ -24,6 +24,10 @@ PageCluster.prototype.init = function () {
     this.table_count_column = 0;
 };
 
+PageCluster.prototype.page_title = function (page_state) {
+    return "CLiC clusters search";
+};
+
 PageCluster.prototype.reload_data = function reload(page_state) {
     var api_opts = {};
 

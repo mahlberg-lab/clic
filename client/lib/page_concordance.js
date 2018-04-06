@@ -55,6 +55,10 @@ PageConcordance.prototype.init = function () {
     this.table_opts.order = [[9, 'asc']];
 };
 
+PageConcordance.prototype.page_title = function (page_state) {
+    return "CLiC concordance search";
+};
+
 PageConcordance.prototype.reload = function reload(page_state) {
     var tag_column_order = page_state.state('tag_column_order');
 

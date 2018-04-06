@@ -1,3 +1,4 @@
+* Update page title on page changes
 * Make error/warning/info reporting more consistent
 * Add basic twitter, opengraph preview support
 

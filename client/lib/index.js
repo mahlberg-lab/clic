@@ -67,6 +67,7 @@ function page_load(e) {
         if (!cb) {
             cb = new ControlBar(document.getElementById('control-bar'));
         }
+        window.document.title = page.page_title(page_state);
 
         return Promise.all([page, cb].map(function (x) {
             return x.reload(page_state).catch(function (err) {

@@ -29,6 +29,10 @@ PageKeyword.prototype.init = function () {
     this.table_count_column = 0;
 };
 
+PageKeyword.prototype.page_title = function (page_state) {
+    return "CLiC keywords search";
+};
+
 PageKeyword.prototype.reload_data = function reload(page_state) {
     var api_opts = {};
 

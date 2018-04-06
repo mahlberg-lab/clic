@@ -11,6 +11,10 @@ function PageSubset() {
 }
 PageSubset.prototype = Object.create(PageConcordance.prototype);
 
+PageSubset.prototype.page_title = function (page_state) {
+    return "CLiC subsets search";
+};
+
 PageSubset.prototype.reload_data = function reload(page_state) {
     var kwicTerms = {},
         kwicSpan = [{reverse: true, ignore: true}, {}, {ignore: true}],

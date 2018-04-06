@@ -54,6 +54,10 @@ function PageContents(content_el) {
     this.content_el = content_el;
 }
 
+PageContents.prototype.page_title = function (page_state) {
+    return "CLiC";
+};
+
 PageContents.prototype.reload = function reload(page_state) {
     var self = this;
 
