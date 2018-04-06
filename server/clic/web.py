@@ -148,10 +148,9 @@ def chapter():
 # ==== Error handlers =====================================
 @app.errorhandler(404)
 def handle_404(error):
-    response = jsonify(dict(
-        error="NotFound",
+    response = jsonify(dict(error=dict(
         message="This endpoint does not exist",
-    ))
+    )))
     response.status_code = 404
     return response
 
