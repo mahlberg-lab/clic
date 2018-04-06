@@ -1,3 +1,5 @@
+* Add basic twitter, opengraph preview support
+
 ## 1.6.2 (2018-03-11)
 
 * Fix nonquote/all subset queries when a chapter is empty
