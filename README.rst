@@ -12,6 +12,8 @@ For more information, cf. `CLiC Dickens - University of Birmingham <http://www.b
 Prerequisites
 -------------
 
+The installation instructions below expect an apt based OS, e.g. Debian Jessie or later.
+
 First, configure your system to include the Yarn repository: https://yarnpkg.com/lang/en/docs/install/
 
 ...then the nodejs repository::
