@@ -1,5 +1,3 @@
-[![DOI](https://zenodo.org/badge/102755711.svg)](https://zenodo.org/badge/latestdoi/102755711)
-
 CLiC: A corpus tool to support the analysis of literary texts
 =============================================================
 
