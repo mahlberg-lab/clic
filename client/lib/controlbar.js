@@ -94,7 +94,6 @@ function ControlBar(control_bar) {
     var self = this;
 
     this.control_bar = control_bar;
-    this.form = control_bar.getElementsByTagName('FORM')[0];
 
     window.document.querySelectorAll('nav + .handle')[0].addEventListener('click', function (e) {
         e.preventDefault();
@@ -159,14 +158,15 @@ function ControlBar(control_bar) {
         }
     });
 
-    self.form.addEventListener('change', function (e) {
+    self.control_bar.addEventListener('change', function (e) {
         if (this.change_timeout) {
             window.clearTimeout(this.change_timeout);
         }
         this.change_timeout = window.setTimeout(function () {
-            var new_search = {};
+            var new_search = {},
+                form = control_bar.querySelector('fieldset:not([disabled]) form');
 
-            jQuery(self.form).serializeArray().forEach(function (f) {
+            jQuery(form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
                     new_search[f.name].push(f.value);
                 } else if (new_search.hasOwnProperty(f.name)) {
@@ -197,7 +197,7 @@ function ControlBar(control_bar) {
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
         jQuery(el).chosen({ width: '100%' }).change(function (e) {
             // Chosen's change event isn't bubbling to the form, do it ourselves.
-            self.form.dispatchEvent(new window.Event('change', {"bubbles": true}));
+            self.control_bar.dispatchEvent(new window.Event('change', {"bubbles": true}));
         });
     });
 
@@ -248,16 +248,15 @@ ControlBar.prototype.reload = function reload(page_state) {
     return Promise.resolve().then(function () {
         return self.corpora || api.get('corpora');
     }).then(function (corpora) {
-        var tag_toggles_el;
+        var tag_toggles_el, form;
 
         self.corpora = corpora;
 
         // Enable the fieldset for the page
-        Array.prototype.forEach.call(self.form.elements, function (el, i) {
-            if (el.tagName === 'FIELDSET') {
-                el.disabled = ('/' + el.name !== page_state.doc());
-            }
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('fieldset'), function (el, i) {
+            el.disabled = ('/' + el.name !== page_state.doc());
         });
+        form = self.control_bar.querySelector('fieldset:not([disabled]) form');
 
         // Recreate tag toggles
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
@@ -292,16 +291,18 @@ ControlBar.prototype.reload = function reload(page_state) {
         }
 
         // Hide the KWIC direction slider we're not using
-        if (page_state.arg('kwic-dir') === 'start') {
-            self.form.elements['kwic-int-start'].disabled = false;
-            self.form.elements['kwic-int-end'].disabled = true;
-        } else {
-            self.form.elements['kwic-int-start'].disabled = true;
-            self.form.elements['kwic-int-end'].disabled = false;
+        if (form.elements['kwic-int-start'] && form.elements['kwic-int-end']) {
+            if (page_state.arg('kwic-dir') === 'start') {
+                form.elements['kwic-int-start'].disabled = false;
+                form.elements['kwic-int-end'].disabled = true;
+            } else {
+                form.elements['kwic-int-start'].disabled = true;
+                form.elements['kwic-int-end'].disabled = false;
+            }
         }
 
         // Set values from page options, or defaults
-        Array.prototype.forEach.call(self.form.elements, function (el_or_array) {
+        Array.prototype.forEach.call(form.elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
                 if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
                     Math.floor(0);
@@ -344,15 +345,14 @@ ControlBar.prototype.reload = function reload(page_state) {
 
 // Apply results of any search into data
 ControlBar.prototype.new_data = function new_data(data) {
-    if (data.allWords) {
-        // Make sure KWIC term values already selected stay selectable
-        Array.prototype.forEach.call(this.form.elements['kwic-terms'], function (el) {
-            var prevVal = jQuery(el).val() || [];
+    var prevVal, el;
 
-            if (el.parentElement.parentElement.disabled) {
-                // The fieldset is disabled, so don't bother
-                return;
-            }
+    if (data.allWords) {
+        el = this.control_bar.querySelector('fieldset:not([disabled]) form').elements['kwic-terms'];
+
+        if (el) {
+            // Make sure KWIC term values already selected stay selectable
+            prevVal = jQuery(el).val() || [];
 
             prevVal.map(function (t) {
                 data.allWords[t] = true;
@@ -361,7 +361,7 @@ ControlBar.prototype.new_data = function new_data(data) {
             el.innerHTML = to_options_html(Object.keys(data.allWords || {}).sort());
             jQuery(el).val(prevVal);
             jQuery(el).trigger("chosen:updated");
-        });
+        }
     }
 };
 

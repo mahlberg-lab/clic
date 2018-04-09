@@ -25,7 +25,7 @@
     cursor: pointer;
 }
 
-#control-bar > form {
+#control-bar > * {
     display: flex;
     flex-flow: column;
     position: absolute;
@@ -34,18 +34,18 @@
     overflow-y: auto;
     z-index: 1;
 }
-#control-bar > form.panel {
+#control-bar > *.panel {
     top: -100%;
     transition: top 0.3s ease;
 }
-#control-bar form.panel,
-#control-bar form.panel h4 span {
+#control-bar > *.panel,
+#control-bar > *.panel h4 span {
     background: #dcd5d5;
 }
-#control-bar > form.panel.in {
+#control-bar > *.panel.in {
     top: 0px;
 }
-#control-bar form.panel >*:not(.header) {
+#control-bar > *.panel >*:not(.header) {
     padding: 5px;
 }
 

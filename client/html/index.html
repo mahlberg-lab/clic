@@ -32,7 +32,7 @@
   <body>
 
 <nav id="control-bar">
-  <form>
+  <div>
 
    <div class="header">
      <a href="#" class="action load" title="Load a previously saved concordance search">Load</a> |
@@ -45,7 +45,7 @@
 
   <fieldset name="concordance" disabled="disabled">
     <legend><a href="/concordance">Concordance</a></legend>
-    <div>
+    <form>
 
       <label>Search the corpora:</label>
       <select name="corpora" data-placeholder="" class="chosen-select" multiple>
@@ -87,12 +87,12 @@
       <div class="tag-toggles"></div>
       <a href="#" class="toggle-panel" data-panel="tag-columns">Manage tag columns...</a>
 
-    </div>
+    </form>
   </fieldset>
 
   <fieldset name="subsets" disabled="disabled">
     <legend><a href="/subsets">Subsets</a></legend>
-    <div>
+    <form>
 
       <label>Search the corpora:</label>
       <select name="corpora" data-placeholder="" class="chosen-select" multiple>
@@ -129,12 +129,12 @@
       <div class="tag-toggles"></div>
       <a href="#" class="toggle-panel" data-panel="tag-columns">Manage tag columns...</a>
 
-    </div>
+    </form>
   </fieldset>
 
   <fieldset name="clusters" disabled="disabled">
     <legend><a href="/clusters">Clusters</a></legend>
-    <div>
+    <form>
       <label>Search the corpora:</label>
       <select name="corpora" class="chosen-select" multiple>
       </select>
@@ -159,12 +159,12 @@
       <label>Filter rows:</label>
       <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
 
-    </div>
+    </form>
   </fieldset>
 
   <fieldset name="keywords" disabled="disabled">
     <legend><a href="/keywords">Keywords</a></legend>
-    <div>
+    <form>
 
       <label>Target corpora:</label>
       <select name="corpora" class="chosen-select" multiple>
@@ -210,10 +210,10 @@
       <label>Filter rows:</label>
       <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
 
-    </div>
+    </form>
   </fieldset>
 
-  </form>
+  </div>
 
   <form class="panel" id="panel-tag-columns">
     <div class="header">
