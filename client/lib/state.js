@@ -91,17 +91,24 @@ State.prototype.state = function (name) {
   * push/replaceState
   */
 State.prototype.to_args = function () {
+    return [
+        this._state,
+        "",
+        this.to_url(),
+    ];
+};
+
+/**
+  * Turn the state object back into a URL string
+  */
+State.prototype.to_url = function () {
     var querystring = obj_to_search(this._args);
 
     if (querystring) {
         querystring = '?' + querystring;
     }
 
-    return [
-        this._state,
-        "",
-        this._doc + querystring,
-    ];
+    return this._doc + querystring;
 };
 
 /**

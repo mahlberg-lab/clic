@@ -51,6 +51,16 @@ test('to_args', function (t) {
     t.end();
 });
 
+test('to_url', function (t) {
+    var s;
+
+    // to_url just returns the url part of any state
+    s = new State(fake_window('/moo/doc', '?cuthbert&pigs=no&dibble&grub&cows=daisy', {animals: {duck: 2, goat: 3}}));
+    t.deepEqual(s.to_url(), '/moo/doc?cuthbert&dibble&grub&cows=daisy&pigs=no');
+
+    t.end();
+});
+
 test('arg:defaults', function (t) {
     var s;
 
