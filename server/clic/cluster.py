@@ -70,11 +70,20 @@ def cluster(
         cdb,
         subset=['all'], corpora=['dickens'],
         clusterlength=['1'],
-        cutoff=['5']):
+        cutoff=None):
     # Defaults / dereference arrays
     clusterlength = int(clusterlength[0])
     subset = subset[0]
-    cutoff = int(cutoff[0])
+
+    # Choose cutoff
+    if cutoff is not None:
+        cutoff = int(cutoff[0])
+    elif len(corpora) == 1:
+        # If only one item, have a low cut-off if this is a book
+        is_corpus = cdb.rdb_query("SELECT COUNT(*) FROM corpus WHERE corpus_id = ?", (corpora[0],)).fetchone()[0] > 0
+        cutoff = 5 if is_corpus else 1
+    else:
+        cutoff = 5
 
     skipped = 0
     wl = cdb.get_word_list(subset, clusterlength, corpora)

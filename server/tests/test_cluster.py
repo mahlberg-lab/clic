@@ -37,3 +37,20 @@ class TestCluster(unittest.TestCase):
             out = []
             for x in cluster(cdb, clusterlength=[5], subset=['shortsus'], corpora=['AgnesG'], cutoff=[3]):
                 out.append(x)
+
+    def test_defaultcutoff(self):
+        cdb = ClicDb()
+
+        def cutoff(corpora, expected_min):
+            try:
+                min_freq = 9999999
+                for x in cluster(cdb, clusterlength=[1], subset=['longsus'], corpora=corpora):
+                    if isinstance(x, tuple) and x[1] < min_freq:
+                        min_freq = x[1]
+            except UserError as e:
+                self.assertIn("frequency less than %d" % expected_min, e.message)
+            self.assertEqual(min_freq, expected_min)
+
+        cutoff(['AgnesG'], 1) # AgnesG is a book, and only one of them
+        cutoff(['AgnesG', 'TTC'], 5) # 2 books has a higher frequency
+        cutoff(['ntc'], 5) # a corpus has a higher frequency
