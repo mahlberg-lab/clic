@@ -20,12 +20,10 @@ PageKeyword.prototype.init = function () {
         { title: "N-gram", data: "1"},
         { title: "Target frequency", data: "2"},
         { title: "Ref frequency", data: "4"},
-        { title: "Expected target", data: "6"},
-        { title: "Expected ref", data: "7"},
         { title: "LL", data: "8"},
         { title: "P", data: "10", class: "nowrapColumn"},
     ];
-    this.table_opts.order = [[6, "desc"]];
+    this.table_opts.order = [[4, "desc"]];
     this.table_count_column = 0;
 };
 
