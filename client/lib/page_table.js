@@ -54,11 +54,13 @@ PageTable.prototype.reload = function reload(page_state) {
     self.page_state = page_state;
 
     return new Promise(function (resolve, reject) {
-        var table_opts, add_events = true;
+        var table_opts, add_events = true, old_page;
 
         self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata'));
 
         if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
+            old_page = self.table.page();
+
             self.table.search(page_state.arg('table-filter'));
             self.table.ajax.reload(function () {
                 // We don't have a separate success / fail callback, so switch
@@ -66,9 +68,13 @@ PageTable.prototype.reload = function reload(page_state) {
                 if (self.last_fetched_data instanceof Error) {
                     reject(self.last_fetched_data);
                 } else {
+                    // Only switch pages if there's enough data available
+                    if (self.table.page.info().pages > old_page) {
+                        self.table.page(old_page).draw('page');
+                    }
                     resolve(self.last_fetched_data);
                 }
-            }, false); // i.e. keep the current page
+            }, true); // i.e. reset the current page (we'll handle switching back ourselves)
         } else {
             if (self.table) {
                 // Re-create table so we can add extra columns

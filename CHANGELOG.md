@@ -1,3 +1,4 @@
+* Only preserve pages after reload if the page exists
 * Remove Expected target/ref columns from Keywords view
 * Link cluster lines to a matching concordance search
 * Update page title on page changes
