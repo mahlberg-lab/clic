@@ -56,7 +56,7 @@ PageTable.prototype.reload = function reload(page_state) {
     return new Promise(function (resolve, reject) {
         var table_opts, add_events = true, old_page;
 
-        self.table_el.classList.toggle('metadata-hidden', !page_state.arg('table-metadata'));
+        self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-type') === 'basic');
 
         if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
             old_page = self.table.page();
