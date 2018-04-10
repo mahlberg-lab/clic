@@ -7,24 +7,12 @@ if (window && window.document) {
     dataTablesNet(window, jQuery);
 }
 var api = require('./api.js');
+var shallow_clone = require('./shallow_clone.js').shallow_clone;
 
 function columns_string(columns) {
     return columns.map(function (c) {
         return c.data || '';
     }).join(':');
-}
-
-function shallow_clone(obj) {
-    var out = obj.constructor(),
-        attr;
-
-    for (attr in obj) {
-        if (obj.hasOwnProperty(attr)) {
-            out[attr] = obj[attr];
-        }
-    }
-
-    return out;
 }
 
 function PageTable(content_el) {
