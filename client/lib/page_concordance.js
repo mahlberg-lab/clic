@@ -44,7 +44,7 @@ PageConcordance.prototype.init = function () {
         { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
         { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
         { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
-        { title: "Book", data: "3.0", class: "metadataColumn", searchable: false }, // Book
+        { title: "Book", data: "3.0", searchable: false }, // Book
         { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
         { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
         { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
