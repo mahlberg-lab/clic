@@ -248,7 +248,7 @@ ControlBar.prototype.reload = function reload(page_state) {
     return Promise.resolve().then(function () {
         return self.corpora || api.get('corpora');
     }).then(function (corpora) {
-        var tag_toggles_el, form;
+        var tag_toggles_el, elements;
 
         self.corpora = corpora;
 
@@ -256,7 +256,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('fieldset'), function (el, i) {
             el.disabled = ('/' + el.name !== page_state.doc());
         });
-        form = self.control_bar.querySelector('fieldset:not([disabled]) form');
+        elements = (self.control_bar.querySelector('fieldset:not([disabled]) form') || {elements: []}).elements;
 
         // Recreate tag toggles
         tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
@@ -291,18 +291,18 @@ ControlBar.prototype.reload = function reload(page_state) {
         }
 
         // Hide the KWIC direction slider we're not using
-        if (form.elements['kwic-int-start'] && form.elements['kwic-int-end']) {
+        if (elements['kwic-int-start'] && elements['kwic-int-end']) {
             if (page_state.arg('kwic-dir') === 'start') {
-                form.elements['kwic-int-start'].disabled = false;
-                form.elements['kwic-int-end'].disabled = true;
+                elements['kwic-int-start'].disabled = false;
+                elements['kwic-int-end'].disabled = true;
             } else {
-                form.elements['kwic-int-start'].disabled = true;
-                form.elements['kwic-int-end'].disabled = false;
+                elements['kwic-int-start'].disabled = true;
+                elements['kwic-int-end'].disabled = false;
             }
         }
 
         // Set values from page options, or defaults
-        Array.prototype.forEach.call(form.elements, function (el_or_array) {
+        Array.prototype.forEach.call(elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
                 if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
                     Math.floor(0);
