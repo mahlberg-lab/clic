@@ -1,0 +1,40 @@
+.distribution-plot {
+    display: inline-block;
+    vertical-align: middle;
+    height: 3rem;
+    width: 100%;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #666;
+    border-radius: 2px;
+    background-color: #ccc;
+}
+
+.distribution-plot > * {
+    display: block;
+    position: absolute;
+    height: 100%;
+    min-width: 2px;
+    overflow: hidden;
+    text-indent: 110%;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 1px 1px rgba(80, 80, 80, 0.3);
+}
+
+#content .distribution-plot > *.kwic-highlight-2 { background: hsl(80, 69%, 75%); }
+#content .distribution-plot > *.kwic-highlight-3 { background: hsl(153, 69%, 75%); }
+#content .distribution-plot > *.kwic-highlight-4 { background: hsl(219, 69%, 75%); }
+#content .distribution-plot > *.kwic-highlight-1 { background: hsl(44, 69%, 75%); }
+#content .distribution-plot > *.selected {
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(240, 220,  78, 0.4),
+        rgba(240, 220,  78, 0.4) 10px,
+        rgba(240, 220,  78, 0.3) 10px,
+        rgba(240, 220,  78, 0.3) 20px
+    );
+}
+#content .distribution-plot > *:hover {
+    box-shadow: 0 0 3px 3px rgba(255, 160, 51, 0.4);
+}

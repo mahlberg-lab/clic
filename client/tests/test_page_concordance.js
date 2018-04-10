@@ -22,6 +22,9 @@ var PageConcordance = proxyquire('../lib/page_concordance.js', {
 // Return a fake PageState wrapping the input
 function mock_state(input) {
     return {
+        arg: function (x) {
+            return input[x];
+        },
         state: function (x) {
             return input[x];
         },
@@ -87,6 +90,49 @@ test('post_process', function (t) {
             'from 1 book',
             '1 entries with 1 KWIC match',
         ], "Extra info updated");
+
+    }).then(function () {
+        // Group by books for distribution plot
+        var data = pt.post_process(
+            mock_state({tag_columns: {}, tag_column_order: [], 'table-type': 'dist_plot'}),
+            kwic_terms('gotten us'),
+            [{ignore: true, reverse: true}, {start: 0, stop: 10}, {start: 0, stop: 10}],
+            {data: [
+                [
+                    ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
+                    ["you've", ' ', 'gotten', ' ', 'us', [0, 2, 4]],
+                    ["into", '.', [0]],
+                    [['parp']], // Book ID
+                    [[1238]], // Word ID
+                ],
+                [
+                    ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
+                    ["you've", ' ', 'gotten', ' ', 'out', [0, 2, 4]],
+                    ["of", '.', [0]],
+                    [['slarp']], // Book ID
+                    [[1238]], // Word ID
+                ],
+                [
+                    ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
+                    ["you've", ' ', 'gotten', ' ', 'away', [0, 2, 4]],
+                    ["from", '.', [0]],
+                    [['parp']], // Book ID
+                    [[1240]], // Word ID
+                ],
+            ], version: 33}
+        );
+
+        t.deepEqual(data.version, 33, "Data version preserved");
+        t.deepEqual(data.data[0][0], "parp", "First row for parp");
+        t.deepEqual(data.data[0].DT_RowId, "parp", "First row for parp");
+        t.deepEqual(data.data[0][1].length, 2, "2 parp sub-rows");
+        t.deepEqual(data.data[0][1][0].kwic, 2, '2 matches in first sub-row');
+        t.deepEqual(data.data[0][1][1].kwic, 1, '1 match in second sub-row');
+
+        t.deepEqual(data.data[1][0], "slarp", "Second row for slarp");
+        t.deepEqual(data.data[1].DT_RowId, "slarp", "Second row for slarp");
+        t.deepEqual(data.data[1][1].length, 1, "1 slarp sub-row");
+        t.deepEqual(data.data[1][1][0].kwic, 1, '1 match in first sub-row');
 
     }).then(function () {
         t.end();

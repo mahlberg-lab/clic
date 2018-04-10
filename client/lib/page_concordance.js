@@ -4,6 +4,9 @@
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
+var quoteattr = require('./quoteattr.js').quoteattr;
+var shallow_clone = require('./shallow_clone.js').shallow_clone;
+var object_entries = require('object.entries-ponyfill');
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
@@ -11,8 +14,8 @@ function renderPosition(data, type, full, meta) {
 
     if (type === 'display') {
         xVal = (data[0] / data[1]) * 50; // word in book / total word count
-        return '<a class="bookLink" title="Click to display concordance in book" target="_blank"' +
-               ' onclick="event.stopPropagation();"' +
+        return '<a class="bookLink" title="Click to display concordance in book"' +
+               ' onclick="event.stopPropagation();" target="_blank"' +
                ' href="/chapter?chapter_id=' + data[2] + '&start=' + data[3] + '&end=' + data[4] + '" >' +
                '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
                '<rect x="0" y="4" width="50" height="7" fill="#D6E1E8"/>' +
@@ -27,6 +30,39 @@ function renderPosition(data, type, full, meta) {
     return data[0];
 }
 
+
+/* Render grouped rows into a set of position plots */
+function renderDistributionPlot(data, type, full, meta) {
+    function plotData() {
+        return data.map(function (r) {
+            var posStart = (r[4][0] / r[4][1]) * 100,
+                posEnd = ((r[4][0] + r[1].slice(-1)[0].length) / r[4][1]) * 100;
+
+            if (type === 'display') {
+                return '<a' +
+                    ' class="' + r.DT_RowClass + '"' +
+                    ' onclick="event.stopPropagation();" target="_blank"' +
+                    ' href="/chapter?chapter_id=' + r[4][2] + '&start=' + r[4][3] + '&end=' + r[4][4] + '"' +
+                    ' style="left: ' + posStart + '%; right: ' + (100 - posEnd) + '%"' +
+                    ' title="' + quoteattr(r[0].slice(0, -1).join("") + '***' + r[1].slice(0, -1).join("") + '***' + r[2].slice(0, -1).join("")) + '"' +
+                    '>' + posStart + '</a>';
+            }
+            return posStart;
+        });
+    }
+
+    if (type === 'display') {
+        return '<div class="distribution-plot">' + plotData().join("\n") + '</div>';
+    }
+
+    if (type === 'export') {
+        return '{' + plotData().join(";") + '}';
+    }
+
+    // Sorting / filtering is done based on position of first item
+    return data.length > 0 ? (data[0][4][0] / data[0][4][1]) * 100 : null;
+}
+
 // PageConcordance inherits PageTable
 function PageConcordance() {
     return PageTable.apply(this, arguments);
@@ -38,21 +74,8 @@ PageConcordance.prototype.init = function () {
 
     this.table_opts.deferRender = true;
     this.table_opts.autoWidth = false;
-    this.table_opts.non_tag_columns = [
-        { data: "kwic", visible: false, sortable: false, searchable: false },
-        { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
-        { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
-        { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
-        { title: "Book", data: "3.0", searchable: false }, // Book
-        { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
-        { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
-        { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
-        { title: "In&nbsp;bk.", data: "4", width: "52px", render: renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
-    ];
     this.table_count_column = 1;
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };
-    this.table_opts.order = [[9, 'asc']];
 };
 
 PageConcordance.prototype.page_title = function (page_state) {
@@ -64,6 +87,32 @@ PageConcordance.prototype.reload = function reload(page_state) {
 
     function renderBoolean(data, type, full, meta) {
         return data ? "✓" : " ";
+    }
+
+    // Choose our column list based on the current view
+    if (page_state.arg('table-type') === 'dist_plot') {
+        this.table_opts.non_tag_columns = [
+            { data: null, defaultContent: "", visible: false, sortable: false, searchable: false }, // NB: Dummy kwic row so we don't throw counts off
+            { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
+            { title: "Book", data: "0", width: "10rem", searchable: true },
+            { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false },
+            { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
+        ];
+        this.table_opts.order = [[3, 'asc']];
+    } else {
+        this.table_opts.non_tag_columns = [
+            { data: "kwic", visible: false, sortable: false, searchable: false },
+            { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
+            { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
+            { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
+            { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
+            { title: "Book", data: "3.0", searchable: false }, // Book
+            { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
+            { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
+            { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
+            { title: "In&nbsp;bk.", data: "4", width: "52px", render: renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
+        ];
+        this.table_opts.order = [[9, 'asc']];
     }
 
     // Generate column list based on tag_columns
@@ -141,7 +190,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 };
 
 PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
-    var i, j, r,
+    var i, j, r, groupedData,
         allBooks = {}, allWords = {}, allMatches = {},
         data = raw_data.data,
         tag_state = page_state.state('tag_columns'),
@@ -167,6 +216,29 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
 
         // Count books used
         allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
+    }
+
+    // Group data into books for concordance plot
+    if (page_state.arg('table-type') === 'dist_plot') {
+        groupedData = {};
+        for (i = 0; i < data.length; i++) {
+            j = data[i][3][0]; // The book name
+            if (groupedData.hasOwnProperty(j)) {
+                groupedData[j].push(data[i]);
+            } else {
+                groupedData[j] = [data[i]];
+            }
+        }
+        // Turn dict of book => rows into array of [book, rows]
+        raw_data = {
+            version: raw_data.version, // TODO: Proper shallow copy? NB: We need to do this otherwise cached_get's copy gets modified
+            data: object_entries(groupedData),
+        };
+
+        // Use book IDs as row IDs
+        for (i = 0; i < raw_data.data.length; i++) {
+            raw_data.data[i].DT_RowId = raw_data.data[i][0];
+        }
     }
 
     // Update info line
