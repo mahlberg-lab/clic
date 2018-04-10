@@ -140,6 +140,9 @@ table.dataTable thead .sorting_desc_disabled:after {
     color: inherit;
     padding: 0 1px;
 }
+#content table.dataTable.metadata-hidden td mark {
+    background: transparent;
+}
 #content table.dataTable td.context > div.l.m1 > mark:nth-of-type(0n+1),
 #content table.dataTable td.context > div.l.m2 > mark:nth-of-type(0n+2),
 #content table.dataTable td.context > div.l.m3 > mark:nth-of-type(0n+3),
