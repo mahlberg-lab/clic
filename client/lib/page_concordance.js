@@ -250,9 +250,14 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             data: object_entries(groupedData),
         };
 
-        // Use book IDs as row IDs
         for (i = 0; i < raw_data.data.length; i++) {
+            // Use book IDs as row IDs
             raw_data.data[i].DT_RowId = raw_data.data[i][0];
+
+            // Add tag columns
+            for (j = 0; j < tag_column_order.length; j++) {
+                raw_data.data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][raw_data.data[i].DT_RowId];
+            }
         }
     }
 
