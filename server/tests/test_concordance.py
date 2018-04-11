@@ -156,3 +156,20 @@ class TestConcordance(unittest.TestCase):
             ["".join(x[0][:-1]) for x in out[1:]],
             [u' girls are', u' girls are.'],
         )
+
+    def test_bookmetadata(self):
+        """We can request book titles"""
+        cdb = ClicDb()
+
+        out = [x for x in concordance(
+            cdb,
+            corpora=['AgnesG', 'TTC'],
+            subset=['quote'],
+            q=[u'she was'],
+            contextsize=[0],
+            metadata=['book_titles'],
+        )]
+        self.assertEqual(out[-1], ('footer', dict(book_titles=dict(
+            AgnesG=(u'Agnes Grey', u'Anne Bront\xeb'),
+            TTC=(u'A Tale of Two Cities', u'Charles Dickens'),
+        ))))

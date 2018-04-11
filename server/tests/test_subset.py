@@ -101,3 +101,19 @@ class TestSubset(unittest.TestCase):
             len([x for x in subset(cdb,corpora=['AgnesG'], subset=['longsus'])]),
             30,
         )
+
+    def test_bookmetadata(self):
+        """We can request book titles"""
+        cdb = ClicDb()
+
+        out = [x for x in subset(
+            cdb,
+            corpora=['AgnesG', 'TTC'],
+            subset=['longsus'],
+            contextsize=[0],
+            metadata=['book_titles'],
+        )]
+        self.assertEqual(out[-1], ('footer', dict(book_titles=dict(
+            AgnesG=(u'Agnes Grey', u'Anne Bront\xeb'),
+            TTC=(u'A Tale of Two Cities', u'Charles Dickens'),
+        ))))

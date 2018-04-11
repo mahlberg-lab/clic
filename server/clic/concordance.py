@@ -13,6 +13,7 @@ Searches texts for given phrase(s).
 - subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
 - q: 1+ string to search for. If multiple terms are provided, they will be OR'ed together (i.e. we search for either)
 - contextsize: Size of context window around search results. Default 0.
+- metadata: Optional data to return, currently only 'book_titles' to return full book titles
 
 Parameters should be provided in querystring format, for example::
 
@@ -72,7 +73,7 @@ Examples:
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 """
-def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0']):
+def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
     """
     Main entry function for concordance search
 
@@ -80,6 +81,8 @@ def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     - subset: Subset to search within, or 'all'
     - q: Quer(ies) to search for, results will contain one of the given expressions
     - contextsize: Size of context window, defaults to none.
+    - metadata, Array of extra metadata to provide with result, some of
+      - 'book_titles' (return dict of book IDs to titles at end of result)
     """
     idx = cdb.get_subset_index(subset[0])
     contextsize = int(contextsize[0])
@@ -87,7 +90,7 @@ def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     query = build_query(cdb, q, idx, corpora)
     result_set = cdb.c3_query(query)
 
-    return create_concordance(cdb, q, result_set, contextsize)
+    return create_concordance(cdb, q, result_set, contextsize, metadata)
 
 
 def build_query(cdb, q, idxName, corpora):
@@ -117,7 +120,7 @@ def build_query(cdb, q, idxName, corpora):
     return query
 
 
-def create_concordance(cdb, q, result_set, contextsize):
+def create_concordance(cdb, q, result_set, contextsize, metadata):
     """
     main concordance method
     create a list of lists containing each three contexts left - node -right,
@@ -141,9 +144,11 @@ def create_concordance(cdb, q, result_set, contextsize):
     yield {}
 
     ## search through each record (chapter) and identify location of search term(s)
+    book_ids = set()
     for result in result_set:
         ch = cdb.get_chapter(result.id)
         (book_id, chapter_num, count_prev_chap, total_word) = cdb.get_chapter_word_counts(result.id)
+        book_ids.add(book_id)
 
         for match in result.proxInfo:
             # match contains proxInfo for each word in node, find first.
@@ -155,3 +160,7 @@ def create_concordance(cdb, q, result_set, contextsize):
             ]
 
             yield conc_line
+    if 'book_titles' in metadata:
+        yield ('footer', dict(
+            book_titles=cdb.get_book_titles(book_ids),
+        ))

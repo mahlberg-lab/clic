@@ -93,6 +93,18 @@ class ClicDb():
 
         return out
 
+    def get_book_titles(self, book_ids):
+        """
+        Return a dict of (book_ids) => title
+        - book_ids: A set / tuple of book_id
+        """
+        out = {}
+        for (book_id, title, author) in self.rdb_query(
+                "SELECT book_id, title, author FROM book WHERE book_id IN (%s) " % ("?, " * len(book_ids)).rstrip(', '),
+                tuple(book_ids)):
+            out[book_id] = (title, author)
+        return out
+
     def get_chapter_word_counts(self, chapter_id):
         """
         For the given book id and chapter, return:
