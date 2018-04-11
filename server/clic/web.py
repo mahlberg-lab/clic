@@ -69,18 +69,20 @@ def stream_json(generator, header={}):
         yield header[:-1] + ',"data":['
 
     separator = '\n'
-    footer = None
+    footer = {}
     try:
         for x in generator:
-            yield separator + json.dumps(x, separators=(',', ':'))
-            separator = ',\n'
+            if isinstance(x, tuple) and x[0] == 'footer':
+                footer.update(x[1])
+            else:
+                yield separator + json.dumps(x, separators=(',', ':'))
+                separator = ',\n'
     except Exception as e:
-        footer = format_error(e)
+        footer.update(format_error(e))
 
     # End list and format footer
-    footer = json.dumps(footer, separators=(',', ':'))
-    if footer[0] == '{':
-        yield '\n], ' + footer[1:]
+    if len(footer) > 0:
+        yield '\n], ' + json.dumps(footer, separators=(',', ':'))[1:]
     else:
         yield '\n]}'
 

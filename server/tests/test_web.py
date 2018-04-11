@@ -92,3 +92,34 @@ class Test_stream_json(unittest.TestCase):
             message="Potato!",
             stack=None,
         ))
+
+    def test_footer(self):
+        """We can return custom footer data"""
+        def fn(max_data):
+            for x in range(max_data):
+                yield x
+            yield ('footer', dict(bottom='yes'))
+
+        out = json.loads(self.sj(fn(2), {"a":1,"b":2}))
+        self.assertEqual(out, dict(
+            a=1,
+            b=2,
+            bottom='yes',
+            data=[0, 1],
+        ))
+
+        out = json.loads(self.sj(fn(1), {"a":1,"b":2}))
+        self.assertEqual(out, dict(
+            a=1,
+            b=2,
+            bottom='yes',
+            data=[0],
+        ))
+
+        out = json.loads(self.sj(fn(0), {"a":1,"b":2}))
+        self.assertEqual(out, dict(
+            a=1,
+            b=2,
+            bottom='yes',
+            data=[],
+        ))
