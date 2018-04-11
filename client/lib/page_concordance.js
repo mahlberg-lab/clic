@@ -63,6 +63,16 @@ function renderDistributionPlot(data, type, full, meta) {
     return data.length > 0 ? (data[0][4][0] / data[0][4][1]) * 100 : null;
 }
 
+/* Render full book title, optionally as hover-over - NB: This must be bound to the PageConcordance object to get titles */
+function renderBook(render_mode, data, type) {
+    if (type === 'display' && this.book_titles[data]) {
+        return '<abbr title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
+            quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
+    }
+
+    return data;
+}
+
 // PageConcordance inherits PageTable
 function PageConcordance() {
     return PageTable.apply(this, arguments);
@@ -72,6 +82,7 @@ PageConcordance.prototype = Object.create(PageTable.prototype);
 PageConcordance.prototype.init = function () {
     PageTable.prototype.init.apply(this, arguments);
 
+    this.book_titles = {};
     this.table_opts.deferRender = true;
     this.table_opts.autoWidth = false;
     this.table_count_column = 1;
@@ -94,7 +105,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
         this.table_opts.non_tag_columns = [
             { data: null, defaultContent: "", visible: false, sortable: false, searchable: false }, // NB: Dummy kwic row so we don't throw counts off
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-            { title: "Book", data: "0", width: "10rem", searchable: true },
+            { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
             { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
@@ -106,7 +117,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
             { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
             { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
-            { title: "Book", data: "3.0", searchable: false }, // Book
+            { title: "Book", data: "3.0", render: renderBook.bind(this, 'abbr'), searchable: false }, // Book
             { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
             { title: "Par.", data: "3.2", class: "metadataColumn", searchable: false }, // Paragraph
             { title: "Sent.", data: "3.3", class: "metadataColumn", searchable: false }, // Sentence
@@ -169,6 +180,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.subset = page_state.arg('conc-subset');
     api_opts.q = page_state.arg('conc-q');
     api_opts.contextsize = 10;
+    api_opts.metadata = ['book_titles'];
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");
@@ -217,6 +229,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         // Count books used
         allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
     }
+
+    // Save book_titles ready for the renderer function
+    this.book_titles = raw_data.book_titles || {};
 
     // Group data into books for concordance plot
     if (page_state.arg('table-type') === 'dist_plot') {

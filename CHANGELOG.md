@@ -1,3 +1,4 @@
+* concordance/subset: Make full book titles available in concordance/subset view
 * concordance/subset: Add API option for returning book titles
 * concordance/subset: Add distribution plot view
 * concordance: Book name column should always be visible
