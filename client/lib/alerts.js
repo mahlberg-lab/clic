@@ -50,6 +50,7 @@ Alerts.prototype.error = function (err) {
 Alerts.prototype.DisplayError = function (message, level) {
     this.message = message;
     this.level = level;
+    this.stack = null; // We don't need a stack trace, these errors are ~expected
 };
 Alerts.prototype.DisplayError.prototype = Error.prototype;
 
