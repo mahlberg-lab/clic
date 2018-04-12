@@ -153,7 +153,7 @@ function ControlBar(control_bar) {
             // Don't submit on enter, change instead
             e.preventDefault();
             if (e.target.tagName === "INPUT") {
-                e.target.dispatchEvent(new window.Event('change', {"bubbles": true}));
+                e.target.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             }
         }
     });
@@ -197,7 +197,7 @@ function ControlBar(control_bar) {
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
         jQuery(el).chosen({ width: '100%' }).change(function (e) {
             // Chosen's change event isn't bubbling to the form, do it ourselves.
-            self.control_bar.dispatchEvent(new window.Event('change', {"bubbles": true}));
+            self.control_bar.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
         });
     });
 
@@ -214,7 +214,7 @@ function ControlBar(control_bar) {
 
             if (el.value !== val_string) {
                 el.value = val_string;
-                el.dispatchEvent(new window.Event('change', {"bubbles": true}));
+                el.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             }
         });
     });
