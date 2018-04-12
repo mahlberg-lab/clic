@@ -164,7 +164,7 @@ function ControlBar(control_bar) {
         }
         this.change_timeout = window.setTimeout(function () {
             var new_search = {},
-                form = control_bar.querySelector('fieldset:not([disabled]) form');
+                form = control_bar.querySelector('fieldset.current form');
 
             jQuery(form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
@@ -177,12 +177,12 @@ function ControlBar(control_bar) {
             });
 
             // Unchecked checkboxes should be false
-            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset:not([disabled]) input[type=checkbox]:not(:checked)'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset.current input[type=checkbox]:not(:checked)'), function (el, i) {
                 new_search[el.name] = [""];
             });
 
             // Empty select boxes should be empty
-            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset:not([disabled]) select[multiple]'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset.current select[multiple]'), function (el, i) {
                 new_search[el.name] = jQuery(el).val();
             });
 
@@ -254,12 +254,12 @@ ControlBar.prototype.reload = function reload(page_state) {
 
         // Enable the fieldset for the page
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('fieldset'), function (el, i) {
-            el.disabled = ('/' + el.name !== page_state.doc());
+            el.classList.toggle('current', '/' + el.getAttribute('data-name') === page_state.doc());
         });
-        elements = (self.control_bar.querySelector('fieldset:not([disabled]) form') || {elements: []}).elements;
+        elements = (self.control_bar.querySelector('fieldset.current form') || {elements: []}).elements;
 
         // Recreate tag toggles
-        tag_toggles_el = self.control_bar.querySelectorAll('fieldset:not([disabled]) .tag-toggles')[0];
+        tag_toggles_el = self.control_bar.querySelectorAll('fieldset.current .tag-toggles')[0];
         if (tag_toggles_el) {
             tag_toggles_el.innerHTML = '';
             self.tag_toggles = Object.keys(page_state.state('tag_columns')).map(function (t) {
@@ -348,7 +348,7 @@ ControlBar.prototype.new_data = function new_data(data) {
     var prevVal, el;
 
     if (data.allWords) {
-        el = this.control_bar.querySelector('fieldset:not([disabled]) form').elements['kwic-terms'];
+        el = this.control_bar.querySelector('fieldset.current form').elements['kwic-terms'];
 
         if (el) {
             // Make sure KWIC term values already selected stay selectable

@@ -54,7 +54,7 @@
     transition: flex-grow 0.3s;
 }
 
-#control-bar fieldset:not([disabled]) {
+#control-bar fieldset.current {
     border-bottom: 1px solid #AAA;
     flex: 1 0 auto;
 }
@@ -77,7 +77,7 @@
     text-decoration: none;
 }
 
-#control-bar fieldset:not([disabled]) > legend > a {
+#control-bar fieldset.current > legend > a {
     background: #CCC;
 }
 
@@ -86,7 +86,7 @@
     margin-top: .5rem;
     padding: 5px;
 }
-#control-bar fieldset:not([disabled]) > legend + * {
+#control-bar fieldset.current > legend + * {
     display: block;
 }
 
