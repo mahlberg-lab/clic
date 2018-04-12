@@ -5,3 +5,4 @@
 require('es6-promise').polyfill();
 require('whatwg-fetch');
 require('custom-event-polyfill');
+require('classlist-toggle-force-polyfill').fix();
