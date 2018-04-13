@@ -52,7 +52,7 @@ function page_load() {
         var PageConstructor;
 
         alerts.clear();
-        document.body.classList.toggle('loading', true);
+        document.body.classList.add('loading');
 
         if (window.ga) {
             window.ga('set', 'location', window.location.href);
@@ -88,10 +88,10 @@ function page_load() {
         if (rvs[0]) {
             cb.new_data(rvs[0]);
         }
-        document.body.classList.toggle('loading', false);
+        document.body.classList.remove('loading');
     }).catch(function (err) {
         alerts.error(err);
-        document.body.classList.toggle('loading', false);
+        document.body.classList.remove('loading');
         throw err;
     });
 }
