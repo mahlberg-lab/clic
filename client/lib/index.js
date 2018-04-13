@@ -13,6 +13,9 @@ var page_classes = {
     '/keywords': require('./page_keyword.js'),
     '/': require('./page_contents.js'),
     '': function () {
+        this.page_title = function () {
+            return "Page not found";
+        };
         this.reload = function (page_state) {
             throw new Error("Unknown page: " + page_state.doc());
         };
