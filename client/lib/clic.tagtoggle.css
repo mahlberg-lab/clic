@@ -2,7 +2,6 @@
     display: block;
     position: relative; /* To contain markers */
     margin-bottom: 1rem;
-    padding 0 5px;
     background-color: #AAA;
     border-radius: 2rem;
     text-align: center;

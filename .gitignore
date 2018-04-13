@@ -8,6 +8,7 @@
 /client/doc
 /client/node_modules/
 /client/www/css/*.min.css
+/client/www/css/*.min.css.map
 /client/www/css/chosen-sprite*.png
 /client/www/css/flags*.png
 /client/www/html/*.min.html

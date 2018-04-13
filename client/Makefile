@@ -5,21 +5,28 @@ NODE = node
 NODE != which node || which nodejs
 NODE_PATH = node_modules
 NODE_CMD = NODE_PATH="$(NODE_PATH)" $(NODE)
-OUT_FILES = \
-    www/js/bundle.clic.min.js \
-    www/js/bundle.chapter.min.js \
-    www/js/bundle.libraries.min.js \
-    www/css/bundle.libraries.min.css \
-    www/chapter.html \
-    www/index.html
+SHELL=/bin/bash -o pipefail
 
-BUNDLE_LIBS = \
+OUTPUTS := index chapter
+
+OUT_FILES = \
+    www/js/polyfill.min.js \
+    www/js/libraries.min.js \
+    www/css/libraries.min.css \
+    www/css/chosen-sprite.png \
+    $(foreach O,$(OUTPUTS),www/$(O).html www/js/$(O).min.js www/css/$(O).min.css)
+
+LIBRARIES_JS = \
     chosen-js \
     custom-event-polyfill \
     datatables.net \
     jquery/dist/jquery.slim.js \
     nouislider \
 
+LIBRARIES_CSS = \
+    node_modules/chosen-js/chosen.css \
+    node_modules/nouislider/distribute/nouislider.min.css \
+    node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
 all: test lint compile
 
@@ -28,10 +35,6 @@ start: all
 pre_commit: lint compile
 
 compile: $(NODE_PATH) $(OUT_FILES)
-
-$(NODE_PATH): package.json
-	NODE_PATH="$(NODE_PATH)" $(YARN)
-	touch $(NODE_PATH)
 
 test: $(NODE_PATH)
 	TZ=Europe/London $(NODE_CMD) $(NODE_PATH)/tape/bin/tape tests/test_*.js
@@ -52,57 +55,58 @@ clean:
 	rm -r -- "$(NODE_PATH)"
 	rm -- www/js/*.min.js www/css/*.min.css www/html/*.min.html www/index-md5sums.html
 
-www/js/bundle.clic.min.js: package.json lib/*
-	mkdir -p www/js
-	(cd www/js && ln -sf ../../lib .)
-	(cd www/js && ln -sf ../../node_modules .)
-	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
-	        $(foreach l,$(BUNDLE_LIBS),-x $(l)) \
-	        -g uglifyify \
-	        lib/index.js \
-	    | $(NODE_CMD) $(NODE_PATH)/exorcist/bin/exorcist.js $@.map \
-	        --base . \
-	        --root /js/ \
-	        --url /js/$(notdir $@).map \
-	    > $@.mktmp
-	mv $@.mktmp $@
+$(NODE_PATH): package.json yarn.lock
+	NODE_PATH="$(NODE_PATH)" $(YARN)
+	touch $(NODE_PATH)
 
-www/js/bundle.chapter.min.js: package.json lib/*
-	mkdir -p www/js
-	(cd www/js && ln -sf ../../lib .)
-	(cd www/js && ln -sf ../../node_modules .)
-	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
-	        $(foreach l,$(BUNDLE_LIBS),-x $(l)) \
-	        -g uglifyify \
-	        lib/index-chapter.js \
-	    | $(NODE_CMD) $(NODE_PATH)/exorcist/bin/exorcist.js $@.map \
-	        --base . \
-	        --root /js/ \
-	        --url /js/$(notdir $@).map \
-	    > $@.mktmp
-	mv $@.mktmp $@
+yarn.lock:
+	touch $@
 
-www/js/bundle.libraries.min.js: package.json
-	mkdir -p www/js
-	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js \
-	        $(foreach l,$(BUNDLE_LIBS),-r $(l)) \
-	        -g uglifyify \
-	    > $@.mktmp
-	mv $@.mktmp $@
-
-www/css/bundle.libraries.min.css: package.json \
-    node_modules/chosen-js/chosen.css \
-    node_modules/nouislider/distribute/nouislider.min.css \
-    node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
+www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 	mkdir -p www/css
-	cat $^ > $@.mktmp
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
+
+www/js/libraries.min.js: package.json
+	mkdir -p www/js
+	(cd www/js && ln -sf ../../node_modules .)
+	$(NODE_CMD) node_modules/browserify/bin/cmd.js \
+	        $(foreach l,$(LIBRARIES_JS),-r $(l)) \
+	    | $(NODE_CMD) node_modules/uglify-js/bin/uglifyjs \
+	        --compress --mangle "reserved=['$$','require','exports']" \
+	        --output $@.mktmp
 	mv $@.mktmp $@
+
+www/css/libraries.min.css: package.json
+	mkdir -p www/css
+	(cd www/js && ln -sf ../../lib .)
+	cat $(LIBRARIES_CSS) > $@.mktmp
+	mv $@.mktmp $@
+
+www/js/%.min.js: package.json lib/*.js
+	mkdir -p www/js
+	(cd www/js && ln -sf ../../lib .)
+	$(NODE_CMD) node_modules/browserify/bin/cmd.js --debug \
+	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
+	        lib/$(basename $(basename $(notdir $@))).js \
+	    | $(NODE_CMD) node_modules/uglify-js/bin/uglifyjs \
+	        --compress --mangle "reserved=['$$','require','exports']" \
+	        --source-map "content='inline',url='$(notdir $@).map'" \
+	        --output $@.mktmp
+	mv $@.mktmp.map $@.map
+	mv $@.mktmp $@
+
+www/css/%.min.css: package.json lib/*.css
+	mkdir -p www/css
+	(cd www/js && ln -sf ../../lib .)
+	$(NODE_CMD) node_modules/postcss-cli/bin/postcss \
+	    --config postcss.config.js \
+	    -o $@ \
+	    lib/$(basename $(basename $(notdir $@))).css
 
 www/%.html: html/%.html ../clic_revision \
     build/html_compile.js \
-    www/css/clic.*.css \
-    www/js/*.js \
+    www/css/%.min.css \
+    www/js/%.min.js \
     ../.local-conf \
     package.json
 	CURRENT_REV=
