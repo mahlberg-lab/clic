@@ -23,6 +23,7 @@ module.exports.format_dt = function (dt) {
             }
         }
     });
+    row.push(dt.table().node().getAttribute('data-corpora-version'));
     row.push(window.location.href); // Add the URL so we can regenerate this page
     out.push(row);
 

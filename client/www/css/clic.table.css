@@ -1,3 +1,11 @@
+#content .data-version {
+    position: absolute;
+    z-index: 1;
+    margin: 3px;
+    font-size: smaller;
+    color: #666;
+}
+
 #content .dataTables_info {
     padding: 5px 1em;
 }

@@ -29,7 +29,7 @@ PageTable.prototype.init = function init() {
     this.table_opts.sort = true;
     this.table_opts.paginate = true;
     this.table_opts.displayLength = 50;
-    this.table_opts.dom = 'ritp';
+    this.table_opts.dom = 'ri<"data-version">tp';
 };
 
 PageTable.prototype.info_callback = function (settings, start, end, max, total, pre) {
@@ -85,6 +85,8 @@ PageTable.prototype.reload = function reload(page_state) {
                     resolve(self.reload_data(self.page_state));
                 }).then(function (data) {
                     self.last_fetched_data = data;
+                    document.querySelector('div.data-version').innerText = data.version.corpora;
+                    self.table.table().node().setAttribute('data-corpora-version', data.version.corpora);
                     callback(data);
                 }).catch(function (err) {
                     // Reject the wider promise, to send the error up
