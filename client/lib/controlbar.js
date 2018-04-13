@@ -107,7 +107,7 @@ function ControlBar(control_bar) {
             e.stopPropagation();
 
             window.dispatchEvent(new window.CustomEvent('state_new', { detail: {
-                doc: e.target.href,
+                doc: e.target.pathname,
                 args: { corpora: self.page_state.arg('corpora') },
                 state: {},
             }}));
