@@ -1,5 +1,5 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true */
+/*jslint todo: true, regexp: true, browser: true */
 /*global Promise */
 require('./polyfill.js');
 var State = require('./state.js');
@@ -12,7 +12,7 @@ var page_classes = {
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
     '/': require('./page_contents.js'),
-    '': function (content_div) {
+    '': function () {
         this.reload = function (page_state) {
             throw new Error("Unknown page: " + page_state.doc());
         };
@@ -47,7 +47,7 @@ var state_defaults = {
 
 var page, cb, alerts, current_page = null;
 
-function page_load(e) {
+function page_load() {
     return Promise.resolve(new State(window, state_defaults)).then(function (page_state) {
         var PageConstructor;
 
@@ -112,7 +112,7 @@ function state_update(e) {
 
     modified = page_state.update(e.detail);
     window.history.replaceState.apply(window.history, page_state.to_args());
-    if (modified) { page_load(e); }
+    if (modified) { page_load(); }
 }
 
 function state_new(e) {
@@ -120,7 +120,7 @@ function state_new(e) {
 
     page_state.update(e.detail, true);
     window.history.pushState.apply(window.history, page_state.to_args());
-    page_load(e);
+    page_load();
 }
 
 if (window) {
