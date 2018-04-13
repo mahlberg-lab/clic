@@ -48,10 +48,11 @@ var state_defaults = {
     'selected_rows': [],
 };
 
-var page, cb, alerts, current_page = null;
+var page, cb, alerts, current_page = null,
+    current_promise = Promise.resolve();
 
-function page_load() {
-    return Promise.resolve(new State(window, state_defaults)).then(function (page_state) {
+function page_load(p) {
+    return p.then(function (page_state) {
         var PageConstructor;
 
         alerts.clear();
@@ -99,40 +100,44 @@ function page_load() {
     });
 }
 
-function table_selection(e) {
-    cb.new_selection(e.detail);
-}
+/* Some kind of page navigation event has occured, do any state updating and re-render page if necessary */
+function state_event(mode, e) {
+    // NB: Wait for current_promise before we do anything, further calls then
+    // wait for us. This serialises rapid link-pressing
+    current_promise = current_promise.then(function () {
+        var modified, page_state = new State(window, state_defaults);
 
-function state_alter(e) {
-    var page_state = new State(window, state_defaults);
+        if (mode === 'initial') {  // page load - we need to init page based on external state change
+            modified = true;
+        } else if (mode === 'alter') { // Updating state to match what the page view has already done
+            page_state.update(e.detail);
+            modified = false;
+            window.history.replaceState.apply(window.history, page_state.to_args());
+        } else if (mode === 'update') { // Update state, update page to match (but break if no changes)
+            modified = page_state.update(e.detail);
+            window.history.replaceState.apply(window.history, page_state.to_args());
+        } else if (mode === 'new') { // Push a new state (i.e. clicking a link)
+            page_state.update(e.detail, true);
+            modified = true;
+            window.history.pushState.apply(window.history, page_state.to_args());
+        } else {
+            throw new Error("Unknown mode " + mode);
+        }
 
-    page_state.update(e.detail);
-    window.history.replaceState.apply(window.history, page_state.to_args());
-}
-
-function state_update(e) {
-    var modified, page_state = new State(window, state_defaults);
-
-    modified = page_state.update(e.detail);
-    window.history.replaceState.apply(window.history, page_state.to_args());
-    if (modified) { page_load(); }
-}
-
-function state_new(e) {
-    var page_state = new State(window, state_defaults);
-
-    page_state.update(e.detail, true);
-    window.history.pushState.apply(window.history, page_state.to_args());
-    page_load();
+        return modified ? page_load(Promise.resolve(page_state)) : null;
+    });
 }
 
 if (window) {
     alerts = new Alerts(document.getElementById('alerts'));
 
-    document.addEventListener('DOMContentLoaded', page_load);
-    window.addEventListener('popstate', page_load);
-    window.addEventListener('tableselection', table_selection);
-    window.addEventListener('state_alter', state_alter);
-    window.addEventListener('state_update', state_update);
-    window.addEventListener('state_new', state_new);
+    document.addEventListener('DOMContentLoaded', state_event.bind(null, 'initial'));
+    window.addEventListener('popstate', state_event.bind(null, 'initial'));
+    window.addEventListener('state_alter', state_event.bind(null, 'alter'));
+    window.addEventListener('state_update', state_event.bind(null, 'update'));
+    window.addEventListener('state_new', state_event.bind(null, 'new'));
+
+    window.addEventListener('tableselection', function (e) {
+        cb.new_selection(e.detail);
+    });
 }
