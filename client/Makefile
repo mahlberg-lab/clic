@@ -3,8 +3,7 @@ NPM = npm
 YARN = yarn
 NODE = node
 NODE != which node || which nodejs
-NODE_PATH = node_modules
-NODE_CMD = NODE_PATH="$(NODE_PATH)" $(NODE)
+NODE_CMD = NODE_PATH="$(CURDIR)" $(NODE)
 SHELL=/bin/bash -o pipefail
 
 OUTPUTS := index chapter
@@ -33,30 +32,30 @@ start: all
 
 pre_commit: lint compile
 
-compile: $(NODE_PATH) $(OUT_FILES)
+compile: node_modules/ $(OUT_FILES)
 
-test: $(NODE_PATH)
-	TZ=Europe/London $(NODE_CMD) $(NODE_PATH)/tape/bin/tape tests/test_*.js
+test: node_modules/
+	TZ=Europe/London $(NODE_CMD) node_modules/tape/bin/tape tests/test_*.js
 
-coverage: $(NODE_PATH)
-	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover $(NODE_PATH)/tape/bin/tape tests/test_*.js
+coverage: node_modules/
+	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
 
-browser_test: $(NODE_PATH)
-	$(NODE_CMD) $(NODE_PATH)/browserify/bin/cmd.js --debug \
+browser_test: node_modules/
+	$(NODE_CMD) node_modules/browserify/bin/cmd.js --debug \
 	    -x ace-editor \
 	    tests/*.js \
-	    | $(NODE_CMD) $(NODE_PATH)/testling/bin/cmd.js $(TESTLING_OPTS)
+	    | $(NODE_CMD) node_modules/testling/bin/cmd.js $(TESTLING_OPTS)
 
-lint: $(NODE_PATH)
-	$(NODE_CMD) $(NODE_PATH)/jslint/bin/jslint lib/*.js tests/*.js
+lint: node_modules/
+	$(NODE_CMD) node_modules/jslint/bin/jslint lib/*.js tests/*.js
 
 clean:
-	rm -r -- "$(NODE_PATH)"
+	rm -r -- "node_modules/"
 	rm -- www/js/*.min.js www/css/*.min.css www/html/*.min.html www/index-md5sums.html
 
-$(NODE_PATH): package.json yarn.lock
-	NODE_PATH="$(NODE_PATH)" $(YARN)
-	touch $(NODE_PATH)
+node_modules/: package.json yarn.lock
+	$(YARN)
+	touch node_modules/
 
 yarn.lock:
 	touch $@
