@@ -18,7 +18,6 @@ OUT_FILES = \
 
 LIBRARIES_JS = \
     chosen-js \
-    custom-event-polyfill \
     datatables.net \
     jquery/dist/jquery.slim.js \
     nouislider \

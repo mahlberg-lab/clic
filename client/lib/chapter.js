@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-require('./polyfill.js');
 var api = require('./api.js');
 var Alerts = require('./alerts.js');
 var State = require('./state.js');
