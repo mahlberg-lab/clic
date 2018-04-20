@@ -106,10 +106,10 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { data: null, defaultContent: "", visible: false, sortable: false, searchable: false }, // NB: Dummy kwic row so we don't throw counts off
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
-            { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false },
+            { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
-        this.table_opts.order = [[3, 'asc']];
+        this.table_opts.order = [[3, 'desc']];
     } else {
         this.table_opts.non_tag_columns = [
             { data: "kwic", visible: false, sortable: false, searchable: false },
