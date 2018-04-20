@@ -76,7 +76,7 @@ www/js/libraries.min.js: package.json
 
 www/css/libraries.min.css: package.json
 	mkdir -p www/css
-	(cd www/js && ln -sf ../../lib .)
+	(cd www/css && ln -sf ../../lib .)
 	cat $(LIBRARIES_CSS) > $@.mktmp
 	mv $@.mktmp $@
 
