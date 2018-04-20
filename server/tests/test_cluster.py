@@ -51,6 +51,6 @@ class TestCluster(unittest.TestCase):
                 self.assertIn("frequency less than %d" % expected_min, e.message)
             self.assertEqual(min_freq, expected_min)
 
-        cutoff(['AgnesG'], 1) # AgnesG is a book, and only one of them
+        cutoff(['AgnesG'], 2) # AgnesG is a book, and only one of them
         cutoff(['AgnesG', 'TTC'], 5) # 2 books has a higher frequency
         cutoff(['ntc'], 5) # a corpus has a higher frequency

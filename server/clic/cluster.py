@@ -81,7 +81,7 @@ def cluster(
     elif len(corpora) == 1:
         # If only one item, have a low cut-off if this is a book
         is_corpus = cdb.rdb_query("SELECT COUNT(*) FROM corpus WHERE corpus_id = ?", (corpora[0],)).fetchone()[0] > 0
-        cutoff = 5 if is_corpus else 1
+        cutoff = 5 if is_corpus else 2
     else:
         cutoff = 5
 
