@@ -103,12 +103,15 @@ PageConcordance.prototype.reload = function reload(page_state) {
     // Choose our column list based on the current view
     if (page_state.arg('table-type') === 'dist_plot') {
         this.table_opts.non_tag_columns = [
-            { data: null, defaultContent: "", visible: false, sortable: false, searchable: false }, // NB: Dummy kwic row so we don't throw counts off
+            { data: "1.max_kwic", defaultContent: "", visible: false, sortable: false, searchable: false },
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
             { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
+        if (page_state.arg('kwic-terms').length > 0) {
+            this.table_opts.non_tag_columns.splice(4, 0, { title: '<abbr title="# of KWIC matches in book">KWIC</abbr>', data: "1.kwic_count", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], });
+        }
         this.table_opts.order = [[3, 'desc']];
     } else {
         this.table_opts.non_tag_columns = [
@@ -242,7 +245,13 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
                 groupedData[j].push(data[i]);
             } else {
                 groupedData[j] = [data[i]];
+                groupedData[j].max_kwic = 0;
+                groupedData[j].kwic_count = 0;
             }
+            if (data[i].kwic > groupedData[j].max_kwic) {
+                groupedData[j].max_kwic = data[i].kwic;
+            }
+            groupedData[j].kwic_count += data[i].kwic > 0 ? 1 : 0;
         }
         // Turn dict of book => rows into array of [book, rows]
         raw_data = {

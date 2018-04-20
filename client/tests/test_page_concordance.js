@@ -128,11 +128,15 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0][1].length, 2, "2 parp sub-rows");
         t.deepEqual(data.data[0][1][0].kwic, 2, '2 matches in first sub-row');
         t.deepEqual(data.data[0][1][1].kwic, 1, '1 match in second sub-row');
+        t.deepEqual(data.data[0][1].max_kwic, 2, 'Maximum 2 matches in row');
+        t.deepEqual(data.data[0][1].kwic_count, 2, '2 KIWC matches in row');
 
         t.deepEqual(data.data[1][0], "slarp", "Second row for slarp");
         t.deepEqual(data.data[1].DT_RowId, "slarp", "Second row for slarp");
         t.deepEqual(data.data[1][1].length, 1, "1 slarp sub-row");
         t.deepEqual(data.data[1][1][0].kwic, 1, '1 match in first sub-row');
+        t.deepEqual(data.data[1][1].max_kwic, 1, 'Maximum 1 match in row');
+        t.deepEqual(data.data[1][1].kwic_count, 1, '1 KIWC match in row');
 
     }).then(function () {
         t.end();
