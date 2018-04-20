@@ -22,10 +22,10 @@
     box-shadow: 0 0 1px 1px rgba(80, 80, 80, 0.3);
 }
 
-#content .distribution-plot > *.kwic-highlight-2 { background: hsl(80, 69%, 75%); z-index: 1; }
-#content .distribution-plot > *.kwic-highlight-3 { background: hsl(153, 69%, 75%); z-index: 2; }
-#content .distribution-plot > *.kwic-highlight-4 { background: hsl(219, 69%, 75%); z-index: 3; }
-#content .distribution-plot > *.kwic-highlight-1 { background: hsl(44, 69%, 75%); z-index: 4; }
+#content .distribution-plot > *.kwic-highlight-2 { background: hsl(80, 92%, 50%); z-index: 1; }
+#content .distribution-plot > *.kwic-highlight-3 { background: hsl(153, 92%, 50%); z-index: 2; }
+#content .distribution-plot > *.kwic-highlight-4 { background: hsl(219, 92%, 50%); z-index: 3; }
+#content .distribution-plot > *.kwic-highlight-1 { background: hsl(44, 92%, 50%); z-index: 4; }
 #content .distribution-plot > *.selected {
     background: repeating-linear-gradient(
         -45deg,
