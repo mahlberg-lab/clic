@@ -102,22 +102,22 @@ test('post_process', function (t) {
                     ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
                     ["you've", ' ', 'gotten', ' ', 'us', [0, 2, 4]],
                     ["into", '.', [0]],
-                    [['parp']], // Book ID
-                    [[1238]], // Word ID
+                    ['parp', 99], // Book ID
+                    [1238, 5555], // Word ID
                 ],
                 [
                     ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
                     ["you've", ' ', 'gotten', ' ', 'out', [0, 2, 4]],
                     ["of", '.', [0]],
-                    [['slarp']], // Book ID
-                    [[1238]], // Word ID
+                    ['slarp', 99], // Book ID
+                    [1238, 2222], // Word ID
                 ],
                 [
                     ['a', ' ', 'fine', ' ', 'mess', [0, 2, 4]],
                     ["you've", ' ', 'gotten', ' ', 'away', [0, 2, 4]],
                     ["from", '.', [0]],
-                    [['parp']], // Book ID
-                    [[1240]], // Word ID
+                    ['parp', 99], // Book ID
+                    [1240, 5555], // Word ID
                 ],
             ], version: 33}
         );
@@ -130,6 +130,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0][1][1].kwic, 1, '1 match in second sub-row');
         t.deepEqual(data.data[0][1].max_kwic, 2, 'Maximum 2 matches in row');
         t.deepEqual(data.data[0][1].kwic_count, 2, '2 KIWC matches in row');
+        t.deepEqual(data.data[0].rel_freq, '360.04', 'Relative frequency');
 
         t.deepEqual(data.data[1][0], "slarp", "Second row for slarp");
         t.deepEqual(data.data[1].DT_RowId, "slarp", "Second row for slarp");
@@ -137,6 +138,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[1][1][0].kwic, 1, '1 match in first sub-row');
         t.deepEqual(data.data[1][1].max_kwic, 1, 'Maximum 1 match in row');
         t.deepEqual(data.data[1][1].kwic_count, 1, '1 KIWC match in row');
+        t.deepEqual(data.data[1].rel_freq, '450.05', 'Relative frequency');
 
     }).then(function () {
         t.end();

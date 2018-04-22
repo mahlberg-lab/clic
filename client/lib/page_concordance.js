@@ -107,6 +107,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
             { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false, "orderSequence": [ "desc", "asc" ], },
+            { title: '<abbr title="x entries per million words">Rel.Freq</abbr>', data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
         if (page_state.arg('kwic-terms').length > 0) {
@@ -267,6 +268,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             for (j = 0; j < tag_column_order.length; j++) {
                 raw_data.data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][raw_data.data[i].DT_RowId];
             }
+
+            // (# of lines) / (words in book) * (1 million)
+            raw_data.data[i].rel_freq = ((raw_data.data[i][1].length / raw_data.data[i][1][0][4][1]) * 1000000).toFixed(2);
         }
     }
 
