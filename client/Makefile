@@ -51,7 +51,10 @@ lint: node_modules/
 
 clean:
 	rm -r -- "node_modules/"
-	rm -- www/js/*.min.js www/css/*.min.css www/html/*.min.html www/index-md5sums.html
+	rm -- $(OUT_FILES)
+
+watch:
+	while inotifywait -r lib; do make compile; done
 
 node_modules/: package.json yarn.lock
 	$(YARN)
@@ -80,12 +83,12 @@ www/css/libraries.min.css: package.json
 	cat $(LIBRARIES_CSS) > $@.mktmp
 	mv $@.mktmp $@
 
-www/js/%.min.js: package.json lib/*.js
+www/js/%.min.js: lib/%.js lib/*.js package.json
 	mkdir -p www/js
 	(cd www/js && ln -sf ../../lib .)
 	$(NODE_CMD) node_modules/browserify/bin/cmd.js --debug \
 	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
-	        lib/$(basename $(basename $(notdir $@))).js \
+	        $< \
 	    | $(NODE_CMD) node_modules/uglify-js/bin/uglifyjs \
 	        --compress --mangle "reserved=['$$','require','exports']" \
 	        --source-map "content='inline',url='$(notdir $@).map'" \
@@ -93,19 +96,18 @@ www/js/%.min.js: package.json lib/*.js
 	mv $@.mktmp.map $@.map
 	mv $@.mktmp $@
 
-www/css/%.min.css: package.json lib/*.css
+www/css/%.min.css: lib/%.css lib/*.css package.json
 	mkdir -p www/css
-	(cd www/js && ln -sf ../../lib .)
+	(cd www/css && ln -sf ../../lib .)
 	$(NODE_CMD) node_modules/postcss-cli/bin/postcss \
 	    --config postcss.config.js \
 	    -o $@ \
-	    lib/$(basename $(basename $(notdir $@))).css
+	    $<
 
-www/%.html: html/%.html ../clic_revision \
-    build/html_compile.js \
-    www/css/%.min.css \
-    www/js/%.min.js \
+www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
     ../.local-conf \
+    ../clic_revision \
+    build/html_compile.js \
     package.json
 	CURRENT_REV=
 	[ -e "../.local-conf" ] && \
