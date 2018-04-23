@@ -86,6 +86,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 }).then(function (data) {
                     self.last_fetched_data = data;
                     document.querySelector('div.data-version').innerText = data.version.corpora;
+                    document.querySelector('div.data-version').setAttribute('title', 'The version of the corpora repository used to generate this table');
                     self.table.table().node().setAttribute('data-corpora-version', data.version.corpora);
                     callback(data);
                 }).catch(function (err) {
