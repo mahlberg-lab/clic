@@ -160,7 +160,7 @@ def create_concordance(cdb, q, result_set, contextsize, metadata):
             ]
 
             yield conc_line
-    if 'book_titles' in metadata:
-        yield ('footer', dict(
-            book_titles=cdb.get_book_titles(book_ids),
-        ))
+
+    footer = cdb.get_book_metadata(book_ids, set(metadata))
+    if footer:
+        yield ('footer', footer)

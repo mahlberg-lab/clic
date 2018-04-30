@@ -119,7 +119,7 @@ def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
                 [book_id, chapter_num, para_chap, sent_chap],
                 [count_prev_chap + int(offset_start), total_word, chapter_id, offset_start, offset_end],
         ]
-    if 'book_titles' in metadata:
-        yield ('footer', dict(
-            book_titles=cdb.get_book_titles(book_ids),
-        ))
+
+    footer = cdb.get_book_metadata(book_ids, set(metadata))
+    if footer:
+        yield ('footer', footer)

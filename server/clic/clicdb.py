@@ -93,16 +93,25 @@ class ClicDb():
 
         return out
 
-    def get_book_titles(self, book_ids):
+    def get_book_metadata(self, book_ids, metadata):
         """
-        Return a dict of (book_ids) => title
-        - book_ids: A set / tuple of book_id
+        Generate dict of metadata that should go in footer of both concordance and subsets
+        - book_ids: Array of book IDs to include
+        - metadata: Metadata items to include, a set contining some of...
+          - 'book_titles': The title / author of each book
         """
         out = {}
-        for (book_id, title, author) in self.rdb_query(
-                "SELECT book_id, title, author FROM book WHERE book_id IN (%s) " % ("?, " * len(book_ids)).rstrip(', '),
-                tuple(book_ids)):
-            out[book_id] = (title, author)
+        def p_params(*args):
+            return ("?, " * sum(len(x) for x in args)).rstrip(', ')
+
+        if 'book_titles' in metadata:
+            out['book_titles'] = {}
+            for (book_id, title, author) in self.rdb_query(
+                    "SELECT book_id, title, author FROM book" +
+                    " WHERE book_id IN (" + p_params(book_ids) + ")",
+                    tuple(book_ids)):
+                out['book_titles'][book_id] = (title, author)
+
         return out
 
     def get_chapter_word_counts(self, chapter_id):
