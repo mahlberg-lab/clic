@@ -99,6 +99,7 @@ class ClicDb():
         - book_ids: Array of book IDs to include
         - metadata: Metadata items to include, a set contining some of...
           - 'book_titles': The title / author of each book
+          - 'chapter_start': The start word ID for all achpters (i.e. the length of the previous)
         """
         out = {}
         def p_params(*args):
@@ -111,6 +112,18 @@ class ClicDb():
                     " WHERE book_id IN (" + p_params(book_ids) + ")",
                     tuple(book_ids)):
                 out['book_titles'][book_id] = (title, author)
+
+        if 'chapter_start' in metadata:
+            out['chapter_start'] = {}
+            for (book_id, chapter_num, word_total) in self.rdb_query(
+                    "SELECT book_id, chapter_num, word_total FROM chapter" +
+                    " WHERE book_id IN (" + p_params(book_ids) + ")" +
+                    " ORDER BY 1, 2",
+                    tuple(book_ids)):
+                if book_id not in out['chapter_start']:
+                    out['chapter_start'][book_id] = dict(_end=0)
+                out['chapter_start'][book_id][chapter_num] = out['chapter_start'][book_id]['_end']
+                out['chapter_start'][book_id]['_end'] += word_total
 
         return out
 
