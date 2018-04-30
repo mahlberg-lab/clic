@@ -58,7 +58,9 @@ test('post_process', function (t) {
                     [['parp']], // Book ID
                     [[1234]], // Word ID
                 ],
-            ]}
+            ], chapter_start: {
+                parp: {0: 100},
+            }, version: 33}
         );
         t.deepEqual(data.data[0].DT_RowId, 'parp1234', 'Formed row ID from book/word');
         t.deepEqual(data.data[0].DT_RowClass, '', 'No matches, RowClass (explicitly) empty');
@@ -80,7 +82,9 @@ test('post_process', function (t) {
                     [['parp']], // Book ID
                     [[1238]], // Word ID
                 ],
-            ]}
+            ], chapter_start: {
+                parp: {0: 100},
+            }, version: 33}
         );
         t.deepEqual(data.data[0].DT_RowId, 'parp1238', 'Formed row ID from book/word');
         t.deepEqual(data.data[0].DT_RowClass, 'kwic-highlight-2', "Colour classes start at 2");
@@ -119,7 +123,10 @@ test('post_process', function (t) {
                     ['parp', 99], // Book ID
                     [1240, 5555], // Word ID
                 ],
-            ], version: 33}
+            ], chapter_start: {
+                parp: {0: 100},
+                slarp: {0: 100},
+            }, version: 33}
         );
 
         t.deepEqual(data.version, 33, "Data version preserved");

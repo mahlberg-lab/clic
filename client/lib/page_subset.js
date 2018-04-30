@@ -40,7 +40,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     api_opts.corpora = page_state.arg('corpora');
     api_opts.subset = page_state.arg('subset-subset');
     api_opts.contextsize = 5;
-    api_opts.metadata = ['book_titles'];
+    api_opts.metadata = ['book_titles', 'chapter_start'];
 
     if (!api_opts.corpora || api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");

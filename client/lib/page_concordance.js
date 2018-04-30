@@ -1,5 +1,5 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
+/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true, nomen: true */
 /*global Promise */
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
@@ -51,8 +51,26 @@ function renderDistributionPlot(data, type, full, meta) {
         });
     }
 
+    function chapterTicks(chapter_start) {
+        return Object.keys(chapter_start).map(function (ch_num) {
+            var pos = (chapter_start[ch_num] / chapter_start._end) * 100;
+
+            if (pos > 99) {
+                return "";
+            }
+            return '<a class="tick chapter"' +
+                ' title="Chapter ' + ch_num + '"' +
+                ' href="/chapter?TODO:"' +
+                ' style="left: ' + pos + '%"' +
+                '></a>';
+        }).join("\n");
+    }
+
     if (type === 'display') {
-        return '<div class="distribution-plot">' + plotData().join("\n") + '</div>';
+        return '<div class="distribution-plot">' +
+            chapterTicks((data[0] || {}).chapter_start) +
+            '<div class="plot">' + plotData().join("\n") + '</div>' +
+            '</div>';
     }
 
     if (type === 'export') {
@@ -184,7 +202,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.subset = page_state.arg('conc-subset');
     api_opts.q = page_state.arg('conc-q');
     api_opts.contextsize = 10;
-    api_opts.metadata = ['book_titles'];
+    api_opts.metadata = ['book_titles', 'chapter_start'];
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");
@@ -232,6 +250,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
 
         // Count books used
         allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
+
+        // Annotate row with chapter_start object for this book ID
+        data[i].chapter_start = raw_data.chapter_start[data[i][3][0]];
     }
 
     // Save book_titles ready for the renderer function
