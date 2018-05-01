@@ -33,7 +33,7 @@ PageTable.prototype.init = function init() {
 };
 
 PageTable.prototype.info_callback = function (settings, start, end, max, total, pre) {
-    return pre + " " + (this.extra_info || []).join(", ");
+    return pre + ", " + (this.extra_info || []).join(", ");
 };
 
 PageTable.prototype.reload = function reload(page_state) {

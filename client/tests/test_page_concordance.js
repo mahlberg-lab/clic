@@ -116,7 +116,7 @@ test('post_process', function (t) {
         t.deepEqual(data.allWords, {'you\'ve': true, gotten: true, us: true, into: true}, 'Found words in middle, right');
         t.deepEqual(pt.extra_info, [
             'from 1 book',
-            '1 lines with 1 KWIC match',
+            '1 line / 1 book with 1 KWIC match',
         ], "Extra info updated");
 
     }).then(function () {
@@ -215,18 +215,18 @@ test('post_process:extra_info', function (t) {
     ], "We just count books");
 
     t.deepEqual(ei([
-        string_to_line("", "An ape", ""),
-        string_to_line("", "ape a gorilla", ""),
-        string_to_line("", "ape a gorilla", ""),
-        string_to_line("", "chimp ape gorilla", ""),
-        string_to_line("", "chimp ape gorilla", ""),
-        string_to_line("", "chimp ape gorilla", ""),
-        string_to_line("", "No monkeying about", ""),
+        string_to_line("", "An ape", "", ['AgnesG', 99, 100, 103]),
+        string_to_line("", "ape a gorilla", "", ['AgnesG', 99, 100, 103]),
+        string_to_line("", "ape a gorilla", "", ['AgnesH', 99, 100, 103]),
+        string_to_line("", "chimp ape gorilla", "", ['AgnesH', 99, 100, 103]),
+        string_to_line("", "chimp ape gorilla", "", ['AgnesH', 99, 100, 103]),
+        string_to_line("", "chimp ape gorilla", "", ['AgnesH', 99, 100, 103]),
+        string_to_line("", "No monkeying about", "", ['AgnesG', 99, 100, 103]),
     ], { "AgnesG": {0: 100, _end: 5555}, "AgnesH": {0: 100, _end: 5555} }), [
         "from 2 books",
-        '3 lines with 3 KWIC matches',
-        '2 lines with 2 KWIC matches',
-        '1 lines with 1 KWIC match'
+        '3 lines / 1 book with 3 KWIC matches',
+        '2 lines / 2 books with 2 KWIC matches',
+        '1 line / 1 book with 1 KWIC match'
     ], "We show each group of KWIC matches in reverse order");
 
     t.end();

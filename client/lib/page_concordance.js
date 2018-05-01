@@ -8,6 +8,20 @@ var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var object_entries = require('object.entries-ponyfill');
 
+// Plural-ise a few known phrases
+function plural(amount, unit) {
+    if (amount === 1) {
+        return amount + " " + unit;
+    }
+
+    switch (unit) {
+    case "KWIC match":
+        return amount + " " + unit + "es";
+    default:
+        return amount + " " + unit + "s";
+    }
+}
+
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
     var xVal, pos_start = full.chapter_start[data[1]] + data[2];
@@ -240,7 +254,12 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         // Add KWICGrouper match column
         r = concordance_utils.generateKwicRow(kwicTerms, kwicSpan, data[i], allWords);
         if (r > 0) {
-            allMatches[r] = (allMatches[r] || 0) + 1;
+            // Count KWIC matches, and # of unique books
+            if (!allMatches[r]) {
+                allMatches[r] = [0, {}];
+            }
+            allMatches[r][0] += 1;
+            allMatches[r][1][data[i][3][0]] = 1;
 
             // Add classes for row highlighting
             data[i].DT_RowClass = 'kwic-highlight-' + (r % 4 + 1);
@@ -300,13 +319,16 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
 
     // Show how many books mentioned if not a dist_plot (otherwise it's pointless)
     if (page_state.arg('table-type') !== 'dist_plot') {
-        i = (Object.keys(raw_data.chapter_start)).length;
-        this.extra_info.push("from " + i + " book" + (i !== 1 ? "s" : ""));
+        this.extra_info.push("from " + plural(Object.keys(raw_data.chapter_start).length, "book"));
     }
 
     // Add KWIC summary
     Object.keys(allMatches).sort(function (a, b) { return b - a; }).map(function (count) {
-        this.extra_info.push(allMatches[count] + " lines with " + count + " KWIC match" + (count !== "1" ? "es" : ""));
+        this.extra_info.push(
+            plural(allMatches[count][0], "line") + " / " +
+                plural(Object.keys(allMatches[count][1]).length, "book") + " with " +
+                plural(parseInt(count, 10), "KWIC match")
+        );
     }.bind(this));
 
     // Add allWords to server response
