@@ -22,6 +22,21 @@ function plural(amount, unit) {
     }
 }
 
+/* Plot count should link to a URL for just that book */
+function renderPlotCount(url_prefix, data, type, full, meta) {
+    data = data.length; // Show the count, not all the lines
+
+    if (type === 'display') {
+        return '<a title="Click to see lines for this book" target="_blank"' +
+               ' onclick="event.stopPropagation();"' +
+               ' href="' + url_prefix + '&corpora=' + encodeURIComponent(full[0]) + '"' +
+               '>' + data + '</a>';
+    }
+
+    return data;
+}
+
+
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
     var xVal, pos_start = full.chapter_start[data[1]] + data[2];
@@ -141,7 +156,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { data: "1.max_kwic", defaultContent: "", visible: false, sortable: false, searchable: false },
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
-            { title: "Count", data: "1", width: "3rem", render: function (data) { return data.length; }, searchable: false, "orderSequence": [ "desc", "asc" ], },
+            { title: "Count", data: "1", width: "3rem", render: renderPlotCount.bind(null, page_state.clone({args: { 'table-type': 'basic', corpora: [] }}).to_url()), searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: '<abbr title="x entries per million words">Rel.Freq</abbr>', data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
