@@ -40,6 +40,30 @@ function kwic_terms(words) {
     return out;
 }
 
+// Turn string(s) into a concordance line
+function string_to_line(str_left, str_node, str_right, metadata) {
+    function conv(str) {
+        var i, words = [], tokens = str ? str.split(/(\s+)/) : [];
+
+        for (i = 0; i < tokens.length; i++) {
+            if (tokens[i].search(/\w/) > -1) {
+                words.push(i);
+            }
+        }
+        tokens.push(words);
+
+        return tokens;
+    }
+
+    return [
+        conv(str_left),
+        conv(str_node),
+        conv(str_right),
+        metadata || ['slarp', 99, 100, 103], // Book / chapter / offset start / offset end
+        [0, 0], // para-in-chap, sent-in-chap
+    ];
+}
+
 test('post_process', function (t) {
     var content_el = { children: [] },
         pt = new PageConcordance(content_el);
@@ -92,7 +116,7 @@ test('post_process', function (t) {
         t.deepEqual(data.allWords, {'you\'ve': true, gotten: true, us: true, into: true}, 'Found words in middle, right');
         t.deepEqual(pt.extra_info, [
             'from 1 book',
-            '1 entries with 1 KWIC match',
+            '1 lines with 1 KWIC match',
         ], "Extra info updated");
 
     }).then(function () {
@@ -155,3 +179,55 @@ test('post_process', function (t) {
     });
 });
 
+test('post_process:extra_info', function (t) {
+    function ei(data, chapter_start, table_type) {
+        var content_el = { children: [] },
+            pt = new PageConcordance(content_el);
+
+        pt.post_process(
+            mock_state({tag_columns: {}, tag_column_order: [], 'table-type': table_type || 'basic'}),
+            kwic_terms('ape gorilla chimp'),
+            [{ignore: true, reverse: true}, {start: 0, stop: 10}, {ignore: true}],
+            {
+                data: data,
+                chapter_start: chapter_start,
+                version: 33,
+            }
+        );
+        return pt.extra_info;
+    }
+
+    t.deepEqual(ei([
+    ], {
+    }), [
+        "from 0 books",
+    ], "Books / matches allowed to be empty");
+
+    t.deepEqual(ei([
+        string_to_line("", "No monkeying about", ""),
+    ], { "AgnesG": {0: 0, _end: 5555} }), [
+        "from 1 book",
+    ], "We just count books");
+
+    t.deepEqual(ei([
+    ], { "AgnesG": {0: 0, _end: 5555}, "AgnesH": {0: 0, _end: 5555} }), [
+        "from 2 books",
+    ], "We just count books");
+
+    t.deepEqual(ei([
+        string_to_line("", "An ape", ""),
+        string_to_line("", "ape a gorilla", ""),
+        string_to_line("", "ape a gorilla", ""),
+        string_to_line("", "chimp ape gorilla", ""),
+        string_to_line("", "chimp ape gorilla", ""),
+        string_to_line("", "chimp ape gorilla", ""),
+        string_to_line("", "No monkeying about", ""),
+    ], { "AgnesG": {0: 100, _end: 5555}, "AgnesH": {0: 100, _end: 5555} }), [
+        "from 2 books",
+        '3 lines with 3 KWIC matches',
+        '2 lines with 2 KWIC matches',
+        '1 lines with 1 KWIC match'
+    ], "We show each group of KWIC matches in reverse order");
+
+    t.end();
+});

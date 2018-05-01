@@ -228,7 +228,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 
 PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
     var i, j, r, groupedData,
-        allBooks = {}, allWords = {}, allMatches = {},
+        allWords = {}, allMatches = {},
         data = raw_data.data,
         tag_state = page_state.state('tag_columns'),
         tag_column_order = page_state.state('tag_column_order');
@@ -250,9 +250,6 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         for (j = 0; j < tag_column_order.length; j++) {
             data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
         }
-
-        // Count books used
-        allBooks[data[i][3][0]] = (allBooks[data[i][3][0]] || 0) + 1;
 
         // Annotate row with chapter_start object for this book ID
         data[i].chapter_start = raw_data.chapter_start[data[i][3][0]];
@@ -298,8 +295,19 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         }
     }
 
-    // Update info line
-    this.extra_info = concordance_utils.extra_info(allBooks, allMatches);
+    // Update extra strings for dataTables.net info line
+    this.extra_info = [];
+
+    // Show how many books mentioned if not a dist_plot (otherwise it's pointless)
+    if (page_state.arg('table-type') !== 'dist_plot') {
+        i = (Object.keys(raw_data.chapter_start)).length;
+        this.extra_info.push("from " + i + " book" + (i !== 1 ? "s" : ""));
+    }
+
+    // Add KWIC summary
+    Object.keys(allMatches).sort(function (a, b) { return b - a; }).map(function (count) {
+        this.extra_info.push(allMatches[count] + " lines with " + count + " KWIC match" + (count !== "1" ? "es" : ""));
+    }.bind(this));
 
     // Add allWords to server response
     raw_data.allWords = allWords;
