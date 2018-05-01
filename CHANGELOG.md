@@ -1,3 +1,4 @@
+* api: Rearrange per-result metadata, still not to be relied on yet
 * concordance/subset: Add chapter ticks to distribution plot
 * concordance/subset: Make full book titles available in concordance/subset view
 * concordance/subset: Add API option for returning book titles
