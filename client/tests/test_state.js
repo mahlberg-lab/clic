@@ -157,3 +157,23 @@ test('update', function (t) {
 
     t.end();
 });
+
+test('clone', function (t) {
+    var s, s2;
+
+    s = new State(fake_window('/moo/doc', '?cows=daisy', { farm: "Big" }), { cows: [], pigs: ['george'], farm: "" });
+    t.deepEqual(s.arg('cows'), ['daisy'], "Original state has cow");
+    t.deepEqual(s.arg('pigs'), ['george'], "Original state has default pig");
+    t.deepEqual(s.state('farm'), "Big", "Original state farm");
+
+    // Clone s, change some variables as we go
+    s2 = s.clone({ args: { cows: [], pigs: ['henry'] } });
+    t.deepEqual(s2.arg('cows'), [], "s2 updated");
+    t.deepEqual(s2.arg('pigs'), ['henry'], "s2 updated");
+    t.deepEqual(s2.state('farm'), "Big", "s2 updated");
+    t.deepEqual(s.arg('cows'), ['daisy'], "Original state has cow");
+    t.deepEqual(s.arg('pigs'), ['george'], "Original state has default pig");
+    t.deepEqual(s.state('farm'), "Big", "Original state farm");
+
+    t.end();
+});

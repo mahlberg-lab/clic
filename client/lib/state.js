@@ -36,11 +36,20 @@ function obj_to_search(obj) {
 
 /**
   * Create a new state object based on the current page
-  * - win: Global window object
-  * - defaults: Object containing defaults for args & state
+  * - win: Global window object / previous state
+  * - defaults: Object containing defaults for args & state (if above isn't a previous state)
   */
 function State(win, defaults) {
     var k;
+
+    // Handed a previous object, clone all properties and use that
+    if (win instanceof State) {
+        this.defaults = JSON.parse(JSON.stringify(win.defaults));
+        this._doc = JSON.parse(JSON.stringify(win._doc));
+        this._state = JSON.parse(JSON.stringify(win._state));
+        this._args = JSON.parse(JSON.stringify(win._args));
+        return;
+    }
 
     this.defaults = { '#': [] };
     if (defaults) {
@@ -170,6 +179,17 @@ State.prototype.update = function (changes, flush) {
     });
 
     return modified;
+};
+
+/**
+  * Return a clone of this state object, optionally modified
+  * - changes: As per update()
+  * - flush: As per update()
+  */
+State.prototype.clone = function (changes, flush) {
+    var new_state = new State(this);
+    new_state.update(changes || {}, flush);
+    return new_state;
 };
 
 module.exports = State;
