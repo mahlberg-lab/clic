@@ -147,15 +147,14 @@ def create_concordance(cdb, q, result_set, contextsize, metadata):
     book_ids = set()
     for result in result_set:
         ch = cdb.get_chapter(result.id)
-        (book_id, chapter_num, _, _) = cdb.get_chapter_word_counts(result.id)
-        book_ids.add(book_id)
+        book_ids.add(ch.book_id)
 
         for match in result.proxInfo:
             # match contains proxInfo for each word in node, find first.
             (word_id, para_chap, sent_chap) = cdb.get_word(result.id, match[0])
 
             conc_line = ch.get_conc_line(word_id, len(match), contextsize) + [
-                [book_id, chapter_num, word_id, word_id + len(match), result.id],
+                [ch.book_id, ch.chapter_num, word_id, word_id + len(match), result.id],
                 [para_chap, sent_chap],
             ]
 

@@ -32,7 +32,8 @@ class TestChapter(unittest.TestCase):
         toks = dom.xpath("/div/descendant::*[self::n or self::w]")
         ch = Chapter(
             tuple(n.text for n in toks),
-            tuple(i for i, n in enumerate(toks) if n.tag == 'w')
+            tuple(i for i, n in enumerate(toks) if n.tag == 'w'),
+            'parp', 1
         )
 
         def conc_line(*args):

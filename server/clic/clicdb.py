@@ -127,33 +127,16 @@ class ClicDb():
 
         return out
 
-    def get_chapter_word_counts(self, chapter_id):
-        """
-        For the given book id and chapter, return:
-        - book_id: The short name of the book
-        - chapter_num: The count of the chapter within the book
-        - count_prev_chap: Word count for all chapters before (chapter)
-        - total_word: Total word count in the book
-        """
-        (book_id, chapter_num) = self.rdb_query("SELECT book_id, chapter_num FROM chapter WHERE chapter_id = ? ", (chapter_id,)).fetchone()
-
-        count_prev_chap = 0
-        total_word = 0
-        for (c_num, ch_total) in self.rdb_query("SELECT chapter_num, word_total FROM chapter WHERE book_id = ?", (book_id,)):
-            if c_num < chapter_num:
-                count_prev_chap += ch_total
-            total_word += ch_total
-        return (book_id, chapter_num, count_prev_chap, total_word)
-
     def get_chapter(self, chapter_id):
         old_text_factory = self.rdb.text_factory
         self.rdb.text_factory = str
         (tokens, word_map) = self.rdb_query("SELECT tokens, word_map FROM tokens WHERE chapter_id = ? ", (chapter_id,)).fetchone()
         self.rdb.text_factory = old_text_factory
+        (book_id, chapter_num) = self.rdb_query("SELECT book_id, chapter_num FROM chapter WHERE chapter_id = ? ", (chapter_id,)).fetchone()
 
         tokens = tuple(tokens.decode('utf8').split(b'\x00'))
         word_map = array.array('L', word_map)
-        return Chapter(tokens, word_map)
+        return Chapter(tokens, word_map, book_id, chapter_num)
 
     def get_subset_index(self, subset):
         """Return the index associated with a subset"""

@@ -15,15 +15,14 @@ class Chapter():
     Attributes:
     - tokens: Array of word / non-word tokens
     - word_map: Array of positions in tokens that contain words, i.e. tokens[word_map[4]] is the 4th word
+    - book_id: The short name of the book
+    - chapter_num: The chapter number within the book
     """
-    def __init__(self, tokens, word_map):
-        """
-        Create object
-        - dom: The lxml Root node for the chapter (a div)
-        - digest: The record digest, used to check for updates
-        """
+    def __init__(self, tokens, word_map, book_id, chapter_num):
         self.tokens = tokens
         self.word_map = word_map
+        self.book_id = book_id
+        self.chapter_num = chapter_num
 
     def get_conc_line(self, word_id, node_size, word_window):
         """
