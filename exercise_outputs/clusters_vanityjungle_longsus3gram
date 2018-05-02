@@ -1,11 +1,11 @@
 /api/cluster?corpora=vanity&corpora=jungle&subset=longsus&clusterlength=3
-{"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.6:6e02382"},"data":[
+{"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.7-beta1:ae9640a"},"data":[
 ["after a pause",8],
 ["said in a",6],
 ["said with a",7],
 ["he said to",5]
-], "message":{"message":"1767 clusters with a frequency less than 5 are not shown","level":"info","stack":null,"error":"UserError"}}
-real	0m0.342s
-user	0m0.022s
-sys	0m0.009s
+], "info":{"message":"1767 clusters with a frequency less than 5 are not shown","stack":null}}
+real	0m0.063s
+user	0m0.013s
+sys	0m0.008s
 

@@ -1,5 +1,5 @@
 /api/keyword?corpora=alice&subset=nonquote&refcorpora=alice&refsubset=quote&clusterlength=1&pvalue=0.0001
-{"message":{"message":"The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed.","level":"info"},"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.6:6e02382"},"data":[
+{"message":{"message":"The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed.","level":"info"},"version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"1.7-beta1:ae9640a"},"data":[
 [0,"the",1267,16521,361,9927,1016.95,611.04999999999995,177.09999999999999,"+","p < 0.0001"],
 [1,"and",637,16521,227,9927,539.71000000000004,324.29000000000002,49.219999999999999,"+","p < 0.0001"],
 [2,"she",520,16521,28,9927,342.31,205.69,323.14999999999998,"+","p < 0.0001"],
@@ -39,7 +39,7 @@
 [115,"felt",23,16521,0,9927,14.369999999999999,8.6300000000000008,21.649999999999999,"+","p < 0.0001"],
 [145,"sat",17,16521,0,9927,10.619999999999999,6.3799999999999999,16.0,"+","p < 0.0001"]
 ]}
-real	0m0.466s
-user	0m0.005s
-sys	0m0.005s
+real	0m0.058s
+user	0m0.007s
+sys	0m0.007s
 
