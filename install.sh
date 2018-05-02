@@ -128,6 +128,12 @@ server {
         proxy_pass ${GA_API_URL};
     }
 
+    location = /robots.txt {
+        return 200 'User-agent: *
+Disallow: /api/
+';
+    }
+
     location /api/ {
         include uwsgi_params;
         uwsgi_pass  uwsgi_server;
