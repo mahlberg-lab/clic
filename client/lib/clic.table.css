@@ -184,7 +184,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     max-width: 20vw;
     vertical-align: top;
     padding-right: 0.3rem;
-    overflow-x: hidden;
+    overflow: hidden; /* Ideally would be -x, but FF ignores */
     background: inherit;
     white-space: nowrap;
 }
