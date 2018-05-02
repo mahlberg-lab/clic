@@ -6,11 +6,11 @@ var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 /* Clusters should link back to an equivalent concordance */
-function renderCluster(url_prefix, data, type, full, meta) {
+function renderCluster(data, type, full, meta) {
     if (type === 'display') {
         return '<a title="Click to find individual concordances" target="_blank"' +
                ' onclick="event.stopPropagation();"' +
-               ' href="' + url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
+               ' href="' + full.cluster_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
                '>' + data + '</a>';
     }
 
