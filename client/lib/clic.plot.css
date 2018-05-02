@@ -21,10 +21,10 @@
     stroke: rgba(80,80,80,.3);
 }
 
-.distribution-plot > .plot .kwic-highlight-2 { fill: hsl(80, 92%, 50%); }
-.distribution-plot > .plot .kwic-highlight-3 { fill: hsl(153, 92%, 50%); }
-.distribution-plot > .plot .kwic-highlight-4 { fill: hsl(219, 92%, 50%); }
-.distribution-plot > .plot .kwic-highlight-1 { fill: hsl(44, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-2 { fill: hsl( 70, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-3 { fill: hsl(166, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-4 { fill: hsl(264, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-1 { fill: hsl(304, 92%, 50%); }
 .distribution-plot > .plot > a > rect:hover {
     fill: rgba(255, 160, 51, 0.7);
     stroke: hsl(32, 72%, 44%);
