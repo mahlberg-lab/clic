@@ -58,6 +58,14 @@ test('to_url', function (t) {
     s = new State(fake_window('/moo/doc', '?cuthbert&pigs=no&dibble&grub&cows=daisy', {animals: {duck: 2, goat: 3}}));
     t.deepEqual(s.to_url(), '/moo/doc?cuthbert&dibble&grub&cows=daisy&pigs=no');
 
+    // Empty array args just vanish
+    s = new State(fake_window('/moo/doc', '?cow=daisy', {}), { cow: [], pig: [] });
+    t.deepEqual(s.to_url(), '/moo/doc?cow=daisy');
+    s.update({ args: { cow: ['daisy', 'freda'], pig: ['george'] }});
+    t.deepEqual(s.to_url(), '/moo/doc?cow=daisy&cow=freda&pig=george');
+    s.update({ args: { cow: [], pig: ['george'] }});
+    t.deepEqual(s.to_url(), '/moo/doc?pig=george');
+
     t.end();
 });
 

@@ -31,7 +31,7 @@ function obj_to_search(obj) {
             }).join('&');
         }
         return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
-    }).join('&');
+    }).filter(function (s) { return !!s; }).join('&');
 }
 
 /**
