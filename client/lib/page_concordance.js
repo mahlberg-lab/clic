@@ -83,7 +83,10 @@ function renderDistributionPlot(data, type, full, meta) {
         });
     }
 
-    function chapterTicks(chapter_start) {
+    function chapterTicks(first_row) {
+        var book_id = first_row[3][0],
+            chapter_start = first_row.chapter_start;
+
         return Object.keys(chapter_start).map(function (ch_num) {
             var pos = (chapter_start[ch_num] / chapter_start._end) * 100;
 
@@ -92,7 +95,7 @@ function renderDistributionPlot(data, type, full, meta) {
             }
             return '<a class="tick chapter"' +
                 ' title="Chapter ' + ch_num + '"' +
-                ' href="/chapter?TODO:"' +
+                ' href="/chapter?book_id=' + book_id + '&chapter_num=' + ch_num + '"' +
                 ' style="left: ' + pos + '%"' +
                 '></a>';
         }).join("\n");
@@ -100,7 +103,7 @@ function renderDistributionPlot(data, type, full, meta) {
 
     if (type === 'display') {
         return '<div class="distribution-plot">' +
-            chapterTicks((data[0] || {}).chapter_start) +
+            (data[0] ? chapterTicks(data[0]) : '') +
             '<div class="plot">' + plotData().join("\n") + '</div>' +
             '</div>';
     }
