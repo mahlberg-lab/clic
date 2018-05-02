@@ -139,7 +139,8 @@ function renderDistributionPlot(data, type, full, meta) {
 /* Render full book title, optionally as hover-over - NB: This must be bound to the PageConcordance object to get titles */
 function renderBook(render_mode, data, type) {
     if (type === 'display' && this.book_titles[data]) {
-        return '<abbr title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
+        //NB: Edge needs persuasion to get abbr to word-wrap
+        return '<abbr style="display: block; width: 9.5rem" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
             quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
     }
 
