@@ -63,24 +63,44 @@ function renderPosition(data, type, full, meta) {
 
 /* Render grouped rows into a set of position plots */
 function renderDistributionPlot(data, type, full, meta) {
-    function plotData() {
-        return data.map(function (r) {
+    function plotDataSvg() {
+        var svg_xres = 1000, // The native X resolution of the SVG plot
+            min_width = data.length < 1000 ? 5 : 1; // The minimum width of a single line
+
+        return '<svg class="plot min-width-' + min_width + '" viewBox="0 0 ' + svg_xres + ' 40" width="' + svg_xres + '" height="40" preserveAspectRatio="none">' + data.sort(function (a, b) {
+            // Sort by #kwicgroups, chapter, position-in-chapter, so kwicgrouped items are on top
+            return a.kwic - b.kwic || a[3][1] - b[3][1] || a[3][2] - b[3][2];
+        }).map(function (r) {
             var ch_start = r.chapter_start[r[3][1]],  // Word-count at start of chapter
                 words_total = r.chapter_start._end,
-                posStart = ((ch_start + r[3][2]) / words_total) * 100,
-                posEnd = ((ch_start + r[3][3]) / words_total) * 100;
+                posStart = ((ch_start + r[3][2]) / words_total) * svg_xres,
+                posWidth = Math.max(min_width, ((r[3][3] - r[3][2]) / words_total) * svg_xres);
 
-            if (type === 'display') {
-                return '<a' +
-                    ' class="' + r.DT_RowClass + '"' +
-                    ' onclick="event.stopPropagation();" target="_blank"' +
-                    ' href="/chapter?chapter_id=' + r[3][4] + '&start=' + r[3][2] + '&end=' + r[2][3] + '"' +
-                    ' style="left: ' + posStart + '%; right: ' + (100 - posEnd) + '%"' +
-                    ' title="' + quoteattr(r[0].slice(0, -1).join("") + '***' + r[1].slice(0, -1).join("") + '***' + r[2].slice(0, -1).join("")) + '"' +
-                    '>' + posStart + '</a>';
-            }
+            return '<a' +
+                ' onclick="event.stopPropagation();" target="_blank"' +
+                ' href="/chapter?chapter_id=' + r[3][4] + '&start=' + r[3][2] + '&end=' + r[3][3] + '"' +
+                '><rect' +
+                ' class="' + r.DT_RowClass + '"' +
+                ' x="' + posStart + '"' +
+                ' width="' + posWidth + '"' +
+                ' y="-5" height="50">' +
+                '<title>' +
+                    quoteattr(r[0].slice(0, -1).join("")) + '***' +
+                    quoteattr(r[1].slice(0, -1).join("")) + '***' +
+                    quoteattr(r[2].slice(0, -1).join("")) +
+                '</title>' +
+                '</rect></a>';
+        }).join("\n") + '</svg>';
+    }
+
+    function plotDataExcel() {
+        return '{' + data.map(function (r) {
+            var ch_start = r.chapter_start[r[3][1]],  // Word-count at start of chapter
+                words_total = r.chapter_start._end,
+                posStart = ((ch_start + r[3][2]) / words_total) * 100;
+
             return posStart;
-        });
+        }).join(";") + '}';
     }
 
     function chapterTicks(first_row) {
@@ -104,12 +124,12 @@ function renderDistributionPlot(data, type, full, meta) {
     if (type === 'display') {
         return '<div class="distribution-plot">' +
             (data[0] ? chapterTicks(data[0]) : '') +
-            '<div class="plot">' + plotData().join("\n") + '</div>' +
+            plotDataSvg() +
             '</div>';
     }
 
     if (type === 'export') {
-        return '{' + plotData().join(";") + '}';
+        return plotDataExcel();
     }
 
     // Sorting / filtering is done based on position of first item

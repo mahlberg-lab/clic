@@ -1,46 +1,33 @@
 .distribution-plot {
-    display: inline-block;
-    vertical-align: middle;
-    width: 100%;
-    margin: 0;
+    /* Constriain the tick positions */
     position: relative;
+    line-height: 0;
 }
 
 .distribution-plot > .plot {
     position: relative;
-    height: 3rem;
+    width: 100%;
     overflow: hidden;
     border: 1px solid #666;
     border-radius: 2px 2px 2px 0;
     background-color: #ccc;
 }
 
-.distribution-plot > .plot > a {
-    display: block;
-    position: absolute;
-    height: 100%;
-    min-width: 0.5%;
-    overflow: hidden;
-    text-indent: 110%;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 1px 1px rgba(80, 80, 80, 0.3);
+.distribution-plot > .plot > a > rect {
+    fill: #f9f9f9;
+}
+.distribution-plot > .plot.min-width-5 > a > rect {
+    stroke-width: 1;
+    stroke: rgba(80,80,80,.3);
 }
 
-.distribution-plot > .plot > a.kwic-highlight-2 { background: hsl(80, 92%, 50%); z-index: 1; }
-.distribution-plot > .plot > a.kwic-highlight-3 { background: hsl(153, 92%, 50%); z-index: 2; }
-.distribution-plot > .plot > a.kwic-highlight-4 { background: hsl(219, 92%, 50%); z-index: 3; }
-.distribution-plot > .plot > a.kwic-highlight-1 { background: hsl(44, 92%, 50%); z-index: 4; }
-.distribution-plot > .plot > a.selected {
-    background: repeating-linear-gradient(
-        -45deg,
-        rgba(240, 220,  78, 0.4),
-        rgba(240, 220,  78, 0.4) 10px,
-        rgba(240, 220,  78, 0.3) 10px,
-        rgba(240, 220,  78, 0.3) 20px
-    );
-}
-.distribution-plot > .plot > a:hover {
-    box-shadow: 0 0 3px 3px rgba(255, 160, 51, 0.4);
+.distribution-plot > .plot .kwic-highlight-2 { fill: hsl(80, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-3 { fill: hsl(153, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-4 { fill: hsl(219, 92%, 50%); }
+.distribution-plot > .plot .kwic-highlight-1 { fill: hsl(44, 92%, 50%); }
+.distribution-plot > .plot > a > rect:hover {
+    fill: rgba(255, 160, 51, 0.7);
+    stroke: hsl(32, 72%, 44%);
 }
 
 .distribution-plot > .tick {
