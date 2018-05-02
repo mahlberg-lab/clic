@@ -23,13 +23,13 @@ function plural(amount, unit) {
 }
 
 /* Plot count should link to a URL for just that book */
-function renderPlotCount(url_prefix, data, type, full, meta) {
+function renderPlotCount(data, type, full, meta) {
     data = data.length; // Show the count, not all the lines
 
     if (type === 'display') {
         return '<a title="Click to see lines for this book" target="_blank"' +
                ' onclick="event.stopPropagation();"' +
-               ' href="' + url_prefix + '&corpora=' + encodeURIComponent(full[0]) + '"' +
+               ' href="' + full.count_url_prefix + '&corpora=' + encodeURIComponent(full[0]) + '"' +
                '>' + data + '</a>';
     }
 
@@ -144,7 +144,7 @@ function renderBook(render_mode, data, type) {
             quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
     }
 
-    return data;
+    return render_mode === 'full' ? this.book_titles[data][0] : data;
 }
 
 // PageConcordance inherits PageTable
@@ -180,7 +180,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { data: "1.max_kwic", defaultContent: "", visible: false, sortable: false, searchable: false },
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
-            { title: "Count", data: "1", width: "3rem", render: renderPlotCount.bind(null, page_state.clone({args: { 'table-type': 'basic', corpora: [] }}).to_url()), searchable: false, "orderSequence": [ "desc", "asc" ], },
+            { title: "Count", data: "1", width: "3rem", render: renderPlotCount, searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: '<abbr title="x entries per million words">Rel.Freq</abbr>', data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
@@ -339,6 +339,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             data: object_entries(groupedData),
         };
 
+        r = page_state.clone({args: { 'table-type': 'basic', corpora: [] }}).to_url();
         for (i = 0; i < raw_data.data.length; i++) {
             // Use book IDs as row IDs
             raw_data.data[i].DT_RowId = raw_data.data[i][0];
@@ -347,6 +348,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             for (j = 0; j < tag_column_order.length; j++) {
                 raw_data.data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][raw_data.data[i].DT_RowId];
             }
+
+            // Add count URL prefix for use in the render function
+            raw_data.data[i].count_url_prefix = r;
 
             // (# of lines) / (words in book) * (1 million)
             raw_data.data[i].rel_freq = ((raw_data.data[i][1].length / raw_data.data[i][1][0].chapter_start._end) * 1000000).toFixed(2);

@@ -43,11 +43,7 @@ PageCluster.prototype.page_title = function (page_state) {
 
 PageCluster.prototype.reload = function reload(page_state) {
     // Make a URL pointing at the concordance page, with the same corpora, use this in cluster links
-    var url_prefix = page_state.clone({doc: 'concordance', args: {
-        corpora: page_state.arg('corpora'),
-        'conc-subset': page_state.arg('subset'),
-    }}, true).to_url();
-    this.table_opts.columns[1].render = renderCluster.bind(null, url_prefix);
+    this.table_opts.columns[1].render = renderCluster;
 
     return PageTable.prototype.reload.apply(this, arguments);
 };
@@ -67,7 +63,24 @@ PageCluster.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a subset", "warn");
     }
 
-    return this.cached_get('cluster', api_opts);
+    return this.cached_get('cluster', api_opts).then(this.post_process.bind(this, page_state));
+};
+
+PageCluster.prototype.post_process = function (page_state, raw_data) {
+    var i, url_prefix,
+        data = raw_data.data || [];
+
+    url_prefix = page_state.clone({doc: 'concordance', args: {
+        corpora: page_state.arg('corpora'),
+        'conc-subset': page_state.arg('subset'),
+    }}, true).to_url();
+
+    for (i = 0; i < data.length; i++) {
+        // Add cluster URL prefix for use in the render function
+        data[i].cluster_url_prefix = url_prefix;
+    }
+
+    return raw_data;
 };
 
 module.exports = PageCluster;

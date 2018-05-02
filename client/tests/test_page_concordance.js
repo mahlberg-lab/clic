@@ -31,9 +31,10 @@ function page_state(pathname, search) {
         },
         history: { state: {} },
     }, {
-       'tag_columns': {},
-       'tag_column_order': [],
-       'table-type': 'basic',
+        'corpora': [],
+        'tag_columns': {},
+        'tag_column_order': [],
+        'table-type': 'basic',
     });
 }
 
@@ -128,7 +129,7 @@ test('post_process', function (t) {
     }).then(function () {
         // Group by books for distribution plot
         var data = pt.post_process(
-            page_state('/c', 'table-type=dist_plot'),
+            page_state('/c', 'corpora=badger&table-type=dist_plot'),
             kwic_terms('gotten us'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {start: 0, stop: 10}],
             {data: [
@@ -176,6 +177,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[1][1].max_kwic, 1, 'Maximum 1 match in row');
         t.deepEqual(data.data[1][1].kwic_count, 1, '1 KIWC match in row');
         t.deepEqual(data.data[1].rel_freq, '450.05', 'Relative frequency');
+        t.deepEqual(data.data[1].count_url_prefix, '/c?table-type=basic', 'URL prefix');
 
     }).then(function () {
         t.end();
