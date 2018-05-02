@@ -4,6 +4,8 @@
 var test = require('tape');
 var proxyquire =  require('proxyquire');
 
+var PageState = require('lib/state.js');
+
 var req_count = 0;
 
 global.window = { setTimeout: setTimeout };
@@ -20,15 +22,19 @@ var PageConcordance = proxyquire('../lib/page_concordance.js', {
 });
 
 // Return a fake PageState wrapping the input
-function mock_state(input) {
-    return {
-        arg: function (x) {
-            return input[x];
+// Make a PageState object with given args
+function page_state(pathname, search) {
+    return new PageState({
+        location: {
+            pathname: (pathname || '/'),
+            search: '?' + (search || ''),
         },
-        state: function (x) {
-            return input[x];
-        },
-    };
+        history: { state: {} },
+    }, {
+       'tag_columns': {},
+       'tag_column_order': [],
+       'table-type': 'basic',
+    });
 }
 
 // Turn a space-separated list of words into a KwicTerms lookup
@@ -71,7 +77,7 @@ test('post_process', function (t) {
     return Promise.resolve(true).then(function () {
         // Ignore all columns
         var data = pt.post_process(
-            mock_state({tag_columns: {}, tag_column_order: []}),
+            page_state(),
             kwic_terms('tongue'),
             [{ignore: true, reverse: true}, {ignore: true}, {ignore: true}],
             {data: [
@@ -95,7 +101,7 @@ test('post_process', function (t) {
     }).then(function () {
         // Match one
         var data = pt.post_process(
-            mock_state({tag_columns: {}, tag_column_order: []}),
+            page_state(),
             kwic_terms('gotten'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {start: 0, stop: 10}],
             {data: [
@@ -122,7 +128,7 @@ test('post_process', function (t) {
     }).then(function () {
         // Group by books for distribution plot
         var data = pt.post_process(
-            mock_state({tag_columns: {}, tag_column_order: [], 'table-type': 'dist_plot'}),
+            page_state('/c', 'table-type=dist_plot'),
             kwic_terms('gotten us'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {start: 0, stop: 10}],
             {data: [
@@ -185,7 +191,7 @@ test('post_process:extra_info', function (t) {
             pt = new PageConcordance(content_el);
 
         pt.post_process(
-            mock_state({tag_columns: {}, tag_column_order: [], 'table-type': table_type || 'basic'}),
+            page_state('/c', 'table-type=' + [table_type || 'basic']),
             kwic_terms('ape gorilla chimp'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {ignore: true}],
             {
