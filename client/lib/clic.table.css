@@ -203,7 +203,9 @@ table.dataTable thead .sorting_desc_disabled:after {
 #content table.dataTable.narrow-node td.context.node {
     width: 3rem;
     white-space: nowrap;
+    padding-left: 0.3rem;
     padding-right: 0.3rem;
+    text-indent: 0;
 }
 #content table.dataTable td.context.right {
     vertical-align: bottom;

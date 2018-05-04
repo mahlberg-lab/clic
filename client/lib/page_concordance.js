@@ -217,7 +217,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
     this.table_el.classList.toggle('narrow-node',
         page_state.arg('table-type') !== 'dist_plot' &&
         page_state.arg('conc-q') && /* Subsets won't have conc-q, but will ~always be wide */
-        (page_state.arg('conc-type') === 'any' || (page_state.arg('conc-q').match(/\s+/g) || []).length < 3)
+        (page_state.arg('conc-type') === 'any' || (page_state.arg('conc-q').match(/\s+/g) || []).length < 6)
         );
 
     return PageTable.prototype.reload.apply(this, arguments);
