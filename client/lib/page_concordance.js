@@ -213,6 +213,13 @@ PageConcordance.prototype.reload = function reload(page_state) {
     }));
     this.table_el.classList.toggle('hasTagColumns', tag_column_order.length > 0);
 
+    // For single-word nodes, we want to keep the node column narrow to balance the table nicely
+    this.table_el.classList.toggle('narrow-node',
+        page_state.arg('table-type') !== 'dist_plot' &&
+        page_state.arg('conc-q') && /* Subsets won't have conc-q, but will ~always be wide */
+        (page_state.arg('conc-type') === 'any' || (page_state.arg('conc-q').match(/\s+/g) || []).length < 3)
+        );
+
     return PageTable.prototype.reload.apply(this, arguments);
 };
 
