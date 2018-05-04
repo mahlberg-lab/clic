@@ -140,7 +140,10 @@ function renderDistributionPlot(data, type, full, meta) {
 function renderBook(render_mode, data, type) {
     if (type === 'display' && this.book_titles[data]) {
         //NB: Edge needs persuasion to get abbr to word-wrap
-        return '<abbr style="display: block; width: 9.5rem" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
+        return '<abbr style="' +
+                'display: block;' +
+                (render_mode === 'full' ? 'width: 9.5rem' : '') +
+            '" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
             quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
     }
 
