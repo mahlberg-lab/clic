@@ -282,12 +282,8 @@ ControlBar.prototype.reload = function reload(page_state) {
                 };
 
                 tag_toggles_el.appendChild(toggle.dom());
-                if (self.initial_selection) {
-                    toggle.update(self.initial_selection);
-                }
                 return toggle;
             });
-            self.initial_selection = null;
         }
 
         // Hide the KWIC direction slider we're not using
@@ -347,6 +343,15 @@ ControlBar.prototype.reload = function reload(page_state) {
 ControlBar.prototype.new_data = function new_data(data) {
     var prevVal, el;
 
+    if (data.selected_data && this.tag_toggles) {
+        this.table_selection = data.selected_data;
+
+        // Tell the toggle to update itself
+        this.tag_toggles.forEach(function (toggle) {
+            toggle.update(data.selected_data);
+        });
+    }
+
     if (data.allWords) {
         el = this.control_bar.querySelector('fieldset.current form').elements['kwic-terms'];
 
@@ -364,20 +369,6 @@ ControlBar.prototype.new_data = function new_data(data) {
         }
     }
 };
-
-// New rows selected, process selection-based widgets
-ControlBar.prototype.new_selection = function new_selection(data) {
-    this.table_selection = data;
-
-    if (!this.tag_toggles) {
-        // Store selection until we're ready
-        this.initial_selection = data;
-    } else {
-        // Tell the toggle to update itself
-        this.tag_toggles.forEach(function (toggle) {
-            toggle.update(data);
-        });
-    }
 
 // Update panes with new page_state
 ControlBar.prototype.tweak = function tweak(page_state) {

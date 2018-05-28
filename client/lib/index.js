@@ -144,8 +144,4 @@ if (window) {
     window.addEventListener('state_tweak', state_event.bind(null, 'tweak'));
     window.addEventListener('state_update', state_event.bind(null, 'update'));
     window.addEventListener('state_new', state_event.bind(null, 'new'));
-
-    window.addEventListener('tableselection', function (e) {
-        cb.new_selection(e.detail);
-    });
 }

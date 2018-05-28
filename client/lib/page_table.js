@@ -141,32 +141,36 @@ PageTable.prototype.reload = function reload(page_state) {
                 n.classList.add('selected');
             }
         }
-        // Trigger event so controlpanel updates
+        // We want to remove this selection on next click
         if (selected.length > 0) {
-            self.initial_selection = true;  // We want to remove this selection on next click
-            self.select_rows();
+            self.initial_selection = true;
         }
+
+        // Add data for selected rows, so control panel can update
+        data.selected_data = self.table.rows('.selected').data().toArray();
 
         return data;
     });
 };
 
-PageTable.prototype.select_rows = function () {
-    var selected_data = this.table.rows('.selected').data();
+/** On tweak make sure selected_data is available for updating toggles */
+PageTable.prototype.tweak = function tweak(page_state) {
+    var self = this;
 
-    // Record selection in page state
-    window.dispatchEvent(new window.CustomEvent('state_alter', { detail: {
+    return new Promise(function (resolve) {
+        resolve({
+            selected_data: self.table.rows('.selected').data().toArray(),
+        });
+    });
+};
+
+/** Record selection in page_state, trigger a tweak-update */
+PageTable.prototype.select_rows = function () {
+    window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
         state: {
-            selected_rows: [].concat.apply([], selected_data.map(function (d) {
-                return d.DT_RowId;
-            })),
+            selected_rows: this.table.rows('.selected').ids().toArray(),
         },
     }}));
-
-    this.table_el.dispatchEvent(new window.CustomEvent('tableselection', {
-        detail: selected_data,
-        bubbles: true,
-    }));
 };
 
 PageTable.prototype.reload_data = function (page_state) {
