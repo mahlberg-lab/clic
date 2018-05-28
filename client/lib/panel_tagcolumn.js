@@ -64,6 +64,7 @@ PanelTagColumns.prototype.do = function (action, e) {
         new_tag_name = choose_name(tag_columns, 'new-tag');
         tag_columns[new_tag_name] = {};
         tag_column_order = tag_column_order.concat([new_tag_name]);
+        tag_column_selected = new_tag_name;
 
     } else if (action === 'delete') {
         if (!tag_column_selected) {
@@ -76,6 +77,7 @@ PanelTagColumns.prototype.do = function (action, e) {
         tag_column_order = tag_column_order.filter(function (t) {
             return t !== tag_column_selected;
         });
+        tag_column_selected = '';
 
     } else if (action === 'rename') {
         new_tag_name = choose_name(tag_columns, e.target.value.toLowerCase().replace(/\W/g, "-"));
@@ -87,13 +89,14 @@ PanelTagColumns.prototype.do = function (action, e) {
         tag_column_order = tag_column_order.map(function (t) {
             return t === tag_column_selected ? new_tag_name : t;
         });
+        tag_column_selected = new_tag_name;
     }
 
     window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
         state: {
             tag_columns: tag_columns,
             tag_column_order: tag_column_order,
-            tag_column_selected: '',
+            tag_column_selected: tag_column_selected,
         },
     }}));
 };
