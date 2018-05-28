@@ -4,6 +4,7 @@
 var State = require('./state.js');
 var ControlBar = require('./controlbar.js');
 var Alerts = require('./alerts.js');
+var Analytics = require('./analytics.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
@@ -47,32 +48,36 @@ var state_defaults = {
     'selected_rows': [],
 };
 
-var page, cb, alerts, current_page = null,
+var page, cb, ga, alerts, current_page = null,
     current_promise = Promise.resolve();
+
+function page_components(page_state) {
+    var PageConstructor;
+
+    if (!page || page_state.doc() !== current_page) {
+        PageConstructor = page_classes[page_state.doc()] || page_classes[''];
+        page = new PageConstructor(document.getElementById('content'));
+        current_page = page_state.doc();
+    }
+
+    if (!cb) {
+        cb = new ControlBar(document.getElementById('control-bar'));
+    }
+
+    if (!ga) {
+        ga = new Analytics();
+    }
+
+    window.document.title = page.page_title(page_state);
+    return [page, cb, ga];
+}
 
 function page_load(p) {
     return p.then(function (page_state) {
-        var PageConstructor;
-
         alerts.clear();
         document.body.classList.add('loading');
 
-        if (window.ga) {
-            window.ga('set', 'location', window.location.href);
-            window.ga('send', 'pageview');
-        }
-
-        if (!page || page_state.doc() !== current_page) {
-            PageConstructor = page_classes[page_state.doc()] || page_classes[''];
-            page = new PageConstructor(document.getElementById('content'));
-            current_page = page_state.doc();
-        }
-        if (!cb) {
-            cb = new ControlBar(document.getElementById('control-bar'));
-        }
-        window.document.title = page.page_title(page_state);
-
-        return Promise.all([page, cb].map(function (x) {
+        return Promise.all(page_components(page_state).map(function (x) {
             return x.reload(page_state).catch(function (err) {
                 // Turn any error output back into a level: { message: ... } object
                 var rv = { a: alerts.err_to_alert(err) };
