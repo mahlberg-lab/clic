@@ -36,7 +36,7 @@ function PanelTagColumns(panel_el) {
         self.rename_el.value = e.target.innerText;
         self.rename_el.select();
 
-        window.dispatchEvent(new window.CustomEvent('state_alter', { detail: {
+        window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
             state: {tag_column_selected: e.target.innerText},
         }}));
     });

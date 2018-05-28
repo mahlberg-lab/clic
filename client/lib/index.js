@@ -72,13 +72,15 @@ function page_components(page_state) {
     return [page, cb, ga];
 }
 
-function page_load(p) {
+function page_load(p, comp_fn) {
     return p.then(function (page_state) {
         alerts.clear();
         document.body.classList.add('loading');
 
         return Promise.all(page_components(page_state).map(function (x) {
-            return x.reload(page_state).catch(function (err) {
+            var fn = x[comp_fn] || function () { return Promise.resolve({}); };
+
+            return (fn.call(x, page_state)).catch(function (err) {
                 // Turn any error output back into a level: { message: ... } object
                 var rv = { a: alerts.err_to_alert(err) };
 
@@ -109,13 +111,15 @@ function state_event(mode, e) {
     // NB: Wait for current_promise before we do anything, further calls then
     // wait for us. This serialises rapid link-pressing
     current_promise = current_promise.then(function () {
-        var modified, page_state = new State(window, state_defaults);
+        var modified,
+            comp_fn = 'reload',
+            page_state = new State(window, state_defaults);
 
         if (mode === 'initial') {  // page load - we need to init page based on external state change
             modified = true;
-        } else if (mode === 'alter') { // Updating state to match what the page view has already done
-            page_state.update(e.detail);
-            modified = false;
+        } else if (mode === 'tweak') { // Minor page update, call tweak instead of reload
+            modified = page_state.update(e.detail);
+            comp_fn = 'tweak';
             window.history.replaceState.apply(window.history, page_state.to_args());
         } else if (mode === 'update') { // Update state, update page to match (but break if no changes)
             modified = page_state.update(e.detail);
@@ -128,7 +132,7 @@ function state_event(mode, e) {
             throw new Error("Unknown mode " + mode);
         }
 
-        return modified ? page_load(Promise.resolve(page_state)) : null;
+        return modified ? page_load(Promise.resolve(page_state), comp_fn) : null;
     });
 }
 
@@ -137,7 +141,7 @@ if (window) {
 
     document.addEventListener('DOMContentLoaded', state_event.bind(null, 'initial'));
     window.addEventListener('popstate', state_event.bind(null, 'initial'));
-    window.addEventListener('state_alter', state_event.bind(null, 'alter'));
+    window.addEventListener('state_tweak', state_event.bind(null, 'tweak'));
     window.addEventListener('state_update', state_event.bind(null, 'update'));
     window.addEventListener('state_new', state_event.bind(null, 'new'));
 
