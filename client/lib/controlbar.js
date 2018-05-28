@@ -378,6 +378,14 @@ ControlBar.prototype.new_selection = function new_selection(data) {
             toggle.update(data);
         });
     }
+
+// Update panes with new page_state
+ControlBar.prototype.tweak = function tweak(page_state) {
+    var self = this;
+
+    return Promise.all(Object.keys(self.panels).map(function (n) {
+        return self.panels[n].tweak(page_state);
+    }));
 };
 
 module.exports = ControlBar;

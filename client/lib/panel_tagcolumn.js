@@ -121,4 +121,13 @@ PanelTagColumns.prototype.reload = function reload(page_state) {
     }).join("");
 };
 
+// Page state has changed (possibly by a change in tag_column_selected), update our copy
+PanelTagColumns.prototype.tweak = function tweak(page_state) {
+    var self = this;
+
+    return Promise.resolve().then(function () {
+        self.page_state = page_state;
+    });
+};
+
 module.exports = PanelTagColumns;
