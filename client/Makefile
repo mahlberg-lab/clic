@@ -1,5 +1,4 @@
 GIT = git
-NPM = npm
 YARN = yarn
 NODE = node
 NODE != which node || which nodejs
@@ -28,30 +27,22 @@ LIBRARIES_CSS = \
 
 all: test lint compile
 
-start: all
-
-pre_commit: lint compile
-
 compile: node_modules/ $(OUT_FILES)
 
+start: all
+
 test: node_modules/
-	TZ=Europe/London $(NODE_CMD) node_modules/tape/bin/tape tests/test_*.js
+	$(NODE_CMD) node_modules/.bin/tape tests/test_*.js
 
 coverage: node_modules/
 	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
-
-browser_test: node_modules/
-	$(NODE_CMD) node_modules/browserify/bin/cmd.js --debug \
-	    -x ace-editor \
-	    tests/*.js \
-	    | $(NODE_CMD) node_modules/testling/bin/cmd.js $(TESTLING_OPTS)
 
 lint: node_modules/
 	$(NODE_CMD) node_modules/jslint/bin/jslint lib/*.js tests/*.js
 
 clean:
-	rm -r -- "node_modules/"
-	rm -- $(OUT_FILES)
+	rm -r -- "node_modules/" || true
+	rm -- $(OUT_FILES) || true
 
 watch:
 	while inotifywait -r lib; do make compile; done
@@ -70,9 +61,9 @@ www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 www/js/libraries.min.js: package.json
 	mkdir -p www/js
 	(cd www/js && ln -sf ../../node_modules .)
-	$(NODE_CMD) node_modules/browserify/bin/cmd.js \
+	$(NODE_CMD) node_modules/.bin/browserify \
 	        $(foreach l,$(LIBRARIES_JS),-r $(l)) \
-	    | $(NODE_CMD) node_modules/uglify-js/bin/uglifyjs \
+	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
 	        --compress --mangle "reserved=['$$','require','exports']" \
 	        --output $@.mktmp
 	mv $@.mktmp $@
@@ -86,10 +77,10 @@ www/css/libraries.min.css: package.json
 www/js/%.min.js: lib/%.js lib/*.js package.json
 	mkdir -p www/js
 	(cd www/js && ln -sf ../../lib .)
-	$(NODE_CMD) node_modules/browserify/bin/cmd.js --debug \
+	$(NODE_CMD) node_modules/.bin/browserify --debug \
 	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
 	        $< \
-	    | $(NODE_CMD) node_modules/uglify-js/bin/uglifyjs \
+	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
 	        --compress --mangle "reserved=['$$','require','exports']" \
 	        --source-map "content='inline',url='$(notdir $@).map'" \
 	        --output $@.mktmp
@@ -118,4 +109,4 @@ www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
 	        $< > $@.mktmp
 	mv $@.mktmp $@
 
-.PHONY: pre_commit compile test start browser_test lint clean
+.PHONY: compile test start lint clean
