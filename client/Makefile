@@ -38,7 +38,7 @@ coverage: node_modules/
 	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
 
 lint: node_modules/
-	$(NODE_CMD) node_modules/jslint/bin/jslint lib/*.js tests/*.js
+	$(NODE_CMD) node_modules/jslint/bin/jslint */*.js
 
 clean:
 	rm -r -- "node_modules/" || true
