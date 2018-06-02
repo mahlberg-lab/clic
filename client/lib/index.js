@@ -11,6 +11,7 @@ var page_classes = {
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
+    '/word-count': require('./page_word_count.js'),
     '/': require('./page_contents.js'),
     '': function () {
         this.page_title = function () {

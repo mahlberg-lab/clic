@@ -147,6 +147,10 @@ table.dataTable thead .sorting_desc_disabled:after {
     display: none;
 }
 
+#content table.dataTable td.numeric {
+    text-align: right;
+}
+
 #content table.dataTable td mark {
     background: rgba(200, 200, 200, 0.33);
     color: inherit;
