@@ -99,6 +99,16 @@ def corpora_details():
     out = clic.metadata.get_corpus_details(clicdb())
     return jsonify(dict(corpora=out, version=clic_version()))
 
+# ==== Word count route ===================================
+import clic.word_count
+
+@app.route('/api/word-count', methods=['GET'])
+def word_count():
+    out = clic.word_count.word_count(clicdb(), **request.args)
+    header = out.next()
+    header['version'] = clic_version()
+    return Response(stream_json(out, header), content_type='application/json')
+
 # ==== Concordance routes =================================
 import clic.concordance
 
