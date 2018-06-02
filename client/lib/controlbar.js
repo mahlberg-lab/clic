@@ -108,7 +108,7 @@ function ControlBar(control_bar) {
 
             window.dispatchEvent(new window.CustomEvent('state_new', { detail: {
                 doc: e.target.pathname,
-                args: { corpora: self.page_state.arg('corpora') },
+                args: { corpora: self.page_state ? self.page_state.arg('corpora') : [] },
                 state: {},
             }}));
 

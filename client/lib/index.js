@@ -84,6 +84,7 @@ function page_load(p, comp_fn) {
             return (fn.call(x, page_state)).catch(function (err) {
                 // Turn any error output back into a level: { message: ... } object
                 var rv = { a: alerts.err_to_alert(err) };
+                if (rv.a[1] === 'error') { console.error(err); }
 
                 rv[rv.a[1]] = rv.a[0];
                 return rv;
@@ -102,8 +103,8 @@ function page_load(p, comp_fn) {
         document.body.classList.remove('loading');
     }).catch(function (err) {
         alerts.error(err);
+        console.error(err);
         document.body.classList.remove('loading');
-        throw err;
     });
 }
 
