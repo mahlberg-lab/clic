@@ -105,28 +105,7 @@ PageTable.prototype.reload = function reload(page_state) {
             self.table = jQuery(self.table_el).DataTable(table_opts);
 
             if (add_events) {
-                if (self.hasOwnProperty('table_count_column')) {
-                    self.table.on('draw.dt', function () {
-                        var pageStart = self.table.page.info().start,
-                            pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});
-
-                        pageCells.nodes().each(function (cell, i) {
-                            cell.innerHTML = pageStart + i + 1;
-                        });
-                    });
-                }
-
-                self.table.on('click', 'tr', function () {
-                    if (self.initial_selection) {
-                        // Remove initial selection before continuing
-                        self.table.rows('.selected').nodes().each(function (el) {
-                            el.classList.remove('selected');
-                        });
-                        self.initial_selection = false;
-                    }
-                    this.classList.toggle('selected');
-                    self.select_rows();
-                });
+                self.add_events();
             }
         }
     }).then(function (data) {
@@ -175,6 +154,34 @@ PageTable.prototype.select_rows = function () {
 
 PageTable.prototype.reload_data = function (page_state) {
     throw new Error("Not implemented");
+};
+
+/** Wire up events to a new table */
+PageTable.prototype.add_events = function add_events() {
+    var self = this;
+
+    if (self.hasOwnProperty('table_count_column')) {
+        self.table.on('draw.dt', function () {
+            var pageStart = self.table.page.info().start,
+                pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});
+
+            pageCells.nodes().each(function (cell, i) {
+                cell.innerHTML = pageStart + i + 1;
+            });
+        });
+    }
+
+    self.table.on('click', 'tr', function () {
+        if (self.initial_selection) {
+            // Remove initial selection before continuing
+            self.table.rows('.selected').nodes().each(function (el) {
+                el.classList.remove('selected');
+            });
+            self.initial_selection = false;
+        }
+        this.classList.toggle('selected');
+        self.select_rows();
+    });
 };
 
 /**
