@@ -136,20 +136,6 @@ function renderDistributionPlot(data, type, full, meta) {
     return data.length > 0 ? ((data[0].chapter_start[data[0][3][1]] + data[0][3][3]) / data[0].chapter_start._end) * 100 : null;
 }
 
-/* Render full book title, optionally as hover-over - NB: This must be bound to the PageConcordance object to get titles */
-function renderBook(render_mode, data, type) {
-    if (type === 'display' && this.book_titles[data]) {
-        //NB: Edge needs persuasion to get abbr to word-wrap
-        return '<abbr style="' +
-                'display: block;' +
-                (render_mode === 'full' ? 'width: 9.5rem' : '') +
-            '" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
-            quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
-    }
-
-    return render_mode === 'full' ? this.book_titles[data][0] : data;
-}
-
 // PageConcordance inherits PageTable
 function PageConcordance() {
     return PageTable.apply(this, arguments);
@@ -182,7 +168,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
         this.table_opts.non_tag_columns = [
             { data: "1.max_kwic", defaultContent: "", visible: false, sortable: false, searchable: false },
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-            { title: "Book", data: "0", render: renderBook.bind(this, 'full'), width: "10rem", searchable: true },
+            { title: "Book", data: "0", render: concordance_utils.renderBook.bind(this, 'full'), width: "10rem", searchable: true },
             { title: "Count", data: "1", width: "3rem", render: renderPlotCount, searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: '<abbr title="x entries per million words">Rel.Freq</abbr>', data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
@@ -198,7 +184,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
             { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
             { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
-            { title: "Book", data: "3.0", render: renderBook.bind(this, 'abbr'), searchable: false }, // Book
+            { title: "Book", data: "3.0", render: concordance_utils.renderBook.bind(this, 'abbr'), searchable: false }, // Book
             { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
             { title: "Par.", data: "4.0", class: "metadataColumn", searchable: false }, // Paragraph-in-chapter
             { title: "Sent.", data: "4.1", class: "metadataColumn", searchable: false }, // Sentence-in-chapter

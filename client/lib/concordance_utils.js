@@ -1,6 +1,7 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
+var quoteattr = require('./quoteattr.js').quoteattr;
 
 function choose_name(tag_columns, base_tag_name) {
     var new_tag_name = base_tag_name,
@@ -116,4 +117,18 @@ module.exports.merge_tags = function (old_state, new_state) {
     }
 
     return out_state;
+};
+
+/* Render full book title, optionally as hover-over */
+module.exports.renderBook = function (render_mode, data, type) {
+    if (type === 'display' && this.book_titles[data]) {
+        //NB: Edge needs persuasion to get abbr to word-wrap
+        return '<abbr style="' +
+                'display: block;' +
+                (render_mode === 'full' ? 'width: 9.5rem' : '') +
+            '" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
+            quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
+    }
+
+    return render_mode === 'full' ? this.book_titles[data][0] : data;
 };
