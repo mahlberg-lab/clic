@@ -30,6 +30,10 @@ function Chapter(content_el) {
             return;
         }
         word_nodes = content_el.getElementsByTagName("w");
+        if (start_node >= word_nodes.length || end_node >= word_nodes.length) {
+            // Selection falls outside our range
+            return;
+        }
         for (i = start_node; i < end_node; i++) {
             word_nodes[i].setAttribute('selected', 'selected');
         }
