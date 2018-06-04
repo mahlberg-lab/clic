@@ -48,11 +48,10 @@ var state_defaults = {
     'table-filter': '',
     'selected_rows': [],
 
-    'start': 0,
-    'end': 0,
     'book': '',
     'chapter_num': 1,
     'chapter_id': -1,
+    'word-highlight': '0:0',
     'chap-highlight': [],
 };
 

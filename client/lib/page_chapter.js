@@ -9,8 +9,9 @@ function Chapter(content_el) {
       * Highlight terms between start and end, if args provided
       */
     this.highlight = function highlight(page_opts) {
-        var start_node = parseInt(page_opts.arg('start'), 10),
-            end_node = parseInt(page_opts.arg('end'), 10),
+        var highlight_arr = page_opts.arg('word-highlight').split(':'),
+            start_node = parseInt(highlight_arr[0], 10),
+            end_node = parseInt(highlight_arr[1], 10),
             word_nodes,
             i;
 
