@@ -19,33 +19,63 @@
 
   <body>
 
-    <nav>
-    </nav>
+<nav id="control-bar" class="in">
+  <div>
 
-    <header>
-      <h1>
-        <a href="/">CLiC</a>
-        <small id="clic-revision"></small>
-      </h1>
-      <div class="sponsors">
-        <img src="/logos/uni-of-bham.jpg" alt="University of Birmingham" />
-        <img src="/logos/ahrc.png" alt="Arts & Humanities Research Council" />
-        <img src="/logos/uni-of-nott.jpg" alt="University of Nottingham" />
-      </div>
-    </header>
+   <div class="header">
+     <a href="http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/documentation.aspx" target="_blank">Help</a>
+   </div>
 
-    <div id="alerts"></div>
-    <section id="content"></section>
+    <fieldset data-name="chapter" class="current">
+      <legend><a href="/chapter">Chapter</a></legend>
+      <form>
 
-    <footer class="legend">
-       <h4>Legend</h4>
-       <s><sss></sss>short suspensions<sse></sse></s>
-       <s><sls></sls>long suspensions<sle></sle></s>
-       <s><qs></qs>quotes<qe></qe></s>
-       <s><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe></s>
-       <s><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse></s>
-       <s><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle></s>
-    </footer>
+      <label>Book:</label>
+      <select name="book" data-placeholder="Select a book..." class="chosen-select">
+      </select>
+      <label>Chapter:</label>
+      <input type="number" name="chapter_num" placeholder="" class="form-control">
+
+      <h4><span>Highlight subsets</span></h4>
+      <ul>
+        <li><sss></sss>short suspensions<sse></sse></li>
+        <li><sls></sls>long suspensions<sle></sle></li>
+        <li><qs></qs>quotes<qe></qe></li>
+        <li><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe></li>
+        <li><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse></li>
+        <li><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle></li>
+      </li>
+      </form>
+    </fieldset>
+  </div>
+</nav>
+     <div class="handle" tabindex="0">
+       <svg xmlns="http://www.w3.org/2000/svg" width="4.4242001mm" height="6.1044559mm" viewBox="0 0 4.4242001 6.1044559">
+         <g transform="translate(-19.71 -132.174)" stroke="#aaa" stroke-width=".53275549">
+           <path d="M19.72065 133.13239h4.41407M19.72065 135.18601h4.41407" fill="none"/>
+           <rect width="1.0327311" height="1.3840785" x="20.470228" y="132.44034" ry=".01258478" fill="#fff"/>
+           <rect width="1.0327311" height="1.3840785" x="22.508711" y="134.49399" ry=".01258478" fill="#fff"/>
+           <path d="M19.71052 137.31999h4.41407" fill="none"/>
+           <rect width="1.0327311" height="1.3840785" x="20.849897" y="136.62796" ry=".01258478" fill="#fff"/>
+         </g>
+       </svg>
+     </div>
+
+    <div id="scrollable-body">
+      <header>
+        <h1>
+          <a href="/">CLiC</a>
+          <small id="clic-revision"></small>
+        </h1>
+        <div class="sponsors">
+          <img src="/logos/uni-of-bham.jpg" alt="University of Birmingham" />
+          <img src="/logos/ahrc.png" alt="Arts & Humanities Research Council" />
+          <img src="/logos/uni-of-nott.jpg" alt="University of Nottingham" />
+        </div>
+      </header>
+      <div id="alerts"></div>
+      <div id="content"></div>
+    </div>
 
     <script id="google-analytics-init">
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;

@@ -1,6 +1,8 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
+var ControlBar = require('./controlbar.js');
+var Analytics = require('./analytics.js');
 var api = require('./api.js');
 var PagePromise = require('./page_promise.js');
 
@@ -12,7 +14,7 @@ var state_defaults = {
     'chapter_id': -1,
 };
 
-var page;
+var page, cb, ga;
 
 function Chapter(content_el) {
     /**
@@ -31,9 +33,12 @@ function Chapter(content_el) {
         for (i = start_node; i < end_node; i++) {
             word_nodes[i].setAttribute('selected', 'selected');
         }
-        window.scrollTo(0, word_nodes[start_node].getBoundingClientRect().top
-                           + window.pageYOffset
-                           - (window.innerHeight / 2));
+        document.getElementById('scrollable-body').scrollTo(
+            0,
+            word_nodes[start_node].getBoundingClientRect().top
+                + window.pageYOffset
+                - (window.innerHeight / 2)
+        );
     };
 
     /**
@@ -54,9 +59,14 @@ function Chapter(content_el) {
         }
 
         return api.get('chapter', args).then(function (doc) {
+            content_el.innerHTML = '';
             content_el.appendChild(doc.documentElement);
             self.highlight(page_opts);
         });
+    };
+
+    this.page_title = function () {
+        return "CLiC chapter view";
     };
 }
 
@@ -64,7 +74,17 @@ function select_components(page_state) {
     if (!page) {
         page = new Chapter(document.getElementById('content'));
     }
-    return [page];
+
+    if (!cb) {
+        cb = new ControlBar(document.getElementById('control-bar'));
+    }
+
+    if (!ga) {
+        ga = new Analytics();
+    }
+
+    window.document.title = page.page_title(page_state);
+    return [page, cb, ga];
 }
 
 var pp = new PagePromise(select_components, state_defaults);

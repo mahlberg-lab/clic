@@ -220,9 +220,10 @@ function ControlBar(control_bar) {
     });
 
     // Init extra panels
-    this.panels = {
-        'tag-columns': new PanelTagColumns(window.document.getElementById('panel-tag-columns')),
-    };
+    this.panels = {};
+    if (window.document.getElementById('panel-tag-columns')) {
+        this.panels['tag-columns'] = new PanelTagColumns(window.document.getElementById('panel-tag-columns'));
+    }
 
     // Add file loader
     this.file_loader = filesystem.file_loader(document, function (file, load_mode) {
@@ -316,6 +317,13 @@ ControlBar.prototype.reload = function reload(page_state) {
                     } else if (el.name === "corpora" || el.name === "refcorpora") {
                         // Populate corpora dropdowns
                         el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
+                            return to_options_html(c.children.map(function (child) {
+                                return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
+                            }), c.title);
+                        }).join("");
+                    } else if (el.name === "book") {
+                        // Populate book dropdowns
+                        el.innerHTML = self.corpora.corpora.map(function (c) {
                             return to_options_html(c.children.map(function (child) {
                                 return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                             }), c.title);
