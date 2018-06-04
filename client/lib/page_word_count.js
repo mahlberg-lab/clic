@@ -38,6 +38,17 @@ PageChapter.prototype.page_title = function (page_state) {
     return "CLiC word counts";
 };
 
+/** Do tweak after a reload, so we open any initially-selected rows */
+PageChapter.prototype.reload = function reload(page_state) {
+    var self = this;
+
+    return PageTable.prototype.reload.apply(this, arguments).then(function (data) {
+        return self.tweak(page_state).then(function () {
+            return data;
+        });
+    });
+};
+
 /** On tweak make sure the selected row is open */
 PageChapter.prototype.tweak = function tweak(page_state) {
     var self = this;
