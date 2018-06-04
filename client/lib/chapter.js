@@ -7,7 +7,9 @@ var PagePromise = require('./page_promise.js');
 var state_defaults = {
     'start': 0,
     'end': 0,
-    'chapter_id': 0,
+    'book': '',
+    'chapter_num': 0,
+    'chapter_id': -1,
 };
 
 var page;
@@ -38,14 +40,20 @@ function Chapter(content_el) {
       * Load the given chapter and add to page
       */
     this.reload = function reload(page_opts) {
-        var self = this,
-            chapter_id = page_opts.arg('chapter_id');
+        var self = this, args;
 
-        if (!chapter_id) {
-            throw new Error("No chapter ID provided");
+        if (page_opts.arg('chapter_id') > -1) {
+            args = {
+                chapter_id: page_opts.arg('chapter_id'),
+            };
+        } else {
+            args = {
+                book: page_opts.arg('book'),
+                chapter_num: page_opts.arg('chapter_num'),
+            };
         }
 
-        return api.get('chapter', {chapter_id: chapter_id}).then(function (doc) {
+        return api.get('chapter', args).then(function (doc) {
             content_el.appendChild(doc.documentElement);
             self.highlight(page_opts);
         });

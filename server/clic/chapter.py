@@ -1,5 +1,5 @@
 """
-Return the XML for a given (chapter_id)
+Return the XML for a given book/chapter number
 """
 
 class NullParser():
@@ -10,8 +10,16 @@ class NullParser():
         return doc
 np = NullParser()
 
-def chapter(cdb, chapter_id):
-    chapter_id = chapter_id[0]
+def chapter(cdb, book=[], chapter_num=[], chapter_id=[]):
+    if len(chapter_id) > 0:
+        chapter_id = chapter_id[0]
+    elif len(book) == 1 and len(chapter_num) == 1:
+        chapter_id = cdb.rdb_query("SELECT chapter_id FROM chapter WHERE book_id = ? AND chapter_num = ?", (
+            book[0],
+            int(chapter_num[0]),
+        )).fetchone()[0]
+    else:
+        raise ValueError('book/chapter not provided')
 
     # Get document and return it directly
     recStore = cdb.db.get_object(cdb.session, 'recordStore')

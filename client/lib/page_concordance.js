@@ -115,7 +115,7 @@ function renderDistributionPlot(data, type, full, meta) {
             }
             return '<a class="tick chapter"' +
                 ' title="Chapter ' + ch_num + '"' +
-                ' href="/chapter?book_id=' + book_id + '&chapter_num=' + ch_num + '"' +
+                ' href="/chapter?book=' + book_id + '&chapter_num=' + ch_num + '"' +
                 ' style="left: ' + pos + '%"' +
                 '></a>';
         }).join("\n");
