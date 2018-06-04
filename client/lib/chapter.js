@@ -52,6 +52,7 @@ function Chapter(content_el) {
     this.reload = function reload(page_opts) {
         var self = this;
 
+        content_el.innerHTML = '';
         return Promise.resolve().then(function () {
             var args;
 
@@ -71,7 +72,6 @@ function Chapter(content_el) {
 
             return api.get('chapter', args);
         }).then(function (doc) {
-            content_el.innerHTML = '';
             content_el.appendChild(doc.documentElement);
             self.highlight(page_opts);
         });
