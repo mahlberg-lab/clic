@@ -1,6 +1,7 @@
 """
 Return the XML for a given book/chapter number
 """
+from clic.errors import UserError
 
 class NullParser():
     """
@@ -17,9 +18,13 @@ def chapter(cdb, book=[], chapter_num=[], chapter_id=[]):
         chapter_id = cdb.rdb_query("SELECT chapter_id FROM chapter WHERE book_id = ? AND chapter_num = ?", (
             book[0],
             int(chapter_num[0]),
-        )).fetchone()[0]
+        )).fetchone()
+        if chapter_id is None:
+            raise UserError('This book/chapter combination doesn\'t seem to exist', 'error')
+        else:
+            chapter_id = chapter_id[0]
     else:
-        raise ValueError('book/chapter not provided')
+        raise UserError('book/chapter not provided', 'error')
 
     # Get document and return it directly
     recStore = cdb.db.get_object(cdb.session, 'recordStore')
