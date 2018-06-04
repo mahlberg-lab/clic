@@ -27,7 +27,7 @@ PageChapter.prototype.init = function () {
         { title: "In Suspensions", data: "4", className: "numeric" },
         { title: "In Long suspensions", data: "5", className: "numeric" },
     ];
-    this.table_opts.order = [[1, "desc"]];
+    this.table_opts.order = [[1, "asc"]];
     this.table_count_column = 0;
 };
 
