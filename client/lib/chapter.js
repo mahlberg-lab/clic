@@ -5,12 +5,13 @@ var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var api = require('./api.js');
 var PagePromise = require('./page_promise.js');
+var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 var state_defaults = {
     'start': 0,
     'end': 0,
     'book': '',
-    'chapter_num': 0,
+    'chapter_num': 1,
     'chapter_id': -1,
 };
 
@@ -49,20 +50,27 @@ function Chapter(content_el) {
       * Load the given chapter and add to page
       */
     this.reload = function reload(page_opts) {
-        var self = this, args;
+        var self = this;
 
-        if (page_opts.arg('chapter_id') > -1) {
-            args = {
-                chapter_id: page_opts.arg('chapter_id'),
-            };
-        } else {
-            args = {
-                book: page_opts.arg('book'),
-                chapter_num: page_opts.arg('chapter_num'),
-            };
-        }
+        return Promise.resolve().then(function () {
+            var args;
 
-        return api.get('chapter', args).then(function (doc) {
+            if (page_opts.arg('chapter_id') > -1) {
+                args = {
+                    chapter_id: page_opts.arg('chapter_id'),
+                };
+            } else {
+                if (!page_opts.arg('book')) {
+                    throw new DisplayError("Please select a book", "warn");
+                }
+                args = {
+                    book: page_opts.arg('book'),
+                    chapter_num: page_opts.arg('chapter_num'),
+                };
+            }
+
+            return api.get('chapter', args);
+        }).then(function (doc) {
             content_el.innerHTML = '';
             content_el.appendChild(doc.documentElement);
             self.highlight(page_opts);
