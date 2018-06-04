@@ -46,7 +46,7 @@ function renderPosition(data, type, full, meta) {
 
         return '<a class="bookLink" title="Click to display concordance in book"' +
                ' onclick="event.stopPropagation();" target="_blank"' +
-               ' href="/chapter?chapter_id=' + data[4] + '&start=' + data[2] + '&end=' + data[3] + '" >' +
+               ' href="/chapter?book=' + data[0] + '&chapter_num=' + data[1] + '&start=' + data[2] + '&end=' + data[3] + '" >' +
                '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
                '<rect x="0" y="4" width="50" height="7" fill="#D6E1E8"/>' +
                '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
