@@ -2,7 +2,7 @@
 import unittest
 
 from clic.clicdb import ClicDb
-from clic.metadata import get_corpus_structure, get_corpus_details
+from clic.metadata import get_corpus_structure
 
 class Test_get_corpus_structure(unittest.TestCase):
     def test_call(self):
@@ -42,13 +42,3 @@ class Test_get_corpus_structure(unittest.TestCase):
                     title='The Old Curiosity Shop',
                     author=u'Charles Dickens',
                 ))
-
-class Test_get_corpus_details(unittest.TestCase):
-    def test_call(self):
-        """
-        get_corpus_details should return a sorted deep structure
-        """
-        out = get_corpus_details(ClicDb())
-
-        for c in out:
-            self.assertTrue(len(c['children']) > 0)
