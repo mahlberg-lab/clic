@@ -65,13 +65,22 @@ PageChapter.prototype.tweak = function tweak(page_state) {
         self.table.rows(page_state.state('selected_rows').map(function (x) { return "#" + x; })).every(function () {
             var book_id = this.data()[0];
 
+            if (this.node().classList.contains('open')) {
+                return;
+            }
+
             this.node().classList.add('open');
-            this.child('View chapter: ' + this.data().chapters.map(function (ch_num) {
+            this.child('<div>View chapter: ' + this.data().chapters.map(function (ch_num) {
                 if (ch_num === '_end') {
                     return '';
                 }
                 return '<a href="/chapter?book_id=' + book_id + '&chapter_num=' + ch_num + '">' + ch_num + '</a>';
-            }).join(", &nbsp;"), "child").show();
+            }).join(", &nbsp;") + '</div>', "child").show();
+
+            // Allow DOM to catch up, then expand it
+            window.setTimeout(function () {
+                this.child()[0].classList.add('expand');
+            }.bind(this), 10);
         });
     });
 };

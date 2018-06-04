@@ -273,3 +273,12 @@ table.dataTable thead .sorting_desc_disabled:after {
     border-left: 1px solid #666;
     border-right: none;
 }
+
+#content table.dataTable tr.child > td > div {
+    overflow: auto;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+#content table.dataTable tr.child.expand > td > div {
+    max-height: 10rem;
+}
