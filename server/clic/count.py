@@ -16,7 +16,7 @@ parameter.
 
 Examples:
 
-/api/word-count?corpora=AgnesG&subset=all&subset=quote
+/api/count?corpora=AgnesG&subset=all&subset=quote
 
     {"data":[
         ["AgnesG",68197,21986]

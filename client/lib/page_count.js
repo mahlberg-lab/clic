@@ -97,7 +97,7 @@ PageChapter.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select the corpora to search in", "warn");
     }
 
-    return this.cached_get('word-count', api_opts).then(this.post_process.bind(this, page_state));
+    return this.cached_get('count', api_opts).then(this.post_process.bind(this, page_state));
 };
 
 PageChapter.prototype.post_process = function (page_state, raw_data) {

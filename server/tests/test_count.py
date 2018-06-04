@@ -2,9 +2,9 @@ import re
 import unittest
 
 from clic.clicdb import ClicDb
-from clic.word_count import word_count
+from clic.count import word_count
 
-class TestWordCount(unittest.TestCase):
+class TestCount(unittest.TestCase):
     def test_word_count(self):
         cdb = ClicDb()
 
