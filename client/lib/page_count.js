@@ -74,7 +74,7 @@ PageChapter.prototype.tweak = function tweak(page_state) {
                 if (ch_num === '_end') {
                     return '';
                 }
-                return '<a href="/chapter?book=' + book_id + '&chapter_num=' + ch_num + '">' + ch_num + '</a>';
+                return '<a target="_blank" href="/chapter?book=' + book_id + '&chapter_num=' + ch_num + '">' + ch_num + '</a>';
             }).join(", &nbsp;") + '</div>', "child").show();
 
             // Allow DOM to catch up, then expand it
