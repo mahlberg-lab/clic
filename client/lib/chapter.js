@@ -13,6 +13,7 @@ var state_defaults = {
     'book': '',
     'chapter_num': 1,
     'chapter_id': -1,
+    'chap-highlight': [],
 };
 
 var page, cb, ga;
@@ -69,6 +70,9 @@ function Chapter(content_el) {
                     chapter_num: page_opts.arg('chapter_num'),
                 };
             }
+
+            // Add a highlight-class for each specified highlight
+            content_el.className = page_opts.arg('chap-highlight').map(function (x) { return 'highlight-' + x; }).join(" ");
 
             return api.get('chapter', args);
         }).then(function (doc) {

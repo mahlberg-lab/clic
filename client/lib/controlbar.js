@@ -166,6 +166,11 @@ function ControlBar(control_bar) {
             var new_search = {},
                 form = control_bar.querySelector('fieldset.current form');
 
+            // Unchecked checkboxes should be emptied if not mentioned
+            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset.current input[type=checkbox]:not(:checked)'), function (el, i) {
+                new_search[el.name] = [];
+            });
+
             jQuery(form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
                     new_search[f.name].push(f.value);
@@ -174,11 +179,6 @@ function ControlBar(control_bar) {
                 } else {
                     new_search[f.name] = [f.value];
                 }
-            });
-
-            // Unchecked checkboxes should be false
-            Array.prototype.forEach.call(control_bar.querySelectorAll('fieldset.current input[type=checkbox]:not(:checked)'), function (el, i) {
-                new_search[el.name] = [""];
             });
 
             // Empty select boxes should be empty
@@ -304,7 +304,7 @@ ControlBar.prototype.reload = function reload(page_state) {
                 if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
                     Math.floor(0);
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
-                    el.checked = !!page_state.arg(el.name);
+                    el.checked = Array.isArray(page_state.arg(el.name)) ? page_state.arg(el.name).indexOf(el.value) > -1 : (page_state.arg(el.name) === el.value);
                 } else if (el.tagName === 'INPUT' && el.type === "radio") {
                     el.checked = page_state.arg(el.name) === el.value;
                 } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {

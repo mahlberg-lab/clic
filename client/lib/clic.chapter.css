@@ -45,14 +45,28 @@
 }
 
 s {
+  margin-right: 0.3em;
+}
+
+.highlight-sent s {
   border: 1px solid #999;
   background: #eee;
-  margin-right: 0.3em;
   line-height: 1.4em;
   text-decoration: none;
 }
 
-qs, qe, alt-qs, alt-qe, sss, sse, sls, sle, alt-sss, alt-sse, alt-sls, alt-sle {
+.highlight-q qzzs,
+.highlight-q qe,
+.highlight-alt-q alt-qs,
+.highlight-alt-q alt-qe,
+.highlight-ss sss,
+.highlight-ss sse,
+.highlight-sl sls,
+.highlight-sl sle,
+.highlight-alt-ss alt-sss,
+.highlight-alt-ss alt-sse,
+.highlight-alt-sl alt-sls,
+.highlight-alt-sl alt-sle {
    display: inline-block;
    vertical-align: text-top;
    width: 10px;
@@ -60,8 +74,18 @@ qs, qe, alt-qs, alt-qe, sss, sse, sls, sle, alt-sss, alt-sse, alt-sls, alt-sle {
    text-align: center;
    font-weight: bold;
 }
-qs:after, alt-qs:after, sss:after, sls:after, alt-sss:after, alt-sls:after { content: "<" }
-qe:after, alt-qe:after, sse:after, sle:after, alt-sse:after, alt-sle:after  { content: ">" }
+.highlight-q qs:after,
+.highlight-alt-q alt-qs:after,
+.highlight-ss sss:after,
+.highlight-sl sls:after,
+.highlight-alt-ss alt-sss:after,
+.highlight-alt-sl alt-sls:after { content: "<" }
+.highlight-q qe:after,
+.highlight-alt-q alt-qe:after,
+.highlight-ss sse:after,
+.highlight-sl sle:after,
+.highlight-alt-ss alt-sse:after,
+.highlight-alt-sl alt-sle:after  { content: ">" }
 
 #content w[selected],
 #content w[selected] + n,

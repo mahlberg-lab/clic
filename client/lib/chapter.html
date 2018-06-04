@@ -37,14 +37,28 @@
       <input type="number" name="chapter_num" placeholder="" class="form-control">
 
       <h4><span>Highlight subsets</span></h4>
-      <ul>
-        <li><sss></sss>short suspensions<sse></sse></li>
-        <li><sls></sls>long suspensions<sle></sle></li>
-        <li><qs></qs>quotes<qe></qe></li>
-        <li><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe></li>
-        <li><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse></li>
-        <li><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle></li>
-      </li>
+        <label class="highlight-sent">
+          <input name="chap-highlight" type="checkbox" value="sent" /><s>Sentences</s>
+        </label>
+        <label class="highlight-ss">
+          <input name="chap-highlight" type="checkbox" value="ss" /><sss></sss>short suspensions<sse></sse>
+        </label>
+        <label class="highlight-sl">
+          <input name="chap-highlight" type="checkbox" value="sl" /><sls></sls>long suspensions<sle></sle>
+        </label>
+        <label class="highlight-q">
+          <input name="chap-highlight" type="checkbox" value="q" /><qs></qs>quotes<qe></qe>
+        </label>
+        <label class="highlight-alt-q">
+          <input name="chap-highlight" type="checkbox" value="alt-q" /><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe>
+        </label>
+        <label class="highlight-alt-ss">
+          <input name="chap-highlight" type="checkbox" value="alt-ss" /><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse>
+        </label>
+        <label class="highlight-alt-sl">
+          <input name="chap-highlight" type="checkbox" value="alt-sl" /><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle>
+        </label>
+
       </form>
     </fieldset>
   </div>
