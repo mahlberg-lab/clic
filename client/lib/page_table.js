@@ -179,7 +179,9 @@ PageTable.prototype.add_events = function add_events() {
             });
             self.initial_selection = false;
         }
-        this.classList.toggle('selected');
+        if (!this.classList.contains('child')) {
+            this.classList.toggle('selected');
+        }
         self.select_rows();
     });
 };

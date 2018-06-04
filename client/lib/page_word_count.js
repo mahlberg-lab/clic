@@ -57,7 +57,7 @@ PageChapter.prototype.tweak = function tweak(page_state) {
                     return '';
                 }
                 return '<a href="/chapter?book_id=' + book_id + '&chapter_num=' + ch_num + '">' + ch_num + '</a>';
-            }).join(", &nbsp;")).show();
+            }).join(", &nbsp;"), "child").show();
         });
     });
 };

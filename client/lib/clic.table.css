@@ -52,10 +52,10 @@
         rgba(240, 220,  78, 0.3) 20px
     );
 }
-#content table.dataTable>tbody>tr:hover {
+#content table.dataTable>tbody>tr:not(.child):hover {
     background: rgba(70, 74, 76, 0.3);
 }
-#content table.dataTable>tbody>tr.selected:hover {
+#content table.dataTable>tbody>tr.selected:not(.child):hover {
     background: repeating-linear-gradient(
         -45deg,
         rgba(70, 74, 76, 0.4),
