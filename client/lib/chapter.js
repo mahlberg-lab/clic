@@ -2,14 +2,15 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 var api = require('./api.js');
-var Alerts = require('./alerts.js');
-var State = require('./state.js');
+var PagePromise = require('./page_promise.js');
 
 var state_defaults = {
     'start': 0,
     'end': 0,
     'chapter_id': 0,
 };
+
+var page;
 
 function Chapter(content_el) {
     /**
@@ -51,38 +52,15 @@ function Chapter(content_el) {
     };
 }
 
-var page;
-
-function page_load(e) {
-    var page_state = new State(window, state_defaults),
-        alerts = new Alerts(document.getElementById('alerts'));
-
-    return Promise.resolve(page_state).then(function (page_state) {
-        alerts.clear();
-
-        if (!page || page_state.doc()) {
-            page = new Chapter(document.getElementById('content'));
-        }
-
-        return Promise.all([
-            page.reload(page_state),
-        ]);
-    }).then(function (rvs) {
-        rvs.forEach(function (rv) {
-            if (rv && rv.message) {
-                alerts.show(rv.message);
-            }
-        });
-        return;
-    }).catch(function (err) {
-        alerts.error(err);
-        if (!err.level) {
-            throw err;
-        }
-    });
+function select_components(page_state) {
+    if (!page) {
+        page = new Chapter(document.getElementById('content'));
+    }
+    return [page];
 }
 
+var pp = new PagePromise(select_components, state_defaults);
+
 if (window) {
-    document.addEventListener('DOMContentLoaded', page_load);
-    window.addEventListener('popstate', page_load);
+    pp.wire_events();
 }
