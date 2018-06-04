@@ -78,7 +78,7 @@ function renderDistributionPlot(data, type, full, meta) {
 
             return '<a' +
                 ' onclick="event.stopPropagation();" target="_blank"' +
-                ' href="/chapter?chapter_id=' + r[3][4] + '&start=' + r[3][2] + '&end=' + r[3][3] + '"' +
+                ' href="/chapter?book=' + r[3][0] + '&chapter_num=' + r[3][1] + '&start=' + r[3][2] + '&end=' + r[3][3] + '"' +
                 '><rect' +
                 ' class="' + r.DT_RowClass + '"' +
                 ' x="' + posStart + '"' +
