@@ -1,15 +1,15 @@
-#content {
+#content>.chapter {
   max-width: 960px;
   margin: 10px auto;
   font-family: serif;
   font-size: 1.1em;
 }
 
-#content txt {
+#content>.chapter txt {
   display: none;
 }
 
-#content > div[type=chapter][booktitle]:before {
+#content>.chapter > div[type=chapter][booktitle]:before {
   content: attr(booktitle) ", by " attr(bookauthor);
   display: block;
   margin-top: 3rem;
@@ -18,13 +18,13 @@
   text-align: center;
 }
 
-#content > div[type=chapter] > p {
+#content>.chapter > div[type=chapter] > p {
   display: block;
   position: relative;
   margin-top: 1em;
   border-top: 1px solid #333;
 }
-#content > div[type=chapter] > p:before {
+#content>.chapter > div[type=chapter] > p:before {
   content: "chapter: " attr(id);
   display: block;
   position: absolute;
@@ -34,12 +34,12 @@
   color: #666;
   font-size: 80%;
 }
-#content > div[type=chapter] > p:before {
+#content>.chapter > div[type=chapter] > p:before {
   content: "paragraph: " attr(id);
   top: -1em;
 }
 
-#content > div[type=chapter] > title {
+#content>.chapter > div[type=chapter] > title {
   display: block;
   font-weight: bold;
 }
@@ -87,11 +87,11 @@ s {
 .highlight-alt-ss alt-sse:after,
 .highlight-alt-sl alt-sle:after  { content: ">" }
 
-#content w[selected],
-#content w[selected] + n,
-#content w[selected] + n + n,
-#content w[selected] + n + n + n,
-#content w[selected] + n + n + n + n {
+#content>.chapter w[selected],
+#content>.chapter w[selected] + n,
+#content>.chapter w[selected] + n + n,
+#content>.chapter w[selected] + n + n + n,
+#content>.chapter w[selected] + n + n + n + n {
   background: yellow;
   font-weight: bold;
 }
