@@ -221,6 +221,43 @@
     </form>
   </fieldset>
 
+  <fieldset data-name="chapter">
+    <legend><a href="/chapter">Chapters</a></legend>
+    <form>
+
+    <label>Book:</label>
+    <select name="book" data-placeholder="Select a book..." class="chosen-select">
+    </select>
+    <label>Chapter:</label>
+    <input type="number" name="chapter_num" placeholder="" class="form-control">
+
+    <h4><span>Highlight subsets</span></h4>
+      <label class="highlight-sent">
+        <input name="chap-highlight" type="checkbox" value="sent" /><s>Sentences</s>
+      </label>
+      <label class="highlight-ss">
+        <input name="chap-highlight" type="checkbox" value="ss" /><sss></sss>short suspensions<sse></sse>
+      </label>
+      <label class="highlight-sl">
+        <input name="chap-highlight" type="checkbox" value="sl" /><sls></sls>long suspensions<sle></sle>
+      </label>
+      <label class="highlight-q">
+        <input name="chap-highlight" type="checkbox" value="q" /><qs></qs>quotes<qe></qe>
+      </label>
+      <label class="highlight-alt-q">
+        <input name="chap-highlight" type="checkbox" value="alt-q" /><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe>
+      </label>
+      <label class="highlight-alt-ss">
+        <input name="chap-highlight" type="checkbox" value="alt-ss" /><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse>
+      </label>
+      <label class="highlight-alt-sl">
+        <input name="chap-highlight" type="checkbox" value="alt-sl" /><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle>
+      </label>
+
+    </form>
+  </fieldset>
+
+
   </div>
 
   <form class="panel" id="panel-tag-columns">

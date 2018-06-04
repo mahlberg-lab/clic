@@ -10,6 +10,7 @@ var page_classes = {
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
+    '/chapter': require('./page_chapter.js'),
     '/count': require('./page_count.js'),
     '/': require('./page_contents.js'),
     '': function () {
@@ -46,6 +47,13 @@ var state_defaults = {
     'table-type': 'basic',
     'table-filter': '',
     'selected_rows': [],
+
+    'start': 0,
+    'end': 0,
+    'book': '',
+    'chapter_num': 1,
+    'chapter_id': -1,
+    'chap-highlight': [],
 };
 
 var page, cb, ga, current_page = null;
