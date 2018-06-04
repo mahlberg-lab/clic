@@ -149,6 +149,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 #content table.dataTable td.numeric {
     text-align: right;
+    font-variant-numeric: lining-nums tabular-nums;
 }
 
 #content table.dataTable td mark {
