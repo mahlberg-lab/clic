@@ -2,10 +2,13 @@ Developing the system
 =====================
 
 Set-up of the development environment is very similar to a production
-environment, see README.rst for details. Specify ``CLIC_MODE="production"`` in
-your ``.local-conf``. This will stop CLiC from being started automatically so
-you can run in debug mode. It will also disable NGINX's server cache so you
-won't get stale responses
+environment, see README.rst for details on how to do this.
+
+The main difference is to use ``CLIC_MODE="development"`` (or not include any
+CLIC_MODE, development is default), in your ``.local-conf``. This will stop
+CLiC from being started automatically so you can run the server in debug mode
+with ``make start``. It will also disable NGINX's server cache so you won't get
+stale responses
 
 Client-side development
 -----------------------
