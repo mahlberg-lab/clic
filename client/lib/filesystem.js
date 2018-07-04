@@ -120,8 +120,8 @@ module.exports.file_loader = function file_loader(document, fn) {
     el.addEventListener('change', function (e) {
         var reader = new FileReader();
 
-        reader.onload = function (e) {
-            fn.apply(this, [event.target.result].concat(el.trigger_args));
+        reader.onload = function (load_ev) {
+            fn.apply(this, [load_ev.target.result].concat(el.trigger_args));
         };
         reader.readAsText(e.target.files[0], "utf-8");
 
