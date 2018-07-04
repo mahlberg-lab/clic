@@ -29,7 +29,7 @@ module.exports.format_dt = function (dt) {
 
     // Format each cell, skipping over the ones we don't care about.
     row = [row_ids[0]];
-    dt.cells().render('export').map(function (c, i) {
+    dt.cells({ search: 'applied' }).render('export').map(function (c, i) {
         var col = i % include_column.length;
 
         if (include_column[col]) {
