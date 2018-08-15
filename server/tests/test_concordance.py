@@ -202,3 +202,18 @@ class TestConcordance(unittest.TestCase):
                 '_end': 136100,
             }
         ))))
+
+    def test_querybyauthor(self):
+        cdb = ClicDb()
+
+        out = [x for x in concordance(
+            cdb,
+            corpora=['author:Jane Austen'],
+            subset=['quote'],
+            q=[u'she was', u'she said'],
+            contextsize=[0],
+        )]
+        self.assertEqual(
+            set([x[1][0] for x in out[1:]]),
+            set([u'emma', u'ladysusan', u'mansfield', u'northanger', u'persuasion', u'pride', u'sense']),
+        )

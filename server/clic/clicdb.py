@@ -51,16 +51,27 @@ class ClicDb():
         - db == 'cheshire': Return a CQL where clause string
         - db == 'rdb': Return (SQL where clause, params)
         """
+        def in_clause(a):
+            """make IN (?, ?, ?) SQL with enough question marks"""
+            return "IN (" + ",".join("?" for x in xrange(len(a))) + ")"
+
         corpus_names = dict((x[0], True) for x in self.rdb_query("SELECT corpus_id FROM corpus"))
         subcorpus = []
+        authors = []
         books = []
         for m in corpora:
             if m in corpus_names:
                 subcorpus.append(m)
+            elif m.startswith('author:'):
+                authors.append(m[len('author:'):])
             else:
                 books.append(m)
 
         if db == 'cheshire':
+            if len(authors) > 0:
+                # Can't do authors, turn into books first
+                for b in self.rdb_query("SELECT book_id FROM book WHERE author " + in_clause(authors), authors):
+                    books.append(b)
             return '(' + ' OR '.join(itertools.chain(
                 ('c3.subCorpus-idx = "%s"' % s for s in subcorpus),
                 ('c3.book-idx = "%s"' % s for s in books),
@@ -69,11 +80,13 @@ class ClicDb():
         if db == 'rdb':
             return (" ".join((
                 "(",
-                "c.book_id IN (SELECT book_id FROM book WHERE corpus_id IN (", ",".join("?" for x in xrange(len(subcorpus))), "))",
+                "c.book_id IN (SELECT book_id FROM book WHERE corpus_id " + in_clause(subcorpus) + ")",
                 "OR",
-                "c.book_id IN (", ",".join("?" for x in xrange(len(books))), ")",
+                "c.book_id IN (SELECT book_id FROM book WHERE author " + in_clause(authors) + ")",
+                "OR",
+                "c.book_id " + in_clause(books),
                 ")",
-            )), subcorpus + books)
+            )), subcorpus + authors + books)
 
         raise ValueError("Unknown db type %s" % db)
 

@@ -117,3 +117,17 @@ class TestSubset(unittest.TestCase):
             AgnesG=(u'Agnes Grey', u'Anne Bront\xeb'),
             TTC=(u'A Tale of Two Cities', u'Charles Dickens'),
         ))))
+
+    def test_querybyauthor(self):
+        cdb = ClicDb()
+
+        out = [x for x in subset(
+            cdb,
+            corpora=['author:Jane Austen'],
+            subset=['quote'],
+            contextsize=[0],
+        )]
+        self.assertEqual(
+            set([x[1][0] for x in out[1:]]),
+            set([u'emma', u'ladysusan', u'mansfield', u'northanger', u'persuasion', u'pride', u'sense']),
+        )

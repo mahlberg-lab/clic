@@ -64,6 +64,10 @@ function to_options_html(opts, group_label) {
 
     out = opts.map(function (t) {
         if (t.hasOwnProperty('id') && t.hasOwnProperty('title')) {
+            if (t.id === null) {
+                // A null ID means we're trying to hide this option (read: all authors)
+                return '';
+            }
             return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.title) + "</option>";
         }
         return "<option>" + escapeHtml(t) + "</option>";

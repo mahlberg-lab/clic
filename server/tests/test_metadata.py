@@ -16,6 +16,7 @@ class Test_get_corpus_structure(unittest.TestCase):
             (u'ntc', u'19\u1d57\u02b0 Century Reference Corpus'),
             (u'ChiLit', u"19\u1d57\u02b0 Century Children\u2019s Literature"),
             (u'Other', u'Other'),
+            (None, 'All books by author'),
         ])
         # Each corpora has some books
         for c in out:
