@@ -9,7 +9,7 @@
   display: none;
 }
 
-#content>.chapter > div[type=chapter][booktitle]:before {
+#content>.chapter:first-child > div[type=chapter][booktitle]:before {
   content: attr(booktitle) ", by " attr(bookauthor);
   display: block;
   margin-top: 3rem;
