@@ -7,39 +7,10 @@ var DisplayError = require('./alerts.js').prototype.DisplayError;
 function PageText(content_el) {
     this.current = {};
     /**
-      * Highlight terms between start and end, if args provided
-      */
-    this.highlight = function highlight(page_opts) {
-        var highlight_arr = page_opts.arg('word-highlight').split(':'),
-            start_node = parseInt(highlight_arr[0], 10),
-            end_node = parseInt(highlight_arr[1], 10),
-            word_nodes,
-            i;
-
-        if (start_node === 0 && end_node === 0) {
-            return;
-        }
-        word_nodes = content_el.getElementsByTagName("w");
-        if (start_node >= word_nodes.length || end_node >= word_nodes.length) {
-            // Selection falls outside our range
-            return;
-        }
-        for (i = start_node; i < end_node; i++) {
-            word_nodes[i].setAttribute('selected', 'selected');
-        }
-        document.getElementById('scrollable-body').scrollTo(
-            0,
-            word_nodes[start_node].getBoundingClientRect().top
-                + window.pageYOffset
-                - (window.innerHeight / 2)
-        );
-    };
-
-    /**
       * Load the given text and add to page
       */
     this.reload = function reload(page_state) {
-        var self = this, p = Promise.resolve({}), force_update = false;
+        var p = Promise.resolve({}), force_update = false;
 
         function get_title(chapter_el, chapter_num) {
             var out, title_el = chapter_el.querySelector('title');
@@ -115,6 +86,37 @@ function PageText(content_el) {
                 return p_data;
             });
             this.current.chapter_num = JSON.stringify(page_state.arg('chapter_num'));
+            force_update = true;
+        }
+
+        // Highlight any words in chapter_num (e.g. for concordance selection)
+        if (force_update || JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
+            p = p.then(function (p_data) {
+                var highlight_arr = page_state.arg('word-highlight').split(':'),
+                    start_node = parseInt(highlight_arr[0], 10),
+                    end_node = parseInt(highlight_arr[1], 10),
+                    word_nodes,
+                    i,
+                    chapter_el = content_el.querySelector('.chapter[data-num="' + page_state.arg('chapter_num') + '"]');
+
+                if (!chapter_el || (start_node === 0 && end_node === 0)) {
+                    return p_data;
+                }
+
+                word_nodes = chapter_el.getElementsByTagName("w");
+                if (start_node >= word_nodes.length || end_node >= word_nodes.length) {
+                    // Selection falls outside our range
+                    return p_data;
+                }
+
+                for (i = start_node; i < end_node; i++) {
+                    word_nodes[i].setAttribute('selected', 'selected');
+                }
+                word_nodes[start_node].scrollIntoView();
+
+                return p_data;
+            });
+            this.current['word-highlight'] = JSON.stringify(page_state.arg('word-highlight'));
         }
 
         if (force_update || JSON.stringify(page_state.arg('chap-highlight')) !== this.current['chap-highlight']) {
@@ -124,7 +126,6 @@ function PageText(content_el) {
                     chapter_el.className = 'chapter ' +
                         page_state.arg('chap-highlight').map(function (x) { return 'highlight-' + x; }).join(" ");
                 });
-                self.highlight(page_state);
 
                 return p_data;
             });

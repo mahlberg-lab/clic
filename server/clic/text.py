@@ -4,7 +4,7 @@ Return the full text for a given book/chapter number
 import re
 
 
-STRIP_TOKENS_REGEX = re.compile(r'<w [^>]+>|</w>|<n>|</n>')
+STRIP_TOKENS_REGEX = re.compile(r'<n>|</n>')
 
 
 class NullParser():

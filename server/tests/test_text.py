@@ -17,8 +17,8 @@ class TestText(unittest.TestCase):
         self.assertEqual(out[0][0], 'AgnesG')
         self.assertEqual(out[0][1], 1)
 
-        # word / non-word markup was stripped, others not
-        self.assertIn("""<sss eid="23" offset="2523" wordOffset="454"/>,\' said he<sse eid="24" offset="2534" wordOffset="456"/><qs eid="25" offset="2534" wordOffset="456"/>""", out[2][2])
+        # non-word markup was stripped, others not
+        self.assertIn("""<qs eid="169" offset="15011" wordOffset="2745"/>,-- \'<w o="77">Yes</w>, <w o="82">I</w> <w o="84">will</w>, <w o="90">Mary</w> <w o="95">Ann</w>,""", out[2][2])
 
         # Fetch some details, proving we've parsed something useful
         tree = etree.parse(StringIO.StringIO(out[2][2]))
