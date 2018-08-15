@@ -22,21 +22,6 @@
   display: block;
   position: relative;
   margin-top: 1em;
-  border-top: 1px solid #333;
-}
-#content>.chapter > div[type=chapter] > p:before {
-  content: "chapter: " attr(id);
-  display: block;
-  position: absolute;
-  top: -1.25em;
-  right: 3em;
-  line-height: 1em;
-  color: #666;
-  font-size: 80%;
-}
-#content>.chapter > div[type=chapter] > p:before {
-  content: "paragraph: " attr(id);
-  top: -1em;
 }
 
 #content>.chapter > div[type=chapter] > title {
@@ -46,6 +31,21 @@
 
 s {
   margin-right: 0.3em;
+}
+
+.highlight-para > div[type=chapter] > p {
+  border-top: 1px solid #333;
+}
+
+.highlight-para > div[type=chapter] > p:before {
+  content: "paragraph: " attr(id);
+  display: block;
+  position: absolute;
+  top: -1em;
+  right: 3em;
+  line-height: 1em;
+  color: #666;
+  font-size: 80%;
 }
 
 .highlight-sent s {
