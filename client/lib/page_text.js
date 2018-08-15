@@ -30,6 +30,7 @@ function PageText(content_el) {
             p = p.then(function (p_data) {
                 var args;
 
+                content_el.innerHTML = '';
                 if (!page_state.arg('book')) {
                     throw new DisplayError("Please select a book", "warn");
                 }
@@ -42,7 +43,6 @@ function PageText(content_el) {
                 var i, chapter_el, doc, parser = new DOMParser();
 
                 data.chapter_nums = [];
-                content_el.innerHTML = '';
                 for (i = 0; i < data.data.length; i++) {
                     doc = parser.parseFromString(data.data[i][2], 'application/xml');
                     if (doc.documentElement.nodeName === "parsererror") {
