@@ -144,14 +144,6 @@ def cluster():
     header['version'] = clic_version()
     return Response(stream_json(out, header), content_type='application/json')
 
-# ==== Chapter routes =====================================
-import clic.chapter
-
-@app.route('/api/chapter', methods=['GET'])
-def chapter():
-    out = clic.chapter.chapter(clicdb(), **request.args)
-    return Response(out, content_type='application/xml')
-
 # ==== Text routes ========================================
 import clic.text
 
