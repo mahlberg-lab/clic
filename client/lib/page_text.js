@@ -86,18 +86,17 @@ function PageText(content_el) {
                 return p_data;
             });
             this.current.chapter_num = JSON.stringify(page_state.arg('chapter_num'));
-            force_update = true;
         }
 
         // Highlight any words in chapter_num (e.g. for concordance selection)
         if (force_update || JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
             p = p.then(function (p_data) {
                 var highlight_arr = page_state.arg('word-highlight').split(':'),
-                    start_node = parseInt(highlight_arr[0], 10),
-                    end_node = parseInt(highlight_arr[1], 10),
+                    start_node = parseInt(highlight_arr[1], 10),
+                    end_node = parseInt(highlight_arr[2], 10),
                     word_nodes,
                     i,
-                    chapter_el = content_el.querySelector('.chapter[data-num="' + page_state.arg('chapter_num') + '"]');
+                    chapter_el = content_el.querySelector('.chapter[data-num="' + highlight_arr[0] + '"]');
 
                 if (!chapter_el || (start_node === 0 && end_node === 0)) {
                     return p_data;
