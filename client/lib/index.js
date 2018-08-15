@@ -13,15 +13,6 @@ var page_classes = {
     '/chapter': require('./page_chapter.js'),
     '/count': require('./page_count.js'),
     '/': require('./page_contents.js'),
-    '/carousel': function () {
-        this.page_title = function () {
-            // NB: This should be only needed until we're done with the carousel test
-            return "Carousel example test";
-        };
-        this.reload = function () {
-            return Promise.resolve({});
-        };
-    },
     '': function () {
         this.page_title = function () {
             return "Page not found";
