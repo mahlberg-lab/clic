@@ -5,14 +5,17 @@
 .carousel li {
     display: flex;
     position: relative;
-    height: 0;
+    height: 0; /* TODO: This isn't letting the box expand with content */
     padding-top: 40%;
+    overflow: hidden;
 
     background: #a5b7c5;
     background-size: cover;
     box-shadow: 0 0 10px #1e345e;
 
     list-style-type: none;
+
+    font-size: 220%;
 
     /* Only to make it obvious before we make the thing work */
     margin-bottom: 1rem;
@@ -30,7 +33,6 @@
 
     
     font-family: Georgia,Helvetica,serif;
-    font-size: 3vw;
     line-height: normal;
     color: ivory;
     text-shadow: -1px 0px 5px #1e345e,
