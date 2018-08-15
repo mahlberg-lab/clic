@@ -63,7 +63,7 @@ function to_options_html(opts, group_label) {
     }
 
     out = opts.map(function (t) {
-        if (t.id && t.title) {
+        if (t.hasOwnProperty('id') && t.hasOwnProperty('title')) {
             return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.title) + "</option>";
         }
         return "<option>" + escapeHtml(t) + "</option>";
@@ -373,6 +373,16 @@ ControlBar.prototype.new_data = function new_data(data) {
 
             el.innerHTML = to_options_html(Object.keys(data.allWords || {}).sort());
             jQuery(el).val(prevVal);
+            jQuery(el).trigger("chosen:updated");
+        }
+    }
+
+    if (data.chapter_nums) {
+        el = this.control_bar.querySelector('fieldset.current form').elements.chapter_num;
+
+        if (el) {
+            el.innerHTML = to_options_html(data.chapter_nums);
+            jQuery(el).val(data.chapter_num_selected || data.chapter_nums[0]);
             jQuery(el).trigger("chosen:updated");
         }
     }

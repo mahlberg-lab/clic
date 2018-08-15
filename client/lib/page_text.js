@@ -41,6 +41,20 @@ function PageText(content_el) {
     this.reload = function reload(page_state) {
         var self = this, p = Promise.resolve({}), force_update = false;
 
+        function get_title(chapter_el, chapter_num) {
+            var out, title_el = chapter_el.querySelector('title');
+
+            if (title_el) {
+                out = title_el.innerHTML;
+            }
+
+            if (!out) {
+                out = 'Chapter ' + chapter_num;
+            }
+
+            return out;
+        }
+
         if (JSON.stringify(page_state.arg('book')) !== this.current.book) {
             p = p.then(function (p_data) {
                 var args;
@@ -56,6 +70,7 @@ function PageText(content_el) {
             }).then(function (data) {
                 var i, chapter_el, doc, parser = new DOMParser();
 
+                data.chapter_nums = [];
                 content_el.innerHTML = '';
                 for (i = 0; i < data.data.length; i++) {
                     doc = parser.parseFromString(data.data[i][2], 'application/xml');
@@ -69,7 +84,14 @@ function PageText(content_el) {
                     chapter_el.setAttribute('data-num', data.data[i][1]);
                     chapter_el.appendChild(doc.documentElement);
                     content_el.appendChild(chapter_el);
+
+                    // Tell controlbar about the chapter
+                    data.chapter_nums.push({
+                        id: data.data[i][1],
+                        title: get_title(chapter_el, data.data[i][1]),
+                    });
                 }
+
                 return data;
             });
             this.current.book = JSON.stringify(page_state.arg('book'));
@@ -78,7 +100,17 @@ function PageText(content_el) {
 
         if (force_update || JSON.stringify(page_state.arg('chapter_num')) !== this.current.chapter_num) {
             p = p.then(function (p_data) {
-                content_el.querySelector('.chapter[data-num="' + page_state.arg('chapter_num') + '"]').scrollIntoView();
+                var chapter_el = content_el.querySelector('.chapter[data-num="' + page_state.arg('chapter_num') + '"]');
+
+                if (!chapter_el) {
+                    // Not found, so select the first one
+                    chapter_el = content_el.childNodes[0];
+                }
+
+                chapter_el.scrollIntoView();
+
+                // Tell controlbar about the changes
+                p_data.chapter_num_selected = chapter_el.getAttribute('data-num');
 
                 return p_data;
             });
