@@ -1,0 +1,49 @@
+.carousel {
+    margin: 0;
+    padding: 0;
+}
+.carousel li {
+    display: flex;
+    position: relative;
+    height: 0;
+    padding-top: 40%;
+
+    background: #a5b7c5;
+    background-size: cover;
+    box-shadow: 0 0 10px #1e345e;
+
+    list-style-type: none;
+
+    /* Only to make it obvious before we make the thing work */
+    margin-bottom: 1rem;
+}
+
+.carousel li h3 {
+    margin-bottom: 0!important;
+    font-size: 100%;
+}
+
+.carousel li a, .carousel li a:link .carousel li a:visited {
+    display: inline-block;
+    align-self: flex-end;
+    margin: 1rem 1rem 2rem 1rem;
+
+    
+    font-family: Georgia,Helvetica,serif;
+    font-size: 3vw;
+    line-height: normal;
+    color: ivory;
+    text-shadow: -1px 0px 5px #1e345e,
+                  1px 0px 5px #1e345e,
+                  0px -1px 5px #1e345e,
+                  0px  1px 5px #1e345e;
+}
+.carousel li a:active, .carousel li a:hover, .carousel li a:focus {
+    text-shadow: 0 0 5px brown;
+    text-decoration: none;
+}
+
+.carousel li strong {
+    font-size: 110%;
+    color: #fdf5b2;
+}

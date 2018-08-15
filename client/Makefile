@@ -12,6 +12,7 @@ OUT_FILES = \
     www/js/libraries.min.js \
     www/css/libraries.min.css \
     www/css/chosen-sprite.png \
+    www/carousel-images \
     $(foreach O,$(OUTPUTS),www/$(O).html www/js/$(O).min.js www/css/$(O).min.css)
 
 LIBRARIES_JS = \
@@ -53,6 +54,10 @@ node_modules/: package.json yarn.lock
 
 yarn.lock:
 	touch $@
+
+www/carousel-images:
+	mkdir -p www
+	ln -rsf ../server/cheshire3-server/dbs/dickens/images $@
 
 www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 	mkdir -p www/css

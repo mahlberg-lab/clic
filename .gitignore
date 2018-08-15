@@ -7,6 +7,7 @@
 /client/coverage
 /client/doc
 /client/node_modules/
+/client/www/carousel-images
 /client/www/css/lib
 /client/www/css/*.min.css
 /client/www/css/*.min.css.map
@@ -36,6 +37,7 @@
 /server/cheshire3-server/dbs/dickens/indexes/*
 /server/cheshire3-server/dbs/dickens/logs/*
 /server/cheshire3-server/dbs/dickens/stores/*
+/server/cheshire3-server/dbs/dickens/images/
 /server/clic-chapter-cache.pickle
 
 /cheshire3.db_dickens.tar.bz2
