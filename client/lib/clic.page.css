@@ -97,11 +97,16 @@ header .sponsors {
     padding: 2rem;
     max-width: 960px;
     margin: 0 auto;
+    font-family: Georgia, Helvetica, serif;
+    font-size: 120%;
 }
-#content > .clic-contents h3 { margin-top: 3rem; margin-bottom: -1rem; }
-#content > .clic-contents h3:first-child { margin-top: 0 }
-#content > .clic-contents h4 { margin-top: 2rem; margin-bottom: 0; }
-#content > .clic-contents small {
-    display: block;
-    font-size: 0.8rem;
+#content > .clic-contents .first-sentence {
+    color: darkred;
+}
+#content > .clic-contents .first-letter {
+    float: left;
+    font-size: 300%;
+    line-height: 0.9em;
+    padding: 3px 3px 0 0;
+    color: darkred;
 }
