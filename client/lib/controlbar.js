@@ -90,6 +90,24 @@ function clickedOn(e, tagName, className) {
     return false;
 }
 
+/**
+  * Given a string 'from:to,from_1:to_1', swap page state around and return URL
+  */
+function swaps_to_url(page_state, arg_swaps) {
+    var detail = { args: {} };
+
+    arg_swaps.split(",").map(function (str) {
+        var to_swap = str.split(":");
+
+        if (to_swap.length === 2) {
+            detail.args[to_swap[0]] = page_state.arg(to_swap[1]);
+            detail.args[to_swap[1]] = page_state.arg(to_swap[0]);
+        }
+    });
+
+    return page_state.clone(detail).to_url();
+}
+
 function ControlBar(control_bar) {
     var self = this;
 
@@ -339,6 +357,14 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
             jQuery(el).trigger("chosen:updated");
+        });
+
+        // Update swaps URLs
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.swap-state'), function (el, i) {
+            el.setAttribute('href', swaps_to_url(
+                page_state,
+                el.getAttribute('data-arg')
+            ));
         });
     }).then(function (data) {
         return Promise.all(Object.keys(self.panels).map(function (n) { self.panels[n].reload(page_state); })).then(function () {
