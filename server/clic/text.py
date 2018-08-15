@@ -1,6 +1,12 @@
 """
 Return the full text for a given book/chapter number
 """
+import re
+
+
+STRIP_TOKENS_REGEX = re.compile(r'<w [^>]+>|</w>|<n>|</n>')
+
+
 class NullParser():
     """
     A no-op parser to avoid the LXML parsing hit
@@ -18,8 +24,9 @@ def text(cdb, corpora=[]):
     try:
         yield {} # Return empty header
         for book_id, chapter_num, chapter_id in chapter_ids:
-            rec = recStore.fetch_record(recStore.session, chapter_id, parser=np)
-            yield [book_id, chapter_num, rec.get_raw(recStore.session)]
+            xml_string = recStore.fetch_record(recStore.session, chapter_id, parser=np).get_raw(recStore.session)
+            xml_string = re.sub(STRIP_TOKENS_REGEX, '', xml_string)
+            yield [book_id, chapter_num, xml_string]
     finally:
         # Release DBD file handles, unfortunately the only public way to do this
         # is "commit_storing", which we don't want to do
