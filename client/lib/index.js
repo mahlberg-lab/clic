@@ -10,7 +10,7 @@ var page_classes = {
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
     '/keywords': require('./page_keyword.js'),
-    '/chapter': require('./page_chapter.js'),
+    '/text': require('./page_text.js'),
     '/count': require('./page_count.js'),
     '/': require('./page_contents.js'),
     '': function () {
