@@ -3,9 +3,9 @@
     padding: 0;
 }
 .carousel li {
-    display: flex;
+    display: block;
     position: relative;
-    height: 0; /* TODO: This isn't letting the box expand with content */
+    min-height: 0;
     padding-top: 40%;
     overflow: hidden;
 
@@ -14,8 +14,6 @@
     box-shadow: 0 0 10px #1e345e;
 
     list-style-type: none;
-
-    font-size: 220%;
 
     /* Only to make it obvious before we make the thing work */
     margin-bottom: 1rem;
@@ -27,13 +25,13 @@
 }
 
 .carousel li a, .carousel li a:link .carousel li a:visited {
-    display: inline-block;
-    align-self: flex-end;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     margin: 1rem;
 
-    
     font-family: Georgia,Helvetica,serif;
-    line-height: normal;
     color: ivory;
     text-shadow: -1px 0px 5px #1e345e,
                   1px 0px 5px #1e345e,
@@ -48,4 +46,22 @@
 .carousel li strong {
     font-size: 110%;
     color: #fdf5b2;
+}
+
+/* On narrow screens center text, on wider screens put it to the left */
+.carousel li {
+    text-align: center;
+    font-size: 100%;
+}
+@media (min-width: 768px) {
+    .carousel li {
+        text-align: left;
+        font-size: 200%;
+    }
+}
+@media (min-width: 960px) {
+    .carousel li {
+        text-align: left;
+        font-size: 220%;
+    }
 }
