@@ -22,8 +22,8 @@
 
     <title>CLiC</title>
 
-    <link href="/css/libraries.min.css" rel="stylesheet">
-    <link href="/css/index.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/{{env.sha_libraries_min_css}}" />
+    <link rel="stylesheet" type="text/css" href="/css/{{env['sha_' + tmpl.base + '_min_css']}}" />
   </head>
 
   <body>
@@ -300,7 +300,7 @@
       <header>
         <h1>
           <a href="/">CLiC</a>
-          <small id="clic-revision"></small>
+          <small id="clic-revision">{{env.CUR_REV}}</small>
         </h1>
         <div class="sponsors">
           <img src="/logos/uni-of-bham.jpg" alt="University of Birmingham" />
@@ -314,11 +314,11 @@
 
     <script id="google-analytics-init">
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-    ga('create', 'UA-XXXXX-Y', 'auto');
+    ga('create', '{{env.GA_KEY}}', 'auto');
     </script>
     <script async src='https://www.google-analytics.com/analytics.js'></script>
-    <script src="/js/polyfill.min.js"></script>
-    <script src="/js/libraries.min.js"></script>
-    <script src="/js/index.min.js"></script>
+    <script type="text/javascript" src="/js/{{env.sha_polyfill_min_js}}"></script>
+    <script type="text/javascript" src="/js/{{env.sha_libraries_min_js}}"></script>
+    <script type="text/javascript" src="/js/{{env['sha_' + tmpl.base + '_min_js']}}"></script>
   </body>
 </html>

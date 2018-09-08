@@ -28,7 +28,7 @@ LIBRARIES_CSS = \
 
 all: test lint compile
 
-compile: node_modules/ $(OUT_FILES)
+compile: node_modules/ clean-unused $(OUT_FILES)
 
 start: all
 
@@ -43,7 +43,13 @@ lint: node_modules/
 
 clean:
 	rm -r -- "node_modules/" || true
-	rm -- $(OUT_FILES) || true
+	git ls-files --others www/ | xargs -r rm --
+
+clean-unused:
+	for f in $(filter-out \
+	    $(foreach f,$(OUT_FILES),$(shell dirname $(f))/$(shell readlink $(f))), \
+	    $(wildcard www/*/*.min.r*.*) \
+	); do rm -- $$f; done
 
 watch:
 	while inotifywait -r lib; do make compile; done
@@ -55,32 +61,44 @@ node_modules/: package.json yarn.lock
 yarn.lock:
 	touch $@
 
+# Move minified output to a version with sha1 hash in it's name, symlink to proper output
+sha1_symlink = \
+    REV_FILE="www/$(1)/$$(basename $(3) .min.$(1)).min.r$$(sha1sum $(2) | head -c7).$(1)"; \
+    mv $(2) $$REV_FILE; \
+    ln -rsf $$REV_FILE $(3)
+
+# Generate environment variables that point to the sha1 hash version
+sha1_envvars = \
+    for f in $(1); do \
+        eval sha_$$(basename $$f | sed 's/\W/_/g')=$$(readlink $$f); \
+    done;
+
 www/carousel-images:
-	mkdir -p www
+	mkdir -p $(dir $@)
 	ln -rsf ../server/cheshire3-server/dbs/dickens/images $@
 
 www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
-	mkdir -p www/css
+	mkdir -p $(dir $@)
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 
 www/js/libraries.min.js: package.json
-	mkdir -p www/js
+	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../node_modules .)
 	$(NODE_CMD) node_modules/.bin/browserify \
 	        $(foreach l,$(LIBRARIES_JS),-r $(l)) \
 	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
 	        --compress --mangle "reserved=['$$','require','exports']" \
 	        --output $@.mktmp
-	mv $@.mktmp $@
+	$(call sha1_symlink,js,$@.mktmp,$@)
 
 www/css/libraries.min.css: package.json
-	mkdir -p www/css
+	mkdir -p $(dir $@)
 	(cd www/css && ln -sf ../../lib .)
 	cat $(LIBRARIES_CSS) > $@.mktmp
-	mv $@.mktmp $@
+	$(call sha1_symlink,css,$@.mktmp,$@)
 
 www/js/%.min.js: lib/%.js lib/*.js package.json
-	mkdir -p www/js
+	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../lib .)
 	$(NODE_CMD) node_modules/.bin/browserify --debug \
 	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
@@ -90,28 +108,27 @@ www/js/%.min.js: lib/%.js lib/*.js package.json
 	        --source-map "content='inline',url='$(notdir $@).map'" \
 	        --output $@.mktmp
 	mv $@.mktmp.map $@.map
-	mv $@.mktmp $@
+	$(call sha1_symlink,js,$@.mktmp,$@)
 
 www/css/%.min.css: lib/%.css lib/*.css package.json
-	mkdir -p www/css
+	mkdir -p $(dir $@)
 	(cd www/css && ln -sf ../../lib .)
 	$(NODE_CMD) node_modules/postcss-cli/bin/postcss \
 	    --config postcss.config.js \
 	    -o $@ \
 	    $<
+	$(call sha1_symlink,css,$@,$@)
 
 www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
     ../.local-conf \
-    ../clic_revision \
+    ../.git/logs/HEAD \
+    ../install.sh \
     build/html_compile.js \
     package.json
-	CURRENT_REV=
-	[ -e "../.local-conf" ] && \
-	    . ../.local-conf; \
-	    export GA_KEY; \
-	    export CUR_REV="`cat ../clic_revision`"; \
-	    $(NODE_CMD) build/html_compile.js \
-	        $< > $@.mktmp
+	set -a; \
+	    $(call sha1_envvars,$(OUT_FILES)) \
+	    NODE_PATH="$(CURDIR)" \
+	    ../install.sh --exec $(NODE) build/html_compile.js $< $@.mktmp $^
 	mv $@.mktmp $@
 
-.PHONY: compile test start lint clean
+.PHONY: compile test start lint clean clean-unused watch

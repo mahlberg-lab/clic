@@ -30,6 +30,13 @@ GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile also
 
 set | grep -E 'CLIC|UWSGI|SERVICE'
 
+CUR_REV="$(
+    git describe --exact-match HEAD || echo $(git rev-parse --abbrev-ref HEAD):$(git rev-parse --short HEAD)
+)" 2>/dev/null
+
+# Execute command if required
+[ $1 = '--exec' ] && { shift; exec $*; }
+
 # ---------------------------
 # Systemd unit file to run uWSGI
 

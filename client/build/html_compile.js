@@ -1,56 +1,43 @@
 "use strict";
 /*jslint todo: true, regexp: true, plusplus: true */
 /*global Promise */
-var crypto = require('crypto');
 var fs = require('fs');
 var path = require('path');
-var cheerio = require('cheerio');
+var nunjucks = require('nunjucks');
 
-function file_hash(file_path) {
-    return new Promise(function (resolve) {
-        var hash = crypto.createHash('sha1'),
-            stream = fs.createReadStream(file_path);
-
-        stream.on('data', function (data) {
-            hash.update(data, 'utf8');
-        });
-        stream.on('end', function () {
-            resolve(".r" + hash.digest('hex').substr(0, 7));
-        });
-    });
+/** Return path/dir/base name for path (p), optionally stripping (ext) */
+function path_forms(p, ext) {
+    return {
+        path: p,
+        dir: path.dirname(p),
+        base: path.basename(p, ext),
+    };
 }
 
 /////////////////////////////
 
-new Promise(function (resolve) {
-    fs.readFile(process.argv[2], 'utf8', function (err, data) {
-        if (err) {
-            throw err;
-        }
-        resolve(data);
-    });
-}).then(function (html_string) {
-    var $ = cheerio.load(html_string);
+if (process.argv.length < 3) {
+    throw new Error([
+        "Usage:",
+        process.argv[0],
+        "(template file path)",
+        "(output file path)",
+    ].join(" "));
+}
 
-    return Promise.all($("link[rel=stylesheet],script").toArray().map(function (el) {
-        var attr = el.tagName === 'script' ? 'src' : 'href';
+Promise.resolve({
+    tmpl: path_forms(process.argv[2], '.html'),
+    output: path_forms(process.argv[3]),
+    env: process.env,
+}).then(function (context) {
+    var out = nunjucks.render(context.tmpl.path, context);
 
-        if (!$(el).attr(attr) || $(el).attr(attr).indexOf("/") !== 0) {
-            return "";
-        }
-
-        return file_hash("www/" + $(el).attr(attr)).then(function (hash) {
-            $(el).attr(attr, $(el).attr(attr) + hash);
+    return new Promise(function (resolve) {
+        fs.writeFile(context.output.path, out, function (err) {
+            if (err) {
+                throw err;
+            }
+            resolve(out);
         });
-    })).then(function () {
-        var ga_script = $("#google-analytics-init");
-
-        ga_script.html(
-            ga_script.html().replace('UA-XXXXX-Y', process.env.GA_KEY)
-        );
-
-        $("#clic-revision").text(process.env.CUR_REV);
-
-        process.stdout.write($.html());
     });
 });
