@@ -19,30 +19,21 @@ PageContents.prototype.page_title = function (page_state) {
 PageContents.prototype.reload = function reload(page_state) {
     var self = this;
 
-    return Promise.resolve().then(function () {
+    return api.get('corpora/headlines').then(function (data) {
+        function gen_list_item(d) {
+            return [
+                '<li style="background-image: url(/carousel-images/' + d.id + '_0.4.jpg)"><a href="/concordance?corpora=' + d.id + '">',
+                '  <h3>' + d.title + '</h3>',
+                '  <strong>' + d.book_count.toLocaleString() + '</strong> books,<br/>',
+                '  <strong>' + d.word_count.toLocaleString() + '</strong> total words</a>',
+                '</li>',
+            ].join("\n");
+        }
+
         self.content_el.innerHTML =
             '<div class="clic-contents">' +
             '  <ul class="carousel">' +
-            '    <li style="background-image: url(/carousel-images/dickens_0.4.jpg)"><a href="/concordance?corpora=dickens">' +
-            '      <h3>DNov - Dickens\'s Novels</h3>' +
-            '      <strong>15</strong> books,<br/>' +
-            '      <strong>3,835,807</strong> total words</a>' +
-            '    </li>' +
-            '    <li style="background-image: url(/carousel-images/ntc_0.4.jpg)"><a href="/concordance?corpora=ntc">' +
-            '      <h3>19C - 19th Century Reference Corpus</h3>' +
-            '      <strong>29</strong> books,<br/>' +
-            '      <strong>4,513,070</strong> total words</a>' +
-            '    </li>' +
-            '    <li style="background-image: url(/carousel-images/ChiLit_0.4.jpg)"><a href="/concordance?corpora=ChiLit">' +
-            '      <h3>ChiLit - 19th Century Children\'s Literature Corpus</h3>' +
-            '      <strong>71</strong> books,<br/>' +
-            '      <strong>4,443,542</strong> total words' +
-            '    </a></li>' +
-            '    <li style="background-image: url(/carousel-images/Other_0.4.jpg)"><a href="/concordance?corpora=ChiLit">' +
-            '      <h3>ArTs - Additional Requested Texts</h3>' +
-            '      <strong>23</strong> books,<br/>' +
-            '      <strong>2,259,103</strong> total words' +
-            '    </a></li>' +
+            data.data.map(gen_list_item).join("\n") +
             '  </ul>' +
             '  <p><span class="first-letter">W</span><span class="first-sentence">elcome to CLiC.</span> The CLiC web app has been developed as part of the <a href="https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/index.aspx">CLiC Dickens project</a>, which demonstrates through corpus stylistics how computer-assisted methods can be used to study literary texts and lead to new insights into how readers perceive fictional characters.</p>' +
             '  <p>Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
