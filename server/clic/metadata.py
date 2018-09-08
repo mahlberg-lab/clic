@@ -33,3 +33,31 @@ def get_corpus_structure(cdb):
         ))
 
     return out
+
+
+def get_corpus_headlines(cdb):
+    """
+    Return a list of dicts containing:
+    - id: corpus short name
+    - title: corpus title
+    - book_count: Number of books in corpus
+    - word_count: Number of words in corpus
+    """
+    c = cdb.rdb_query(
+        "SELECT c.corpus_id" +
+        "     , c.title" +
+        "     , (SELECT COUNT(*) FROM book b WHERE b.corpus_id = c.corpus_id) book_count" +
+        "     , (SELECT SUM(word_total) FROM chapter ch, book b WHERE ch.book_id = b.book_id AND b.corpus_id = c.corpus_id) word_count" +
+        " FROM corpus c" +
+        " ORDER BY c.ordering")
+
+    out = []
+    for (c_id, c_title, book_count, word_count) in c:
+        out.append(dict(
+            id=c_id,
+            title=c_title,
+            book_count=book_count,
+            word_count=word_count,
+        ))
+
+    return out

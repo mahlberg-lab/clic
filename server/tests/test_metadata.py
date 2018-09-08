@@ -2,7 +2,7 @@
 import unittest
 
 from clic.clicdb import ClicDb
-from clic.metadata import get_corpus_structure
+from clic.metadata import get_corpus_structure, get_corpus_headlines
 
 class Test_get_corpus_structure(unittest.TestCase):
     def test_call(self):
@@ -43,3 +43,17 @@ class Test_get_corpus_structure(unittest.TestCase):
                     title='The Old Curiosity Shop',
                     author=u'Charles Dickens',
                 ))
+
+
+class Test_get_corpus_headlines(unittest.TestCase):
+    def test_call(self):
+        """
+        get_corpus_structure should return just corpus level detail
+        """
+        out = get_corpus_headlines(ClicDb())
+        self.assertEqual(
+            [x['id'] for x in out],
+            [u'dickens', u'ntc', u'ChiLit', u'Other'],
+        )
+        for x in out:
+            self.assertEqual(x.keys(), ['title', 'id', 'word_count', 'book_count'])

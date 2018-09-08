@@ -94,6 +94,11 @@ def corpora():
     out = clic.metadata.get_corpus_structure(clicdb())
     return jsonify(dict(corpora=out, version=clic_version()))
 
+@app.route('/api/corpora/headlines', methods=['GET'])
+def headlines():
+    out = clic.metadata.get_corpus_headlines(clicdb())
+    return jsonify(dict(data=out, version=clic_version()))
+
 # ==== count route ========================================
 import clic.count
 
