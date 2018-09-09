@@ -3,6 +3,7 @@
 /*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 var api = require('./api.js');
+var gen_carousel = require('lib/carousel.js').gen_carousel;
 
 function escapeHTML(s) {
     return new Option(s).innerHTML;
@@ -20,7 +21,7 @@ PageContents.prototype.reload = function reload(page_state) {
     var self = this;
 
     return api.get('corpora/headlines').then(function (data) {
-        function gen_list_item(d) {
+        function gen_carousel_item(d) {
             return [
                 '<li style="background-image: url(/carousel-images/' + d.id + '_0.4.jpg)"><a href="/concordance?corpora=' + d.id + '">',
                 '  <h3>' + d.title + '</h3>',
@@ -32,9 +33,6 @@ PageContents.prototype.reload = function reload(page_state) {
 
         self.content_el.innerHTML =
             '<div class="clic-contents">' +
-            '  <ul class="carousel">' +
-            data.data.map(gen_list_item).join("\n") +
-            '  </ul>' +
             '  <p><span class="first-letter">W</span><span class="first-sentence">elcome to CLiC.</span> The CLiC web app has been developed as part of the <a href="https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/index.aspx">CLiC Dickens project</a>, which demonstrates through corpus stylistics how computer-assisted methods can be used to study literary texts and lead to new insights into how readers perceive fictional characters.</p>' +
             '  <p>Please choose a function in the control bar to the right (click the icon in the top right if it is not displayed).</p>' +
             '  <h2>Citing CLiC</h2>' +
@@ -46,6 +44,12 @@ PageContents.prototype.reload = function reload(page_state) {
             '  </cite></p>' +
             '  <p>If possible, please also include a link to <a href="https://clic.bham.ac.uk">clic.bham.ac.uk</a>.</p>' +
             '</div>';
+
+        // Add carousel to top of clic-contents
+        self.content_el.firstChild.insertBefore(
+            gen_carousel(data.data.map(gen_carousel_item), 5),
+            self.content_el.firstChild.firstChild
+        );
     });
 
 };

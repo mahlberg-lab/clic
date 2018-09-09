@@ -1,27 +1,31 @@
 .carousel {
+    position: relative;
+    height: 0;
+
     margin: 0;
+    margin-bottom: 1rem;
+
     padding: 0;
+    padding-bottom: 40%; /* i.e. carousel has fixed ratio dimensions */
+    overflow: hidden;
+
+    box-shadow: 0 0 10px #1e345e;
 }
 .carousel li {
     display: block;
-    position: relative;
-    min-height: 0;
-    padding-top: 40%;
-    overflow: hidden;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
 
     background: #a5b7c5;
     background-size: cover;
-    box-shadow: 0 0 10px #1e345e;
 
     list-style-type: none;
-
-    /* Only to make it obvious before we make the thing work */
-    margin-bottom: 1rem;
 }
-
-.carousel li h3 {
-    margin-bottom: 0!important;
-    font-size: 100%;
+.carousel li.offscreen {
+    transition: left .5s ease-in-out;
+    left: 100%;
 }
 
 .carousel li a, .carousel li a:link .carousel li a:visited {
@@ -43,7 +47,12 @@
     text-decoration: none;
 }
 
-.carousel li strong {
+.carousel li a h3 {
+    margin-bottom: 0!important;
+    font-size: 100%;
+}
+
+.carousel li a strong {
     font-size: 110%;
     color: #fdf5b2;
 }
