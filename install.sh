@@ -11,6 +11,7 @@ set -ex
 # ---------------------------
 # Config options, to override any of these, set them in .local.conf
 
+set -a
 CLIC_PATH="${CLIC_PATH-$(dirname "$(readlink -f "$0")")}"
 SERVER_NAME="${SERVER_NAME-$(hostname --fqdn)}"
 SERVICE_NAME="${SERVICE_NAME-clic}"
@@ -28,11 +29,12 @@ UWSGI_CACHE_SIZE="${UWSGI_CACHE_SIZE-1g}"
 [ "${CLIC_MODE}" = "production" ] && UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-api_cache}" || UWSGI_CACHE_ZONE="${UWSGI_CACHE_ZONE-off}"
 GA_KEY="${GA_KEY-}"  # NB: This is used by the makefile also
 
-set | grep -E 'CLIC|UWSGI|SERVICE'
-
-CUR_REV="$(
+PROJECT_REV="$(
     git describe --exact-match HEAD || echo $(git rev-parse --abbrev-ref HEAD):$(git rev-parse --short HEAD)
 )" 2>/dev/null
+
+set | grep -E 'CLIC|UWSGI|SERVICE|PROJECT'
+set +a
 
 # Execute command if required
 [ $1 = '--exec' ] && { shift; exec $*; }
