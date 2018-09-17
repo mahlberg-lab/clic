@@ -24,6 +24,7 @@ PageChapter.prototype.init = function () {
     this.table_opts.columns = [
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
         { title: "Book", data: "0", render: concordance_utils.renderBook.bind(this, 'full'), width: "10rem", searchable: true },
+        { title: "Chapters", data: "chapters", className: "numeric", render: renderNumeric },
         { title: "Total Words", data: "1", className: "numeric", render: renderNumeric },
         { title: "In Quotes", data: "2", className: "numeric", render: renderNumeric },
         { title: "In Non-quotes", data: "3", className: "numeric", render: renderNumeric },
@@ -44,7 +45,7 @@ PageChapter.prototype.reload_data = function reload(page_state) {
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
     api_opts.subset = ['all', 'quote', 'nonquote', 'shortsus', 'longsus'];
-    api_opts.metadata = ['book_titles'];
+    api_opts.metadata = ['book_titles', 'chapter_start'];
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");
@@ -60,6 +61,9 @@ PageChapter.prototype.post_process = function (page_state, raw_data) {
     for (i = 0; i < data.length; i++) {
         // Use book IDs as row IDs
         data[i].DT_RowId = data[i][0];
+
+        // Get chapter count from chapter_start metadata
+        data[i].chapters = Object.keys(raw_data.chapter_start[data[i][0]]).length - 1;
 
         // Sum up counts for extra_info
         totals[0] += data[i][1];
