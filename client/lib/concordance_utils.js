@@ -123,11 +123,11 @@ module.exports.merge_tags = function (old_state, new_state) {
 module.exports.renderBook = function (render_mode, data, type) {
     if (type === 'display' && this.book_titles[data]) {
         //NB: Edge needs persuasion to get abbr to word-wrap
-        return '<abbr style="' +
+        return '<a href="/text?book=' + data + '"><abbr style="' +
                 'display: block;' +
                 (render_mode === 'full' ? 'width: 9.5rem' : '') +
             '" title="' + quoteattr(this.book_titles[data][0] + ' (' + this.book_titles[data][1] + ')') + '">' +
-            quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr>';
+            quoteattr(render_mode === 'full' ? this.book_titles[data][0] : data) + '</abbr></a>';
     }
 
     return render_mode === 'full' ? this.book_titles[data][0] : data;
