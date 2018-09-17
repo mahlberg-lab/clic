@@ -1,0 +1,268 @@
+<nav id="control-bar">
+  <div>
+
+   <div class="header">
+     <a href="#" class="action load" title="Load a previously saved concordance search">Load</a> |
+     <a href="#" class="action merge" title="Merge your current tag columns with a previously saved concordance search">Merge</a> |
+     <a href="#" class="action save" title="Save your current search and tag columns to a CSV file">Save</a> |
+     <a href="#" class="action clear" title="Clear all current search fields">Clear</a> |
+     <a href="http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/documentation.aspx" target="_blank">Help</a>
+
+  </div>
+
+  <fieldset data-name="concordance">
+    <legend><a href="/concordance">Concordance</a></legend>
+    <form>
+
+      <label>Search the corpora:</label>
+      <select name="corpora" data-placeholder="" class="chosen-select" multiple>
+      </select>
+      <label>Only in subsets:</label>
+      <select name="conc-subset" data-placeholder="" class="chosen-select">
+        <option value="all" selected="selected">All text</option>
+        <option value="shortsus">Short Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+      <label>Search for terms:</label>
+      <input type="text" name="conc-q" placeholder="e.g. 'dense fog'" class="form-control">
+      <div class="conc-type">
+        <label>
+          <input name="conc-type" type="radio" value="whole" checked="checked">Whole phrase
+        </label>
+        <label>
+          Any word <input name="conc-type" type="radio" value="any">
+        </label>
+      </div>
+
+      <h4><span>Results</span></h4>
+      <label>View as:</label>
+      <label><input name="table-type" type="radio" value="basic" checked="checked">Basic results</label>
+      <label><input name="table-type" type="radio" value="full" checked="">Full metadata</label>
+      <label><input name="table-type" type="radio" value="dist_plot" checked="">Distribution plot</label>
+      <label>Filter rows:</label>
+      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+
+      <h4><span>KWICGrouper</span></h4>
+      <label>Search in span:</label>
+      <input name="kwic-span" type="nouislider">
+      <label>Search for types:</label>
+      <select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
+
+      <h4><span>Tags</span></h4>
+      <label>Selected rows are part of:</label>
+      <div class="tag-toggles"></div>
+      <a href="#" class="toggle-panel" data-panel="tag-columns">Manage tag columns...</a>
+
+    </form>
+  </fieldset>
+
+  <fieldset data-name="subsets">
+    <legend><a href="/subsets">Subsets</a></legend>
+    <form>
+
+      <label>Search the corpora:</label>
+      <select name="corpora" data-placeholder="" class="chosen-select" multiple>
+      </select>
+      <label>Show subsets:</label>
+      <select name="subset-subset" data-placeholder="" class="chosen-select">
+        <option value="shortsus">Short Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+
+      <h4><span>Results</span></h4>
+      <label>View as:</label>
+      <label><input name="table-type" type="radio" value="basic" checked="checked">Basic results</label>
+      <label><input name="table-type" type="radio" value="full" checked="">Full metadata</label>
+      <label><input name="table-type" type="radio" value="dist_plot" checked="">Distribution plot</label>
+      <label>Filter rows:</label>
+      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+
+      <h4><span>KWICGrouper</span></h4>
+
+      <label>Search in subset:</label>
+      <div class="optionbox" style="overflow: hidden">
+        <label style="float: left"><input type="radio" name="kwic-dir" value="start" checked="checked"/>From start</label>
+        <label style="float: right">From end<input type="radio" name="kwic-dir" value="end"/></label>
+      </div>
+      <input name="kwic-int-start" type="nouislider">
+      <input name="kwic-int-end" type="nouislider">
+      <label>Search for types:</label>
+      <select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
+
+      <h4><span>Tags</span></h4>
+      <label>Selected rows are part of:</label>
+      <div class="tag-toggles"></div>
+      <a href="#" class="toggle-panel" data-panel="tag-columns">Manage tag columns...</a>
+
+    </form>
+  </fieldset>
+
+  <fieldset data-name="clusters">
+    <legend><a href="/clusters">Clusters</a></legend>
+    <form>
+      <label>Search the corpora:</label>
+      <select name="corpora" class="chosen-select" multiple>
+      </select>
+      <label>Only in subsets:</label>
+      <select name="subset" class="chosen-select">
+        <option value="all" selected="selected">All text</option>
+        <option value="shortsus">Short Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+
+      <label>n-gram:</label>
+      <select name="clusterlength" class="chosen-select">
+        <option value="1" selected="selected">1-gram</option>
+        <option value="3">3-gram</option>
+        <option value="4">4-gram</option>
+        <option value="5">5-gram</option>
+      </select>
+
+      <h4><span>Results</span></h4>
+      <label>Filter rows:</label>
+      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+
+    </form>
+  </fieldset>
+
+  <fieldset data-name="keywords">
+    <legend><a href="/keywords">Keywords</a></legend>
+    <form>
+
+      <label>Target corpora:</label>
+      <select name="corpora" class="chosen-select" multiple>
+      </select>
+      <label>...within subset:</label>
+      <select name="subset" class="chosen-select">
+        <option value="all" selected="selected">All text</option>
+        <option value="shortsus">Short Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+
+      <label>n-gram:</label>
+      <select name="clusterlength" class="chosen-select">
+        <option value="1" selected="selected">1-gram</option>
+        <option value="3">3-gram</option>
+        <option value="4">4-gram</option>
+        <option value="5">5-gram</option>
+      </select>
+
+      <h4><span>Reference Corpora</span></h4>
+      <label>Reference corpora:</label>
+      <select name="refcorpora" class="chosen-select" multiple>
+      </select>
+      <label>...within subset:</label>
+      <select name="refsubset" class="chosen-select">
+        <option value="all" selected="selected">All text</option>
+        <option value="shortsus">Short Suspensions</option>
+        <option value="longsus">Long suspensions</option>
+        <option value="quote">Quotes</option>
+        <option value="nonquote">Non-quotes</option>
+      </select>
+      <p><br/><a href="#" class="swap-state" data-arg="corpora:refcorpora,subset:refsubset">Swap target and reference corpora</a></p>
+
+      <label>p-value cut-off:</label>
+      <select name="pvalue" class="chosen-select">
+        <option>0.05</option>
+        <option>0.01</option>
+        <option>0.001</option>
+        <option selected="selected">0.0001</option>
+      </select>
+
+      <h4><span>Results</span></h4>
+      <label>Filter rows:</label>
+      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+
+    </form>
+  </fieldset>
+
+  <fieldset data-name="count">
+    <legend><a href="/count">Counts</a></legend>
+    <form>
+      <label>Search the corpora:</label>
+      <select name="corpora" class="chosen-select" multiple>
+      </select>
+    </form>
+  </fieldset>
+
+  <fieldset data-name="text">
+    <legend><a href="/text">Texts</a></legend>
+    <form>
+
+    <label>Book:</label>
+    <select name="book" data-placeholder="Select a book..." class="chosen-select">
+    </select>
+    <label>Chapter:</label>
+    <select name="chapter_num" data-placeholder="" class="chosen-select">
+    </select>
+
+    <h4><span>Highlight subsets</span></h4>
+      <label class="highlight-para">
+        <input name="chap-highlight" type="checkbox" value="para" /><span>Paragraphs</span>
+      </label>
+      <label class="highlight-sent">
+        <input name="chap-highlight" type="checkbox" value="sent" /><s>Sentences</s>
+      </label>
+      <label class="highlight-ss">
+        <input name="chap-highlight" type="checkbox" value="ss" /><sss></sss>short suspensions<sse></sse>
+      </label>
+      <label class="highlight-sl">
+        <input name="chap-highlight" type="checkbox" value="sl" /><sls></sls>long suspensions<sle></sle>
+      </label>
+      <label class="highlight-q">
+        <input name="chap-highlight" type="checkbox" value="q" /><qs></qs>quotes<qe></qe>
+      </label>
+      <label class="highlight-alt-q">
+        <input name="chap-highlight" type="checkbox" value="alt-q" /><alt-qs></alt-qs>embedded quotes<alt-qe></alt-qe>
+      </label>
+      <label class="highlight-alt-ss">
+        <input name="chap-highlight" type="checkbox" value="alt-ss" /><alt-sss></alt-sss>embedded short suspensions<alt-sse></alt-sse>
+      </label>
+      <label class="highlight-alt-sl">
+        <input name="chap-highlight" type="checkbox" value="alt-sl" /><alt-sls></alt-sls>embedded long suspensions<alt-sle></alt-sle>
+      </label>
+
+    </form>
+  </fieldset>
+
+
+  </div>
+
+  <form class="panel" id="panel-tag-columns">
+    <div class="header">
+      <a href="#" class="toggle-panel" data-panel="tag-columns">⟸ Back</a>
+    </div>
+    <div>
+
+      <h4><span>Tag columns</span></h4>
+      <ul class="tag-list"></ul>
+      <button name="tag-column-add" style="float: left">Add new</button>
+      <button name="tag-column-delete" style="float: right">Delete selected</button>
+
+      <h4><span>Rename selected tag column</span></h4>
+      <input type="text" name="tag-column-rename" placeholder="" class="form-control">
+
+    </div>
+  </form>
+
+</nav>
+
+<div class="handle" tabindex="0">
+  <svg xmlns="http://www.w3.org/2000/svg" width="4.4242001mm" height="6.1044559mm" viewBox="0 0 4.4242001 6.1044559">
+    <g transform="translate(-19.71 -132.174)" stroke="#aaa" stroke-width=".53275549">
+      <path d="M19.72065 133.13239h4.41407M19.72065 135.18601h4.41407" fill="none"/>
+      <rect width="1.0327311" height="1.3840785" x="20.470228" y="132.44034" ry=".01258478" fill="#fff"/>
+      <rect width="1.0327311" height="1.3840785" x="22.508711" y="134.49399" ry=".01258478" fill="#fff"/>
+      <path d="M19.71052 137.31999h4.41407" fill="none"/>
+      <rect width="1.0327311" height="1.3840785" x="20.849897" y="136.62796" ry=".01258478" fill="#fff"/>
+    </g>
+  </svg>
+</div>
