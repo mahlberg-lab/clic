@@ -110,3 +110,12 @@ header .sponsors {
     padding: 3px 3px 0 0;
     color: darkred;
 }
+
+/* Whilst loading, content should be invisible */
+#content > .clic-contents {
+    transition: opacity .3s;
+    opacity: 1;
+}
+body.loading #content > .clic-contents {
+    opacity: 0;
+}
