@@ -30,6 +30,14 @@ function parse_xml(str_promise, content_type) {
     });
 }
 
+function api_error_object(data) {
+    var e = new Error("Failed to fetch data: " + data.error.message);
+
+    console.log("API Debug info: " + JSON.stringify(data, null, 2));
+    e.stack = data.error.stack || '';
+    return e;
+}
+
 module.exports.get = function (endpoint, qs) {
     var opts = {
         headers: {
@@ -40,7 +48,13 @@ module.exports.get = function (endpoint, qs) {
     return window.fetch('/api/' + endpoint + '?' + to_query_string(qs), opts).then(function (response) {
         if (response.status === 200) {
             if (response.headers.get('Content-Type') === 'application/json') {
-                return response.json();
+                return response.json().then(function (data) {
+                    // Check for any run-time error
+                    if (data.error) {
+                        throw api_error_object(data);
+                    }
+                    return data;
+                });
             }
             if (response.headers.get('Content-Type') === 'application/xml') {
                 return parse_xml(response.text(), response.headers.get('Content-Type'));
@@ -54,11 +68,7 @@ module.exports.get = function (endpoint, qs) {
 
             throw new Error("Failed to fetch data: Could not communicate with server (" + response.statusText + ")");
         }).then(function (data) {
-            var e = new Error("Failed to fetch data: " + data.error.message);
-
-            console.log("API Debug info: " + JSON.stringify(data, null, 2));
-            e.stack = data.error.stack || '';
-            throw e;
+            throw api_error_object(data);
         });
     });
 };
