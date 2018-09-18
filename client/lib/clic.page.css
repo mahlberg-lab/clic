@@ -94,6 +94,8 @@ header .sponsors {
 #alerts pre:empty { display: none; }
 
 #content > .clic-contents {
+    animation: fadein 2s;
+    animation-timing-function: ease-in;
     padding: 2rem;
     max-width: 960px;
     margin: 0 auto;
@@ -110,12 +112,7 @@ header .sponsors {
     padding: 3px 3px 0 0;
     color: darkred;
 }
-
-/* Whilst loading, content should be invisible */
-#content > .clic-contents {
-    transition: opacity .3s;
-    opacity: 1;
-}
-body.loading #content > .clic-contents {
-    opacity: 0;
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
