@@ -8,6 +8,10 @@ var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var object_entries = require('object.entries-ponyfill');
 
+function partsPerMillion(count, total) {
+    return ((count / total) * 1000000).toFixed(2);
+}
+
 // Plural-ise a few known phrases
 function plural(amount, unit) {
     if (amount === 1) {
@@ -254,7 +258,9 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     api_opts.subset = page_state.arg('conc-subset');
     api_opts.q = page_state.arg('conc-q');
     api_opts.contextsize = 10;
-    api_opts.metadata = ['book_titles', 'chapter_start'];
+    // When searching in quotes, rel.freq. should be based on the number of
+    // words in quotes, not the number of words overall
+    api_opts.metadata = ['book_titles', 'chapter_start', 'word_count_' + api_opts.subset];
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");
@@ -277,6 +283,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 
 PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
     var i, j, r, groupedData,
+        word_count_key,
         allWords = {}, allMatches = {},
         data = raw_data.data,
         tag_state = page_state.state('tag_columns'),
@@ -323,6 +330,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     // Save book_titles ready for the renderer function
     this.book_titles = raw_data.book_titles || {};
 
+    // Find the metadata we should base the rel.freq on (i.e. whichever we requested)
+    word_count_key = Object.keys(raw_data).filter(function (x) { return x.indexOf("word_count_") === 0; })[0];
+
     // Group data into books for concordance plot
     if (page_state.arg('table-type') === 'dist_plot') {
         groupedData = {};
@@ -358,16 +368,26 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             // Add count URL prefix for use in the render function
             raw_data.data[i].count_url_prefix = r;
 
-            // (# of lines) / (words in book) * (1 million)
-            raw_data.data[i].rel_freq = ((raw_data.data[i][1].length / raw_data.data[i][1][0].chapter_start._end) * 1000000).toFixed(2);
+            raw_data.data[i].rel_freq = partsPerMillion(
+                raw_data.data[i][1].length,  // # of lines in this group
+                raw_data[word_count_key][raw_data.data[i][0]]  // Counts for this book
+            );
         }
     }
 
     // Update extra strings for dataTables.net info line
     this.extra_info = [];
 
-    // Show how many books mentioned if not a dist_plot (otherwise it's pointless)
     if (page_state.arg('table-type') !== 'dist_plot') {
+        if (raw_data.data.length > 0 && Object.keys(raw_data[word_count_key]).length > 0) {  // NB: Strictly we should check the sum is > 0, but close enough
+            // Rel freq
+            this.extra_info.push("rel. freq. " + partsPerMillion(
+                raw_data.data.length,  // # of results overall
+                Object.keys(raw_data[word_count_key]).reduce(function (a, k) { return a + raw_data[word_count_key][k]; }, 0)  // Counts from all books
+            ));
+        }
+
+        // Book count
         this.extra_info.push("from " + plural(Object.keys(raw_data.chapter_start).length, "book"));
     }
 
