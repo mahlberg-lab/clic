@@ -203,6 +203,20 @@ class TestConcordance(unittest.TestCase):
             }
         ))))
 
+        # word_count
+        out = [x for x in concordance(
+            cdb,
+            corpora=['AgnesG', 'TTC'],
+            subset=['quote'],
+            q=[u'she was'],
+            contextsize=[0],
+            metadata=['word_count_all', 'word_count_quote'],
+        )]
+        self.assertEqual(out[-1], ('footer', dict(
+            word_count_all=dict(AgnesG=68197, TTC=136100),
+            word_count_quote=dict(AgnesG=21986, TTC=48557),
+        )))
+
     def test_querybyauthor(self):
         cdb = ClicDb()
 

@@ -113,30 +113,55 @@ class ClicDb():
         - metadata: Metadata items to include, a set contining some of...
           - 'book_titles': The title / author of each book
           - 'chapter_start': The start word ID for all achpters (i.e. the length of the previous)
+          - 'word_count_(subset)': Count of words within (subset)
         """
         out = {}
         def p_params(*args):
             return ("?, " * sum(len(x) for x in args)).rstrip(', ')
 
-        if 'book_titles' in metadata:
-            out['book_titles'] = {}
-            for (book_id, title, author) in self.rdb_query(
-                    "SELECT book_id, title, author FROM book" +
-                    " WHERE book_id IN (" + p_params(book_ids) + ")",
-                    tuple(book_ids)):
-                out['book_titles'][book_id] = (title, author)
+        for k in metadata:
+            out[k] = {}
 
-        if 'chapter_start' in metadata:
-            out['chapter_start'] = {}
-            for (book_id, chapter_num, word_total) in self.rdb_query(
-                    "SELECT book_id, chapter_num, word_total FROM chapter" +
-                    " WHERE book_id IN (" + p_params(book_ids) + ")" +
-                    " ORDER BY 1, 2",
-                    tuple(book_ids)):
-                if book_id not in out['chapter_start']:
-                    out['chapter_start'][book_id] = dict(_end=0)
-                out['chapter_start'][book_id][chapter_num] = out['chapter_start'][book_id]['_end']
-                out['chapter_start'][book_id]['_end'] += word_total
+            if k == 'book_titles':
+                for (book_id, title, author) in self.rdb_query(
+                        "SELECT book_id, title, author FROM book" +
+                        " WHERE book_id IN (" + p_params(book_ids) + ")",
+                        tuple(book_ids)):
+                    out[k][book_id] = (title, author)
+
+            elif k == 'chapter_start':
+                for (book_id, chapter_num, word_total) in self.rdb_query(
+                        "SELECT book_id, chapter_num, word_total FROM chapter" +
+                        " WHERE book_id IN (" + p_params(book_ids) + ")" +
+                        " ORDER BY 1, 2",
+                        tuple(book_ids)):
+                    if book_id not in out[k]:
+                        out[k][book_id] = dict(_end=0)
+                    out[k][book_id][chapter_num] = out[k][book_id]['_end']
+                    out[k][book_id]['_end'] += word_total
+
+            elif k == 'word_count_all':
+                for (book_id, word_count) in self.rdb_query(
+                        "SELECT book_id, SUM(word_total) word_count FROM chapter" +
+                        " WHERE book_id IN (" + p_params(book_ids) + ")" +
+                        " GROUP BY 1 ORDER BY 1",
+                        tuple(book_ids)):
+                    out[k][book_id] = word_count
+
+            elif k.startswith('word_count_'):
+                for (book_id, word_count) in self.rdb_query(
+                        "SELECT c.book_id" +
+                        "     , SUM(s.offset_end - s.offset_start) word_count" +
+                        "  FROM subset s, chapter c" +
+                        " WHERE s.chapter_id = c.chapter_id" +
+                        "   AND book_id IN (" + p_params(book_ids) + ")" +
+                        "   AND s.subset_type = ?" +
+                        " GROUP BY 1 ORDER BY 1",
+                        tuple(book_ids) + (k.replace('word_count_', ''), )):
+                    out[k][book_id] = word_count
+
+            else:
+                raise ValueError("Unknown metadata item %s" % k)
 
         return out
 

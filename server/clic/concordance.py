@@ -13,7 +13,7 @@ Searches texts for given phrase(s).
 - subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
 - q: 1+ string to search for. If multiple terms are provided, they will be OR'ed together (i.e. we search for either)
 - contextsize: Size of context window around search results. Default 0.
-- metadata: Optional data to return, currently only 'book_titles' to return full book titles
+- metadata: Optional data to return, see get_book_metadata in clicdb.py for all options
 
 Parameters should be provided in querystring format, for example::
 

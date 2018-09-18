@@ -6,7 +6,7 @@ Returns subsets of given texts, for example quotations.
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: subset to return, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
 - contextsize: Size of context window around subset. Default 0.
-- metadata: Optional data to return, currently only 'book_titles' to return full book titles
+- metadata: Optional data to return, see get_book_metadata in clicdb.py for all options
 
 Parameters should be provided in querystring format, for example::
 
