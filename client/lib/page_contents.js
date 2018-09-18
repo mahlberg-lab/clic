@@ -20,7 +20,7 @@ PageContents.prototype.reload = function reload(page_state) {
     var self = this;
 
     return api.get('corpora/headlines').then(function (data) {
-        var clic_contents_el = self.content_el.querySelector('#content > .clic-contents');
+        var carousel_el = self.content_el.querySelector('#content > .clic-contents > .carousel');
 
         function gen_carousel_item(d) {
             return [
@@ -32,11 +32,11 @@ PageContents.prototype.reload = function reload(page_state) {
             ].join("\n");
         }
 
-        if (clic_contents_el) {
-            // Add carousel to top of clic-contents
-            clic_contents_el.insertBefore(
+        if (carousel_el) {
+            // Replace carousel placeholder with a real carousel
+            carousel_el.parentNode.replaceChild(
                 gen_carousel(data.data.map(gen_carousel_item), 5),
-                clic_contents_el.firstChild
+                carousel_el
             );
         } else {
             // Reload page properly so clic-contents is available
