@@ -6,10 +6,12 @@ import os
 os.environ['HOME'] = "/tmp"
 
 from flask import Flask, request, Response, jsonify, g
+from flask_cors import CORS
 
 from clic.clicdb import ClicDb
 
 app = Flask(__name__)
+CORS(app)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 # Enable profiling per request
 # from werkzeug.contrib.profiler import ProfilerMiddleware
