@@ -56,6 +56,7 @@ ExecStart=${UWSGI_BIN} \
     --mount /=clic.web:app \
     --chmod-socket=666 \
     --harakiri ${UWSGI_HARAKIRI} \
+    --env="PROJECT_REV=${PROJECT_REV}" \
     -s ${UWSGI_SOCKET}
 WorkingDirectory=${CLIC_PATH}/server
 User=${UWSGI_USER}

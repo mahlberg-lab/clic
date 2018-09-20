@@ -101,8 +101,7 @@ class ClicDb():
             out[repo] = version
 
         # CLiC might have been upgraded since import
-        with open(os.path.join(CLIC_DIR, '..', 'clic_revision')) as f:
-            out['clic'] = f.read().strip()
+        out['clic'] = os.environ.get('PROJECT_REV', 'development')
 
         return out
 
