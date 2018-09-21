@@ -4,7 +4,7 @@
   "description": "CLiC clientside code",
   "homepage": "http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx",
   "dependencies": {
-    "bootstrap": "4.0.0-alpha.6",
+    "bootstrap": "^4.1.2",
     "chosen-js": "^1.7.0",
     "classlist-toggle-force-polyfill": "git://github.com/orangemug/classlist-toggle-force-polyfill.git",
     "custom-event-polyfill": "^0.3.0",
