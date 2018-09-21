@@ -52,4 +52,18 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     return this.cached_get('subset', api_opts).then(this.post_process.bind(this, page_state, kwicTerms, kwicSpan));
 };
 
+
+PageSubset.prototype.relative_frequency_title = function (page_state) {
+    return '<abbr title="percentage of total words that are in ' + page_state.arg('subset-subset') + ' subsets">%age</abbr>';
+};
+
+
+PageSubset.prototype.relative_frequency = function (lines, total_words) {
+    var words_in_subset = lines.reduce(function (total, l) {
+        return total + l[1][l[1].length - 1].length;
+    }, 0);
+
+    return ((words_in_subset / total_words) * 100).toFixed(2);
+};
+
 module.exports = PageSubset;
