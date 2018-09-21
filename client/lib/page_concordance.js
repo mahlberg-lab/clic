@@ -8,10 +8,6 @@ var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var object_entries = require('object.entries-ponyfill');
 
-function partsPerMillion(count, total) {
-    return ((count / total) * 1000000).toFixed(2);
-}
-
 // Plural-ise a few known phrases
 function plural(amount, unit) {
     if (amount === 1) {
@@ -174,7 +170,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
             { title: "Book", data: "0", render: concordance_utils.renderBook.bind(this, 'full'), width: "10rem", searchable: true },
             { title: "Count", data: "1", width: "3rem", render: renderPlotCount, searchable: false, "orderSequence": [ "desc", "asc" ], },
-            { title: '<abbr title="x entries per million words">Rel.Freq</abbr>', data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
+            { title: this.relative_frequency_title(page_state), data: "rel_freq", width: "3rem", searchable: false, "orderSequence": [ "desc", "asc" ], },
             { title: "Plot", data: "1", render: renderDistributionPlot, searchable: false },
         ];
         if (page_state.arg('kwic-terms').length > 0) {
@@ -368,9 +364,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             // Add count URL prefix for use in the render function
             raw_data.data[i].count_url_prefix = r;
 
-            raw_data.data[i].rel_freq = partsPerMillion(
-                raw_data.data[i][1].length,  // # of lines in this group
-                raw_data[word_count_key][raw_data.data[i][0]]  // Counts for this book
+            raw_data.data[i].rel_freq = this.relative_frequency(
+                raw_data.data[i][1],  // All lines in this book
+                raw_data[word_count_key][raw_data.data[i][0]]  // Total counts for this book
             );
         }
     }
@@ -381,8 +377,8 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     if (page_state.arg('table-type') !== 'dist_plot') {
         if (raw_data.data.length > 0 && Object.keys(raw_data[word_count_key]).length > 0) {  // NB: Strictly we should check the sum is > 0, but close enough
             // Rel freq
-            this.extra_info.push("rel. freq. " + partsPerMillion(
-                raw_data.data.length,  // # of results overall
+            this.extra_info.push(this.relative_frequency_title(page_state) + ' ' + this.relative_frequency(
+                raw_data.data,  // All lines
                 Object.keys(raw_data[word_count_key]).reduce(function (a, k) { return a + raw_data[word_count_key][k]; }, 0)  // Counts from all books
             ));
         }
@@ -403,6 +399,22 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     // Add allWords to server response
     raw_data.allWords = allWords;
     return raw_data;
+};
+
+PageConcordance.prototype.relative_frequency_title = function (page_state) {
+    var title;
+
+    if (page_state.arg('conc-subset') === 'all') {
+        title = 'Lines per milion words overall';
+    } else {
+        title = 'Lines per milion words from ' + page_state.arg('conc-subset') + ' subsets';
+    }
+    return '<abbr title="' + title + '">Rel. Freq.</abbr>';
+};
+
+
+PageConcordance.prototype.relative_frequency = function (lines, total_words) {
+    return ((lines.length / total_words) * 1000000).toFixed(2);
 };
 
 module.exports = PageConcordance;

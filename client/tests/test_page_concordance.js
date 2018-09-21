@@ -35,6 +35,7 @@ function page_state(pathname, search) {
         'tag_columns': {},
         'tag_column_order': [],
         'table-type': 'basic',
+        'conc-subset': 'all',
     });
 }
 
@@ -100,7 +101,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].kwic, 0, 'No matches, kwic 0');
         t.deepEqual(data.allWords, {}, 'Ignoring all rows, so no words found');
         t.deepEqual(pt.extra_info, [
-            'rel. freq. 10000.00',  // i.e. (1 / 100) * 1 000 000
+            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 10000.00',  // i.e. (1 / 100) * 1 000 000
             'from 1 book',
         ], "Extra info updated");
 
@@ -129,7 +130,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].kwic, 1, 'Overall 1 match');
         t.deepEqual(data.allWords, {'you\'ve': true, gotten: true, us: true, into: true}, 'Found words in middle, right');
         t.deepEqual(pt.extra_info, [
-            'rel. freq. 5000.00',  // i.e. (1 / 200) * 1 000 000
+            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 5000.00',  // i.e. (1 / 200) * 1 000 000
             'from 1 book',
             '1 line / 1 book with 1 KWIC match',
         ], "Extra info updated");
@@ -202,11 +203,13 @@ test('post_process:extra_info', function (t) {
     function ei(data, chapter_start, table_type, word_count) {
         var content_el = { children: [] },
             input = { data: data, chapter_start: chapter_start, version: 33 },
+            query_string = 'table-type=' + [table_type || 'basic'],
             pt = new PageConcordance(content_el);
 
         if (word_count) {
             // NB: It doesn't really matter what the subset is called
             input.word_count_somesubset = word_count;
+            query_string += '&conc-subset=somesubset';
         } else {
             input.word_count_all = {};
             Object.keys(chapter_start).forEach(function (k) {
@@ -214,7 +217,7 @@ test('post_process:extra_info', function (t) {
             });
         }
         pt.post_process(
-            page_state('/c', 'table-type=' + [table_type || 'basic']),
+            page_state('/c', query_string),
             kwic_terms('ape gorilla chimp'),
             [{ignore: true, reverse: true}, {start: 0, stop: 10}, {ignore: true}],
             input
@@ -231,14 +234,14 @@ test('post_process:extra_info', function (t) {
     t.deepEqual(ei([
         string_to_line("", "No monkeying about", ""),
     ], { "AgnesG": {0: 0, _end: 5555} }), [
-        "rel. freq. 180.02",  // (1 / 5555) * 1000000
+        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 180.02',  // (1 / 5555) * 1000000
         "from 1 book",
     ], "We just count books");
 
     t.deepEqual(ei([
         string_to_line("", "No monkeying about", ""),
     ], { "AgnesG": {0: 0, _end: 5555} }, undefined, { "AgnesG": 500 }), [
-        "rel. freq. 2000.00",  // (1 / 500) * 1000000
+        '<abbr title="Lines per milion words from somesubset subsets">Rel. Freq.</abbr> 2000.00',  // (1 / 500) * 1000000
         "from 1 book",
     ], "We can use different subsets to calculate rel.freq");
 
@@ -256,7 +259,7 @@ test('post_process:extra_info', function (t) {
         string_to_line("", "chimp ape gorilla", "", ['AgnesH', 99, 100, 103]),
         string_to_line("", "No monkeying about", "", ['AgnesG', 99, 100, 103]),
     ], { "AgnesG": {0: 100, _end: 5555}, "AgnesH": {0: 100, _end: 5555} }), [
-        "rel. freq. 630.06",  // (7 / (2*5555)) * 1000000
+        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 630.06',  // (7 / (2*5555)) * 1000000
         "from 2 books",
         '3 lines / 1 book with 3 KWIC matches',
         '2 lines / 2 books with 2 KWIC matches',
