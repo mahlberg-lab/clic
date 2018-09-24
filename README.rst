@@ -25,14 +25,12 @@ First, configure your system to include the Yarn repository: https://yarnpkg.com
 Then install the following from your system repositories::
 
     # Server prerequisites
-    sudo apt-get install build-essential \
-        subversion \
-        python-virtualenv virtualenv \
-        python2.7 libpython2.7-dev python2.7-dev \
-        libxml2-dev libxslt1-dev
+    sudo apt install \
+        postgresql postgresql-contrib \
+        python3 python3-venv python3-dev \
 
     # Client prerequisites
-    sudo apt-get install make nodejs yarn nginx
+    sudo apt install make nodejs yarn nginx
 
 Database setup
 --------------

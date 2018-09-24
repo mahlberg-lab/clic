@@ -1,28 +1,34 @@
-all: compile test
+EGG_NAME=clic
+SHELL=/bin/bash -o pipefail
 
-compile: lib/python2.7/site-packages/.requirements
-	./bin/pip install -e .
+all: compile test lint
 
 bin/pip:
-	/usr/bin/virtualenv .
+	python3 -m venv .
 
-lib/python2.7/site-packages/PyZ3950: bin/pip
-	./bin/pip install http://www.panix.com/~asl2/software/PyZ3950/PyZ3950-2.04.tar.gz
-	touch $@
-
-lib/python2.7/site-packages/ZSI: bin/pip
-	svn checkout svn://svn.code.sf.net/p/pywebsvcs/code/branches/v1_5 /tmp/pywebsvcs-code
-	mv /tmp/pywebsvcs-code/wstools /tmp/pywebsvcs-code/zsi/ZSI/wstools/
-	./bin/pip install /tmp/pywebsvcs-code/zsi/
-	rm -fr -- '/tmp/pywebsvcs-code'
-	touch $@
-
-lib/python2.7/site-packages/.requirements: requirements.txt \
-    lib/python2.7/site-packages/PyZ3950 \
-    lib/python2.7/site-packages/ZSI \
-    bin/pip
+lib/.requirements: requirements.txt requirements-to-freeze.txt setup.py bin/pip
+	# Install frozen requirements
 	./bin/pip install -r requirements.txt
-	touch lib/python2.7/site-packages/.requirements
+	# Make sure any new requirements are available
+	./bin/pip install -r requirements-to-freeze.txt
+	# Freeze the output at current state
+	./bin/pip freeze | grep -v egg=$(EGG_NAME) > requirements.txt
+	touch lib/.requirements
+
+compile: lib/.requirements
+
+test: compile
+	./bin/pytest tests/test_*.py
+
+lint: lib/.requirements
+	./bin/flake8 --ignore=E501 $(EGG_NAME)/ tests/
+
+coverage: compile
+	./bin/coverage run ./bin/py.test tests/
+	./bin/coverage html
+	mkdir -p ../client/www/coverage
+	ln -rs htmlcov ../client/www/coverage/server
+	echo Visit http://...//coverage/server/index.html
 
 start: lib/python2.7/site-packages/.requirements test
 	./bin/uwsgi \
@@ -34,11 +40,4 @@ start: lib/python2.7/site-packages/.requirements test
 	    --chmod-socket=666 \
 	    -s /tmp/clic_uwsgi.development.sock
 
-clean:
-	rm -rf -- ./bin ./include ./lib ./local ./share
-	find ./clic -name '*.pyc' -exec rm -- {} \;
-
-test: lib/python2.7/site-packages/.requirements
-	./bin/py.test tests/
-
-.PHONY: compile test start
+.PHONY: compile test lint coverage start
