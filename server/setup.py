@@ -4,6 +4,7 @@ requires = [
     'Flask',
     'uWSGI',
     'pandas',
+    'psycopg2',
     'unidecode',
 ]
 
@@ -26,6 +27,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
+            'import_cheshire_json=clic.migrate.cheshire_json:script_import_cheshire_json',
             'recreate_rdb=clic.clicdb:recreate_rdb',
             'store_documents=clic.clicdb:store_documents',
         ],
