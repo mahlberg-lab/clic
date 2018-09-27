@@ -1,5 +1,5 @@
 flake8
 coverage
 wheel
--e . ".[testing]"
 -e .
+.[testing]
