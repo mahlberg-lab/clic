@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-import os
-import os.path
-
-from unidecode import unidecode
-
-from clic.errors import UserError
 """Concordance endpoint
 
 Searches texts for given phrase(s).
@@ -73,7 +66,13 @@ Examples:
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 """
-def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
+import re
+
+from clic.db.book import get_book_metadata, get_book
+from clic.errors import UserError
+
+
+def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
     """
     Main entry function for concordance search
 
@@ -84,82 +83,118 @@ def concordance(cdb, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     - metadata, Array of extra metadata to provide with result, some of
       - 'book_titles' (return dict of book IDs to titles at end of result)
     """
-    idx = cdb.get_subset_index(subset[0])
-    contextsize = int(contextsize[0])
+    book_ids = (1,)  # TODO: corpra_to_book_ids(cur, corpora)
+    # TODO: region_id = subset_to_rclass_id(cur, subset)
+    like_sets = parse_queries(q)
+    contextsize = contextsize[0]
+    metadata = set(metadata)
+    book_cur = cur.connection.cursor()
+    book = None
 
-    query = build_query(cdb, q, idx, corpora)
-    result_set = cdb.c3_query(query)
+    for likes in like_sets:
+        query = """
+            SELECT book_id,
+                   ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens,
+                   ARRAY_AGG(crange ORDER BY ordering) node_tokens,
+                   conc_group word_id
+              FROM (
+        """
+        params = [int(contextsize) * 10]  # TODO: Bodge word -> char
 
-    return create_concordance(cdb, q, result_set, contextsize, metadata)
+        for i, like in enumerate(likes):
+            if i > 0:
+                query += "UNION ALL\n"
+            query += """
+                SELECT book_id,
+                       crange,
+                       ttype,
+                       ordering,
+                       ordering - %s conc_group
+                  FROM token
+                 WHERE book_id IN %s
+                   AND ttype LIKE %s
+            """
+            params.extend([i, book_ids, like])
+        query += """
+            ) c
+            GROUP BY book_id, conc_group
+            HAVING COUNT(*) = %s
+            ORDER BY book_id, conc_group
+        """
+        params.append(len(likes))
+        # TODO: Not filtering by region.
+        # TODO: * maerialised views that filter tokens: SELECT * FROM token t, region r WHERE t.crange <@ r.crange
+        # TODO: * filter by region after results got.
 
-
-def build_query(cdb, q, idxName, corpora):
-    '''
-    Builds a cheshire query
-     - q: Quer(ies) to search for
-     - idxName: Index to use, e.g. "chapter-idx"
-     - corpora: List of subcorpi to search, e.g. ["dickens"]
-
-    Return a CQL query
-    '''
-    ## define search term
-    if len(q) == 0:
-        raise UserError("You must supply at least one search term", "error")
-
-    term_clauses = []
-    for term in q:
-        term_clauses.append(u'c3.{0} = "{1}"'.format(idxName, unicode(unidecode(term)).replace('"', '\\"')))
-
-    ## conduct database search
-    ## note: /proxInfo needed to search individual books
-    query = u'(%s) and/proxInfo (%s)' % (
-        cdb.corpora_list_to_query(corpora),
-        u' or/proxInfo '.join(term_clauses),
-    )
-
-    return query
-
-
-def create_concordance(cdb, q, result_set, contextsize, metadata):
-    """
-    main concordance method
-    create a list of lists containing each three contexts left - node -right,
-    and a list within those contexts containing each word.
-    Add two separate lists containing metadata information:
-    [
-    [left context - word 1, word 2, etc.],
-    [node - word 1, word 2, etc],
-    [right context - word 1, etc],
-    [chapter metadata],
-    [book metadata]
-    ],
-    etc.
-    """
-    conc_lines = [] # return concordance lines in list
-
-    if sum(len(result.proxInfo) for result in result_set) > 10000:
-        raise UserError("This query returns over 10 000 results, please try some other search terms using less-common words.", "error")
-
-    # Empty heading
-    yield {}
-
-    ## search through each record (chapter) and identify location of search term(s)
-    book_ids = set()
-    for result in result_set:
-        ch = cdb.get_chapter(result.id)
-        book_ids.add(ch.book_id)
-
-        for match in result.proxInfo:
-            # match contains proxInfo for each word in node, find first.
-            (word_id, para_chap, sent_chap) = cdb.get_word(result.id, match[0])
-
-            conc_line = ch.get_conc_line(word_id, len(match), contextsize) + [
-                [ch.book_id, ch.chapter_num, word_id, word_id + len(match)],
-                [para_chap, sent_chap],
+        cur.execute(query, params)
+        for book_id, full_tokens, node_tokens, word_id in cur:
+            if not book or book['id'] != book_id:
+                book = get_book(book_cur, book_id, content=True)
+            conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
+            yield [
+                conc_left,
+                conc_node,  # TODO: Should be doing unidecode to sort I don’t know -> don't, presumably for KWIC's sake?
+                conc_right,
+                # TODO: What to do about chapter_num?
+                [book['name'], 0, word_id, word_id + len(likes)],
+                # TODO: Para / sentence counts (and probably move chap counts here)
+                [0, 0]
             ]
 
-            yield conc_line
+    book_cur.close()
 
-    footer = cdb.get_book_metadata(book_ids, set(metadata))
+    footer = get_book_metadata(cur, book_ids, metadata)
     if footer:
         yield ('footer', footer)
+
+
+def to_conc(full_text, full_tokens, node_tokens):
+    """
+    Convert full text + tokens back into wire format
+    - full_text: String covering entire area, including window
+    - full_tokens: List of tokens, including window
+    - node_tokens: List of tokens, excluding window
+
+    A token is of the form [min, max] TODO: And ctype?
+    """
+    concs = [[]]
+    toks = [[]]
+
+    prev_t = None
+    for t in full_tokens:
+        if t == node_tokens[0]:
+            concs.append([])
+            toks.append([])
+        if prev_t:
+            # Add non-word characters before current tokens
+            concs[-1].append(full_text[prev_t.upper:t.lower])
+        # Add word token
+        toks[-1].append(len(concs[-1]))
+        concs[-1].append(full_text[t.lower:t.upper])
+        prev_t = t
+
+        if t == node_tokens[-1]:
+            # Anything after this is right-hand context
+            concs.append([])
+            toks.append([])
+
+    # Add array of indicies that are tokens to the end
+    for i, c in enumerate(concs):
+        c.append(toks[i])
+    return concs
+
+
+def parse_queries(query_list):
+    def term_to_like(t):
+        """Escape any literal LIKE terms, convert * to %"""
+        return (t.replace('\\', '\\\\')
+                 .replace('%', '\\%')
+                 .replace('_', '\\_')
+                 .replace('*', '%'))
+
+    if len(query_list) == 0:
+        raise UserError("You must supply at least one search term", "error")
+
+    # Split each query by whitespace(TODO: Or non-word? Comma good, hypen bad? We need to apply quoting rules from input)
+    # TODO: We need a tokeniser class that both this and the ingester uses
+    return [[term_to_like(t) for t in re.split('\s+', query.lower())] for query in query_list]
