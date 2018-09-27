@@ -9,6 +9,7 @@ from flask import Flask, request, Response, jsonify, g
 from flask_cors import CORS
 
 from clic.clicdb import ClicDb
+from clic.stream_json import stream_json, format_error
 
 app = Flask(__name__)
 CORS(app)
@@ -44,49 +45,6 @@ def add_header(response):
 def close_db(exception):
     if getattr(g, 'clicdb', None):
         g.clicdb.close()
-
-def format_error(e):
-    import traceback
-
-    level = getattr(e, 'level', 'error')
-    print_stack = getattr(e, 'print_stack', True)
-    return {level: dict(
-        message=(e.__class__.__name__ + ": " if print_stack else "") + e.message,
-        stack=traceback.format_exc() if print_stack else None,
-    )}
-
-def stream_json(generator, header={}):
-    """
-    Stream output of generator as JSON.
-    header is used as the containing dict,
-    all other items will be added to a "data" array within it
-    """
-    # Initial JSON object based on first item returned
-    header = json.dumps(header, separators=(',', ':'))
-    if header[-1] != '}':
-        raise ValueError("Initial item not a JSON object: %s" % header)
-    if header == '{}':
-        yield '{"data":['
-    else:
-        yield header[:-1] + ',"data":['
-
-    separator = '\n'
-    footer = {}
-    try:
-        for x in generator:
-            if isinstance(x, tuple) and x[0] == 'footer':
-                footer.update(x[1])
-            else:
-                yield separator + json.dumps(x, separators=(',', ':'))
-                separator = ',\n'
-    except Exception as e:
-        footer.update(format_error(e))
-
-    # End list and format footer
-    if len(footer) > 0:
-        yield '\n], ' + json.dumps(footer, separators=(',', ':'))[1:]
-    else:
-        yield '\n]}'
 
 # ==== Metadata routes ====================================
 import clic.metadata
