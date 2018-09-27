@@ -71,6 +71,7 @@ import re
 import unidecode
 
 from clic.db.book import get_book_metadata, get_book
+from clic.db.corpora import corpora_to_book_ids
 from clic.errors import UserError
 
 
@@ -85,7 +86,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     - metadata, Array of extra metadata to provide with result, some of
       - 'book_titles' (return dict of book IDs to titles at end of result)
     """
-    book_ids = (1,)  # TODO: corpra_to_book_ids(cur, corpora)
+    book_ids = corpora_to_book_ids(cur, corpora)
     # TODO: region_id = subset_to_rclass_id(cur, subset)
     like_sets = parse_queries(q)
     contextsize = contextsize[0]
@@ -116,7 +117,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                  WHERE book_id IN %s
                    AND ttype LIKE %s
             """
-            params.extend([i, book_ids, like])
+            params.extend([i, tuple(book_ids), like])
         query += """
             ) c
             GROUP BY book_id, conc_group
