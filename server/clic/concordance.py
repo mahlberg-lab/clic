@@ -68,6 +68,8 @@ Examples:
 """
 import re
 
+import unidecode
+
 from clic.db.book import get_book_metadata, get_book
 from clic.errors import UserError
 
@@ -133,7 +135,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
             yield [
                 conc_left,
-                conc_node,  # TODO: Should be doing unidecode to sort I don’t know -> don't, presumably for KWIC's sake?
+                conc_node,
                 conc_right,
                 # TODO: What to do about chapter_num?
                 [book['name'], 0, word_id, word_id + len(likes)],
@@ -155,7 +157,7 @@ def to_conc(full_text, full_tokens, node_tokens):
     - full_tokens: List of tokens, including window
     - node_tokens: List of tokens, excluding window
 
-    A token is of the form [min, max] TODO: And ctype?
+    A token is a NumericRange type indicating the range in full_text it corresponds to
     """
     concs = [[]]
     toks = [[]]
@@ -170,7 +172,8 @@ def to_conc(full_text, full_tokens, node_tokens):
             concs[-1].append(full_text[prev_t.upper:t.lower])
         # Add word token
         toks[-1].append(len(concs[-1]))
-        concs[-1].append(full_text[t.lower:t.upper])
+        # TODO: Ideally we'd not mangle text, instead return the tokens here
+        concs[-1].append(unidecode.unidecode(full_text[t.lower:t.upper]))
         prev_t = t
 
         if t == node_tokens[-1]:
