@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS corpus (
     PRIMARY KEY (corpus_id),
     
     name TEXT NOT NULL,
+    UNIQUE(name),
     title TEXT NOT NULL,
     ordering INT NOT NULL DEFAULT 0
 );
