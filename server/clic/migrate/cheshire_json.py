@@ -24,12 +24,14 @@ def xml_to_plaintext(xml_string, offset):
 
     def open_region(rclass, rvalue=None):
         if rclass in unclosed_regions:
-            raise ValueError("Already have an open %s" % rclass)
+            close_region(rclass)
+            print("*** Warning: Unclosed %s" % rclass)
         unclosed_regions[rclass] = [rclass, rvalue, len(out_string) + offset]
 
     def close_region(rclass):
         if rclass not in unclosed_regions:
-            raise ValueError("Closing an unopen region %s" % rclass)
+            print("*** Warning: Ignoring closure of unopen %s" % rclass)
+            return
         out_regions.append(unclosed_regions[rclass] + [len(out_string) + offset])
         del unclosed_regions[rclass]
 
@@ -39,6 +41,8 @@ def xml_to_plaintext(xml_string, offset):
             if 'chapter.title' in unclosed_regions:
                 # Parsing the title, reformat it
                 out_string = out_string + "CHAPTER %s." % part
+            elif 'ignore.text' in unclosed_regions:
+                pass  # Ignore plain-text version
             elif 'token.word' in unclosed_regions:
                 # rvalue for a word should be it's type
                 unclosed_regions['token.word'][1] = re.sub(r'\W+', '', part).lower()
@@ -55,6 +59,25 @@ def xml_to_plaintext(xml_string, offset):
             open_region('token.word')
         elif part.startswith('span class="s"'):
             open_region('chapter.sentence', 1)  # TODO: paragraph count
+
+        elif part == '/w':
+            close_region('token.word')
+        elif part.startswith('w o='):
+            open_region('token.word')
+
+        elif part == '/s':
+            close_region('chapter.sentence')
+        elif part.startswith('s sid='):
+            open_region('chapter.sentence', 1)  # TODO: paragraph count
+
+        elif part == '/txt':
+            close_region('ignore.text')
+        elif part == 'txt':
+            open_region('ignore.text')
+        elif part == '/toks':
+            pass
+        elif part == 'toks':
+            pass
 
         elif part.startswith('qs '):
             if 'wordOffset=' in part:  # i.e. ignore fake quote-start at end
@@ -99,6 +122,10 @@ def xml_to_plaintext(xml_string, offset):
             # No idea.
             pass
 
+        elif part.startswith('corr ') or part == '/corr':
+            # Corrections? Bah.
+            pass
+
         else:
             # Dunno
             raise ValueError("Unknown tag %s" % part)
@@ -112,7 +139,7 @@ def xml_to_plaintext(xml_string, offset):
         raise ValueError("Still have open regions!")
     # TODO: non-quote regions
     # TODO: Boundaries
-    return book_name, out_string, out_regions
+    return book_name, out_string, [x for x in out_regions if x[0] != 'ignore.text']
 
 
 def script_import_cheshire_json():
