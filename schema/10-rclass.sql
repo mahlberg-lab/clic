@@ -22,7 +22,7 @@ $BODY$
         ON CONFLICT (rclass_id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description;
 $BODY$ LANGUAGE sql;
 SELECT pg_temp.upsert_rclass(101, 'metadata.title', 'Book title');
-SELECT pg_temp.upsert_rclass(101, 'metadata.author', 'Book author');
+SELECT pg_temp.upsert_rclass(102, 'metadata.author', 'Book author');
 SELECT pg_temp.upsert_rclass(201, 'boundary.chapter', 'Whitespace between chapters');
 SELECT pg_temp.upsert_rclass(202, 'boundary.paragraph', 'Whitespace between paragraphs');
 SELECT pg_temp.upsert_rclass(203, 'boundary.sentence', 'Punctuation denoting end of sentences');

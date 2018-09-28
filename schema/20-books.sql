@@ -64,12 +64,28 @@ $BODY$
 $BODY$ LANGUAGE sql;
 COMMENT ON FUNCTION public.tokens_in_crange(book_id INT, crange INT8RANGE) IS 'Get all tokens within the given crange';
 
-/*
-TODO:
-Book metadata view: Picks out values for
-* 'metadata.title'
-* 'metadata.author'
 
+DROP MATERIALIZED VIEW IF EXISTS book_metadata;
+CREATE MATERIALIZED VIEW book_metadata AS
+    SELECT r.book_id,
+           r.rclass_id,
+           r.rvalue,
+           SUBSTRING(b.content, LOWER(r.crange)::INT + 1, (UPPER(r.crange) - LOWER(r.crange))::INT+1) AS content
+      FROM region r, book b
+     WHERE b.book_id = r.book_id
+       AND r.rclass_id IN (101, 102, 302);
+COMMENT ON MATERIALIZED VIEW book_metadata IS 'Extracted metadata from book contents';
+
+
+CREATE OR REPLACE FUNCTION refresh_book_materialized_views()
+RETURNS VOID SECURITY DEFINER LANGUAGE PLPGSQL
+AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW book_metadata;
+END $$;
+COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
+
+/*
 Searching for n-grams is:
    * Get 'token.type' and 'boundary.*', sorted by crange
    * Window function to search next n rows, disregard if one is a boundary.
