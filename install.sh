@@ -13,6 +13,7 @@ set -ex
 
 set -a
 CLIC_PATH="${CLIC_PATH-$(dirname "$(readlink -f "$0")")}"
+CLIC_MODE="${CLIC_MODE-development}"
 SERVER_NAME="${SERVER_NAME-$(hostname --fqdn)}"
 SERVICE_NAME="${SERVICE_NAME-clic}"
 SERVICE_FILE="${SERVICE_FILE-/etc/systemd/system/${SERVICE_NAME}.service}"
