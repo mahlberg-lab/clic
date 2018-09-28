@@ -87,6 +87,8 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
       - 'book_titles' (return dict of book IDs to titles at end of result)
     """
     book_ids = corpora_to_book_ids(cur, corpora)
+    if len(book_ids) == 0:
+        raise UserError("No books to search", "error")
     # TODO: region_id = subset_to_rclass_id(cur, subset)
     like_sets = parse_queries(q)
     contextsize = contextsize[0]
