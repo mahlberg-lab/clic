@@ -1,41 +1,60 @@
-def get_corpus_structure(cdb):
+from clic.db.lookup import rclass_id_lookup
+
+
+def corpora(cur):
     """
     Return a list of dicts containing:
     - id: corpus short name
     - title: corpus title
     - children: [{id: book id, title: book title, author: book author}, ...]
     """
-    c = cdb.rdb_query(
-        "SELECT c.corpus_id, c.title, b.book_id, b.title, b.author" +
-        " FROM corpus c, book b" +
-        " WHERE b.corpus_id = c.corpus_id" +
-        " ORDER BY c.ordering, b.title")
+    rclass = rclass_id_lookup(cur)
+
+    cur.execute("""
+        SELECT c.name c_name
+             , c.title c_title
+             , (SELECT b.name FROM book b WHERE b.book_id = cb.book_id) b_name
+             , MAX(CASE WHEN bm.rclass_id = %(rclass_title)s THEN bm.content ELSE NULL END) AS title
+             , MAX(CASE WHEN bm.rclass_id = %(rclass_author)s THEN bm.content ELSE NULL END) AS author
+          FROM corpus c, corpus_book cb, book_metadata bm
+         WHERE c.corpus_id = cb.corpus_id
+           AND cb.book_id = bm.book_id
+           AND bm.rclass_id IN (%(rclass_title)s, %(rclass_author)s)
+      GROUP BY c.corpus_id, cb.book_id
+      ORDER BY c.ordering, b_name
+    """, dict(
+        rclass_title=rclass['metadata.title'],
+        rclass_author=rclass['metadata.author'],
+    ))
 
     out = []
-    for (c_id, c_title, b_id, b_title, b_author) in c:
-        if len(out) == 0 or out[-1]['id'] != c_id:
-            out.append(dict(id=c_id, title=c_title, children=[]))
+    for (c_id, c_title, b_id, b_title, b_author) in cur:
+        if len(out) == 0 or out[-1]['id'] != 'corpus:%s' % c_id:
+            out.append(dict(id='corpus:%s' % c_id, title=c_title, children=[]))
         out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author))
 
-    c = cdb.rdb_query(
-        "SELECT b.author, COUNT(*) book_count" +
-        " FROM book b" +
-        " GROUP BY b.author" +
-        " HAVING book_count > 2" +
-        " ORDER BY b.author")
+    cur.execute("""
+        SELECT bm.content author
+             , COUNT(*) book_count
+          FROM book_metadata bm
+         WHERE bm.rclass_id IN (%(rclass_author)s)
+      GROUP BY bm.content
+    """, dict(
+        rclass_author=rclass['metadata.author'],
+    ))
 
     out.append(dict(id=None, title='All books by author', children=[]))
-    for (b_author, b_count) in c:
+    for (b_author, b_count) in cur:
         out[-1]['children'].append(dict(
             id='author:%s' % b_author,
             title=b_author,
             author='%d books' % b_count,  # NB: Just doing this to get it into brackets, ew.
         ))
 
-    return out
+    return dict(corpora=out)
 
 
-def get_corpus_headlines(cdb):
+def corpora_headlines(cur):
     """
     Return a list of dicts containing:
     - id: corpus short name
@@ -43,16 +62,18 @@ def get_corpus_headlines(cdb):
     - book_count: Number of books in corpus
     - word_count: Number of words in corpus
     """
-    c = cdb.rdb_query(
-        "SELECT c.corpus_id" +
-        "     , c.title" +
-        "     , (SELECT COUNT(*) FROM book b WHERE b.corpus_id = c.corpus_id) book_count" +
-        "     , (SELECT SUM(word_total) FROM chapter ch, book b WHERE ch.book_id = b.book_id AND b.corpus_id = c.corpus_id) word_count" +
-        " FROM corpus c" +
-        " ORDER BY c.ordering")
+    cur.execute("""
+        SELECT c.name
+             , c.title
+             , COUNT(*) book_count
+             , (SELECT SUM(word_count) FROM book_word_count bwc WHERE rclass_id = 301) word_count
+          FROM corpus c, corpus_book cb
+         WHERE c.corpus_id = cb.corpus_id
+      GROUP BY c.corpus_id
+    """)
 
     out = []
-    for (c_id, c_title, book_count, word_count) in c:
+    for (c_id, c_title, book_count, word_count) in cur:
         out.append(dict(
             id=c_id,
             title=c_title,
@@ -60,4 +81,4 @@ def get_corpus_headlines(cdb):
             word_count=word_count,
         ))
 
-    return out
+    return dict(data=out)
