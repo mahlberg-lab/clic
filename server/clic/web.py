@@ -2,21 +2,11 @@
 import json
 import os
 
-# Hack HOME var so cheshire3 can make a useless config directory
-os.environ['HOME'] = "/tmp"
-
 from flask import Flask, request, Response, jsonify, g
 from flask_cors import CORS
 
 from clic.clicdb import ClicDb
 from clic.stream_json import stream_json, format_error
-
-app = Flask(__name__)
-CORS(app)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
-# Enable profiling per request
-# from werkzeug.contrib.profiler import ProfilerMiddleware
-# app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
 def clicdb():
     if not getattr(g, '_clicdb', None):
@@ -33,13 +23,6 @@ def clic_version():
 @app.before_first_request
 def warm_cache():
     clicdb().warm_cache()
-
-@app.after_request
-def add_header(response):
-    # Everything can be cached for up to an hour
-    response.cache_control.max_age = 3600
-    response.cache_control.public = True
-    return response
 
 @app.teardown_appcontext
 def close_db(exception):

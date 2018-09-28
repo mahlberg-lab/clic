@@ -9,7 +9,7 @@ _pool = None
 
 
 @contextlib.contextmanager
-def get_cursor():
+def get_pool_cursor():
     global _pool, _cur_dsn
     dsn = os.environ['DB_DSN']
     if _cur_dsn != dsn:

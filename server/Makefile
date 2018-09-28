@@ -30,13 +30,13 @@ coverage: compile
 	ln -rs htmlcov ../client/www/coverage/server
 	echo Visit http://...//coverage/server/index.html
 
-start: lib/python2.7/site-packages/.requirements test
+start: lib/.requirements # test
 	./bin/uwsgi \
 	    --master \
 	    --processes=1 --threads=1 \
 	    --enable-threads --thunder-lock \
 	    --honour-stdin \
-	    --mount /=clic.web:app \
+	    --mount /=clic.app:create_app \
 	    --chmod-socket=666 \
 	    -s /tmp/clic_uwsgi.development.sock
 

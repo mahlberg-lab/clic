@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 requires = [
     'Flask',
+    'flask-cors',
     'uWSGI',
     'pandas',
     'psycopg2',
