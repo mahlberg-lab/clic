@@ -36,7 +36,7 @@ start: lib/.requirements # test
 	    --processes=1 --threads=1 \
 	    --enable-threads --thunder-lock \
 	    --honour-stdin \
-	    --mount /=clic.app:create_app \
+	    --mount /=clic.uwsgi:app \
 	    --chmod-socket=666 \
 	    -s /tmp/clic_uwsgi.development.sock
 
