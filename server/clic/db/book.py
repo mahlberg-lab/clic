@@ -1,13 +1,15 @@
 import psycopg2
 import psycopg2.extras
 
-from clic.db.util import rclass_id
+from clic.db.lookup import rclass_id_lookup
 
 
 def put_book(cur, book):
     """
     Import a book object
     """
+    rclass = rclass_id_lookup(cur)
+
     # Insert book / update content, get ID for other updates
     cur.execute("""
         INSERT INTO book (name, content)
@@ -29,7 +31,7 @@ def put_book(cur, book):
         psycopg2.extras.NumericRange(off_start, off_end),
         ttype,
         i,
-    ) for i, (rclass, ttype, off_start, off_end) in enumerate(book['regions']) if rclass == 'token.word'))
+    ) for i, (rclass_name, ttype, off_start, off_end) in enumerate(book['regions']) if rclass_name == 'token.word'))
 
     # Replace regions with new values
     cur.execute("DELETE FROM region WHERE book_id = %(book_id)s", dict(book_id=book_id))
@@ -38,9 +40,9 @@ def put_book(cur, book):
     """, ((
         book_id,
         psycopg2.extras.NumericRange(off_start, off_end),
-        rclass_id(cur, rclass),
+        rclass[rclass_name],
         rvalue,
-    ) for rclass, rvalue, off_start, off_end in book['regions'] if rclass != 'token.word'))
+    ) for rclass_name, rvalue, off_start, off_end in book['regions'] if rclass_name != 'token.word'))
 
     # Refresh materialized views
     cur.execute("SELECT refresh_book_materialized_views()")
