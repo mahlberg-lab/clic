@@ -55,7 +55,6 @@ CREATE INDEX IF NOT EXISTS region_rclass_id ON region (rclass_id);  -- Get regio
 CREATE INDEX IF NOT EXISTS gist_region_crange ON region USING GIST (crange);  -- Allows us to discover what's at this point
 
 
-DROP FUNCTION tokens_in_crange(in_book_id INT, in_crange INT8RANGE);
 CREATE OR REPLACE FUNCTION tokens_in_crange(in_book_id INT, in_crange INT8RANGE) RETURNS TABLE(crange INT8RANGE) STABLE AS
 $BODY$
     SELECT t.crange
