@@ -93,7 +93,6 @@ CREATE MATERIALIZED VIEW book_word_count AS
            ) word_count
       FROM region r, rclass rc
      WHERE r.rclass_id = rc.rclass_id
-       AND r.book_id = 2
        AND rc.name IN (
                'chapter.text',
                'quote.quote',
