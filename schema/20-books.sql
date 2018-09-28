@@ -71,9 +71,13 @@ CREATE MATERIALIZED VIEW book_metadata AS
            r.rclass_id,
            r.rvalue,
            SUBSTRING(b.content, LOWER(r.crange)::INT + 1, (UPPER(r.crange) - LOWER(r.crange))::INT+1) AS content
-      FROM region r, book b
+      FROM region r, book b, rclass rc
      WHERE b.book_id = r.book_id
-       AND r.rclass_id IN (101, 102, 302);
+       AND r.rclass_id = rc.rclass_id
+       AND rc.name IN (
+           'metadata.title',
+           'metadata.author',
+           'chapter.title');
 COMMENT ON MATERIALIZED VIEW book_metadata IS 'Extracted metadata from book contents';
 
 
