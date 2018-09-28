@@ -4,7 +4,8 @@ from flask_cors import CORS
 import clic.concordance
 from clic.db.cursor import get_pool_cursor
 from clic.db.version import clic_version
-from clic.stream_json import stream_json, format_error
+from clic.stream_json import stream_json, format_error, JSONEncoder
+
 
 STREAMING_APIS = [
     clic.concordance.concordance,
@@ -14,6 +15,7 @@ STREAMING_APIS = [
 def create_app(config=None, app_name=None):
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+    app.json_encoder = JSONEncoder
 
     # Register a view for all regular API calls
     for fn in STREAMING_APIS:
@@ -22,9 +24,10 @@ def create_app(config=None, app_name=None):
                 header = dict(version=clic_version(cur))
                 out = fn(cur, **request.args)
                 return Response(
-                    stream_json(out, header),
-                    content_type='application/json'
+                    stream_json(out, header, cls=JSONEncoder),
+                    content_type='application/json',
                 )
+
         app.add_url_rule(
             '/api/' + fn.__name__,
             methods=['GET'],

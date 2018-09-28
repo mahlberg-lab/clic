@@ -1,4 +1,14 @@
+import decimal
 import json
+
+from flask.json import JSONEncoder as BaseJSONEncoder
+
+
+class JSONEncoder(BaseJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return str(obj)
+        return BaseJSONEncoder.default(self, obj)
 
 
 def format_error(e):
@@ -12,7 +22,7 @@ def format_error(e):
     )}
 
 
-def stream_json(generator, header={}):
+def stream_json(generator, header={}, cls=json.JSONEncoder):
     """
     Stream output of generator as JSON. Generator results should be of the
     form:
@@ -22,7 +32,7 @@ def stream_json(generator, header={}):
     - Anything else: Add to a "data" array
     """
     def format_header(header):
-        header = json.dumps(header, separators=(',', ':'), sort_keys=True)
+        header = json.dumps(header, separators=(',', ':'), sort_keys=True, cls=cls)
 
         if header[-1] != '}':
             raise ValueError("Initial item not a JSON object: %s" % header)
@@ -40,10 +50,10 @@ def stream_json(generator, header={}):
                 header.update(x[1])
             else:
                 if header_written:
-                    yield ',\n' + json.dumps(x, separators=(',', ':'))
+                    yield ',\n' + json.dumps(x, separators=(',', ':'), cls=cls)
                 else:
                     yield format_header(header)
-                    yield '\n' + json.dumps(x, separators=(',', ':'))
+                    yield '\n' + json.dumps(x, separators=(',', ':'), cls=cls)
                     header_written = True
     except Exception as e:
         footer.update(format_error(e))
@@ -56,7 +66,7 @@ def stream_json(generator, header={}):
         yield '\n], ' + json.dumps(
             footer,
             separators=(',', ':'),
-            sort_keys=True
+            cls=cls,
         )[1:]
     else:
         yield '\n]}'
