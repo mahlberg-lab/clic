@@ -81,11 +81,34 @@ CREATE MATERIALIZED VIEW book_metadata AS
 COMMENT ON MATERIALIZED VIEW book_metadata IS 'Extracted metadata from book contents';
 
 
+DROP MATERIALIZED VIEW IF EXISTS book_word_count;
+CREATE MATERIALIZED VIEW book_word_count AS
+    SELECT r.book_id,
+           r.rclass_id,
+           r.rvalue,
+           (
+               SELECT COUNT(t.ttype)
+                 FROM token t
+                WHERE t.book_id = r.book_id AND t.crange <@ r.crange
+           ) word_count
+      FROM region r, rclass rc
+     WHERE r.rclass_id = rc.rclass_id
+       AND r.book_id = 2
+       AND rc.name IN (
+               'chapter.text',
+               'quote.quote',
+               'quote.nonquote',
+               'quote.suspension.short',
+               'quote.suspension.long');
+COMMENT ON MATERIALIZED VIEW book_word_count IS 'Count words within a selection of regions';
+
+
 CREATE OR REPLACE FUNCTION refresh_book_materialized_views()
 RETURNS VOID SECURITY DEFINER LANGUAGE PLPGSQL
 AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW book_metadata;
+    REFRESH MATERIALIZED VIEW book_word_count;
 END $$;
 COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
 
