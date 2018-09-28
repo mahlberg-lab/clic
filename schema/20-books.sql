@@ -70,7 +70,7 @@ CREATE MATERIALIZED VIEW book_metadata AS
     SELECT r.book_id,
            r.rclass_id,
            r.rvalue,
-           SUBSTRING(b.content, LOWER(r.crange)::INT + 1, (UPPER(r.crange) - LOWER(r.crange))::INT+1) AS content
+           SUBSTRING(b.content, LOWER(r.crange)::INT + 1, (UPPER(r.crange) - LOWER(r.crange))::INT) AS content
       FROM region r, book b, rclass rc
      WHERE b.book_id = r.book_id
        AND r.rclass_id = rc.rclass_id
