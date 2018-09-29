@@ -34,6 +34,8 @@ def xml_to_plaintext(xml_string, offset):
     out_string = ""
     out_regions = []
     unclosed_regions = {}
+    count_sentence = 1
+    count_paragraph = 1
 
     def open_region(rclass, rvalue=None):
         if rclass in unclosed_regions:
@@ -60,7 +62,8 @@ def xml_to_plaintext(xml_string, offset):
         elif part.startswith('span class="w"'):
             open_region('token.word')
         elif part.startswith('span class="s"'):
-            open_region('chapter.sentence', 1)  # TODO: paragraph count
+            open_region('chapter.sentence', count_sentence)
+            count_sentence += 1
 
         elif part == '/w':
             close_region('token.word')
@@ -72,7 +75,8 @@ def xml_to_plaintext(xml_string, offset):
         elif part == '/s':
             close_region('chapter.sentence')
         elif part.startswith('s sid='):
-            open_region('chapter.sentence', 1)  # TODO: paragraph count
+            open_region('chapter.sentence', count_paragraph)
+            count_paragraph += 1
 
         elif part == 'txt' or part == '/txt':
             continue  # Ignore, don't add txt to document
@@ -105,7 +109,8 @@ def xml_to_plaintext(xml_string, offset):
             close_region('quote.embedded')
 
         elif part.startswith('p '):
-            open_region('chapter.paragraph', 1)  # TODO: paragraph count
+            open_region('chapter.paragraph', count_paragraph)
+            count_paragraph += 1
         elif part == '/p':
             close_region('chapter.paragraph')
 
