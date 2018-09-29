@@ -66,6 +66,7 @@ http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
 '''
 from clic.errors import UserError
 
+
 def cluster(
         cdb,
         subset=['all'], corpora=['dickens'],
