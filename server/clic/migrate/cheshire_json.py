@@ -1,7 +1,7 @@
 import json
 import re
 
-XML_TAG_REGEX = re.compile(r'<([^>]+)>')
+XML_TAG_REGEX = re.compile(r'<([^>]+)>([^<]*)', re.MULTILINE)
 
 
 def from_cheshire_json(f, book_meta):
@@ -48,28 +48,11 @@ def xml_to_plaintext(xml_string, offset):
         out_regions.append(unclosed_regions[rclass] + [len(out_string) + offset])
         del unclosed_regions[rclass]
 
-    for i, part in enumerate(re.split(XML_TAG_REGEX, xml_string)):
-        if i % 2 == 0:
-            # Text part, add to string
-            if 'chapter.title' in unclosed_regions:
-                # Parsing the title, reformat it
-                part = re.sub(
-                    r'^(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)?\s?([0-9IVXLC]*)\.*\s*',
-                    lambda m: (m.group(1) or 'CHAPTER').upper() + (' ' + m.group(2) if m.group(2) else '') + '. ',
-                    part,
-                    flags=re.IGNORECASE
-                )
-                out_string = out_string + part
-            elif 'ignore.text' in unclosed_regions:
-                pass  # Ignore plain-text version
-            elif 'token.word' in unclosed_regions:
-                # rvalue for a word should be it's type
-                unclosed_regions['token.word'][1] = re.sub(r'\W+', '', part).lower()
-                out_string = out_string + part
-            else:
-                out_string = out_string + part
+    for i, m in enumerate(re.finditer(XML_TAG_REGEX, xml_string)):
+        part = m.group(1)
+        text_part = m.group(2)
 
-        elif part.startswith('/span'):
+        if part.startswith('/span'):
             if 'token.word' in unclosed_regions:
                 close_region('token.word')
             elif 'chapter.sentence' in unclosed_regions:
@@ -83,16 +66,16 @@ def xml_to_plaintext(xml_string, offset):
             close_region('token.word')
         elif part.startswith('w o='):
             open_region('token.word')
+            # rvalue for a word should be it's type
+            unclosed_regions['token.word'][1] = re.sub(r'\W+', '', text_part).lower()
 
         elif part == '/s':
             close_region('chapter.sentence')
         elif part.startswith('s sid='):
             open_region('chapter.sentence', 1)  # TODO: paragraph count
 
-        elif part == '/txt':
-            close_region('ignore.text')
-        elif part == 'txt':
-            open_region('ignore.text')
+        elif part == 'txt' or part == '/txt':
+            continue  # Ignore, don't add txt to document
         elif part == '/toks':
             pass
         elif part == 'toks':
@@ -126,6 +109,13 @@ def xml_to_plaintext(xml_string, offset):
 
         elif part == 'title':
             open_region('chapter.title', chapter_num)
+            # Reformat the text part before it gets added
+            text_part = re.sub(
+                r'^(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)?\s?([0-9IVXLC]*)\.*\s*',
+                lambda m: (m.group(1) or 'CHAPTER').upper() + (' ' + m.group(2) if m.group(2) else '') + '. ',
+                text_part,
+                flags=re.IGNORECASE
+            )
         elif part == '/title':
             close_region('chapter.title')
             out_string = out_string + "\n\n"
@@ -151,6 +141,9 @@ def xml_to_plaintext(xml_string, offset):
             # Dunno
             raise ValueError("Unknown tag %s" % part)
 
+        # Add any text to main string
+        out_string = out_string + text_part
+
     close_region('chapter.text')
     if 'quote.quote' in unclosed_regions:
         # Close up a final quote
@@ -161,7 +154,7 @@ def xml_to_plaintext(xml_string, offset):
         raise ValueError("Still have open regions!")
     # TODO: non-quote regions
     # TODO: Boundaries
-    return book_name, out_string, [x for x in out_regions if x[0] != 'ignore.text']
+    return book_name, out_string, out_regions
 
 
 def script_import_cheshire_json():
