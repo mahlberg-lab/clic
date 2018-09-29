@@ -7,7 +7,7 @@ def clic_version(cur):
     """
     # Fetch versions from DB
     cur.execute("""
-        SELECT repository_id, version FROM repository
+        SELECT name, version FROM repository
     """)
     out = dict(cur)
 
