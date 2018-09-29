@@ -83,10 +83,12 @@ def xml_to_plaintext(xml_string, offset):
 
         elif part.startswith('qs '):
             if 'wordOffset=' in part:  # i.e. ignore fake quote-start at end
+                close_region('quote.nonquote')
                 open_region('quote.quote')
         elif part.startswith('qe '):
             if 'wordOffset=' in part:  # i.e. ignore fake quote-end
                 close_region('quote.quote')
+                open_region('quote.nonquote')
 
         elif part.startswith('sss '):
             open_region('quote.suspension.short')
@@ -120,6 +122,7 @@ def xml_to_plaintext(xml_string, offset):
             close_region('chapter.title')
             out_string = out_string + "\n\n"
             open_region('chapter.text', chapter_num)
+            open_region('quote.nonquote')
 
         elif re.match(r'div id="\w+.\d+" book="\w+" type="chapter" num="\d+"', part):
             # Top of chapter, note book name
@@ -152,7 +155,6 @@ def xml_to_plaintext(xml_string, offset):
         close_region('quote.nonquote')
     if len(unclosed_regions) > 0:
         raise ValueError("Still have open regions!")
-    # TODO: non-quote regions
     # TODO: Boundaries
     return book_name, out_string, out_regions
 
