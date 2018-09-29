@@ -71,7 +71,15 @@ Examples:
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 
 """
-def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata=[]):
+from clic.concordance import to_conc
+
+from clic.db.book import get_book_metadata, get_book
+from clic.db.corpora import corpora_to_book_ids
+from clic.db.lookup import api_subset_lookup
+from clic.errors import UserError
+
+
+def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata=[]):
     """
     Main entry function for subset search
 
@@ -81,44 +89,50 @@ def subset(cdb, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
     - metadata, Array of extra metadata to provide with result, some of
       - 'book_titles' (return dict of book IDs to titles at end of result)
     """
-    contextsize = int(contextsize[0])
+    book_ids = corpora_to_book_ids(cur, corpora)
+    if len(book_ids) == 0:
+        raise UserError("No books to search", "error")
+    contextsize = contextsize[0]
+    metadata = set(metadata)
+    book_cur = cur.connection.cursor()
+    book = None
+    api_subset = api_subset_lookup(cur)
+    rclass_ids = tuple(api_subset[s] for s in subset)
 
-    (where, params) = cdb.corpora_list_to_query(corpora, db='rdb')
-    if 'all' in subset:
-        query = " ".join((
-            "SELECT c.chapter_id, 0 offset_start, c.word_total offset_end",
-            "FROM chapter c",
-            "WHERE c.word_total > 0", # NB: We can't get_word() for an empty chapter
-            "AND ", where,
-            "ORDER BY c.book_id, c.chapter_id"
-        ))
-    else:
-        query = " ".join((
-            "SELECT s.chapter_id, s.offset_start, s.offset_end",
-            "FROM subset s, chapter c",
-            "WHERE s.chapter_id = c.chapter_id",
-            "AND s.offset_end > s.offset_start", # NB: We can't get_word() for 0-length subsets
-            "AND ", where,
-            "AND s.subset_type IN (", ",".join("?" for x in xrange(len(subset))), ")",
-            "ORDER BY c.book_id, c.chapter_id"
-        ))
-        params.extend(subset)
+    # TODO: Use whatever filtering by region we do to speed this up also
+    cur.execute("""
+        SELECT r.book_id
+             , ARRAY(SELECT tokens_in_crange(r.book_id, range_expand(r.crange, %(contextsize)s))) full_tokens
+             , ARRAY_AGG(t.crange ORDER BY ordering) node_tokens
+             , MIN(t.ordering) word_id_min
+             , MAX(t.ordering) word_id_max
+          FROM region r, token t
+         WHERE t.book_id = r.book_id AND t.crange <@ r.crange
+           AND r.book_id IN %(book_id)s
+           AND r.rclass_id IN %(rclass_ids)s
+      GROUP BY r.book_id, r.crange
+    """, dict(
+        book_id=tuple(book_ids),
+        contextsize=int(contextsize) * 10,  # TODO: Bodge word -> char
+        rclass_ids=rclass_ids,
+    ))
 
-    yield {} # Return empty header
-    cur_chapter = None
-    book_ids = set()
-    for (chapter_id, offset_start, offset_end) in cdb.rdb_query(query, params):
-        if not cur_chapter or cur_chapter != chapter_id:
-            cur_chapter = chapter_id
-            ch = cdb.get_chapter(cur_chapter)
-            book_ids.add(ch.book_id)
-
-        (_, para_chap, sent_chap) = cdb.get_word(chapter_id, [0, offset_start])
-        yield ch.get_conc_line(offset_start, offset_end - offset_start, contextsize) + [
-                [ch.book_id, ch.chapter_num, offset_start, offset_end, chapter_id],
-                [para_chap, sent_chap],
+    for book_id, full_tokens, node_tokens, word_id_min, word_id_max in cur:
+        if not book or book['id'] != book_id:
+            book = get_book(book_cur, book_id, content=True)
+        conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
+        yield [
+            conc_left,
+            conc_node,
+            conc_right,
+            # TODO: What to do about chapter_num?
+            [book['name'], 0, word_id_min, word_id_max],
+            # TODO: Para / sentence counts (and probably move chap counts here)
+            [0, 0]
         ]
 
-    footer = cdb.get_book_metadata(book_ids, set(metadata))
+    book_cur.close()
+
+    footer = get_book_metadata(cur, book_ids, metadata)
     if footer:
         yield ('footer', footer)

@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 import clic.concordance
 import clic.metadata
+import clic.subset
 from clic.db.cursor import get_pool_cursor
 from clic.db.version import clic_version
 from clic.stream_json import stream_json, format_error, JSONEncoder
@@ -10,6 +11,7 @@ from clic.stream_json import stream_json, format_error, JSONEncoder
 
 STREAMING_APIS = [
     clic.concordance.concordance,
+    clic.subset.subset,
 ]
 
 JSON_APIS = [
