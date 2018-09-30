@@ -53,9 +53,12 @@ Or using text files as input:
 import pandas as pd
 import numpy as np
 
+from clic.cluster import get_word_list
+from clic.db.corpora import corpora_to_book_ids
+
 
 def keyword(
-        cdb,
+        cur,
         clusterlength,
         pvalue,
         subset=['all'], corpora=['dickens'],
@@ -64,15 +67,17 @@ def keyword(
     Main entry,
     '''
     # Defaults / dereference arrays
+    book_ids = corpora_to_book_ids(cur, corpora)
+    refbook_ids = corpora_to_book_ids(cur, refcorpora)
     pvalue = float(pvalue[0])
     clusterlength = int(clusterlength[0])
     subset = subset[0]
     refsubset = refsubset[0]
 
-    wordlist_analysis = facets_to_df(cdb.get_word_list(subset, clusterlength, corpora))
+    wordlist_analysis = facets_to_df(get_word_list(cur, book_ids, subset, clusterlength))
     total_analysis = wordlist_analysis.Count.sum()
 
-    wordlist_reference = facets_to_df(cdb.get_word_list(refsubset, clusterlength, refcorpora))
+    wordlist_reference = facets_to_df(get_word_list(cur, refbook_ids, refsubset, clusterlength))
     total_reference = wordlist_reference.Count.sum()
 
     try:
@@ -85,8 +90,7 @@ def keyword(
             p_value=pvalue,
         ).to_records()
     except:  # noqa
-        yield dict(message=dict(
-            level='warn',
+        yield ('header', dict(warn=dict(
             message='''
 CliC was not able to generate a keyword list for you. Please check your search settings.
 Because short suspensions are limited to 4 tokens, no 5-grams are available for short suspensions.
@@ -95,20 +99,17 @@ Please note that the target text/corpus and the reference text/corpus should be 
 It is also possible that there are no keywords with the parameters you specified. In that case
 increasing the p-value might be an option.
             '''.strip(),
-        ))
+        )))
         return
         # TODO: What about the actual error? Log it?
 
     # Return header message
     if total_analysis:
-        yield dict(message=dict(
-            level='info',
+        yield ('header', dict(info=dict(
             message='''
 The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed.
             '''.strip()
-        ))
-    else:
-        yield {}
+        )))
 
     for k in keywords:
         # Convert row into something JSON-serializable
@@ -282,21 +283,9 @@ def facets_to_df(facets):
     Converts the facets into a dataframe that can be manipulated
     more easily.
     '''
-    def select_third_value(value):
-        '''
-        Facets come in the following format:
-        [(u'a', (38, 879, 84372)),
-         (u'all', (1067, 879, 15104)),
-
-        This function returns the third values, respectively 84372 and 15104
-        in the example above.
-        '''
-        return value[2]
-
-    dataframe = pd.DataFrame(facets, columns=['Type', 'Raw facet'])
+    dataframe = pd.DataFrame(list(facets), columns=['Type', 'Count'])
     dataframe.index += 1
 
-    dataframe['Count'] = dataframe['Raw facet'].apply(select_third_value)
     total = dataframe.Count.sum()
     dataframe['Percentage'] = dataframe.Count / total * 100
     dataframe['Percentage'] = dataframe['Percentage'].round(decimals=2)

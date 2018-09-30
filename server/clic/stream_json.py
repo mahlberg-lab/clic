@@ -1,12 +1,16 @@
 import decimal
 import json
 
+import numpy
+
 from flask.json import JSONEncoder as BaseJSONEncoder
 
 
 class JSONEncoder(BaseJSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
+            return str(obj)
+        if isinstance(obj, numpy.int64):
             return str(obj)
         return BaseJSONEncoder.default(self, obj)
 

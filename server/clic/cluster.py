@@ -64,37 +64,69 @@ http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
         "version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"v1.6.1"}
     }
 '''
-from clic.errors import UserError
+from clic.db.corpora import corpora_to_book_ids
 
 
 def cluster(
-        cdb,
+        cur,
         subset=['all'], corpora=['dickens'],
         clusterlength=['1'],
         cutoff=None):
     # Defaults / dereference arrays
+    book_ids = corpora_to_book_ids(cur, corpora)
     clusterlength = int(clusterlength[0])
     subset = subset[0]
 
     # Choose cutoff
     if cutoff is not None:
         cutoff = int(cutoff[0])
-    elif len(corpora) == 1:
-        # If only one item, have a low cut-off if this is a book
-        is_corpus = cdb.rdb_query("SELECT COUNT(*) FROM corpus WHERE corpus_id = ?", (corpora[0],)).fetchone()[0] > 0
-        cutoff = 5 if is_corpus else 2
     else:
-        cutoff = 5
+        cutoff = 5 if len(book_ids) > 1 else 2
 
     skipped = 0
-    wl = cdb.get_word_list(subset, clusterlength, corpora)
+    wl = get_word_list(cur, book_ids, subset, clusterlength)
 
-    yield dict()
-
-    for term, (termId, nRecs, freq) in wl:  # facet = (thing, thing, frequency)
+    for term, freq in wl:
         if freq >= cutoff:
             yield (term, freq)
         else:
             skipped += 1
+
     if skipped > 0:
-        raise UserError('%d clusters with a frequency less than %d are not shown' % (skipped, cutoff), 'info')
+        yield ('footer', dict(info=dict(
+            message='%d clusters with a frequency less than %d are not shown' % (skipped, cutoff)
+        )))
+
+
+def get_word_list(cur, book_ids, subset, clusterlength):
+    """
+    Yields tuples of:
+    - Concatenated tokens
+    - Frequency of them in given text
+    """
+    cur.execute("""
+        SELECT ttypes
+             , COUNT(*)
+          FROM (
+            SELECT book_id
+                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, LOWER(crange) ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
+                 , BOOL_AND(ttype IS NOT NULL) OVER (ORDER BY book_id, LOWER(crange) ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ngram_valid
+              FROM (
+                SELECT t.book_id, t.crange, t.ttype
+                  FROM token t
+                 WHERE book_id IN %(book_ids)s
+                    UNION ALL
+                SELECT r.book_id, r.crange, NULL ttype
+                  FROM region r
+                 WHERE book_id IN %(book_ids)s
+                   ) regions_and_tokens
+          ORDER BY book_id, LOWER(crange)
+               ) all_ngrams
+         WHERE ngram_valid
+      GROUP BY ttypes
+    """, dict(
+        book_ids=tuple(book_ids),
+        extra_tokens=clusterlength - 1,
+    ))
+
+    return cur

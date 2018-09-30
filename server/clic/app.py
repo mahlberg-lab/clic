@@ -2,7 +2,9 @@ from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
 
 import clic.concordance
+import clic.cluster
 import clic.metadata
+import clic.keyword
 import clic.subset
 from clic.db.cursor import get_pool_cursor
 from clic.db.version import clic_version
@@ -11,7 +13,9 @@ from clic.stream_json import stream_json, format_error, JSONEncoder
 
 STREAMING_APIS = [
     clic.concordance.concordance,
+    clic.cluster.cluster,
     clic.subset.subset,
+    clic.keyword.keyword,
 ]
 
 JSON_APIS = [
