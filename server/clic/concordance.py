@@ -72,6 +72,7 @@ import unidecode
 
 from clic.db.book import get_book_metadata, get_book
 from clic.db.corpora import corpora_to_book_ids
+from clic.db.lookup import api_subset_lookup
 from clic.errors import UserError
 
 
@@ -86,10 +87,11 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     - metadata, Array of extra metadata to provide with result, some of
       - 'book_titles' (return dict of book IDs to titles at end of result)
     """
-    book_ids = corpora_to_book_ids(cur, corpora)
+    book_ids = tuple(corpora_to_book_ids(cur, corpora))
     if len(book_ids) == 0:
         raise UserError("No books to search", "error")
-    # TODO: region_id = subset_to_rclass_id(cur, subset)
+    api_subset = api_subset_lookup(cur)
+    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
     like_sets = parse_queries(q)
     contextsize = contextsize[0]
     metadata = set(metadata)
@@ -115,11 +117,17 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                        ttype,
                        ordering,
                        ordering - %s conc_group
-                  FROM token
+                  FROM token t
                  WHERE book_id IN %s
                    AND ttype LIKE %s
             """
-            params.extend([i, tuple(book_ids), like])
+            params.extend([i, book_ids, like])
+            if len(rclass_ids) > 0:
+                # Make sure these tokens are in an appropriate region
+                query += """
+                   AND EXISTS(SELECT 1 FROM region r WHERE r.book_id = t.book_id AND r.rclass_id IN %s AND t.crange <@ r.crange)
+                """
+                params.extend([rclass_ids])
         query += """
             ) c
             GROUP BY book_id, conc_group
@@ -127,9 +135,6 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             ORDER BY book_id, conc_group
         """
         params.append(len(likes))
-        # TODO: Not filtering by region.
-        # TODO: * maerialised views that filter tokens: SELECT * FROM token t, region r WHERE t.crange <@ r.crange
-        # TODO: * filter by region after results got.
 
         cur.execute(query, params)
         for book_id, full_tokens, node_tokens, word_id in cur:
