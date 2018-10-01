@@ -12,16 +12,38 @@ from clic.stream_json import stream_json, format_error, JSONEncoder
 
 
 STREAMING_APIS = [
-    clic.concordance.concordance,
     clic.cluster.cluster,
-    clic.subset.subset,
+    clic.concordance.concordance,
     clic.keyword.keyword,
+    clic.subset.subset,
 ]
 
+
+def streaming_view_func(fn):
+    def view_func():
+        with get_pool_cursor() as cur:
+            header = dict(version=clic_version(cur))
+            out = fn(cur, **request.args)
+            return Response(
+                stream_json(out, header, cls=JSONEncoder),
+                content_type='application/json',
+            )
+    return view_func
+
+
 JSON_APIS = [
-    clic.metadata.corpora_headlines,
     clic.metadata.corpora,
+    clic.metadata.corpora_headlines,
 ]
+
+
+def json_view_func(fn):
+    def view_func():
+        with get_pool_cursor() as cur:
+            out = fn(cur)
+            out['version'] = clic_version(cur)
+            return jsonify(out)
+    return view_func
 
 
 def create_app(config=None, app_name=None):
@@ -30,35 +52,21 @@ def create_app(config=None, app_name=None):
     app.json_encoder = JSONEncoder
 
     # Register a view for all regular API calls
-    for fn_st in STREAMING_APIS:
-        def view_func():
-            with get_pool_cursor() as cur:
-                header = dict(version=clic_version(cur))
-                out = fn_st(cur, **request.args)
-                return Response(
-                    stream_json(out, header, cls=JSONEncoder),
-                    content_type='application/json',
-                )
-
-        app.add_url_rule(
-            '/api/' + fn_st.__name__.replace('_', '/'),
-            endpoint=fn_st.__name__,
-            methods=['GET'],
-            view_func=view_func,
-        )
-
-    # Metadata routes are just passed through jsonify
-    for fn in JSON_APIS:
-        def json_view_func():
-            with get_pool_cursor() as cur:
-                out = fn(cur)
-                out['version'] = clic_version(cur)
-                return jsonify(out)
+    for fn in STREAMING_APIS:
         app.add_url_rule(
             '/api/' + fn.__name__.replace('_', '/'),
             endpoint=fn.__name__,
             methods=['GET'],
-            view_func=json_view_func,
+            view_func=streaming_view_func(fn),
+        )
+
+    # Metadata routes are just passed through jsonify
+    for fn in JSON_APIS:
+        app.add_url_rule(
+            '/api/' + fn.__name__.replace('_', '/'),
+            endpoint=fn.__name__,
+            methods=['GET'],
+            view_func=json_view_func(fn),
         )
 
     # Extensions
