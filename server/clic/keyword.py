@@ -55,6 +55,7 @@ import numpy as np
 
 from clic.cluster import get_word_list
 from clic.db.corpora import corpora_to_book_ids
+from clic.db.lookup import api_subset_lookup
 
 
 def keyword(
@@ -71,13 +72,14 @@ def keyword(
     refbook_ids = corpora_to_book_ids(cur, refcorpora)
     pvalue = float(pvalue[0])
     clusterlength = int(clusterlength[0])
-    subset = subset[0]
-    refsubset = refsubset[0]
+    api_subset = api_subset_lookup(cur)
+    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
+    refrclass_ids = tuple(api_subset[s] for s in refsubset if s != 'all')
 
-    wordlist_analysis = facets_to_df(get_word_list(cur, book_ids, subset, clusterlength))
+    wordlist_analysis = facets_to_df(get_word_list(cur, book_ids, rclass_ids, clusterlength))
     total_analysis = wordlist_analysis.Count.sum()
 
-    wordlist_reference = facets_to_df(get_word_list(cur, refbook_ids, refsubset, clusterlength))
+    wordlist_reference = facets_to_df(get_word_list(cur, refbook_ids, refrclass_ids, clusterlength))
     total_reference = wordlist_reference.Count.sum()
 
     try:

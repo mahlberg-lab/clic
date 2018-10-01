@@ -65,6 +65,7 @@ http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
     }
 '''
 from clic.db.corpora import corpora_to_book_ids
+from clic.db.lookup import api_subset_lookup
 
 
 def cluster(
@@ -75,7 +76,8 @@ def cluster(
     # Defaults / dereference arrays
     book_ids = corpora_to_book_ids(cur, corpora)
     clusterlength = int(clusterlength[0])
-    subset = subset[0]
+    api_subset = api_subset_lookup(cur)
+    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
 
     # Choose cutoff
     if cutoff is not None:
@@ -84,7 +86,7 @@ def cluster(
         cutoff = 5 if len(book_ids) > 1 else 2
 
     skipped = 0
-    wl = get_word_list(cur, book_ids, subset, clusterlength)
+    wl = get_word_list(cur, book_ids, rclass_ids, clusterlength)
 
     for term, freq in wl:
         if freq >= cutoff:
@@ -98,13 +100,17 @@ def cluster(
         )))
 
 
-def get_word_list(cur, book_ids, subset, clusterlength):
+def get_word_list(cur, book_ids, rclass_ids, clusterlength):
     """
     Yields tuples of:
     - Concatenated tokens
     - Frequency of them in given text
     """
-    cur.execute("""
+    params = dict(
+        book_ids=tuple(book_ids),
+        extra_tokens=clusterlength - 1,
+    )
+    query = """
         SELECT ttypes
              , COUNT(*)
           FROM (
@@ -115,6 +121,14 @@ def get_word_list(cur, book_ids, subset, clusterlength):
                 SELECT t.book_id, t.crange, t.ttype
                   FROM token t
                  WHERE book_id IN %(book_ids)s
+    """
+    if len(rclass_ids) > 0:
+        # Make sure these tokens are in an appropriate region
+        query += """
+                   AND EXISTS(SELECT 1 FROM region r WHERE r.book_id = t.book_id AND r.rclass_id IN %(rclass_ids)s AND t.crange <@ r.crange)
+        """
+        params['rclass_ids'] = rclass_ids
+    query += """
                     UNION ALL
                 SELECT r.book_id, r.crange, NULL ttype
                   FROM region r
@@ -124,9 +138,6 @@ def get_word_list(cur, book_ids, subset, clusterlength):
                ) all_ngrams
          WHERE ngram_valid
       GROUP BY ttypes
-    """, dict(
-        book_ids=tuple(book_ids),
-        extra_tokens=clusterlength - 1,
-    ))
-
+    """
+    cur.execute(query, params)
     return cur
