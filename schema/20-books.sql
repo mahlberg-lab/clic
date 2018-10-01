@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS token (
     book_id INT NOT NULL,
     FOREIGN KEY (book_id) REFERENCES book(book_id),
 
-    crange INT8RANGE NOT NULL,
+    crange INT4RANGE NOT NULL,
     ttype TEXT NOT NULL,
-    ordering INT NOT NULL  -- TODO: INT enough?
+    ordering INT NOT NULL  -- TODO: Do we even need it, vs. LOWER(crange)?
 );
 COMMENT ON TABLE  token IS 'Tokens within a book';
 COMMENT ON COLUMN token.ttype IS 'Token type, i.e. normalised token';
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS region (
     book_id INT NOT NULL,
     FOREIGN KEY (book_id) REFERENCES book(book_id),
 
-    crange INT8RANGE NOT NULL,
+    crange INT4RANGE NOT NULL,
     rclass_id INT NOT NULL,
     FOREIGN KEY (rclass_id) REFERENCES rclass(rclass_id),
     rvalue INT NULL
@@ -55,14 +55,14 @@ CREATE INDEX IF NOT EXISTS region_rclass_id ON region (rclass_id);  -- Get regio
 CREATE INDEX IF NOT EXISTS gist_region_crange ON region USING GIST (crange);  -- Allows us to discover what's at this point
 
 
-CREATE OR REPLACE FUNCTION tokens_in_crange(in_book_id INT, in_crange INT8RANGE) RETURNS TABLE(crange INT8RANGE) STABLE AS
+CREATE OR REPLACE FUNCTION tokens_in_crange(in_book_id INT, in_crange INT4RANGE) RETURNS TABLE(crange INT4RANGE) STABLE AS
 $BODY$
     SELECT t.crange
       FROM token t
       WHERE t.book_id = in_book_id AND t.crange <@ in_crange
       ORDER BY ordering
 $BODY$ LANGUAGE sql;
-COMMENT ON FUNCTION public.tokens_in_crange(book_id INT, crange INT8RANGE) IS 'Get all tokens within the given crange';
+COMMENT ON FUNCTION public.tokens_in_crange(book_id INT, crange INT4RANGE) IS 'Get all tokens within the given crange';
 
 
 DROP MATERIALIZED VIEW IF EXISTS book_metadata;
@@ -70,7 +70,7 @@ CREATE MATERIALIZED VIEW book_metadata AS
     SELECT r.book_id,
            r.rclass_id,
            r.rvalue,
-           SUBSTRING(b.content, LOWER(r.crange)::INT + 1, (UPPER(r.crange) - LOWER(r.crange))::INT) AS content
+           SUBSTRING(b.content, LOWER(r.crange) + 1, (UPPER(r.crange) - LOWER(r.crange))) AS content
       FROM region r, book b, rclass rc
      WHERE b.book_id = r.book_id
        AND r.rclass_id = rc.rclass_id

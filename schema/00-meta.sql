@@ -10,9 +10,9 @@ CREATE AGGREGATE range_merge(anyrange) (
 );
 
 -- Expand range in both directions by (i)
-CREATE OR REPLACE FUNCTION range_expand(range INT8RANGE, i INT) RETURNS INT8RANGE IMMUTABLE AS
+CREATE OR REPLACE FUNCTION range_expand(range INT4RANGE, i INT) RETURNS INT4RANGE IMMUTABLE AS
 $BODY$
-    SELECT INT8RANGE(LOWER(range) - i, UPPER(range) + i);
+    SELECT INT4RANGE(LOWER(range) - i, UPPER(range) + i);
 $BODY$ LANGUAGE sql;
 
 
