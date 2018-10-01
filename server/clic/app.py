@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 import clic.concordance
 import clic.cluster
+import clic.count
 import clic.metadata
 import clic.keyword
 import clic.subset
@@ -14,6 +15,7 @@ from clic.stream_json import stream_json, format_error, JSONEncoder
 STREAMING_APIS = [
     clic.cluster.cluster,
     clic.concordance.concordance,
+    clic.count.count,
     clic.keyword.keyword,
     clic.subset.subset,
 ]
