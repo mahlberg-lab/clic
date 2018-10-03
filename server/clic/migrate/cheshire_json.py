@@ -47,7 +47,9 @@ def xml_to_plaintext(xml_string, offset):
         if rclass not in unclosed_regions:
             print("*** Warning: Ignoring closure of unopen %s" % rclass)
             return
-        out_regions.append(unclosed_regions[rclass] + [len(out_string) + offset])
+        if unclosed_regions[rclass][2] < len(out_string) + offset:
+            # Region has content in, so store it
+            out_regions.append(unclosed_regions[rclass] + [len(out_string) + offset])
         del unclosed_regions[rclass]
 
     for i, m in enumerate(re.finditer(XML_TAG_REGEX, xml_string)):
