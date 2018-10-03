@@ -33,14 +33,12 @@ def corpora_to_book_ids(cur, corpora):
             cur.execute("""
               SELECT bm.book_id
                 FROM book_metadata bm
-               WHERE bm.author = %s
-            """, (c[len('author:'):],))
+               WHERE bm.rclass_id = (SELECT rclass_id FROM rclass WHERE name = 'metadata.author')
+                 AND bm.content = %(author)s;
+            """, dict(
+                author=c[len('author:'):],
+            ))
             out.extend([r[0] for r in cur])
-
-            c = c[7:]
-            cur.execute("""
-            """, )
-            out.extend(corpora_to_book_ids(cur, ))
         else:
             # Assume book name
             cur.execute("SELECT book_id FROM book WHERE name = %s", (c,))

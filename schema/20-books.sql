@@ -83,6 +83,7 @@ CREATE MATERIALIZED VIEW book_metadata AS
            'metadata.author',
            'chapter.title');
 COMMENT ON MATERIALIZED VIEW book_metadata IS 'Extracted metadata from book contents';
+CREATE INDEX IF NOT EXISTS book_metadata_rclass_id ON book_metadata(rclass_id);  -- Select metadata by type (e.g. author)
 
 
 DROP MATERIALIZED VIEW IF EXISTS book_word_count;
