@@ -15,6 +15,7 @@ COMMENT ON COLUMN rclass.description IS 'Description for region class, define rv
 
 
 /* Populate vocabulary */
+-- TODO: This could also be an ENUM, but inserting into an ENUM sounds painful
 CREATE OR REPLACE FUNCTION pg_temp.upsert_rclass(new_id INT, new_name TEXT, new_description TEXT) RETURNS VOID AS
 $BODY$
     INSERT INTO rclass (rclass_id, name, description)

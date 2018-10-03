@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS book (
     UNIQUE (name),
 
     content TEXT
+    -- TODO: Include title/author here, instead of extracting from text?
+    -- TODO: What about year? Can we include that in the corpora text? Would allow, e.g. all 19thC texts
 );
 COMMENT ON TABLE  book IS 'Book name & contents';
 COMMENT ON COLUMN book.name IS 'Short name of book, e.g. TTC';
@@ -116,11 +118,5 @@ BEGIN
 END $$;
 COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
 
-/*
-Searching for n-grams is:
-   * Get 'token.type' and 'boundary.*', sorted by crange
-   * Window function to search next n rows, disregard if one is a boundary.
-   * Group n' filter
-*/
 
 COMMIT;

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS corpus (
     UNIQUE(name),
     title TEXT NOT NULL,
     ordering INT NOT NULL DEFAULT 0
+    -- TODO: An image column, to store the (binary) image to return as a data: URI in /highlights? Ugly, but not many other options
 );
 COMMENT ON TABLE  corpus IS 'Groups of books';
 COMMENT ON COLUMN corpus.name IS 'Short name of corpus, e.g. ChiLit';

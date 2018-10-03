@@ -173,6 +173,7 @@ def to_conc(full_text, full_tokens, node_tokens):
     prev_t = None
     for t in full_tokens:
         if t == node_tokens[0]:
+            # TODO: Split non-word characters on space, appending to previous entry (clic/c3chapter.py)
             concs.append([])
             toks.append([])
         if prev_t:
@@ -181,6 +182,7 @@ def to_conc(full_text, full_tokens, node_tokens):
         # Add word token
         toks[-1].append(len(concs[-1]))
         # TODO: Ideally we'd not mangle text, instead return the tokens here
+        # TODO: Write tokenisation scheme in JS?
         concs[-1].append(unidecode.unidecode(full_text[t.lower:t.upper]))
         prev_t = t
 
