@@ -44,9 +44,6 @@ def put_book(cur, book):
         rvalue,
     ) for rclass_name, rvalue, off_start, off_end in book['regions'] if rclass_name != 'token.word'))
 
-    # Refresh materialized views
-    cur.execute("SELECT refresh_book_materialized_views()")
-
 
 def get_book(cur, book_id, content=False, tokens=False, regions=False):
     """Get book from DB, specifying what details are required"""

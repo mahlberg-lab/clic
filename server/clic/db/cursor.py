@@ -25,13 +25,20 @@ def get_pool_cursor():
 
 
 @contextlib.contextmanager
-def get_script_cursor():
+def get_script_cursor(for_write=False):
     """Return a single cursor for a short-lived script"""
     dsn = os.environ['DB_DSN']
     conn = psycopg2.connect(dsn)
+    conn.set_session(readonly=not(for_write))
     try:
         yield conn.cursor()
         conn.commit()
+        if for_write:
+            # If writing, vaccuum and rebuild views afterwards
+            conn.set_session(autocommit=True)
+            cur = conn.cursor()
+            cur.execute("VACUUM ANALYSE")
+            cur.execute("SELECT refresh_book_materialized_views()")
     finally:
         conn.rollback()
-        conn.close()
+    conn.close()

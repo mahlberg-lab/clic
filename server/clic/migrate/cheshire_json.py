@@ -183,5 +183,5 @@ def script_import_cheshire_json():
 
     with open(file_path, 'r') as f:
         book = from_cheshire_json(f, book_meta)
-    with get_script_cursor() as cur:
+    with get_script_cursor(for_write=True) as cur:
         put_book(cur, book)
