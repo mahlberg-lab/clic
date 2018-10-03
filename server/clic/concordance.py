@@ -102,7 +102,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         query = """
             SELECT book_id,
                    ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens,
-                   ARRAY_AGG(crange ORDER BY ordering) node_tokens,
+                   ARRAY_AGG(crange ORDER BY LOWER(crange)) node_tokens,
                    conc_group word_id
               FROM (
         """

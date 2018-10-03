@@ -25,8 +25,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS book_name_book_id ON book(name, book_id); -- T
 CREATE TABLE IF NOT EXISTS token (
     book_id INT NOT NULL,
     FOREIGN KEY (book_id) REFERENCES book(book_id),
+    crange INT4RANGE NOT NULL CHECK (UPPER(crange) > LOWER(crange)),
+    PRIMARY KEY (book_id, crange),
 
-    crange INT4RANGE NOT NULL,
     ttype TEXT NOT NULL,
     ordering INT NOT NULL  -- TODO: Do we even need it, vs. LOWER(crange)?
 );
@@ -35,6 +36,7 @@ COMMENT ON COLUMN token.ttype IS 'Token type, i.e. normalised token';
 COMMENT ON COLUMN token.crange IS 'Character range to find this token at';
 COMMENT ON COLUMN token.ordering IS 'Position of this token in chapter';
 CREATE INDEX IF NOT EXISTS gist_token_crange ON token USING GIST (crange);  -- Allows us to discover what's at this point
+CREATE INDEX IF NOT EXISTS token_lower_crange ON token (LOWER(crange));  -- Sorting on LOWER(crange)
 CREATE INDEX IF NOT EXISTS token_ordering ON token (ordering);  -- Allows us to select tokens around given ones
 -- TODO: Could use trgm? https://niallburkley.com/blog/index-columns-for-like-in-postgres/
 
@@ -42,10 +44,11 @@ CREATE INDEX IF NOT EXISTS token_ordering ON token (ordering);  -- Allows us to 
 CREATE TABLE IF NOT EXISTS region (
     book_id INT NOT NULL,
     FOREIGN KEY (book_id) REFERENCES book(book_id),
-
-    crange INT4RANGE NOT NULL,
     rclass_id INT NOT NULL,
     FOREIGN KEY (rclass_id) REFERENCES rclass(rclass_id),
+    crange INT4RANGE NOT NULL CHECK (UPPER(crange) > LOWER(crange)),
+    PRIMARY KEY (book_id, rclass_id, crange), -- TODO: Is this being unique correct? Are there regions that get nested within themselves?
+
     rvalue INT NULL
 );
 COMMENT ON TABLE  region IS 'Regions within a book';
@@ -53,6 +56,7 @@ COMMENT ON COLUMN region.rvalue IS 'Value associated with range, e.g. chapter nu
 COMMENT ON COLUMN region.crange IS 'Character range this applies to';
 CREATE INDEX IF NOT EXISTS region_rclass_id ON region (rclass_id);  -- Get regions by rclass
 CREATE INDEX IF NOT EXISTS gist_region_crange ON region USING GIST (crange);  -- Allows us to discover what's at this point
+CREATE INDEX IF NOT EXISTS region_lower_crange ON token (LOWER(crange));  -- Sorting on LOWER(crange)
 
 
 CREATE OR REPLACE FUNCTION tokens_in_crange(in_book_id INT, in_crange INT4RANGE) RETURNS TABLE(crange INT4RANGE) STABLE AS

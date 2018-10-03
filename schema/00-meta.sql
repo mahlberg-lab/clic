@@ -18,3 +18,7 @@ $BODY$ LANGUAGE sql;
 
 
 COMMIT;
+
+-- Before we begin, vacuum any existing data, creating the
+-- MATERIALISED VIEWS can be problematic otherwise.
+VACUUM ANALYSE;
