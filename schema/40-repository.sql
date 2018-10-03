@@ -1,7 +1,7 @@
 BEGIN;
 
 
-CREATE TABLE repository (
+CREATE TABLE IF NOT EXISTS repository (
     repository_id SERIAL,
     PRIMARY KEY (repository_id),
     
