@@ -134,7 +134,6 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
                   FROM region r
                  WHERE book_id IN %(book_ids)s
                    ) regions_and_tokens
-          ORDER BY book_id, LOWER(crange)
                ) all_ngrams
          WHERE ngram_valid
       GROUP BY ttypes
