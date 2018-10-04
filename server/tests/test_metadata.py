@@ -4,6 +4,7 @@ import unittest
 from clic.clicdb import ClicDb
 from clic.metadata import get_corpus_structure, get_corpus_headlines
 
+
 class Test_get_corpus_structure(unittest.TestCase):
     def test_call(self):
         """

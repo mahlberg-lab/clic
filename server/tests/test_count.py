@@ -1,8 +1,8 @@
-import re
 import unittest
 
 from clic.clicdb import ClicDb
 from clic.count import word_count
+
 
 class TestCount(unittest.TestCase):
     def test_word_count(self):
@@ -41,4 +41,3 @@ class TestCount(unittest.TestCase):
             [u'BH', 354362, 7911],
             [u'alli', 257184, 1091],
         ])
-

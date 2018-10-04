@@ -13,6 +13,8 @@ class NullParser():
     """
     def process_document(self, session, doc):
         return doc
+
+
 np = NullParser()
 
 
@@ -22,7 +24,7 @@ def text(cdb, corpora=[]):
 
     recStore = cdb.db.get_object(cdb.session, 'recordStore')
     try:
-        yield {} # Return empty header
+        yield {}  # Return empty header
         for book_id, chapter_num, chapter_id in chapter_ids:
             xml_string = recStore.fetch_record(recStore.session, chapter_id, parser=np).get_raw(recStore.session)
             xml_string = re.sub(STRIP_TOKENS_REGEX, '', xml_string)

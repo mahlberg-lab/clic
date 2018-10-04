@@ -1,12 +1,13 @@
-import re
 import unittest
 
 from clic.clicdb import ClicDb
 from clic.subset import subset
 
+
 def only_word(l):
     """Use final word-position-index to filter array"""
     return [l[i] for i in l[-1]]
+
 
 class TestSubset(unittest.TestCase):
     def test_subset(self):
@@ -72,7 +73,7 @@ class TestSubset(unittest.TestCase):
 
         # 60 is missing from alli, since it's empty
         rv = [x for x in subset(cdb, corpora=['alli'])]
-        self.assertEqual([x[1][1] for x in rv[1:]], range(1,60) + [61])
+        self.assertEqual([x[1][1] for x in rv[1:]], range(1, 60) + [61])
 
         # We can also fetch nonquote subsets without falling over the empty chapter
         rv = [x for x in subset(cdb, corpora=['alli'], subset=['nonquote'])]
@@ -80,7 +81,7 @@ class TestSubset(unittest.TestCase):
         rv = [x for x in subset(cdb, corpora=['alli'], subset=['quote'])]
         self.assertEqual(len(rv), 5223)
 
-    def test_subset(self):
+    def test_subsetcontext(self):
         """Can choose what to return"""
         cdb = ClicDb()
 
@@ -92,13 +93,13 @@ class TestSubset(unittest.TestCase):
 
         # Agnes grey is returned in chunks of chapter
         self.assertEqual(
-            len([x for x in subset(cdb,corpora=['AgnesG'])]),
+            len([x for x in subset(cdb, corpora=['AgnesG'])]),
             26,
         )
 
         # There's more long suspension though
         self.assertEqual(
-            len([x for x in subset(cdb,corpora=['AgnesG'], subset=['longsus'])]),
+            len([x for x in subset(cdb, corpora=['AgnesG'], subset=['longsus'])]),
             30,
         )
 

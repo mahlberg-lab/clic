@@ -4,6 +4,7 @@ from lxml import etree
 
 from clic.c3chapter import Chapter
 
+
 def word_indices(l):
     """Return indicies of an array which contain word-y strings"""
     out = []

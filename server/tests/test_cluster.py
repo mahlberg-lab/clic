@@ -4,6 +4,7 @@ from clic.clicdb import ClicDb
 from clic.cluster import cluster
 from clic.errors import UserError
 
+
 def cluster_catch_usererror(*args, **kwargs):
     out = []
     try:
@@ -12,6 +13,7 @@ def cluster_catch_usererror(*args, **kwargs):
     except UserError as e:
         out.append("UserError: %s" % e.message)
     return out
+
 
 class TestCluster(unittest.TestCase):
     def test_cluster(self):
@@ -51,6 +53,6 @@ class TestCluster(unittest.TestCase):
                 self.assertIn("frequency less than %d" % expected_min, e.message)
             self.assertEqual(min_freq, expected_min)
 
-        cutoff(['AgnesG'], 2) # AgnesG is a book, and only one of them
-        cutoff(['AgnesG', 'TTC'], 5) # 2 books has a higher frequency
-        cutoff(['ntc'], 5) # a corpus has a higher frequency
+        cutoff(['AgnesG'], 2)  # AgnesG is a book, and only one of them
+        cutoff(['AgnesG', 'TTC'], 5)  # 2 books has a higher frequency
+        cutoff(['ntc'], 5)  # a corpus has a higher frequency

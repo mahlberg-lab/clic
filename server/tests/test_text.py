@@ -4,7 +4,7 @@ import unittest
 
 from clic.clicdb import ClicDb
 from clic.text import text
-from clic.errors import UserError
+
 
 class TestText(unittest.TestCase):
     def test_fetch_by_book(self):
