@@ -83,18 +83,21 @@ def get_book_metadata(cur, book_ids, metadata):
 
         if k == 'book_titles':
             cur.execute("""
-                SELECT book_id, rclass_id, content
-                  FROM book_metadata
-                 WHERE book_id IN %s
-                   AND rclass_id IN %s
+                SELECT b.name
+                     , bm.rclass_id
+                     , bm.content
+                  FROM book b, book_metadata bm
+                 WHERE b.book_id = bm.book_id
+                   AND b.book_id IN %s
+                   AND bm.rclass_id IN %s
             """, (
                 tuple(book_ids),
                 (rclass['metadata.title'], rclass['metadata.author']),
             ))
-            for (book_id, rclass_id, content) in cur:
-                if book_id not in out[k]:
-                    out[k][book_id] = [None, None]
-                out[k][book_id][0 if rclass_id == rclass['metadata.title'] else 1] = content
+            for (book_name, rclass_id, content) in cur:
+                if book_name not in out[k]:
+                    out[k][book_name] = [None, None]
+                out[k][book_name][0 if rclass_id == rclass['metadata.title'] else 1] = content
 
         elif k == 'chapter_start':
             cur.execute("""
@@ -113,35 +116,43 @@ def get_book_metadata(cur, book_ids, metadata):
                 out[k][book_id][chapter_num] = out[k][book_id]['_end']
                 out[k][book_id]['_end'] += word_total
 
-        elif k == 'word_count_all':
+        elif k == 'word_count_chapter':
             cur.execute("""
-                SELECT bwc.book_id, SUM(bwc.word_count) AS word_count
-                  FROM book_word_count bwc
-                 WHERE bwc.rclass_id = %s
-                   AND bwc.book_id IN %s
-              GROUP BY bwc.book_id
+                SELECT b.name
+                     , bwc.rvalue as chapter_num
+                     , bwc.word_count
+                  FROM book b, book_word_count bwc
+                 WHERE b.book_id = bwc.book_id
+                   AND bwc.rclass_id = %s
+                   AND b.book_id IN %s
+              ORDER BY bwc.book_id, bwc.rvalue
             """, (
                 rclass['chapter.text'],
                 tuple(book_ids),
             ))
-            for (book_id, word_count) in cur:
-                out[k][book_id] = word_count
+            for (book_name, chapter_num, word_total) in cur:
+                if book_name not in out[k]:
+                    out[k][book_name] = dict(_end=0)
+                out[k][book_name][chapter_num] = out[k][book_name]['_end']
+                out[k][book_name]['_end'] += int(word_total)
 
         elif k.startswith('word_count_'):
             api_subset = api_subset_lookup(cur)
             # TODO: word_count_quote not quite matching old CLiC (too high). Why?
             cur.execute("""
-                SELECT bwc.book_id, SUM(bwc.word_count) AS word_count
-                  FROM book_word_count bwc
-                 WHERE bwc.rclass_id = %s
-                   AND bwc.book_id IN %s
-              GROUP BY bwc.book_id
+                SELECT b.name
+                     , SUM(bwc.word_count) AS word_count
+                  FROM book b, book_word_count bwc
+                 WHERE b.book_id = bwc.book_id
+                   AND bwc.rclass_id = %s
+                   AND b.book_id IN %s
+              GROUP BY b.book_id
             """, (
                 api_subset[k.replace('word_count_', '')],
                 tuple(book_ids),
             ))
-            for (book_id, word_count) in cur:
-                out[k][book_id] = word_count
+            for (book_name, word_count) in cur:
+                out[k][book_name] = int(word_count)
 
         else:
             raise ValueError("Unknown metadata item %s" % k)
