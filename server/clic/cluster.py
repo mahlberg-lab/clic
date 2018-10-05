@@ -125,9 +125,15 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
     if len(rclass_ids) > 0:
         # Make sure these tokens are in an appropriate region
         query += """
-                   AND EXISTS(SELECT 1 FROM region r WHERE r.book_id = t.book_id AND r.rclass_id IN %(rclass_ids)s AND t.crange <@ r.crange)
+                   AND EXISTS(SELECT 1
+                                FROM token_metadata tm
+                               WHERE t.book_id = tm.book_id
+                                 AND LOWER(t.crange) = tm.lower_crange
+                                 AND tm.part_of ? %(rclass_id)s)
         """
-        params['rclass_ids'] = rclass_ids
+        params['rclass_id'] = str(rclass_ids[0])
+        if len(rclass_ids) > 1:
+            raise NotImplementedError()
     query += """
                     UNION ALL
                 SELECT r.book_id, r.crange, NULL ttype

@@ -72,7 +72,7 @@ import unidecode
 
 from clic.db.book import get_book_metadata, get_book
 from clic.db.corpora import corpora_to_book_ids
-from clic.db.lookup import api_subset_lookup
+from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
 
 
@@ -91,6 +91,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     if len(book_ids) == 0:
         raise UserError("No books to search", "error")
     api_subset = api_subset_lookup(cur)
+    rclass = rclass_id_lookup(cur)
     rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
     like_sets = parse_queries(q)
     contextsize = contextsize[0]
@@ -100,10 +101,11 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
 
     for likes in like_sets:
         query = """
-            SELECT book_id,
-                   ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens,
-                   ARRAY_AGG(crange ORDER BY LOWER(crange)) node_tokens,
-                   conc_group word_id
+            SELECT book_id
+                 , ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens
+                 , ARRAY_AGG(crange ORDER BY book_id, LOWER(crange)) node_tokens
+                 , conc_group word_id
+                 , JSONB_AGG(part_of) part_of
               FROM (
         """
         params = [int(contextsize) * 10]  # TODO: Bodge word -> char
@@ -112,22 +114,24 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             if i > 0:
                 query += "UNION ALL\n"
             query += """
-                SELECT book_id,
-                       crange,
-                       ttype,
-                       ordering,
-                       ordering - %s conc_group
-                  FROM token t
-                 WHERE book_id IN %s
-                   AND ttype LIKE %s
+                SELECT t.book_id
+                     , t.crange
+                     , t.ttype
+                     , t.ordering
+                     , t.ordering - %s conc_group
+                     , tm.part_of
+                  FROM token t, token_metadata tm
+                 WHERE t.book_id = tm.book_id AND LOWER(t.crange) = tm.lower_crange
+                   AND t.book_id IN %s
+                   AND t.ttype LIKE %s
             """
             params.extend([i, book_ids, like])
             if len(rclass_ids) > 0:
                 # Make sure these tokens are in an appropriate region
-                query += """
-                   AND EXISTS(SELECT 1 FROM region r WHERE r.book_id = t.book_id AND r.rclass_id IN %s AND t.crange <@ r.crange)
-                """
-                params.extend([rclass_ids])
+                query += " AND tm.part_of ? %s"
+                params.extend([str(rclass_ids[0])])
+            if len(rclass_ids) > 1:
+                raise NotImplementedError()
         query += """
             ) c
             GROUP BY book_id, conc_group
@@ -137,7 +141,8 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         params.append(len(likes))
 
         cur.execute(query, params)
-        for book_id, full_tokens, node_tokens, word_id in cur:
+        for book_id, full_tokens, node_tokens, word_id, part_of in cur:
+            part_of = part_of[0]  # Unwind redundant aggregation
             if not book or book['id'] != book_id:
                 book = get_book(book_cur, book_id, content=True)
             conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
@@ -146,9 +151,12 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 conc_node,
                 conc_right,
                 # TODO: What to do about chapter_num?
-                [book['name'], 0, word_id, word_id + len(likes)],
-                # TODO: Para / sentence counts (and probably move chap counts here)
-                [0, 0]
+                [book['name'], int(part_of[str(rclass['chapter.text'])]), word_id, word_id + len(likes)],
+                # TODO: Probably move chap counts here
+                [
+                    int(part_of[str(rclass['chapter.paragraph'])]),
+                    int(part_of[str(rclass['chapter.sentence'])]),
+                ]
             ]
 
     book_cur.close()

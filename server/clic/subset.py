@@ -75,7 +75,7 @@ from clic.concordance import to_conc
 
 from clic.db.book import get_book_metadata, get_book
 from clic.db.corpora import corpora_to_book_ids
-from clic.db.lookup import api_subset_lookup
+from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
 
 
@@ -98,26 +98,27 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
     book = None
     api_subset = api_subset_lookup(cur)
     rclass_ids = tuple(api_subset[s] for s in subset)
+    rclass = rclass_id_lookup(cur)
 
-    # TODO: Use whatever filtering by region we do to speed this up also
     cur.execute("""
         SELECT r.book_id
              , ARRAY(SELECT tokens_in_crange(r.book_id, range_expand(r.crange, %(contextsize)s))) full_tokens
              , ARRAY_AGG(t.crange ORDER BY ordering) node_tokens
              , MIN(t.ordering) word_id_min
              , MAX(t.ordering) word_id_max
+             , (SELECT tm.part_of FROM token_metadata tm WHERE tm.book_id = r.book_id AND tm.lower_crange = MIN(LOWER(t.crange))) part_of
           FROM region r, token t
          WHERE t.book_id = r.book_id AND t.crange <@ r.crange
            AND r.book_id IN %(book_id)s
            AND r.rclass_id IN %(rclass_ids)s
-      GROUP BY r.book_id, r.crange
+      GROUP BY r.book_id, r.crange -- NB: Not using LOWER(r.crange) (generally faster) means we don't have to scan the table
     """, dict(
         book_id=tuple(book_ids),
         contextsize=int(contextsize) * 10,  # TODO: Bodge word -> char
         rclass_ids=rclass_ids,
     ))
 
-    for book_id, full_tokens, node_tokens, word_id_min, word_id_max in cur:
+    for book_id, full_tokens, node_tokens, word_id_min, word_id_max, part_of in cur:
         if not book or book['id'] != book_id:
             book = get_book(book_cur, book_id, content=True)
         conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
@@ -126,9 +127,12 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
             conc_node,
             conc_right,
             # TODO: What to do about chapter_num?
-            [book['name'], 0, word_id_min, word_id_max],
-            # TODO: Para / sentence counts (and probably move chap counts here)
-            [0, 0]
+            [book['name'], int(part_of[str(rclass['chapter.text'])]), word_id_min, word_id_max],
+            # TODO: Probably move chap counts here
+            [
+                int(part_of[str(rclass['chapter.paragraph'])]),
+                int(part_of[str(rclass['chapter.sentence'])]),
+            ]
         ]
 
     book_cur.close()

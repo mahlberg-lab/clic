@@ -39,39 +39,23 @@ def count(cur, corpora=['dickens'], subset=['all', 'shortsus', 'longsus', 'nonqu
     book_ids = tuple(corpora_to_book_ids(cur, corpora))
     api_subset = api_subset_lookup(cur)
     rclass_ids = tuple(api_subset[s] for s in subset)
-    cur.execute("""
-        SELECT r.book_id
-             , r.rclass_id
-             , SUM((SELECT COUNT(*) FROM token t WHERE t.book_id = r.book_id AND t.crange <@ r.crange)) word_count
-          FROM region r
-         WHERE r.book_id IN %(book_ids)s
-           AND r.rclass_id IN %(rclass_ids)s
-      GROUP BY r.book_id, r.rclass_id
-      ORDER BY r.book_id, r.rclass_id
-    """, dict(
-        book_ids=book_ids,
-        rclass_ids=rclass_ids,
-    ))
+    query = """
+        SELECT tm.book_id
+    """
+    params = dict(book_ids=book_ids)
+    for r in rclass_ids:
+        query += """
+             , COUNT(CASE WHEN tm.part_of ? '%d' THEN 1 END) is_%d
+        """ % (r, r)
+    query += """
+          FROM token_metadata tm
+         WHERE tm.book_id IN %(book_ids)s
+      GROUP BY book_id
+    """
+    cur.execute(query, params)
 
-    # Lookup table of subset name to position
-    subset_pos = {}
-    for i, s in enumerate(subset):
-        subset_pos[api_subset[s]] = i
-
-    cur_row = None
-    book_ids = set()
-    for (book_id, rclass_id, word_count) in cur:
-        if not cur_row or cur_row[0] != book_id:
-            book_ids.add(book_id)
-            if cur_row:
-                yield cur_row
-            cur_row = [
-                book_id,
-            ] + [0] * len(subset)
-        # Add this subset to the current row rollup
-        cur_row[subset_pos[rclass_id] + 1] += word_count
-    if cur_row:
-        yield cur_row
+    for row in cur:
+        yield row
 
     footer = get_book_metadata(cur, book_ids, set(metadata))
     if footer:

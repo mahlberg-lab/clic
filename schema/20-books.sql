@@ -121,12 +121,24 @@ CREATE MATERIALIZED VIEW book_word_count AS
 COMMENT ON MATERIALIZED VIEW book_word_count IS 'Count words within a selection of regions';
 
 
+DROP MATERIALIZED VIEW IF EXISTS token_metadata;
+CREATE MATERIALIZED VIEW token_metadata AS
+        SELECT t.book_id
+             , LOWER(t.crange) lower_crange
+             , JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) part_of
+          FROM token t, region r
+         WHERE t.book_id = r.book_id AND t.crange <@ r.crange
+      GROUP BY t.book_id, LOWER(t.crange); -- NB: Without LOWER(), we sort and join the entire result set
+CREATE INDEX IF NOT EXISTS token_metadata_book_id_lower_crange ON token_metadata USING GIST (book_id, lower_crange);
+COMMENT ON INDEX token_metadata_book_id_lower_crange IS 'Join condition for main token table';
+
 CREATE OR REPLACE FUNCTION refresh_book_materialized_views()
 RETURNS VOID SECURITY DEFINER LANGUAGE PLPGSQL
 AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW book_metadata;
     REFRESH MATERIALIZED VIEW book_word_count;
+    REFRESH MATERIALIZED VIEW token_metadata;
 END $$;
 COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
 
