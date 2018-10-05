@@ -103,7 +103,7 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
     cur.execute("""
         SELECT r.book_id
              , ARRAY(SELECT tokens_in_crange(r.book_id, range_expand(r.crange, %(contextsize)s))) full_tokens
-             , ARRAY_AGG(t.crange ORDER BY ordering) node_tokens
+             , ARRAY_AGG(t.crange ORDER BY t.book_id, LOWER(t.crange)) node_tokens
              , r.crange node_crange
              , (SELECT tm.part_of FROM token_metadata tm WHERE tm.book_id = r.book_id AND tm.lower_crange = MIN(LOWER(t.crange))) part_of
           FROM region r, token t
