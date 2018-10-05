@@ -69,7 +69,7 @@ def get_book_metadata(cur, book_ids, metadata):
     - book_ids: Array of book IDs to include
     - metadata: Metadata items to include, a set contining some of...
       - 'book_titles': The title / author of each book
-      - 'chapter_start': The start word ID for all achpters (i.e. the length of the previous)
+      - 'chapter_start': The start character for all chapters, and end of book
       - 'word_count_(subset)': Count of words within (subset)
     """
     def p_params(*args):
@@ -101,20 +101,22 @@ def get_book_metadata(cur, book_ids, metadata):
 
         elif k == 'chapter_start':
             cur.execute("""
-                SELECT bwc.book_id, bwc.rvalue as chapter_num, bwc.word_count
-                  FROM book_word_count bwc
-                 WHERE bwc.rclass_id = %s
-                   AND bwc.book_id IN %s
-              ORDER BY bwc.book_id, bwc.rvalue
+                SELECT b.name
+                     , r.rvalue as chapter_num
+                     , r.crange crange
+                  FROM book b, region r
+                 WHERE b.book_id = r.book_id
+                   AND r.rclass_id = %s
+                   AND b.book_id IN %s
             """, (
                 rclass['chapter.text'],
                 tuple(book_ids),
             ))
-            for (book_id, chapter_num, word_total) in cur:
-                if book_id not in out[k]:
-                    out[k][book_id] = dict(_end=0)
-                out[k][book_id][chapter_num] = out[k][book_id]['_end']
-                out[k][book_id]['_end'] += word_total
+            for (book_name, chapter_num, crange) in cur:
+                if book_name not in out[k]:
+                    out[k][book_name] = dict()
+                out[k][book_name][chapter_num] = crange.lower
+                out[k][book_name]['_end'] = max(out[k][book_name].get('_end', 0), crange.upper)
 
         elif k == 'word_count_chapter':
             cur.execute("""

@@ -104,8 +104,7 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
         SELECT r.book_id
              , ARRAY(SELECT tokens_in_crange(r.book_id, range_expand(r.crange, %(contextsize)s))) full_tokens
              , ARRAY_AGG(t.crange ORDER BY ordering) node_tokens
-             , MIN(t.ordering) word_id_min
-             , MAX(t.ordering) word_id_max
+             , r.crange node_crange
              , (SELECT tm.part_of FROM token_metadata tm WHERE tm.book_id = r.book_id AND tm.lower_crange = MIN(LOWER(t.crange))) part_of
           FROM region r, token t
          WHERE t.book_id = r.book_id AND t.crange <@ r.crange
@@ -118,7 +117,7 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
         rclass_ids=rclass_ids,
     ))
 
-    for book_id, full_tokens, node_tokens, word_id_min, word_id_max, part_of in cur:
+    for book_id, full_tokens, node_tokens, node_crange, part_of in cur:
         if not book or book['id'] != book_id:
             book = get_book(book_cur, book_id, content=True)
         conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
@@ -126,10 +125,9 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
             conc_left,
             conc_node,
             conc_right,
-            # TODO: What to do about chapter_num?
-            [book['name'], int(part_of[str(rclass['chapter.text'])]), word_id_min, word_id_max],
-            # TODO: Probably move chap counts here
+            [book['name'], node_crange.lower, node_crange.upper],
             [
+                int(part_of[str(rclass['chapter.text'])]),
                 int(part_of[str(rclass['chapter.paragraph'])]),
                 int(part_of[str(rclass['chapter.sentence'])]),
             ]

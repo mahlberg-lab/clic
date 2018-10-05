@@ -104,7 +104,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             SELECT book_id
                  , ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens
                  , ARRAY_AGG(crange ORDER BY book_id, LOWER(crange)) node_tokens
-                 , conc_group word_id
+                 , RANGE_MERGE(crange) node_range
                  , JSONB_AGG(part_of) part_of
               FROM (
         """
@@ -117,7 +117,6 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 SELECT t.book_id
                      , t.crange
                      , t.ttype
-                     , t.ordering
                      , t.ordering - %s conc_group
                      , tm.part_of
                   FROM token t, token_metadata tm
@@ -141,7 +140,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         params.append(len(likes))
 
         cur.execute(query, params)
-        for book_id, full_tokens, node_tokens, word_id, part_of in cur:
+        for book_id, full_tokens, node_tokens, node_crange, part_of in cur:
             part_of = part_of[0]  # Unwind redundant aggregation
             if not book or book['id'] != book_id:
                 book = get_book(book_cur, book_id, content=True)
@@ -150,10 +149,9 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 conc_left,
                 conc_node,
                 conc_right,
-                # TODO: What to do about chapter_num?
-                [book['name'], int(part_of[str(rclass['chapter.text'])]), word_id, word_id + len(likes)],
-                # TODO: Probably move chap counts here
+                [book['name'], node_crange.lower, node_crange.upper],
                 [
+                    int(part_of[str(rclass['chapter.text'])]),
                     int(part_of[str(rclass['chapter.paragraph'])]),
                     int(part_of[str(rclass['chapter.sentence'])]),
                 ]

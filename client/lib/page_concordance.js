@@ -39,14 +39,14 @@ function renderPlotCount(data, type, full, meta) {
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
-    var xVal, pos_start = full.chapter_start[data[1]] + data[2];
+    var xVal, pos_start = data[1];
 
     if (type === 'display') {
         xVal = (pos_start / full.chapter_start._end) * 50; // word in book / total word count
 
         return '<a class="bookLink" title="Click to display concordance in book"' +
                ' onclick="event.stopPropagation();" target="_blank"' +
-               ' href="/text?book=' + data[0] + '&chapter_num=' + data[1] + '&word-highlight=' + data[1] + '%3A' + data[2] + '%3A' + data[3] + '" >' +
+               ' href="/text?book=' + data[0] + '&chapter_num=' + full[4][0] + '&word-highlight=' + data[1] + '%3A' + data[2] + '" >' +
                '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
                '<rect x="0" y="4" width="50" height="7" fill="#D6E1E8"/>' +
                '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
@@ -68,17 +68,15 @@ function renderDistributionPlot(data, type, full, meta) {
             min_width = data.length < 1000 ? 5 : 1; // The minimum width of a single line
 
         return '<svg class="plot min-width-' + min_width + '" viewBox="0 0 ' + svg_xres + ' 40" width="' + svg_xres + '" height="40" preserveAspectRatio="none">' + data.sort(function (a, b) {
-            // Sort by #kwicgroups, chapter, position-in-chapter, so kwicgrouped items are on top
-            return a.kwic - b.kwic || a[3][1] - b[3][1] || a[3][2] - b[3][2];
+            // Sort by #kwicgroups, position-in-book, so kwicgrouped items are on top
+            return a.kwic - b.kwic || a[3][1] - b[3][1];
         }).map(function (r) {
-            var ch_start = r.chapter_start[r[3][1]],  // Word-count at start of chapter
-                words_total = r.chapter_start._end,
-                posStart = ((ch_start + r[3][2]) / words_total) * svg_xres,
-                posWidth = Math.max(min_width, ((r[3][3] - r[3][2]) / words_total) * svg_xres);
+            var posStart = (r[3][1] / r.chapter_start._end) * svg_xres,
+                posWidth = Math.max(min_width, ((r[3][2] - r[3][1]) / r.chapter_start._end) * svg_xres);
 
             return '<a' +
                 ' onclick="event.stopPropagation();" target="_blank"' +
-                ' href="/text?book=' + r[3][0] + '&chapter_num=' + r[3][1] + '&word-highlight=' + r[3][1] + '%3A' + r[3][2] + '%3A' + r[3][3] + '"' +
+                ' href="/text?book=' + r[3][0] + '&chapter_num=' + r[4][0] + '&word-highlight=' + r[3][1] + '%3A' + r[3][2] + '"' +
                 '><rect' +
                 ' class="' + r.DT_RowClass + '"' +
                 ' x="' + posStart + '"' +
@@ -95,9 +93,7 @@ function renderDistributionPlot(data, type, full, meta) {
 
     function plotDataExcel() {
         return '{' + data.map(function (r) {
-            var ch_start = r.chapter_start[r[3][1]],  // Word-count at start of chapter
-                words_total = r.chapter_start._end,
-                posStart = ((ch_start + r[3][2]) / words_total) * 100;
+            var posStart = (r[3][1] / r.chapter_start._end) * 100;
 
             return posStart;
         }).join(";") + '}';
@@ -133,7 +129,7 @@ function renderDistributionPlot(data, type, full, meta) {
     }
 
     // Sorting / filtering is done based on position of first item
-    return data.length > 0 ? ((data[0].chapter_start[data[0][3][1]] + data[0][3][3]) / data[0].chapter_start._end) * 100 : null;
+    return data.length > 0 ? (data[0][3][2] / data[0].chapter_start._end) * 100 : null;
 }
 
 // PageConcordance inherits PageTable
@@ -185,9 +181,9 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
             { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
             { title: "Book", data: "3.0", render: concordance_utils.renderBook.bind(this, 'abbr'), searchable: false }, // Book
-            { title: "Ch.", data: "3.1", class: "metadataColumn", searchable: false }, // Chapter
-            { title: "Par.", data: "4.0", class: "metadataColumn", searchable: false }, // Paragraph-in-chapter
-            { title: "Sent.", data: "4.1", class: "metadataColumn", searchable: false }, // Sentence-in-chapter
+            { title: "Ch.", data: "4.0", class: "metadataColumn", searchable: false }, // Chapter
+            { title: "Par.", data: "4.1", class: "metadataColumn", searchable: false }, // Paragraph-in-chapter
+            { title: "Sent.", data: "4.2", class: "metadataColumn", searchable: false }, // Sentence-in-chapter
             { title: "In&nbsp;bk.", data: "3", width: "52px", render: renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
         ];
         this.table_opts.order = [[9, 'asc']];
@@ -319,7 +315,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
         }
 
-        // Annotate row with chapter_start object for this book ID
+        // Link to chapter starts for ticks, length of entire book, number of books
         data[i].chapter_start = raw_data.chapter_start[data[i][3][0]];
     }
 
