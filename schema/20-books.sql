@@ -1,5 +1,8 @@
 BEGIN;
 
+-- We need this for GIST tokens on book_id INT as well as ranges.
+CREATE EXTENSION btree_gist;
+
 /*
 TODO: Versioning
 * Before we versioned the entire thing. Now we could:
@@ -37,8 +40,10 @@ COMMENT ON TABLE  token IS 'Tokens within a book';
 COMMENT ON COLUMN token.ttype IS 'Token type, i.e. normalised token';
 COMMENT ON COLUMN token.crange IS 'Character range to find this token at';
 COMMENT ON COLUMN token.ordering IS 'Position of this token in chapter';
-CREATE INDEX IF NOT EXISTS gist_token_crange ON token USING GIST (crange);
-COMMENT ON INDEX gist_token_crange IS 'Allows us to discover what''s at this point';
+CREATE INDEX IF NOT EXISTS gist_token_book_id_crange ON token USING GIST (book_id, crange);
+COMMENT ON INDEX gist_token_book_id_crange IS 'Finding tokens in a range, joining to regions';
+CREATE INDEX IF NOT EXISTS token_book_id_lower_crange ON token (book_id, LOWER(crange));
+COMMENT ON INDEX token_book_id_lower_crange IS 'Joining with a scalar equivalent to the PK';
 CREATE INDEX IF NOT EXISTS token_lower_crange ON token (LOWER(crange));
 COMMENT ON INDEX token_lower_crange IS 'Sorting on LOWER(crange)';
 CREATE INDEX IF NOT EXISTS token_ordering ON token (ordering);
@@ -61,10 +66,10 @@ COMMENT ON COLUMN region.rvalue IS 'Value associated with range, e.g. chapter nu
 COMMENT ON COLUMN region.crange IS 'Character range this applies to';
 CREATE INDEX IF NOT EXISTS region_rclass_id ON region (rclass_id);
 COMMENT ON INDEX region_rclass_id IS 'Get regions by rclass';
-CREATE INDEX IF NOT EXISTS gist_region_crange ON region USING GIST (crange);
-COMMENT ON INDEX gist_region_crange IS 'Allows us to discover what''s at this point';
-CREATE INDEX IF NOT EXISTS region_lower_crange ON token (LOWER(crange));
-COMMENT ON INDEX region_lower_crange IS 'Sorting on LOWER(crange)';
+CREATE INDEX IF NOT EXISTS gist_region_book_id_crange ON region USING GIST (book_id, crange);
+COMMENT ON INDEX gist_region_book_id_crange IS 'Finding regions in a range, joining to tokens';
+CREATE INDEX IF NOT EXISTS region_book_id_lower_crange ON region (book_id, LOWER(crange));
+COMMENT ON INDEX region_book_id_lower_crange IS 'Sorting on LOWER(crange)';
 
 
 CREATE OR REPLACE FUNCTION tokens_in_crange(in_book_id INT, in_crange INT4RANGE) RETURNS TABLE(crange INT4RANGE) STABLE AS
@@ -72,7 +77,7 @@ $BODY$
     SELECT t.crange
       FROM token t
       WHERE t.book_id = in_book_id AND t.crange <@ in_crange
-      ORDER BY ordering
+      ORDER BY LOWER(t.crange)
 $BODY$ LANGUAGE sql;
 COMMENT ON FUNCTION public.tokens_in_crange(book_id INT, crange INT4RANGE) IS 'Get all tokens within the given crange';
 
