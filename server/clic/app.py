@@ -7,6 +7,7 @@ import clic.count
 import clic.metadata
 import clic.keyword
 import clic.subset
+import clic.text
 from clic.db.cursor import get_pool_cursor
 from clic.db.version import clic_version
 from clic.stream_json import stream_json, format_error, JSONEncoder
@@ -18,6 +19,7 @@ STREAMING_APIS = [
     clic.count.count,
     clic.keyword.keyword,
     clic.subset.subset,
+    clic.text.text,
 ]
 
 
