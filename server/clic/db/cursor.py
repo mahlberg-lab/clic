@@ -4,17 +4,15 @@ import os
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 
-_cur_dsn = None
 _pool = None
 
 
 @contextlib.contextmanager
 def get_pool_cursor():
-    global _pool, _cur_dsn
+    global _pool
     dsn = os.environ['DB_DSN']
-    if _cur_dsn != dsn:
+    if not _pool or dsn != _pool._kwargs['dsn']:
         _pool = ThreadedConnectionPool(1, 10, dsn=dsn)
-        _cur_dsn = dsn  # TODO: Can we get DSN out of _pool object?
     conn = _pool.getconn()
     try:
         yield conn.cursor()
