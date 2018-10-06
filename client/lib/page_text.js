@@ -2,6 +2,7 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise, DOMParser */
 var api = require('./api.js');
+var corpora_utils = require('lib/corpora_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 function PageText(content_el) {
@@ -11,20 +12,6 @@ function PageText(content_el) {
       */
     this.reload = function reload(page_state) {
         var p = Promise.resolve({}), force_update = false;
-
-        function get_title(chapter_el, chapter_num) {
-            var out, title_el = chapter_el.querySelector('title');
-
-            if (title_el) {
-                out = title_el.innerHTML;
-            }
-
-            if (!out) {
-                out = 'Chapter ' + chapter_num;
-            }
-
-            return out;
-        }
 
         if (JSON.stringify(page_state.arg('book')) !== this.current.book) {
             p = p.then(function (p_data) {
@@ -36,47 +23,57 @@ function PageText(content_el) {
                 }
                 args = {
                     corpora: page_state.arg('book'),
+                    regions: [
+                        'metadata.title',
+                        'metadata.author',
+                        'chapter.title',
+                        'chapter.sentence',
+                        'quote.quote',
+                        'quote.suspension.short',
+                        'quote.suspension.long',
+                        'quote.embedded',
+                        'quote.embedded.suspension.short',
+                        'quote.embedded.suspension.long',
+                    ],
                 };
 
                 return api.get('text', args);
-            }).then(function (data) {
-                var i, chapter_el, doc, parser = new DOMParser();
+            }.bind(this)).then(function (data) {
+                this.content = data.content;
+                this.regions = data.data;
 
-                data.chapter_nums = [];
-                for (i = 0; i < data.data.length; i++) {
-                    doc = parser.parseFromString(data.data[i][2], 'application/xml');
-                    if (doc.documentElement.nodeName === "parsererror") {
-                        throw new Error("Cannot parse chapter: " + data.data[i][0] + '/' + data.data[i][1]);
-                    }
-
-                    chapter_el = document.createElement('DIV');
-                    chapter_el.className = 'chapter';
-                    chapter_el.setAttribute('data-book', data.data[i][0]);
-                    chapter_el.setAttribute('data-num', data.data[i][1]);
-                    chapter_el.appendChild(doc.documentElement);
-                    content_el.appendChild(chapter_el);
-
-                    // Tell controlbar about the chapter
-                    data.chapter_nums.push({
-                        id: data.data[i][1],
-                        title: get_title(chapter_el, data.data[i][1]),
-                    });
-                }
+                data.chapter_nums = corpora_utils.chapter_headings(this.content, this.regions);
 
                 return data;
-            });
+            }.bind(this));
             this.current.book = JSON.stringify(page_state.arg('book'));
             force_update = true;
         }
 
+        // Highlight any words in chapter_num (e.g. for concordance selection)
+        if (force_update || JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
+            p = p.then(function (p_data) {
+                var book_el, highlight_arr = page_state.arg('word-highlight').split(':');
+
+                content_el.innerHTML = '';
+                book_el = document.createElement('DIV');
+                book_el.className = 'book-content';
+                book_el.innerHTML = corpora_utils.regions_to_html(this.content, this.regions, highlight_arr.map(function (x) { return parseInt(x, 10); }));
+                content_el.appendChild(book_el);
+
+                content_el.querySelector('.book-content > .highlight').scrollIntoView();
+
+                return p_data;
+            }.bind(this));
+            this.current['word-highlight'] = JSON.stringify(page_state.arg('word-highlight'));
+        }
+
         if (force_update || JSON.stringify(page_state.arg('chapter_num')) !== this.current.chapter_num) {
             p = p.then(function (p_data) {
-                var chapter_el = content_el.querySelector('.chapter[data-num="' + page_state.arg('chapter_num') + '"]');
-
-                if (!chapter_el) {
-                    // Not found, so select the first one
-                    chapter_el = content_el.childNodes[0];
-                }
+                // Find chapter to scroll to, or top of page
+                var chapter_el = content_el.querySelector(
+                    '.chapter-title.chapter-' + page_state.arg('chapter_num')
+                ) || content_el.parentElement;
 
                 chapter_el.scrollIntoView();
 
@@ -88,43 +85,13 @@ function PageText(content_el) {
             this.current.chapter_num = JSON.stringify(page_state.arg('chapter_num'));
         }
 
-        // Highlight any words in chapter_num (e.g. for concordance selection)
-        if (force_update || JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
-            p = p.then(function (p_data) {
-                var highlight_arr = page_state.arg('word-highlight').split(':'),
-                    start_node = parseInt(highlight_arr[1], 10),
-                    end_node = parseInt(highlight_arr[2], 10),
-                    word_nodes,
-                    i,
-                    chapter_el = content_el.querySelector('.chapter[data-num="' + highlight_arr[0] + '"]');
-
-                if (!chapter_el || (start_node === 0 && end_node === 0)) {
-                    return p_data;
-                }
-
-                word_nodes = chapter_el.getElementsByTagName("w");
-                if (start_node >= word_nodes.length || end_node >= word_nodes.length) {
-                    // Selection falls outside our range
-                    return p_data;
-                }
-
-                for (i = start_node; i < end_node; i++) {
-                    word_nodes[i].setAttribute('selected', 'selected');
-                }
-                word_nodes[start_node].scrollIntoView();
-
-                return p_data;
-            });
-            this.current['word-highlight'] = JSON.stringify(page_state.arg('word-highlight'));
-        }
-
         if (force_update || JSON.stringify(page_state.arg('chap-highlight')) !== this.current['chap-highlight']) {
             p = p.then(function (p_data) {
-                Array.prototype.map.call(content_el.childNodes, function (chapter_el) {
-                    // Add a highlight-class for each specified highlight
-                    chapter_el.className = 'chapter ' +
-                        page_state.arg('chap-highlight').map(function (x) { return 'highlight-' + x; }).join(" ");
-                });
+                // Add a highlight-class for each specified highlight
+                content_el.childNodes[0].className = 'book-content ' +
+                    page_state.arg('chap-highlight').map(function (x) {
+                        return 'h-' + x.replace(/\./g, '-');
+                    }).join(" ");
 
                 return p_data;
             });

@@ -49,7 +49,7 @@ var state_defaults = {
     'selected_rows': [],
 
     'book': '',
-    'chapter_num': 1,
+    'chapter_num': 0,
     'chapter_id': -1,
     'word-highlight': '0:0',
     'chap-highlight': [],
