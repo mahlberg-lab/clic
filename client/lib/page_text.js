@@ -53,15 +53,24 @@ function PageText(content_el) {
         // Highlight any words in chapter_num (e.g. for concordance selection)
         if (force_update || JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
             p = p.then(function (p_data) {
-                var book_el, highlight_arr = page_state.arg('word-highlight').split(':');
+                var book_el, highlight_arr;
+
+                highlight_arr = page_state.arg('word-highlight').split(':').map(function (x) {
+                    return parseInt(x, 10);
+                });
+                if (highlight_arr[0] === 0 && highlight_arr[1] === 0) {
+                    highlight_arr = null;
+                }
 
                 content_el.innerHTML = '';
                 book_el = document.createElement('DIV');
                 book_el.className = 'book-content';
-                book_el.innerHTML = corpora_utils.regions_to_html(this.content, this.regions, highlight_arr.map(function (x) { return parseInt(x, 10); }));
+                book_el.innerHTML = corpora_utils.regions_to_html(this.content, this.regions, highlight_arr);
                 content_el.appendChild(book_el);
 
-                content_el.querySelector('.book-content > .highlight').scrollIntoView();
+                if (highlight_arr) {
+                    content_el.querySelector('.book-content > .highlight').scrollIntoView();
+                }
 
                 return p_data;
             }.bind(this));
@@ -73,12 +82,14 @@ function PageText(content_el) {
                 // Find chapter to scroll to, or top of page
                 var chapter_el = content_el.querySelector(
                     '.chapter-title.chapter-' + page_state.arg('chapter_num')
-                ) || content_el.parentElement;
+                );
 
-                chapter_el.scrollIntoView();
+                if (chapter_el) {
+                    chapter_el.scrollIntoView();
 
-                // Tell controlbar about the changes
-                p_data.chapter_num_selected = chapter_el.getAttribute('data-num');
+                    // Tell controlbar about the changes
+                    p_data.chapter_num_selected = chapter_el.getAttribute('data-num');
+                }
 
                 return p_data;
             });
