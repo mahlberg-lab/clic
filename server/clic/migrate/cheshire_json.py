@@ -5,6 +5,7 @@ XML_TAG_REGEX = re.compile(r'<([^>]+)>([^<]*)', re.MULTILINE)
 
 
 def from_cheshire_json(f, book_meta):
+    """Interprets a /text response from a CLiC 1.6 instance into a 1.7 book format"""
     doc = json.load(f)
     book = dict(regions=[], content="")
 
@@ -173,7 +174,6 @@ def script_import_cheshire_json():
     from clic.db.cursor import get_script_cursor
 
     corpora_path = sys.argv[1]
-    file_path = sys.argv[2]
 
     with open(corpora_path, 'r') as f:
         corpora = json.load(f)
@@ -182,7 +182,17 @@ def script_import_cheshire_json():
         for b in c['children']:
             book_meta[b['id']] = b
 
-    with open(file_path, 'r') as f:
-        book = from_cheshire_json(f, book_meta)
     with get_script_cursor(for_write=True) as cur:
-        put_book(cur, book)
+        for file_path in sys.argv[2:]:
+            print("=== %s" % file_path)
+
+            print(" * Parsing...")
+            with open(file_path, 'r') as f:
+                book = from_cheshire_json(f, book_meta)
+
+            print(" * Adding to DB...")
+            put_book(cur, book)
+
+            print(" * Committing...")
+            cur.connection.commit()
+    print("=== Updating materialised views...")
