@@ -6,27 +6,16 @@
   white-space: pre-line;
 }
 
-#content>.book-content span.metadata-title,
-#content>.book-content span.metadata-author {
-  display: block;
-  text-align: center;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
 .book-content span.metadata-title {
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 .book-content span.metadata-author {
-  font-size: 1.5rem;
-  max-width: 500px;
-  border-bottom: 2px solid #666;
+  font-size: 2rem;
 }
 
 .book-content span.chapter-title {
-  display: block;
-  font-weight: bold;
+  font-size: 1.7rem;
 }
 
 nav fieldset[data-name="text"] label span {
