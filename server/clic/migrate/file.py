@@ -41,3 +41,19 @@ def to_book_file(book, f):
     # Contents
     f.write("\n")
     f.write(book['content'])
+
+
+def script_export_book_file():
+    import sys
+    from clic.db.book import get_book
+    from clic.db.cursor import get_script_cursor
+
+    book_name = sys.argv[1]
+    if (len(sys.argv) > 2):
+        f = open(sys.argv[2], 'w')
+    else:
+        f = sys.stdout
+
+    with get_script_cursor(for_write=False) as cur:
+        book = get_book(cur, book_name, content=True, regions=True)
+        to_book_file(book, f)

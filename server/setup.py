@@ -28,9 +28,8 @@ setup(
     ),
     entry_points={
         'console_scripts': [
+            'export_file=clic.migrate.file:script_export_book_file',
             'import_cheshire_json=clic.migrate.cheshire_json:script_import_cheshire_json',
-            'recreate_rdb=clic.clicdb:recreate_rdb',
-            'store_documents=clic.clicdb:store_documents',
         ],
     },
 )

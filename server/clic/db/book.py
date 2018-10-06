@@ -45,20 +45,36 @@ def put_book(cur, book):
     ) for rclass_name, rvalue, off_start, off_end in book['regions'] if rclass_name != 'token.word'))
 
 
-def get_book(cur, book_id, content=False, tokens=False, regions=False):
+def get_book(cur, book_id_name, content=False, regions=False):
     """Get book from DB, specifying what details are required"""
-    out = dict(id=book_id)
+    out = dict()
 
     # Initial fetch from main table
-    cur.execute("SELECT name, " + ("content" if content else "NULL") + " AS content FROM book WHERE book_id = %s", (book_id,))
-    (out['name'], out['content'],) = cur.fetchone()
+    cur.execute("".join([
+        "SELECT book_id, name",
+        ", content" if content else ", NULL AS content",
+        " FROM book WHERE",
+        " book_id = %s" if isinstance(book_id_name, int) else " name = %s",
+    ]), (book_id_name,))
+    (out['id'], out['name'], out['content'],) = cur.fetchone()
     if not content:
         del out['content']
 
-    if tokens:
-        raise NotImplementedError()
     if regions:
-        raise NotImplementedError()
+        cur.execute("""
+            SELECT (SELECT name FROM rclass WHERE rclass_id = r.rclass_id) rclass_name
+                 , r.crange
+                 , r.rvalue
+              FROM region r
+             WHERE r.book_id = %(book_id)s
+        """, dict(
+            book_id=out['id'],
+        ))
+
+        out['regions'] = [
+            [rclass_name, crange.lower, crange.upper, rvalue]
+            for rclass_name, crange, rvalue in cur
+        ]
 
     return out
 
