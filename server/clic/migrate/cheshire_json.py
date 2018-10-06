@@ -96,14 +96,15 @@ def xml_to_plaintext(xml_string, offset):
                 close_region('quote.quote')
                 open_region('quote.nonquote')
 
+        # NB: Cheshire didn't differentiate between embedded suspensions and regular ones, work it out now
         elif part.startswith('sss '):
-            open_region('quote.suspension.short')
+            open_region('quote.embedded.suspension.short' if 'quote.quote' in unclosed_regions else 'quote.suspension.short')
         elif part.startswith('sse '):
-            close_region('quote.suspension.short')
+            close_region('quote.embedded.suspension.short' if 'quote.embedded.suspension.short' in unclosed_regions else 'quote.suspension.short')
         elif part.startswith('sls '):
-            open_region('quote.suspension.long')
+            open_region('quote.embedded.suspension.long' if 'quote.quote' in unclosed_regions else 'quote.suspension.long')
         elif part.startswith('sle '):
-            close_region('quote.suspension.long')
+            close_region('quote.embedded.suspension.long' if 'quote.embedded.suspension.long' in unclosed_regions else 'quote.suspension.long')
 
         elif part.startswith('alt-qs '):
             open_region('quote.embedded')
@@ -161,7 +162,7 @@ def xml_to_plaintext(xml_string, offset):
     if 'quote.nonquote' in unclosed_regions:
         close_region('quote.nonquote')
     if len(unclosed_regions) > 0:
-        raise ValueError("Still have open regions!")
+        raise ValueError("Still have open regions: " + ",".join(unclosed_regions.keys()))
     # TODO: Boundaries
     return book_name, out_string, out_regions
 
