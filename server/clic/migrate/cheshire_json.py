@@ -18,7 +18,6 @@ def from_cheshire_json(f, book_meta):
     book['regions'].append(['metadata.author', None, len(book['content'])])
     book['content'] += book_meta[doc['data'][0][0]]['author']
     book['regions'][-1].append(len(book['content']))
-    book['content'] += "\n\n"
 
     for book_id, chapter_num, xml_string in doc['data']:
         book['name'], new_string, new_regions = xml_to_plaintext(xml_string, len(book['content']))
@@ -76,6 +75,7 @@ def xml_to_plaintext(xml_string, offset):
 
         elif part == '/s':
             close_region('chapter.sentence')
+            out_string = out_string + " "
         elif part.startswith('s sid='):
             open_region('chapter.sentence', count_paragraph)
             count_paragraph += 1
@@ -118,6 +118,7 @@ def xml_to_plaintext(xml_string, offset):
             close_region('chapter.paragraph')
 
         elif part == 'title':
+            out_string = out_string + "\n\n\n"
             open_region('chapter.title', chapter_num)
             # Reformat the text part before it gets added
             text_part = re.sub(
@@ -128,7 +129,6 @@ def xml_to_plaintext(xml_string, offset):
             )
         elif part == '/title':
             close_region('chapter.title')
-            out_string = out_string + "\n\n"
             open_region('chapter.text', chapter_num)
             open_region('quote.nonquote')
 
