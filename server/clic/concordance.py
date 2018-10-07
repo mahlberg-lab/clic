@@ -66,6 +66,7 @@ Examples:
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 """
+import re
 import unidecode
 
 from clic.db.book import get_book_metadata, get_book
@@ -73,6 +74,8 @@ from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
 from clic.tokenizer import parse_query
+
+RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns it
 
 
 def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
@@ -95,7 +98,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     like_sets = [parse_query(s) for s in q]
     if len(like_sets) == 0:
         raise UserError("You must supply at least one search term", "error")
-    contextsize = contextsize[0]
+    contextsize = int(contextsize[0])
     metadata = set(metadata)
     book_cur = cur.connection.cursor()
     book = None
@@ -109,7 +112,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                  , JSONB_AGG(part_of) part_of
               FROM (
         """
-        params = [int(contextsize) * 10]  # TODO: Bodge word -> char
+        params = [contextsize * 10]  # TODO: Bodge word -> char
 
         for i, like in enumerate(likes):
             if i > 0:
@@ -145,11 +148,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             part_of = part_of[0]  # Unwind redundant aggregation
             if not book or book['id'] != book_id:
                 book = get_book(book_cur, book_id, content=True)
-            conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
-            yield [
-                conc_left,
-                conc_node,
-                conc_right,
+            yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
                 [book['name'], node_crange.lower, node_crange.upper],
                 [
                     int(part_of[str(rclass['chapter.text'])]),
@@ -165,27 +164,48 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         yield ('footer', footer)
 
 
-def to_conc(full_text, full_tokens, node_tokens):
+def to_conc(full_text, full_tokens, node_tokens, contextsize):
     """
     Convert full text + tokens back into wire format
     - full_text: String covering entire area, including window
     - full_tokens: List of tokens, including window
     - node_tokens: List of tokens, excluding window
+    - contextsize: Number of tokens should be in window, if 0 then don't return window
 
     A token is a NumericRange type indicating the range in full_text it corresponds to
     """
     concs = [[]]
     toks = [[]]
 
+    def append_if_nonempty(l, s):
+        if s:
+            l.append(s)
+
     prev_t = None
     for t in full_tokens:
+        # Non-word characters before this word
+        intra_word = full_text[prev_t.upper:t.lower] if prev_t else ''
         if t == node_tokens[0]:
-            # TODO: Split non-word characters on space, appending to previous entry (clic/c3chapter.py)
+            # First token of node
             concs.append([])
             toks.append([])
-        if prev_t:
+            intra_word = re.split(RE_WHITESPACE, intra_word, maxsplit=1)
+            append_if_nonempty(concs[-2], intra_word[0])
+            if len(intra_word) > 1:
+                append_if_nonempty(concs[-2], intra_word[1])  # NB: Window gets space, not node
+                append_if_nonempty(concs[-1], intra_word[2])
+        elif prev_t == node_tokens[-1]:
+            # First token of right-window
+            concs.append([])
+            toks.append([])
+            intra_word = re.split(RE_WHITESPACE, intra_word, maxsplit=1)
+            append_if_nonempty(concs[-2], intra_word[0])
+            if len(intra_word) > 1:
+                append_if_nonempty(concs[-1], intra_word[1])  # NB: Window gets space, not node
+                append_if_nonempty(concs[-1], intra_word[2])
+        else:
             # Add non-word characters before current tokens
-            concs[-1].append(full_text[prev_t.upper:t.lower])
+            append_if_nonempty(concs[-1], intra_word)
         # Add word token
         toks[-1].append(len(concs[-1]))
         # TODO: Ideally we'd not mangle text, instead return the tokens here
@@ -193,12 +213,7 @@ def to_conc(full_text, full_tokens, node_tokens):
         concs[-1].append(unidecode.unidecode(full_text[t.lower:t.upper]))
         prev_t = t
 
-        if t == node_tokens[-1]:
-            # Anything after this is right-hand context
-            concs.append([])
-            toks.append([])
-
     # Add array of indicies that are tokens to the end
     for i, c in enumerate(concs):
         c.append(toks[i])
-    return concs
+    return [concs[1]] if contextsize == 0 else concs

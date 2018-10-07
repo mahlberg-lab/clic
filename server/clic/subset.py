@@ -92,7 +92,7 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
     book_ids = corpora_to_book_ids(cur, corpora)
     if len(book_ids) == 0:
         raise UserError("No books to search", "error")
-    contextsize = contextsize[0]
+    contextsize = int(contextsize[0])
     metadata = set(metadata)
     book_cur = cur.connection.cursor()
     book = None
@@ -113,18 +113,14 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
       GROUP BY r.book_id, r.crange -- NB: Not using LOWER(r.crange) (generally faster) means we don't have to scan the table
     """, dict(
         book_id=tuple(book_ids),
-        contextsize=int(contextsize) * 10,  # TODO: Bodge word -> char
+        contextsize=contextsize * 10,  # TODO: Bodge word -> char
         rclass_ids=rclass_ids,
     ))
 
     for book_id, full_tokens, node_tokens, node_crange, part_of in cur:
         if not book or book['id'] != book_id:
             book = get_book(book_cur, book_id, content=True)
-        conc_left, conc_node, conc_right = to_conc(book['content'], full_tokens, node_tokens)
-        yield [
-            conc_left,
-            conc_node,
-            conc_right,
+        yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
             [book['name'], node_crange.lower, node_crange.upper],
             [
                 int(part_of[str(rclass['chapter.text'])]),

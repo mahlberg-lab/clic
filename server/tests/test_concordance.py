@@ -1,12 +1,66 @@
-# -*- coding: utf-8 -*-
 import re
 import unittest
 
-from clic.clicdb import ClicDb
-from clic.concordance import concordance
+from psycopg2._range import NumericRange
+
+from clic.concordance import concordance, to_conc
+from clic.nonexistant import ClicDb
 
 
-class TestConcordance(unittest.TestCase):
+FULL_TEXT = 'A man walked into a bar. "Ouch!", he said. It was an iron bar.'
+R_A = NumericRange(0, 1)
+R_MAN = NumericRange(2, 5)
+R_WALKED = NumericRange(6, 12)
+R_INTO = NumericRange(13, 17)
+R_A2 = NumericRange(18, 19)
+R_BAR = NumericRange(20, 23)
+R_OUCH = NumericRange(26, 31)
+R_HE = NumericRange(34, 36)
+R_SAID = NumericRange(37, 41)
+R_IT = NumericRange(43, 45)
+R_WAS = NumericRange(46, 49)
+R_AN = NumericRange(50, 52)
+R_IRON = NumericRange(53, 57)
+R_BAR2 = NumericRange(58, 61)
+
+
+class Test_to_conc(unittest.TestCase):
+    def test_emptycontextsize(self):
+        """0 context means we don't return the window lists"""
+        self.assertEqual(to_conc(
+            FULL_TEXT,
+            [R_MAN, R_WALKED, R_INTO],
+            [R_MAN, R_WALKED, R_INTO],
+            0
+        ), [
+            ['man', ' ', 'walked', ' ', 'into', [0, 2, 4]],
+        ])
+
+    def test_windowsplit(self):
+        """We split windows on nearest space"""
+        self.assertEqual(to_conc(
+            FULL_TEXT,
+            [R_A, R_MAN, R_WALKED, R_INTO, R_A2, R_BAR],
+            [R_MAN, R_WALKED, R_INTO],
+            2
+        ), [
+            ['A', ' ', [0]],
+            ['man', ' ', 'walked', ' ', 'into', [0, 2, 4]],
+            [' ', 'a', ' ', 'bar', [1, 3]]
+        ])
+        self.assertEqual(to_conc(
+            FULL_TEXT,
+            [R_A2, R_BAR, R_OUCH, R_HE, R_SAID],
+            [R_OUCH],
+            2
+        ), [
+            ['a', ' ', 'bar', '.', ' ', [0, 2]],
+            ['"', 'Ouch!', '",', [1]],
+            [' ', 'he', ' ', 'said', [1, 3]],
+        ])
+
+
+class SkipConcordance():  # TODO: Skip the lot
     def test_concordance(self):
         cdb = ClicDb()
 
