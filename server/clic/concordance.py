@@ -66,14 +66,13 @@ Examples:
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 """
-import re
-
 import unidecode
 
 from clic.db.book import get_book_metadata, get_book
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
+from clic.tokenizer import parse_query
 
 
 def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
@@ -93,7 +92,9 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     api_subset = api_subset_lookup(cur)
     rclass = rclass_id_lookup(cur)
     rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
-    like_sets = parse_queries(q)
+    like_sets = [parse_query(s) for s in q]
+    if len(like_sets) == 0:
+        raise UserError("You must supply at least one search term", "error")
     contextsize = contextsize[0]
     metadata = set(metadata)
     book_cur = cur.connection.cursor()
@@ -201,19 +202,3 @@ def to_conc(full_text, full_tokens, node_tokens):
     for i, c in enumerate(concs):
         c.append(toks[i])
     return concs
-
-
-def parse_queries(query_list):
-    def term_to_like(t):
-        """Escape any literal LIKE terms, convert * to %"""
-        return (t.replace('\\', '\\\\')
-                 .replace('%', '\\%')
-                 .replace('_', '\\_')
-                 .replace('*', '%'))
-
-    if len(query_list) == 0:
-        raise UserError("You must supply at least one search term", "error")
-
-    # Split each query by whitespace(TODO: Or non-word? Comma good, hypen bad? We need to apply quoting rules from input)
-    # TODO: We need a tokeniser class that both this and the ingester uses
-    return [[term_to_like(t) for t in re.split('\s+', query.lower())] for query in query_list]
