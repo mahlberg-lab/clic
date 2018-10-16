@@ -40,16 +40,16 @@ def count(cur, corpora=['dickens'], subset=['all', 'shortsus', 'longsus', 'nonqu
     api_subset = api_subset_lookup(cur)
     rclass_ids = tuple(api_subset[s] for s in subset)
     query = """
-        SELECT (SELECT name FROM book WHERE book_id = tm.book_id) AS "name"
+        SELECT (SELECT name FROM book WHERE book_id = t.book_id) AS "name"
     """
     params = dict(book_ids=book_ids)
     for r in rclass_ids:
         query += """
-             , COUNT(CASE WHEN tm.part_of ? '%d' THEN 1 END) is_%d
+             , COUNT(CASE WHEN t.part_of ? '%d' THEN 1 END) is_%d
         """ % (r, r)
     query += """
-          FROM token_metadata tm
-         WHERE tm.book_id IN %(book_ids)s
+          FROM token t
+         WHERE t.book_id IN %(book_ids)s
       GROUP BY book_id
     """
     cur.execute(query, params)

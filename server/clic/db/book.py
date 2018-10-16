@@ -22,17 +22,6 @@ def put_book(cur, book):
     ))
     (book_id,) = cur.fetchone()
 
-    # Replace tokens with new values
-    cur.execute("DELETE FROM token WHERE book_id = %(book_id)s", dict(book_id=book_id))
-    psycopg2.extras.execute_values(cur, """
-        INSERT INTO token (book_id, crange, ttype, ordering) VALUES %s
-    """, ((
-        book_id,
-        psycopg2.extras.NumericRange(off_start, off_end),
-        ttype,
-        i,
-    ) for i, (rclass_name, ttype, off_start, off_end) in enumerate(book['regions']) if rclass_name == 'token.word'))
-
     # Replace regions with new values
     cur.execute("DELETE FROM region WHERE book_id = %(book_id)s", dict(book_id=book_id))
     psycopg2.extras.execute_values(cur, """
@@ -43,6 +32,18 @@ def put_book(cur, book):
         rclass[rclass_name],
         rvalue,
     ) for rclass_name, rvalue, off_start, off_end in book['regions'] if rclass_name != 'token.word'))
+
+    # Replace tokens with new values
+    # NB: Do this after regions, so part_of gets populated
+    cur.execute("DELETE FROM token WHERE book_id = %(book_id)s", dict(book_id=book_id))
+    psycopg2.extras.execute_values(cur, """
+        INSERT INTO token (book_id, crange, ttype, ordering) VALUES %s
+    """, ((
+        book_id,
+        psycopg2.extras.NumericRange(off_start, off_end),
+        ttype,
+        i,
+    ) for i, (rclass_name, ttype, off_start, off_end) in enumerate(book['regions']) if rclass_name == 'token.word'))
 
 
 def get_book(cur, book_id_name, content=False, regions=False):

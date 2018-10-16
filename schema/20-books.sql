@@ -34,12 +34,14 @@ CREATE TABLE IF NOT EXISTS token (
     PRIMARY KEY (book_id, crange),
 
     ttype TEXT NOT NULL,
-    ordering INT NOT NULL  -- TODO: Do we even need it, vs. LOWER(crange)?
+    ordering INT NOT NULL,  -- TODO: Do we even need it, vs. LOWER(crange)?
+    part_of JSONB NULL
 );
 COMMENT ON TABLE  token IS 'Tokens within a book';
 COMMENT ON COLUMN token.ttype IS 'Token type, i.e. normalised token';
 COMMENT ON COLUMN token.crange IS 'Character range to find this token at';
 COMMENT ON COLUMN token.ordering IS 'Position of this token in chapter';
+COMMENT ON COLUMN token.part_of IS 'Dict of all regions this token is part of';
 CREATE INDEX IF NOT EXISTS gist_token_book_id_crange ON token USING GIST (book_id, crange);
 COMMENT ON INDEX gist_token_book_id_crange IS 'Finding tokens in a range, joining to regions';
 CREATE INDEX IF NOT EXISTS token_book_id_lower_crange ON token (book_id, LOWER(crange));
@@ -49,6 +51,20 @@ COMMENT ON INDEX token_lower_crange IS 'Sorting on LOWER(crange)';
 CREATE INDEX IF NOT EXISTS token_ordering ON token (ordering);
 COMMENT ON INDEX token_ordering IS 'Allows us to select tokens around given ones';
 -- TODO: Could use trgm? https://niallburkley.com/blog/index-columns-for-like-in-postgres/
+
+CREATE OR REPLACE FUNCTION token_part_of_before_insert_fn() RETURNS TRIGGER AS $$
+BEGIN
+   -- Populate part_of
+   SELECT JSONB_OBJECT_AGG(r.rclass_id, r.rvalue)
+     INTO NEW.part_of
+     FROM region r
+    WHERE r.book_id = NEW.book_id
+      AND r.crange @> NEW.crange;
+   RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
+DROP TRIGGER IF EXISTS token_part_of_before_insert ON token;
+CREATE TRIGGER token_part_of_before_insert BEFORE INSERT ON token FOR EACH ROW EXECUTE PROCEDURE token_part_of_before_insert_fn();
 
 
 CREATE TABLE IF NOT EXISTS region (
@@ -121,24 +137,12 @@ CREATE MATERIALIZED VIEW book_word_count AS
 COMMENT ON MATERIALIZED VIEW book_word_count IS 'Count words within a selection of regions';
 
 
-DROP MATERIALIZED VIEW IF EXISTS token_metadata;
-CREATE MATERIALIZED VIEW token_metadata AS
-        SELECT t.book_id
-             , LOWER(t.crange) lower_crange
-             , JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) part_of
-          FROM token t, region r
-         WHERE t.book_id = r.book_id AND t.crange <@ r.crange
-      GROUP BY t.book_id, LOWER(t.crange); -- NB: Without LOWER(), we sort and join the entire result set
-CREATE INDEX IF NOT EXISTS token_metadata_book_id_lower_crange ON token_metadata USING GIST (book_id, lower_crange);
-COMMENT ON INDEX token_metadata_book_id_lower_crange IS 'Join condition for main token table';
-
 CREATE OR REPLACE FUNCTION refresh_book_materialized_views()
 RETURNS VOID SECURITY DEFINER LANGUAGE PLPGSQL
 AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW book_metadata;
     REFRESH MATERIALIZED VIEW book_word_count;
-    REFRESH MATERIALIZED VIEW token_metadata;
 END $$;
 COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
 

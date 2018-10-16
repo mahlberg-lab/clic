@@ -122,16 +122,15 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                      , t.crange
                      , t.ttype
                      , t.ordering - %s conc_group
-                     , tm.part_of
-                  FROM token t, token_metadata tm
-                 WHERE t.book_id = tm.book_id AND LOWER(t.crange) = tm.lower_crange
-                   AND t.book_id IN %s
+                     , t.part_of
+                  FROM token t
+                 WHERE t.book_id IN %s
                    AND t.ttype LIKE %s
             """
             params.extend([i, book_ids, like])
             if len(rclass_ids) > 0:
                 # Make sure these tokens are in an appropriate region
-                query += " AND tm.part_of ? %s"
+                query += " AND t.part_of ? %s"
                 params.extend([str(rclass_ids[0])])
             if len(rclass_ids) > 1:
                 raise NotImplementedError()
