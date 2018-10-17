@@ -94,7 +94,9 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         raise UserError("No books to search", "error")
     api_subset = api_subset_lookup(cur)
     rclass = rclass_id_lookup(cur)
-    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
+    rclass_ids = tuple(api_subset[s] for s in subset)
+    if len(rclass_ids) != 1:
+        raise UserError("You must supply exactly one subset", "error")
     like_sets = [parse_query(s) for s in q]
     if len(like_sets) == 0:
         raise UserError("You must supply at least one search term", "error")
@@ -104,51 +106,62 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     book = None
 
     for likes in like_sets:
-        query = """
-            SELECT book_id
-                 , ARRAY(SELECT tokens_in_crange(book_id, range_expand(RANGE_MERGE(crange), %s))) full_tokens
-                 , ARRAY_AGG(crange ORDER BY book_id, LOWER(crange)) node_tokens
-                 , RANGE_MERGE(crange) node_range
-                 , JSONB_AGG(part_of) part_of
-              FROM (
-        """
-        params = [contextsize * 10]  # TODO: Bodge word -> char
+        # Choose an "anchor". We search for this first to narrow the possible
+        # outputs as much as possible, then consider the types around each.
+        anchor_offset = max(enumerate(likes), key=lambda l: len(l[1]))[0]
 
-        for i, like in enumerate(likes):
-            if i > 0:
-                query += "UNION ALL\n"
-            query += """
-                SELECT t.book_id
-                     , t.crange
-                     , t.ttype
-                     , t.ordering - %s conc_group
-                     , t.part_of
-                  FROM token t
-                 WHERE t.book_id IN %s
-                   AND t.ttype LIKE %s
-            """
-            params.extend([i, book_ids, like])
-            if len(rclass_ids) > 0:
-                # Make sure these tokens are in an appropriate region
-                query += " AND t.part_of ? %s"
-                params.extend([str(rclass_ids[0])])
-            if len(rclass_ids) > 1:
-                raise NotImplementedError()
+        query = ""
+        params = dict()
         query += """
-            ) c
-            GROUP BY book_id, conc_group
-            HAVING COUNT(*) = %s
-            ORDER BY book_id, conc_group
+            SELECT t.book_id
+                  , ARRAY_AGG(c.rel_order ORDER BY c.rel_order) rel_order
+                  , ARRAY_AGG(c.crange ORDER BY c.rel_order) full_tokens
+                  , t.part_of
+               FROM token t
+               JOIN LATERAL ( -- i.e. for each valid anchor token, get all tokens around it, including context
+                    SELECT t2.ordering - t.ordering + %(anchor_offset)s rel_order
+                         , t2.ttype, t2.crange, t2.part_of
+                      FROM token t2
+                     WHERE t2.book_id = t.book_id
+                       AND t2.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s
+                                           AND t.ordering - %(anchor_offset)s + %(total_likes)s + %(contextsize)s
+                    ) c ON TRUE
+             WHERE t.book_id IN %(book_ids)s
+               AND t.part_of ? %(part_of)s
+               AND t.ttype LIKE %(anchor_like)s
+          GROUP BY t.book_id, t.crange
         """
-        params.append(len(likes))
+        params['anchor_offset'] = anchor_offset
+        params['anchor_like'] = likes[anchor_offset]
+        params['book_ids'] = book_ids
+        params['contextsize'] = contextsize
+        params['total_likes'] = len(likes)
+        params['part_of'] = str(rclass_ids[0])
+
+        if len(likes) > 1:
+            # Make sure all likes surrounding the anchor match our conditions
+            # TODO: This isn't considering boundaries. -- she sat."\n"On the pavement?"\n"Yes." --> Should we be numbering all regions, and checking it's part of the same one?
+            query += "HAVING SUM(CASE\n"
+            for i, l in enumerate(likes):
+                if i == anchor_offset:
+                    continue  # No point re-checking the anchor
+                i = str(i)
+                query += "WHEN c.rel_order = " + i + " AND c.ttype LIKE %(like_" + i + ")s AND c.part_of ? %(part_of)s THEN 1\n"
+                params['like_' + i] = l
+            query += "ELSE 0 END) = %(total_likes)s - 1 -- i.e. We have a match for every CASE\n"
+
+        query += """
+          ORDER BY t.book_id, t.crange
+        """
 
         cur.execute(query, params)
-        for book_id, full_tokens, node_tokens, node_crange, part_of in cur:
-            part_of = part_of[0]  # Unwind redundant aggregation
+        for book_id, rel_order, full_tokens, part_of in cur:
+            # Extract portion of tokens that are the node
+            node_tokens = full_tokens[rel_order.index(0):rel_order.index(0) + len(likes)]
             if not book or book['id'] != book_id:
                 book = get_book(book_cur, book_id, content=True)
             yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
-                [book['name'], node_crange.lower, node_crange.upper],
+                [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
                 [
                     int(part_of[str(rclass['chapter.text'])]),
                     int(part_of[str(rclass['chapter.paragraph'])]),

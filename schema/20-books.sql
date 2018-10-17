@@ -1,7 +1,11 @@
 BEGIN;
 
 -- We need this for GIST tokens on book_id INT as well as ranges.
-CREATE EXTENSION btree_gist;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+-- Enable trgm for indexing token ttypes for concordance LIKE search
+CREATE EXTENSION IF NOT EXISTS btree_gin;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 /*
 TODO: Versioning
@@ -46,11 +50,10 @@ CREATE INDEX IF NOT EXISTS gist_token_book_id_crange ON token USING GIST (book_i
 COMMENT ON INDEX gist_token_book_id_crange IS 'Finding tokens in a range, joining to regions';
 CREATE INDEX IF NOT EXISTS token_book_id_lower_crange ON token (book_id, LOWER(crange));
 COMMENT ON INDEX token_book_id_lower_crange IS 'Joining with a scalar equivalent to the PK';
-CREATE INDEX IF NOT EXISTS token_lower_crange ON token (LOWER(crange));
-COMMENT ON INDEX token_lower_crange IS 'Sorting on LOWER(crange)';
-CREATE INDEX IF NOT EXISTS token_ordering ON token (ordering);
-COMMENT ON INDEX token_ordering IS 'Allows us to select tokens around given ones';
--- TODO: Could use trgm? https://niallburkley.com/blog/index-columns-for-like-in-postgres/
+CREATE INDEX IF NOT EXISTS token_book_id_ordering ON token (book_id, ordering);
+COMMENT ON INDEX token_book_id_ordering IS 'Selecting tokens around a point in concordance';
+CREATE INDEX IF NOT EXISTS trgm_token_ttype_part_of ON token USING GIN (book_id, ttype gin_trgm_ops, part_of);
+COMMENT ON INDEX trgm_token_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance';
 
 CREATE OR REPLACE FUNCTION token_part_of_before_insert_fn() RETURNS TRIGGER AS $$
 BEGIN
