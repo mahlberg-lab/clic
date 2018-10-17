@@ -1,33 +1,90 @@
+"""
+This module provides the core tokenisation used in CLiC, used both when parsing
+incoming texts and when parsing concordance queries
+
+Method
+------
+
+To extract tokens, we use Unicode text segmentation as described in [UAX29],
+using the implementation in the [ICU] library.
+
+We search the string for word boundaries using the standard rules for en_GB.
+For example, the following string has boundaries marked with "|".
+
+    The| |quick| |(||“|brown|”|)| |fox| |can’t| |jump| |32.3| |feet|,| |right|?|
+
+If the boundary marks the end of a word/numeric section, we consider this a
+token.
+
+Tokens are normalised into types by:-
+
+* Lower-casing, ``The`` -> ``the``.
+* Normalising any non-ascii characters with [UNIDECODE], e.g.
+  * ``can’t`` -> ``can't``.
+  * ``café`` -> ``cafe``.
+* Removing any surrounding underscores, e.g. ``_connoisseur_`` -> ``connoisseur``.
+
+In addition, when parsing a query we treat ``*`` as being part of a word, so
+``*Books*`` would result in ``*books*`` in query mode, and ``books`` otherwise.
+
+References
+----------
+
+.. [ICU] http://userguide.icu-project.org/boundaryanalysis
+.. [UAX29] https://www.unicode.org/reports/tr29/tr29-33.html#Word_Boundaries
+.. [UNIDECODE] https://pypi.org/project/Unidecode/
+"""
 import re
+
+import icu
 import unidecode
 
-RE_NON_WORD_EXTREMITIES = re.compile(r'^[\W_]+|[\W_]+$')
-RE_QUERY_NON_WORD_EXTREMITIES = re.compile(r'^([^\w*]|_)+|([^\w*]|_)+$')
+DEFAULT_LOCALE = icu.Locale('en_GB')  # TODO: Get from corpora?
+
+QUERY_ADDITIONAL_WORD_PARTS = set((
+    '*',  # Consider * to be part of a type, so we can use it as a wildcard
+))
+
+REGEX_WORD_REMOVALS = re.compile(r'^_|_$')
 
 
-def word_split(s):
+def types_from_string(s, offset=0, additional_word_parts=set()):
     """
-    Split a string into a list of word parts
+    Extract tuples of (type, start, end) from s, optionally adding (offset) to
+    the start and end values
     """
-    # TODO: This should be pyicu and fancy
-    if not s:
-        return []
-    return re.split('\s+', s)
+    def get_token(word_start, word_end):
+        """Return (type, start, end)"""
+        ttype = s[word_start:word_end].lower()
+        ttype = unidecode.unidecode(ttype)
+        ttype = re.sub(REGEX_WORD_REMOVALS, '', ttype)
+        return (
+            ttype,
+            word_start + offset,
+            word_end + offset,
+        )
 
+    bi = icu.BreakIterator.createWordInstance(DEFAULT_LOCALE)
+    bi.setText(s)
 
-def word_to_type(s, query=False):
-    """
-    Take a word string and extract a corpus-linguistics type.
-    * Lower-case
-    * Remove any non-word characters from either end
-    * Normalise unicode chars to ASCII. e.g. "don't"
+    out = [None]
+    last_b = 0
+    word_start = None
+    for b in bi:
+        if bi.getRuleStatus() > 0 or s[last_b:b] in additional_word_parts:
+            if word_start is None:
+                # This boundary has something word-y before it, start a word
+                word_start = last_b
+        elif word_start is not None:
+            # A non-wordy boundary but a word still open, finalise it
+            yield get_token(word_start, last_b)
+            word_start = None
+        last_b = b
+    if word_start is not None:
+        # At end, finish any final word
+        yield get_token(word_start, last_b)
 
-    If query is TRUE, then allow *
-    """
-    s = s.lower()
-    s = re.sub(RE_QUERY_NON_WORD_EXTREMITIES if query else RE_NON_WORD_EXTREMITIES, '', s)
-    s = unidecode.unidecode(s)
-    return s
+    return (unidecode.unidecode(s.lower()) for s in out)
 
 
 def parse_query(q):
@@ -41,4 +98,4 @@ def parse_query(q):
                  .replace('_', '\\_')
                  .replace('*', '%'))
 
-    return [term_to_like(word_to_type(w, query=True)) for w in word_split(q)]
+    return list(term_to_like(t) for t, word_start, word_end in types_from_string(q, additional_word_parts=QUERY_ADDITIONAL_WORD_PARTS))

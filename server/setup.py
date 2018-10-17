@@ -6,6 +6,7 @@ requires = [
     'uWSGI',
     'pandas',
     'psycopg2',
+    'pyicu',
     'unidecode',
 ]
 

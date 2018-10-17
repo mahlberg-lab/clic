@@ -28,6 +28,7 @@ Then install the following from your system repositories::
     sudo apt install \
         postgresql postgresql-contrib \
         python3 python3-venv python3-dev \
+        libicu-dev \
 
     # Client prerequisites
     sudo apt install make nodejs yarn nginx
