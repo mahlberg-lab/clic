@@ -62,24 +62,21 @@ def put_book(cur, book):
 
     # Finalise token import by updating metadata
     cur.execute("""
-        WITH extras AS
+        WITH token_ordering AS
         (
             SELECT t.book_id
                  , t.crange
-                 , ROW_NUMBER() OVER (PARTITION BY t.book_id ORDER BY t.book_id, t.crange) ordering
-                 , JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) part_of
-              FROM token t, region r
-             WHERE t.book_id = r.book_id AND t.crange <@ r.crange
-               AND t.book_id = %(book_id)s
-          GROUP BY t.book_id, t.crange
+                 , ROW_NUMBER() OVER (ORDER BY t.book_id, t.crange) ordering
+              FROM token t
+             WHERE t.book_id = %(book_id)s
         )
-        UPDATE token
-           SET ordering = extras.ordering
-             , part_of = extras.part_of
-          FROM extras
-         WHERE token.book_id = extras.book_id
-           AND token.crange = extras.crange
-           AND token.book_id = %(book_id)s;
+        UPDATE token t
+           SET ordering = o.ordering
+             , part_of = (SELECT JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) FROM region r WHERE t.book_id = r.book_id AND t.crange <@ r.crange)
+          FROM token_ordering o
+         WHERE t.book_id = o.book_id
+           AND t.crange = o.crange
+           AND t.book_id = %(book_id)s
     """, dict(
         book_id=book_id,
     ))
