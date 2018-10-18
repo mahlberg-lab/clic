@@ -34,6 +34,7 @@ def put_book(cur, book):
     (book_id,) = cur.fetchone()
 
     # Replace regions with new values
+    cur.execute("SELECT index_disable('region')")
     cur.execute("DELETE FROM region WHERE book_id = %(book_id)s", dict(book_id=book_id))
     psycopg2.extras.execute_values(cur, """
         INSERT INTO region (book_id, crange, rclass_id, rvalue) VALUES %s
@@ -43,8 +44,10 @@ def put_book(cur, book):
         rclass[rclass_name],
         rvalue,
     ) for rclass_name, rvalue, off_start, off_end in book['regions']))
+    cur.execute("SELECT index_enable('region')")
 
     # Tokenise each chapter text region and add it to the database
+    cur.execute("SELECT index_disable('token')")
     cur.execute("DELETE FROM token WHERE book_id = %(book_id)s", dict(book_id=book_id))
     for rclass_name, _, off_start, off_end in book['regions']:
         if rclass_name != 'chapter.text':
@@ -80,6 +83,9 @@ def put_book(cur, book):
     """, dict(
         book_id=book_id,
     ))
+
+    # Re-index tokens now we're done
+    cur.execute("SELECT index_enable('token')")
 
 
 def get_book(cur, book_id_name, content=False, regions=False):
