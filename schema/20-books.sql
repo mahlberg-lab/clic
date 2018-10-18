@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS book (
 COMMENT ON TABLE  book IS 'Book name & contents';
 COMMENT ON COLUMN book.name IS 'Short name of book, e.g. TTC';
 COMMENT ON COLUMN book.content IS 'Full text contents of book';
-CREATE UNIQUE INDEX IF NOT EXISTS book_name_book_id ON book(name, book_id); -- TODO: To act as lookup
+CREATE UNIQUE INDEX IF NOT EXISTS book_name_book_id ON book(name, book_id);
+COMMENT ON INDEX book_name_book_id IS 'Allow name -> book_id lookup to work without scanning book content';
 
 
 CREATE TABLE IF NOT EXISTS token (
