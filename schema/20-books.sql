@@ -7,12 +7,6 @@ CREATE EXTENSION IF NOT EXISTS btree_gist;
 CREATE EXTENSION IF NOT EXISTS btree_gin;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-/*
-TODO: Versioning
-* Before we versioned the entire thing. Now we could:
-  * Have a separate version column for book? corpus?
-  * At what point are things immutable?
-*/
 
 CREATE TABLE IF NOT EXISTS book (
     book_id SERIAL,
@@ -22,8 +16,6 @@ CREATE TABLE IF NOT EXISTS book (
     UNIQUE (name),
 
     content TEXT
-    -- TODO: Include title/author here, instead of extracting from text?
-    -- TODO: What about year? Can we include that in the corpora text? Would allow, e.g. all 19thC texts
 );
 COMMENT ON TABLE  book IS 'Book name & contents';
 COMMENT ON COLUMN book.name IS 'Short name of book, e.g. TTC';
