@@ -165,6 +165,7 @@ def xml_to_plaintext(xml_string, offset):
 
 def script_import_cheshire_json():
     import sys
+    import timeit
     from clic.db.book import put_book
     from clic.db.cursor import get_script_cursor
 
@@ -181,13 +182,19 @@ def script_import_cheshire_json():
         for file_path in sys.argv[2:]:
             print("=== %s" % file_path)
 
-            print(" * Parsing...")
+            print(" * Parsing...", end=" ", flush=True)
+            start_time = timeit.default_timer()
             with open(file_path, 'r') as f:
                 book = from_cheshire_json(f, book_meta)
+            print("%.2f secs" % (timeit.default_timer() - start_time))
 
-            print(" * Adding to DB...")
+            print(" * Adding to DB...", end=" ", flush=True)
+            start_time = timeit.default_timer()
             put_book(cur, book)
+            print("%.2f secs" % (timeit.default_timer() - start_time))
 
-            print(" * Committing...")
+            print(" * Committing...", end=" ", flush=True)
+            start_time = timeit.default_timer()
             cur.connection.commit()
+            print("%.2f secs" % (timeit.default_timer() - start_time))
     print("=== Updating materialised views...")
