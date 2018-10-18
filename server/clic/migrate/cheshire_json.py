@@ -57,22 +57,17 @@ def xml_to_plaintext(xml_string, offset):
         text_part = m.group(2)
 
         if part.startswith('/span'):
-            if 'token.word' in unclosed_regions:
-                close_region('token.word')
-            elif 'chapter.sentence' in unclosed_regions:
+            if 'chapter.sentence' in unclosed_regions:
                 close_region('chapter.sentence')
-        elif part.startswith('span class="w"'):
-            open_region('token.word')
         elif part.startswith('span class="s"'):
             open_region('chapter.sentence', count_sentence)
             count_sentence += 1
 
+        # Ignore cheshire3's tokenisation
         elif part == '/w':
-            close_region('token.word')
+            pass
         elif part.startswith('w o='):
-            open_region('token.word')
-            # rvalue for a word should be it's type
-            unclosed_regions['token.word'][1] = re.sub(r'\W+', '', text_part).lower()
+            pass
 
         elif part == '/s':
             close_region('chapter.sentence')

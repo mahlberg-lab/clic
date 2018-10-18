@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS token (
     PRIMARY KEY (book_id, crange),
 
     ttype TEXT NOT NULL,
-    ordering INT NOT NULL,  -- TODO: Do we even need it, vs. LOWER(crange)?
-    part_of JSONB NULL
+    ordering INT NULL,  -- TODO: Do we even need it, vs. LOWER(crange)?
+    part_of JSONB NULL  -- NB: Ideally this would be NOT NULL DEFERRABLE but you can't do that yet
 );
 COMMENT ON TABLE  token IS 'Tokens within a book';
 COMMENT ON COLUMN token.ttype IS 'Token type, i.e. normalised token';
@@ -55,20 +55,6 @@ CREATE INDEX IF NOT EXISTS token_book_id_ordering ON token (book_id, ordering);
 COMMENT ON INDEX token_book_id_ordering IS 'Selecting tokens around a point in concordance';
 CREATE INDEX IF NOT EXISTS trgm_token_ttype_part_of ON token USING GIN (book_id, ttype gin_trgm_ops, part_of);
 COMMENT ON INDEX trgm_token_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance';
-
-CREATE OR REPLACE FUNCTION token_part_of_before_insert_fn() RETURNS TRIGGER AS $$
-BEGIN
-   -- Populate part_of
-   SELECT JSONB_OBJECT_AGG(r.rclass_id, r.rvalue)
-     INTO NEW.part_of
-     FROM region r
-    WHERE r.book_id = NEW.book_id
-      AND r.crange @> NEW.crange;
-   RETURN NEW;
-END;
-$$ LANGUAGE 'plpgsql';
-DROP TRIGGER IF EXISTS token_part_of_before_insert ON token;
-CREATE TRIGGER token_part_of_before_insert BEFORE INSERT ON token FOR EACH ROW EXECUTE PROCEDURE token_part_of_before_insert_fn();
 
 
 CREATE TABLE IF NOT EXISTS region (

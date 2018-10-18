@@ -2,11 +2,22 @@ import psycopg2
 import psycopg2.extras
 
 from clic.db.lookup import rclass_id_lookup, api_subset_lookup
+from clic.tokenizer import types_from_string
 
 
 def put_book(cur, book):
     """
     Import a book object
+    - name: The shortname of the book
+    - content: The full book string, as per instructions in the corpora repository
+    - regions: A list of...
+      - rclass: rclass, e.g. "chapter.text" (see /schema/10-rclass.sql)
+      - rvalue: rvalue, e.g. chapter number (see /schema/10-rclass.sql)
+      - off_start: Character offset for start of this region
+      - off_end: Character offset for end of this region, non-inclusive
+
+    The book contents / regions will be imported into the database, and any
+    "chapter.text" region will be tokenised.
     """
     rclass = rclass_id_lookup(cur)
 
@@ -31,19 +42,47 @@ def put_book(cur, book):
         psycopg2.extras.NumericRange(off_start, off_end),
         rclass[rclass_name],
         rvalue,
-    ) for rclass_name, rvalue, off_start, off_end in book['regions'] if rclass_name != 'token.word'))
+    ) for rclass_name, rvalue, off_start, off_end in book['regions']))
 
-    # Replace tokens with new values
-    # NB: Do this after regions, so part_of gets populated
+    # Tokenise each chapter text region and add it to the database
     cur.execute("DELETE FROM token WHERE book_id = %(book_id)s", dict(book_id=book_id))
-    psycopg2.extras.execute_values(cur, """
-        INSERT INTO token (book_id, crange, ttype, ordering) VALUES %s
-    """, ((
-        book_id,
-        psycopg2.extras.NumericRange(off_start, off_end),
-        ttype,
-        i,
-    ) for i, (rclass_name, ttype, off_start, off_end) in enumerate(book['regions']) if rclass_name == 'token.word'))
+    for rclass_name, _, off_start, off_end in book['regions']:
+        if rclass_name != 'chapter.text':
+            continue
+        psycopg2.extras.execute_values(cur, """
+            INSERT INTO token (book_id, crange, ttype) VALUES %s
+        """, ((
+            book_id,
+            psycopg2.extras.NumericRange(off_start, off_end),
+            ttype,
+        ) for ttype, off_start, off_end in types_from_string(
+            book['content'][off_start:off_end],
+            offset=off_start
+        )))
+
+    # Finalise token import by updating metadata
+    cur.execute("""
+        WITH extras AS
+        (
+            SELECT t.book_id
+                 , t.crange
+                 , ROW_NUMBER() OVER (PARTITION BY t.book_id ORDER BY t.book_id, t.crange) ordering
+                 , JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) part_of
+              FROM token t, region r
+             WHERE t.book_id = r.book_id AND t.crange <@ r.crange
+               AND t.book_id = %(book_id)s
+          GROUP BY t.book_id, t.crange
+        )
+        UPDATE token
+           SET ordering = extras.ordering
+             , part_of = extras.part_of
+          FROM extras
+         WHERE token.book_id = extras.book_id
+           AND token.crange = extras.crange
+           AND token.book_id = %(book_id)s;
+    """, dict(
+        book_id=book_id,
+    ))
 
 
 def get_book(cur, book_id_name, content=False, regions=False):
