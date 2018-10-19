@@ -43,7 +43,8 @@ Result metadata and Position-in-book metadata are currently subject to change.
 The ``version`` object gives both the current version of CLiC and the revision of the
 corpora ingested in the database.
 
-Examples:
+Examples
+--------
 
 /api/concordance?corpora=AgnesG&q=his+hands&q=his+feet&contextsize=3::
 
@@ -65,6 +66,43 @@ Examples:
          . . .
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
+
+Method
+------
+
+The concordance search peforms the following steps:
+
+1. Resolve the corpora option to a list of book IDs, translate the subset
+   selection to a database region.
+
+2. Tokenise each provided query using the standard method in `tokenizer.py`_,
+   converting into a list of database `like expressions`_ for types.
+   Note that the CLiC UI generally only provides
+   one query, unless you select "Any word", in which case it separates on
+   whitespace and gives multiple queries. For example:
+
+   * "He s* her foot" (whole phrase) results in one query ``['he', 's%', 'her', 'foot']``
+   * "latter pavement" (any word) results in 2 queries, ``['latter']`` and ``['pavement']``
+
+3. For each query, choose an "anchor" type. The aim here is to find the least
+   frequent term that will filter the results the fastest. Currently we choose
+   the longest search term. ``["on", "*", "pavement"]`` will use ``pavement``
+   as the anchor.
+
+4. Search the database for all types that match this anchor in the given books,
+   and within the given region. For example if our query was ``oliver*``, this
+   would match the types ``oliver``, ``oliver's``, ``olivers``, etc.
+
+5. For each match, fetch the rest of the node types and context, if required.
+
+6. Check that any remaining types in the node also match the query and are in a
+   relevant region.
+
+7. Combine the results with the text from the original book, add the
+   chapter/paragraph/sentence statistics from the anchor, return result.
+
+.. _like expressions: https://www.postgresql.org/docs/9.5/static/functions-matching.html#SECT2
+
 """
 import re
 import unidecode
