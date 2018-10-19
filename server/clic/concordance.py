@@ -113,23 +113,21 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         query = ""
         params = dict()
         query += """
-            SELECT t.book_id
-                  , ARRAY_AGG(c.rel_order ORDER BY c.rel_order) rel_order
-                  , ARRAY_AGG(c.crange ORDER BY c.rel_order) full_tokens
+             SELECT t.book_id
+                  , c.node_start - 1 node_start -- NB: Postgres is 1-indexed
+                  , c.cranges full_tokens
                   , t.part_of
                FROM token t
-               JOIN LATERAL ( -- i.e. for each valid anchor token, get all tokens around it, including context
-                    SELECT t2.ordering - t.ordering + %(anchor_offset)s rel_order
-                         , t2.ttype, t2.crange, t2.part_of
-                      FROM token t2
-                     WHERE t2.book_id = t.book_id
-                       AND t2.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s
-                                           AND t.ordering - %(anchor_offset)s + %(total_likes)s + %(contextsize)s
-                    ) c ON TRUE
+               -- i.e. for each valid anchor token, get all tokens around it, including context
+               JOIN LATERAL token_get_surrounding( t.book_id
+                                                 , %(part_of)s
+                                                 , t.ordering
+                                                 , %(anchor_offset)s
+                                                 , %(total_likes)s
+                                                 , %(contextsize)s
+                                                 ) c ON TRUE
              WHERE t.book_id IN %(book_ids)s
                AND t.part_of ? %(part_of)s
-               AND t.ttype LIKE %(anchor_like)s
-          GROUP BY t.book_id, t.crange
         """
         params['anchor_offset'] = anchor_offset
         params['anchor_like'] = likes[anchor_offset]
@@ -138,26 +136,19 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         params['total_likes'] = len(likes)
         params['part_of'] = str(rclass_ids[0])
 
-        if len(likes) > 1:
-            # Make sure all likes surrounding the anchor match our conditions
-            # TODO: This isn't considering boundaries. -- she sat."\n"On the pavement?"\n"Yes." --> Should we be numbering all regions, and checking it's part of the same one?
-            query += "HAVING SUM(CASE\n"
-            for i, l in enumerate(likes):
-                if i == anchor_offset:
-                    continue  # No point re-checking the anchor
-                i = str(i)
-                query += "WHEN c.rel_order = " + i + " AND c.ttype LIKE %(like_" + i + ")s AND c.part_of ? %(part_of)s THEN 1\n"
-                params['like_' + i] = l
-            query += "ELSE 0 END) = %(total_likes)s - 1 -- i.e. We have a match for every CASE\n"
-
-        query += """
-          ORDER BY t.book_id, t.crange
-        """
+        for i, l in enumerate(likes):
+            if i == anchor_offset:
+                # We should check the main token table for the anchor node, so
+                # postgres searches for this first
+                query += "AND t.ttype LIKE %(like_" + str(i) + ")s\n"
+            else:
+                query += "AND c.ttypes[c.node_start + " + str(i) + "] LIKE %(like_" + str(i) + ")s\n"
+            params["like_" + str(i)] = l
 
         cur.execute(query, params)
-        for book_id, rel_order, full_tokens, part_of in cur:
+        for book_id, node_start, full_tokens, part_of in cur:
             # Extract portion of tokens that are the node
-            node_tokens = full_tokens[rel_order.index(0):rel_order.index(0) + len(likes)]
+            node_tokens = full_tokens[node_start:node_start + len(likes)]
             if not book or book['id'] != book_id:
                 book = get_book(book_cur, book_id, content=True)
             yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
