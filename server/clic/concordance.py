@@ -257,4 +257,6 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     # Add array of indicies that are tokens to the end
     for i, c in enumerate(concs):
         c.append(toks[i])
+    if len(concs) < 3:
+        concs.append([[]])
     return [concs[1]] if contextsize == 0 else concs
