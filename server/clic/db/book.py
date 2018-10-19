@@ -23,37 +23,29 @@ def put_book(cur, book):
 
     # Insert book / update content, get ID for other updates
     cur.execute("""
-        INSERT INTO book (name, content)
-        VALUES (%(name)s, %(content)s)
-        ON CONFLICT (name) DO UPDATE SET content=EXCLUDED.content
-        RETURNING book_id
+        SELECT book_id, token_tbl, region_tbl FROM book_import_init(%(name)s, %(content)s)
     """, dict(
         name=book['name'],
         content=book['content'],
     ))
-    (book_id,) = cur.fetchone()
+    (book_id, token_tbl, region_tbl) = cur.fetchone()
 
     # Replace regions with new values
-    cur.execute("SELECT index_disable('region')")
-    cur.execute("DELETE FROM region WHERE book_id = %(book_id)s", dict(book_id=book_id))
     psycopg2.extras.execute_values(cur, """
-        INSERT INTO region (book_id, crange, rclass_id, rvalue) VALUES %s
+        INSERT INTO """ + region_tbl + """ (book_id, crange, rclass_id, rvalue) VALUES %s
     """, ((
         book_id,
         psycopg2.extras.NumericRange(off_start, off_end),
         rclass[rclass_name],
         rvalue,
     ) for rclass_name, rvalue, off_start, off_end in book['regions']))
-    cur.execute("SELECT index_enable('region')")
 
     # Tokenise each chapter text region and add it to the database
-    cur.execute("SELECT index_disable('token')")
-    cur.execute("DELETE FROM token WHERE book_id = %(book_id)s", dict(book_id=book_id))
     for rclass_name, _, off_start, off_end in book['regions']:
         if rclass_name != 'chapter.text':
             continue
         psycopg2.extras.execute_values(cur, """
-            INSERT INTO token (book_id, crange, ttype) VALUES %s
+            INSERT INTO """ + token_tbl + """ (book_id, crange, ttype) VALUES %s
         """, ((
             book_id,
             psycopg2.extras.NumericRange(off_start, off_end),
@@ -63,29 +55,12 @@ def put_book(cur, book):
             offset=off_start
         )))
 
-    # Finalise token import by updating metadata
+    # Finalise token import, let DB update metadata, indexes
     cur.execute("""
-        WITH token_ordering AS
-        (
-            SELECT t.book_id
-                 , t.crange
-                 , ROW_NUMBER() OVER (ORDER BY t.book_id, t.crange) ordering
-              FROM token t
-             WHERE t.book_id = %(book_id)s
-        )
-        UPDATE token t
-           SET ordering = o.ordering
-             , part_of = (SELECT JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) FROM region r WHERE t.book_id = r.book_id AND t.crange <@ r.crange)
-          FROM token_ordering o
-         WHERE t.book_id = o.book_id
-           AND t.crange = o.crange
-           AND t.book_id = %(book_id)s
+        SELECT * FROM book_import_finalise(%(book_id)s)
     """, dict(
         book_id=book_id,
     ))
-
-    # Re-index tokens now we're done
-    cur.execute("SELECT index_enable('token')")
 
 
 def get_book(cur, book_id_name, content=False, regions=False):
