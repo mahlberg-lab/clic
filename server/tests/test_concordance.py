@@ -1,10 +1,70 @@
-import re
 import unittest
 
 from psycopg2._range import NumericRange
 
 from clic.concordance import concordance, to_conc
-from clic.nonexistant import ClicDb
+
+from .requires_postgresql import RequiresPostgresql
+
+
+class TestConcordance(RequiresPostgresql, unittest.TestCase):
+    maxDiff = None
+
+    def test_queries(self):
+        """We can ask for nodes with many words, or many words separately"""
+        cur = self.pg_cur()
+        book_1 = self.put_book("""
+‘Well!’ thought Alice to herself, ‘after such a fall as this, I shall
+think nothing of tumbling down stairs! How brave they’ll all think me at
+home! Why, I wouldn’t say anything about it, even if I fell off the top
+of the house!’ (Which was very likely true.)
+        """)
+
+        # "f*ll *" matches fall or fell, and selects the word next to it
+        out = simplify(concordance(cur, [book_1], q=['f*ll *']))
+        self.assertEqual(out, [
+            [book_1, 49, 'fall', 'as'],
+            [book_1, 199, 'fell', 'off'],
+        ])
+
+        # We select the word before fall, and the word after fell
+        out = simplify(concordance(cur, [book_1], q=['* fall', 'fell *']))
+        self.assertEqual(out, [
+            [book_1, 47, 'a', 'fall'],
+            [book_1, 199, 'fell', 'off'],
+        ])
+
+        # Since we tokenise, punctuation in queries has no affect
+        out = simplify(concordance(cur, [book_1], q=['"i--FELL--off!"']))
+        self.assertEqual(out, [
+            [book_1, 197, 'I', 'fell', 'off'],  # NB: I is capitalised since we return the token from the text, not the type
+        ])
+
+        # The type of quote (don’t vs don't) works, and get's normalised in output too
+        out = simplify(concordance(cur, [book_1], q=["wouldn't"], contextsize=[1]))
+        self.assertEqual(out, [
+            [book_1, 157, 'I', '**', "wouldn't", '**', 'say'],
+        ])
+
+    def test_contextsize(self):
+        """We can ask for different length contexts"""
+        cur = self.pg_cur()
+        book_1 = self.put_book("""
+            A man walked into a bar. "Ouch!", he said. It was an iron bar.
+        """)
+
+        # Fetch without concordance
+        out = simplify(concordance(cur, [book_1], q=['bar']))
+        self.assertEqual(out, [
+            [book_1, 33, 'bar'],
+            [book_1, 71, 'bar'],
+        ])
+
+        out = simplify(concordance(cur, [book_1], q=['bar'], contextsize=[2]))
+        self.assertEqual(out, [
+            [book_1, 33, 'into', 'a', '**', 'bar', '**', 'Ouch', 'he'],
+            [book_1, 71, 'an', 'iron', '**', 'bar', '**'],  # NB: We have all 3 parts still, even though it's at the end
+        ])
 
 
 FULL_TEXT = 'A man walked into a bar. "Ouch!", he said. It was an iron bar.'
@@ -60,227 +120,21 @@ class Test_to_conc(unittest.TestCase):
         ])
 
 
-class SkipConcordance():  # TODO: Skip the lot
-    def test_concordance(self):
-        cdb = ClicDb()
-
-        # If they both match then words in the node match query
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was', u'she said'],
-            contextsize=[5],
-        )]
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['she:was', 'she:said']),
-        )
-
-    def test_contextsize(self):
-        """Contextsize should be configurable"""
-        cdb = ClicDb()
-
-        # No context, we skip those columns
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[0],
-        )]
-        # NB: Node now in first row
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['she:was']),
-        )
-
-        # Context adds columns either side
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[3],
-        )]
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['yes:replied:she', 'she:i:saw', 'detestable:i:wish', 'in:their:houses', 'can:well:believe', 'williamson:brown:said', 'her:how:mistaken']),
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['she:was']),
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['artful:too:but', 'sure:no:gentleman', 'in:her:fears', "sure:she:didn't", 'dead:she:then', 'giddy:and:vain', 'at:paris:when']),
-        )
-
-        # Can vary size
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[1],
-        )]
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['said', 'wish', 'mistaken', 'houses', 'she', 'believe', 'saw'])
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['she:was']),
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set(['giddy', 'sure', 'artful', 'at', 'in', 'dead'])
-        )
-
-        # Can even vary query length
-        she_was_out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[1],
-        )]
-        hand_out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'hand'],
-            contextsize=[1],
-        )]
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG'],
-            subset=['quote'],
-            q=[u'she was', u'hand'],
-            contextsize=[1],
-        )]
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set([":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
-                [":".join([x.lower() for x in line[0][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set([":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
-                [":".join([x.lower() for x in line[1][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
-        )
-        self.assertEqual(
-            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in out[1:]]),
-            set([":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in she_was_out[1:]] +
-                [":".join([x.lower() for x in line[2][:-1] if re.match(r'\w', x)]) for line in hand_out[1:]])
-        )
-
-    def test_unidecode(self):
-        """We mush down quotes in queries to ascii characters"""
-        cdb = ClicDb()
-
-        out_fancy = [x for x in concordance(
-            cdb,
-            corpora=['BH'],
-            subset=['quote'],
-            q=[u'I don’t know'],
-        )]
-        out_ascii = [x for x in concordance(
-            cdb,
-            corpora=['BH'],
-            subset=['quote'],
-            q=[u"I don't know"],
-        )]
-        # Queries both produce results and are equivalent
-        self.assertTrue(len(out_ascii) > 0)
-        self.assertEqual(out_fancy, out_ascii)
-
-    def test_escaping(self):
-        """We escape double quotes into something that at least doesn't cause errors"""
-        cdb = ClicDb()
-
-        out = [x for x in concordance(
-            cdb,
-            corpora=['BH'],
-            subset=['quote'],
-            q=[u'"girls are"'],
-        )]
-        self.assertEqual(
-            ["".join(x[0][:-1]) for x in out[1:]],
-            [u' girls are', u' girls are.'],
-        )
-
-    def test_bookmetadata(self):
-        """We can request book titles"""
-        cdb = ClicDb()
-
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG', 'TTC'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[0],
-            metadata=['book_titles'],
-        )]
-        self.assertEqual(out[-1], ('footer', dict(book_titles=dict(
-            AgnesG=(u'Agnes Grey', u'Anne Bront\xeb'),
-            TTC=(u'A Tale of Two Cities', u'Charles Dickens'),
-        ))))
-
-        # chapter_start can also be got
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG', 'TTC'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[0],
-            metadata=['book_titles', 'chapter_start'],
-        )]
-        self.assertEqual(out[-1], ('footer', dict(book_titles=dict(
-            AgnesG=(u'Agnes Grey', u'Anne Bront\xeb'),
-            TTC=(u'A Tale of Two Cities', u'Charles Dickens'),
-        ), chapter_start=dict(
-            AgnesG={
-                1: 0, 2: 4424, 3: 7130, 4: 11363, 5: 14529, 6: 16855, 7: 18933, 8: 24573, 9: 25458, 10: 26959,
-                11: 28722, 12: 34349, 13: 35799, 14: 38319, 15: 43312, 16: 45815, 17: 47159, 18: 50967, 19: 54240,
-                20: 55417, 21: 57388, 22: 59672, 23: 62600, 24: 64042, 25: 66188,
-                '_end': 68197,
-            },
-            TTC={
-                1: 0, 2: 1005, 3: 3023, 4: 4643, 5: 9055, 6: 13228, 7: 17372, 8: 19771, 9: 22159,
-                10: 27022, 11: 29272, 12: 31407, 13: 35983, 14: 39315, 15: 41164, 16: 45238, 17: 48204, 18: 49600, 19: 52171,
-                20: 54012, 21: 57905, 22: 62130, 23: 66001, 24: 67910, 25: 70325, 26: 73113, 27: 74462, 28: 78726, 29: 80762,
-                30: 83390, 31: 87821, 32: 92057, 33: 94547, 34: 96274, 35: 98413, 36: 100694, 37: 103196, 38: 105044, 39: 109720,
-                40: 114373, 41: 120167, 42: 121625, 43: 124833, 44: 129234, 45: 133871,
-                '_end': 136100,
-            }
-        ))))
-
-        # word_count
-        out = [x for x in concordance(
-            cdb,
-            corpora=['AgnesG', 'TTC'],
-            subset=['quote'],
-            q=[u'she was'],
-            contextsize=[0],
-            metadata=['word_count_all', 'word_count_quote'],
-        )]
-        self.assertEqual(out[-1], ('footer', dict(
-            word_count_all=dict(AgnesG=68197, TTC=136100),
-            word_count_quote=dict(AgnesG=21986, TTC=48557),
-        )))
-
-    def test_querybyauthor(self):
-        cdb = ClicDb()
-
-        out = [x for x in concordance(
-            cdb,
-            corpora=['author:Jane Austen'],
-            subset=['quote'],
-            q=[u'she was', u'she said'],
-            contextsize=[0],
-        )]
-        self.assertEqual(
-            set([x[1][0] for x in out[1:]]),
-            set([u'emma', u'ladysusan', u'mansfield', u'northanger', u'persuasion', u'pride', u'sense']),
-        )
+def simplify(conc_results):
+    """Turn concordance output into something slightly more human-readable"""
+    out = []
+    for r in conc_results:
+        if len(r) == 3:
+            out.append(
+                [r[1][0], r[1][1]] +
+                [r[0][i] for i in r[0][-1]]
+            )
+        else:  # Have context and node
+            out.append(
+                [r[3][0], r[3][1]] +
+                [r[0][i] for i in r[0][-1]] + ['**'] +
+                [r[1][i] for i in r[1][-1]] + ['**'] +
+                [r[2][i] for i in r[2][-1]]
+            )
+    out.sort()
+    return out
