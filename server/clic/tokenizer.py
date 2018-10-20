@@ -27,6 +27,71 @@ Tokens are normalised into types by:-
 In addition, when parsing a query we treat ``*`` as being part of a word, so
 ``*Books*`` would result in ``*books*`` in query mode, and ``books`` otherwise.
 
+Examples / edge cases
+---------------------
+
+A type is lower-case, ASCII-representable term, and "fancy" apostrophe's are normalised::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     I am a café cat, don’t you k'now.
+    ... ''')]
+    ['i', 'am', 'a', 'cafe', 'cat', "don't", 'you', "k'now"]
+
+Numbers are types too::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     Just my $0.02, but we're 12 minutes late.
+    ... ''')]
+    ['just', 'my', '0.02', 'but', "we're", '12', 'minutes', 'late']
+
+All surrounding punctuation is filtered out::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     "I am a cat", they said, "hear me **roar**!".
+    ...
+    ...     "...or at least mew".
+    ... ''')]
+    ['i', 'am', 'a', 'cat', 'they', 'said', 'hear', 'me', 'roar',
+     'or', 'at', 'least', 'mew']
+
+Unicode word-splitting doesn't combine hypenated words::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     It had been a close and sultry day--one of the hottest of the
+    ...     dog-days--even out in the open country
+    ... ''')]
+    ['it', 'had', 'been', 'a', 'close', 'and', 'sultry', 'day',
+     'one', 'of', 'the', 'hottest', 'of', 'the', 'dog', 'days',
+     'even', 'out', 'in', 'the', 'open', 'country']
+
+    >>> [x[0] for x in types_from_string('''
+    ...     so many out-of-the-way things had happened lately
+    ... ''')]
+    ['so', 'many', 'out', 'of', 'the', 'way', 'things',
+     'had', 'happened', 'lately']
+
+We strip underscores whilst generating types, which are considered part of a
+word in the unicode standard::
+
+    >>> [x[0] for x in types_from_string('''
+    ... had some reputation as a _connoisseur_.
+    ... ''')]
+    ['had', 'some', 'reputation', 'as', 'a', 'connoisseur']
+
+Unlike regular parsing, query parsing preserves asterisks and converts them
+into percent marks for use in database concordance queries::
+
+    >>> [x[0] for x in types_from_string('''
+    ... Moo* * oi*-nk
+    ... ''')]
+    ['moo', 'oi', 'nk']
+
+    >>> parse_query('''
+    ... Moo* * oi*-nk
+    ... ''')
+    ['moo%', '%', 'oi%', 'nk']
+
+
 References
 ----------
 

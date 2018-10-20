@@ -4,55 +4,9 @@ from clic.tokenizer import types_from_string, parse_query
 
 
 class TestTypesFromString(unittest.TestCase):
+    # NB: The main tests for tokenizer are doctests in the module
+
     def test_main(self):
-        # A type is lower-case, and "fancy" apostrophe's are normalised
-        self.assertEqual([x[0] for x in types_from_string("""
-            I am a café cat, don’t you k'now.
-        """)], [
-            "i", "am", "a", "cafe", "cat", "don't", "you", "k'now",
-        ])
-
-        # Numbers are types too
-        self.assertEqual([x[0] for x in types_from_string("""
-            Just my $0.02, but we're 12 minutes late.
-        """)], [
-            "just", "my", "0.02", "but", "we're", "12", "minutes", "late",
-        ])
-
-        # All punctuation is filtered out
-        self.assertEqual([x[0] for x in types_from_string("""
-            "I am a cat", they said, "hear me **roar**!".
-
-            "...or at least mew".
-        """)], [
-            "i", "am", "a", "cat", "they", "said",
-            "hear", "me", "roar",
-            "or", "at", "least", "mew"
-        ])
-
-        # Unicode word-splitting doesn't combine hypenated words
-        self.assertEqual([x[0] for x in types_from_string("""
-            It had been a close and sultry day--one of the hottest of the
-            dog-days--even out in the open country
-        """)], [
-            'it', 'had', 'been', 'a', 'close', 'and', 'sultry', 'day',
-            'one', 'of', 'the', 'hottest', 'of', 'the', 'dog', 'days',
-            'even', 'out', 'in', 'the', 'open', 'country',
-        ])
-        self.assertEqual([x[0] for x in types_from_string("""
-            so many out-of-the-way things had happened lately
-        """)], [
-            'so', 'many', 'out', 'of', 'the', 'way',
-            'things', 'had', 'happened', 'lately',
-        ])
-
-        # We strip underscores, which are considered part of a word in the unicode standard
-        self.assertEqual([x[0] for x in types_from_string("""
-            had some reputation as a _connoisseur_.
-        """)], [
-            "had", "some", "reputation", "as", "a", "connoisseur",
-        ])
-
         # Empty string has no types in it
         self.assertEqual([x[0] for x in types_from_string("")], [])
 
@@ -78,8 +32,10 @@ class TestTypesFromString(unittest.TestCase):
 
 
 class TestParseQuery(unittest.TestCase):
+    # NB: The main tests for tokenizer are doctests in the module
+
     def test_main(self):
-        # We keep stars, but they get parsed into LIKE percent-marks. Underscores get escaped
+        # Underscores are escaped as well as asterisks being converted
         self.assertEqual(parse_query("""
             Moo* * oi*-nk b_th
         """), [
