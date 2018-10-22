@@ -18,7 +18,7 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt setup.py bin/pip
 compile: lib/.requirements
 
 test: compile
-	./bin/pytest tests/test_*.py
+	./bin/pytest $(EGG_NAME) tests
 
 lint: lib/.requirements
 	./bin/flake8 --ignore=E501 $(EGG_NAME)/ tests/
