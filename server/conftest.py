@@ -45,6 +45,10 @@ def format_conc(conc_results):
     return out
 
 
+def format_cluster(cluster_results):
+    """Drop footer, just include results"""
+    return [x for x in cluster_results if x[0] != 'footer']
+
 @pytest.fixture(autouse=True)
 def doctest_extras(doctest_namespace):
     global rpg
@@ -52,6 +56,7 @@ def doctest_extras(doctest_namespace):
     # Add extras to the namespace
     doctest_namespace['test_database'] = test_database
     doctest_namespace['format_conc'] = format_conc
+    doctest_namespace['format_cluster'] = format_cluster
     yield doctest_namespace
 
     if rpg:

@@ -1,4 +1,4 @@
-'''
+"""
 Return a list of word clusters, and their frequency within the given texts.
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
@@ -63,7 +63,53 @@ http://clic.bham.ac.uk/api/cluster?corpora=AgnesG&clusterlength=3::
         },
         "version":{"corpora":"master:2affe56","clic:import":"1.6:876222b","clic":"v1.6.1"}
     }
-'''
+
+Method
+------
+
+The cluster search peforms the following steps:
+
+1. Resolve the corpora option to a list of book IDs, translate the subset
+   selection to a database region. If the subset 'all' is selected, use
+   chapters as our region.
+
+2. Form a list of both tokens in the selected region, and the start of each
+   region. Order these by their position in book.
+
+3. Consider each (clusterlength) set of items in the list. If one of the set is
+   a start of a region, this cluster crosses a boundary and is ignored.
+
+4. For the remaining token-only sets, concatenate the token types together to
+   create the cluster.
+
+5. Count instances of each unique cluster, applying frequency cut-off before
+   returning result.
+
+Examples / edge cases
+---------------------
+
+These are the corpora we use for the following tests::
+
+    >>> db_cur = test_database(
+    ... willows='''
+    ... The Mole was so touched by his kind manner of speaking that he could
+    ... find no voice to answer him; and he had to brush away a tear or two with
+    ...
+    ... Then a firm paw gripped
+    ... him by the back of his neck. It was the Rat, and he was evidently
+    ... laughing--the Mole could FEEL him laughing, right down his arm and
+    ... through his paw, and so into his--the Mole’s--neck.
+    ... ''')
+
+We count "The Mole" and "the Mole" as the same, since the types are equivalent,
+however "the Mole's" doesn't count::
+
+    >>> format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2']))
+    [('and he', 2), ('the mole', 2)]
+
+TODO: Test quote boundaries
+
+"""
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup
 
