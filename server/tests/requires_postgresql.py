@@ -68,7 +68,7 @@ class RequiresPostgresql():
         self._pg_curs.append(self.pg_conn.cursor())
         return self._pg_curs[-1]
 
-    def put_book(self, content, regions=None):
+    def put_book(self, content, regions=None, book_name=None):
         from hashlib import sha1
         from clic.db.book import put_book
 
@@ -80,8 +80,9 @@ class RequiresPostgresql():
                 ['chapter.paragraph', 1, 0, len(content)],
                 ['chapter.sentence', 1, 0, len(content)],
             ]
+        if not book_name:
+            book_name = sha1(content.encode('utf8')).hexdigest()[-10:]
 
-        book_name = sha1(content.encode('utf8')).hexdigest()[-10:]
         put_book(cur, dict(
             name=book_name,
             content=content,

@@ -103,6 +103,62 @@ The concordance search peforms the following steps:
 
 .. _like expressions: https://www.postgresql.org/docs/9.5/static/functions-matching.html#SECT2
 
+Examples / edge cases
+---------------------
+
+These are the corpora we use for the following tests::
+
+    >>> db_cur = test_database(
+    ... alice='''
+    ... ‘Well!’ thought Alice to herself, ‘after such a fall as this, I shall
+    ... think nothing of tumbling down stairs! How brave they’ll all think me at
+    ... home! Why, I wouldn’t say anything about it, even if I fell off the top
+    ... of the house!’ (Which was very likely true.)
+    ... ''',
+    ...
+    ... willows='''
+    ... ‘Get off!’ spluttered the Rat, with his mouth full.
+    ...
+    ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
+    ... ‘They were all in a great state of alarm along River Bank when I arrived
+    ... this morning.
+    ... ''')
+
+"f*ll *" matches fall or fell, and selects the word next to it::
+
+    >>> format_conc(concordance(db_cur, ['alice'], q=['f*ll *']))
+    [['alice', 49, 'fall', 'as'],
+     ['alice', 199, 'fell', 'off']]
+
+We don't match "cheerfully" in willows, though::
+
+    >>> format_conc(concordance(db_cur, ['willows'], q=['f*ll *']))
+    [['willows', 47, 'full', 'Thought']]
+
+Search multiple books at the same time::
+
+    >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=['f*ll *']))
+    [['alice', 49, 'fall', 'as'],
+     ['alice', 199, 'fell', 'off'],
+     ['willows', 47, 'full', 'Thought']]
+
+We can ask for nodes with many words, or many words separately
+We select the word before fall, and the word after fell::
+
+    >>> format_conc(concordance(db_cur, ['alice'], q=['* fall', 'fell *']))
+    [['alice', 47, 'a', 'fall'],
+     ['alice', 199, 'fell', 'off']]
+
+Since we tokenise first, punctuation in queries has no affect::
+NB: I is capitalised since we return the token from the text, not the type
+
+    >>> format_conc(concordance(db_cur, ['alice'], q=['"i--FELL--off!"']))
+    [['alice', 197, 'I', 'fell', 'off']]
+
+The type of quote (don’t vs don't) works, and get's normalised in output too::
+
+    >>> format_conc(concordance(db_cur, ['alice'], q=["wouldn't"], contextsize=[1]))
+    [['alice', 157, 'I', '**', "wouldn't", '**', 'say']]
 """
 import re
 import unidecode

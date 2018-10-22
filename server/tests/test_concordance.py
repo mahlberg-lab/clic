@@ -8,43 +8,8 @@ from .requires_postgresql import RequiresPostgresql
 
 
 class TestConcordance(RequiresPostgresql, unittest.TestCase):
+    # NB: The main tests for Concordance are doctests in the module
     maxDiff = None
-
-    def test_queries(self):
-        """We can ask for nodes with many words, or many words separately"""
-        cur = self.pg_cur()
-        book_1 = self.put_book("""
-‘Well!’ thought Alice to herself, ‘after such a fall as this, I shall
-think nothing of tumbling down stairs! How brave they’ll all think me at
-home! Why, I wouldn’t say anything about it, even if I fell off the top
-of the house!’ (Which was very likely true.)
-        """)
-
-        # "f*ll *" matches fall or fell, and selects the word next to it
-        out = simplify(concordance(cur, [book_1], q=['f*ll *']))
-        self.assertEqual(out, [
-            [book_1, 49, 'fall', 'as'],
-            [book_1, 199, 'fell', 'off'],
-        ])
-
-        # We select the word before fall, and the word after fell
-        out = simplify(concordance(cur, [book_1], q=['* fall', 'fell *']))
-        self.assertEqual(out, [
-            [book_1, 47, 'a', 'fall'],
-            [book_1, 199, 'fell', 'off'],
-        ])
-
-        # Since we tokenise, punctuation in queries has no affect
-        out = simplify(concordance(cur, [book_1], q=['"i--FELL--off!"']))
-        self.assertEqual(out, [
-            [book_1, 197, 'I', 'fell', 'off'],  # NB: I is capitalised since we return the token from the text, not the type
-        ])
-
-        # The type of quote (don’t vs don't) works, and get's normalised in output too
-        out = simplify(concordance(cur, [book_1], q=["wouldn't"], contextsize=[1]))
-        self.assertEqual(out, [
-            [book_1, 157, 'I', '**', "wouldn't", '**', 'say'],
-        ])
 
     def test_contextsize(self):
         """We can ask for different length contexts"""
