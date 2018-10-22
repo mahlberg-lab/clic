@@ -1,11 +1,10 @@
 from clic.concordance import concordance
-from clic.undefined import ClicDb
 
 
 class Skip_get_book_metadata():  # TODO: Skip the lot
     def test_bookmetadata(self):
         """We can request book titles"""
-        cdb = ClicDb()
+        cdb = "ClicDb()"
 
         out = [x for x in concordance(
             cdb,
@@ -64,7 +63,7 @@ class Skip_get_book_metadata():  # TODO: Skip the lot
         )))
 
     def test_querybyauthor(self):
-        cdb = ClicDb()
+        cdb = "ClicDb()"
 
         out = [x for x in concordance(
             cdb,
