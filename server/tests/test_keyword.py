@@ -2,23 +2,7 @@ import unittest
 import pytest
 import pandas as pd
 
-from clic.clicdb import ClicDb
 from clic.keyword import keyword, log_likelihood, extract_keywords
-
-
-class TestKeyword(unittest.TestCase):
-    @pytest.mark.filterwarnings('ignore:divide by zero')
-    def test_keyword(self):
-        cdb = ClicDb()
-        out = [x for x in keyword(
-            cdb,
-            clusterlength=[1],
-            pvalue=[0.0001],
-            subset=['quote'], corpora=['AgnesG'],
-            refsubset=['quote'], refcorpora=['dickens'],
-        )]
-        self.assertTrue(len(out) > 0)
-        # TODO: Actual tests
 
 
 class LogLikelihoodBasicTest(unittest.TestCase):
@@ -50,23 +34,23 @@ class LogLikelihoodBasicTest(unittest.TestCase):
 
     def test_hand(self):
         hand = round(self.LLR.loc[self.LLR.Type == 'hand', 'LL'], 2)
-        self.assertEqual(hand, 534.64)
+        self.assertEqual(hand.values[0], 534.64)
 
     def test_hands(self):
         hands = round(self.LLR.loc[self.LLR.Type == 'hands', 'LL'], 2)
-        self.assertEqual(hands, 183.53)
+        self.assertEqual(hands.values[0], 183.53)
 
     def test_forehead(self):
         forehead = round(self.LLR.loc[self.LLR.Type == 'forehead', 'LL'], 2)
-        self.assertEqual(forehead, 20.50)
+        self.assertEqual(forehead.values[0], 20.50)
 
     def test_head(self):
         head = round(self.LLR.loc[self.LLR.Type == 'head', 'LL'], 2)
-        self.assertEqual(head, 437.88)
+        self.assertEqual(head.values[0], 437.88)
 
     def test_neck(self):
         neck = round(self.LLR.loc[self.LLR.Type == 'neck', 'LL'], 2)
-        self.assertEqual(neck, 0.32)
+        self.assertEqual(neck.values[0], 0.32)
 
 
 class LogLikelihoodZeroes(unittest.TestCase):
@@ -89,12 +73,12 @@ class LogLikelihoodZeroes(unittest.TestCase):
     @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_zero(self):
         zero = round(self.LLR.loc[self.LLR.Type == 'zero', 'LL'], 2)
-        self.assertEqual(zero, 4180.78)
+        self.assertEqual(zero.values[0], 4180.78)
 
     @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_zero_two(self):
         zero_two = round(self.LLR.loc[self.LLR.Type == 'zero_two', 'LL'], 2)
-        self.assertEqual(zero_two, 33.57)
+        self.assertEqual(zero_two.values[0], 33.57)
 
     @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_zero_three(self):
@@ -104,7 +88,7 @@ class LogLikelihoodZeroes(unittest.TestCase):
         '''
         zero_three = round(
             self.LLR.loc[self.LLR.Type == 'zero_three', 'LL'], 2)
-        self.assertNotEqual(zero_three, 102.16)
+        self.assertNotEqual(zero_three.values[0], 102.16)
 
 
 class LogLikelihoodSameValues(unittest.TestCase):
@@ -124,7 +108,7 @@ class LogLikelihoodSameValues(unittest.TestCase):
 
     def test_same_values(self):
         same_values = round(self.LLR.loc[self.LLR.Type == 'zero', 'LL'], 2)
-        self.assertEqual(same_values, 0)
+        self.assertEqual(same_values.values[0], 0)
 
 
 class KeywordExtraction(unittest.TestCase):
@@ -150,6 +134,7 @@ class KeywordExtraction(unittest.TestCase):
                                       columns=('Type',
                                                'Count'))
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_wordlist_merging(self):
         keywords = extract_keywords(self.analysis,
                                     self.reference,
@@ -163,6 +148,7 @@ class KeywordExtraction(unittest.TestCase):
         # five does not occur in ref
         self.assertEqual(keywords.Count_ref[3], 0)
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_limit_rows(self):
         keywords2 = extract_keywords(self.analysis,
                                      self.reference,
@@ -171,6 +157,7 @@ class KeywordExtraction(unittest.TestCase):
                                      limit_rows=2)
         self.assertEqual(len(keywords2), 2)
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_p_value(self):
         keywords3 = extract_keywords(self.analysis,
                                      self.reference,
@@ -180,6 +167,7 @@ class KeywordExtraction(unittest.TestCase):
         # there are only 4 keywords
         self.assertEqual(len(keywords3), 4)
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_frequency_cutoff(self):
         keywords4 = extract_keywords(self.analysis,
                                      self.reference,
@@ -188,6 +176,7 @@ class KeywordExtraction(unittest.TestCase):
                                      freq_cut_off=30)
         self.assertEqual(len(keywords4), 2)
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_exclude_underused(self):
         '''
         Expected work:
@@ -210,6 +199,7 @@ class KeywordExtraction(unittest.TestCase):
                                      exclude_underused=False)
         self.assertEqual(len(keywords5), 3)
 
+    @pytest.mark.filterwarnings('ignore:divide by zero')
     def test_round_values(self):
         keywords6 = extract_keywords(self.analysis,
                                      self.reference,
