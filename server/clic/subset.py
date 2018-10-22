@@ -70,6 +70,25 @@ Examples:
       ],
     ], "version":{"corpora":"master:fc4de7c", "clic":"1.6:95bf699"}}
 
+Method
+------
+
+The subset search peforms the following steps:
+1. Resolve the corpora option to a list of book IDs, translate the subset
+   selection to a database region.
+
+2. For each region, find all tokens within the region, and (contextsize) + 10 characters
+   either side (it is faster to approximate the context's number of characters
+   than get (contextsize) words).
+
+3. Combine the results with the text from the original book, add the
+   chapter/paragraph/sentence statistics for the first node in the region, return result.
+
+Examples / edge cases
+---------------------
+
+TODO: We can't have meaningful examples until we can have quotes in tests.
+
 """
 from clic.concordance import to_conc
 
