@@ -1,26 +1,24 @@
-from lxml import etree
-import StringIO
 import unittest
 
-from clic.clicdb import ClicDb
 from clic.text import text
 
+from .requires_postgresql import RequiresPostgresql
 
-class TestText(unittest.TestCase):
+
+class TestText(RequiresPostgresql, unittest.TestCase):
     def test_fetch_by_book(self):
         """
         Fetch by book
         """
-        cdb = ClicDb()
-        out = [x for x in text(cdb, corpora=['AgnesG'])][1:]
+        cur = self.pg_cur()
+        book_1 = self.put_book("""
+            A man walked into a bar. "Ouch!", he said. It was an iron bar.
+        """)
 
-        self.assertEqual(out[0][0], 'AgnesG')
-        self.assertEqual(out[0][1], 1)
-
-        # non-word markup was stripped, others not
-        self.assertIn("""<qs eid="169" offset="15011" wordOffset="2745"/>,-- \'<w o="77">Yes</w>, <w o="82">I</w> <w o="84">will</w>, <w o="90">Mary</w> <w o="95">Ann</w>,""", out[2][2])
-
-        # Fetch some details, proving we've parsed something useful
-        tree = etree.parse(StringIO.StringIO(out[2][2]))
-        self.assertEqual(tree.xpath('/div')[0].get('book'), 'AgnesG')
-        self.assertEqual(tree.xpath('/div')[0].get('num'), '3')
+        out = list(text(cur, [book_1], ['chapter.text']))
+        self.assertEqual(out, [
+            ('header', dict(content="""
+            A man walked into a bar. "Ouch!", he said. It was an iron bar.
+        """)),
+            ['chapter.text', 0, 84, 1],
+        ])
