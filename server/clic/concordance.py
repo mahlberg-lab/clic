@@ -142,23 +142,33 @@ Search multiple books at the same time::
      ['alice', 199, 'fell', 'off'],
      ['willows', 47, 'full', 'Thought']]
 
-We can ask for nodes with many words, or many words separately
-We select the word before fall, and the word after fell::
+Multiple queries can be done too (which is ordinarily used for the "Any word"
+option). We select the word before fall, and the word after fell::
 
     >>> format_conc(concordance(db_cur, ['alice'], q=['* fall', 'fell *']))
     [['alice', 47, 'a', 'fall'],
      ['alice', 199, 'fell', 'off']]
 
-Since we tokenise first, punctuation in queries has no affect::
-NB: I is capitalised since we return the token from the text, not the type
+Since queries are tokenised first, punctuation / case of queries is ignored.
+NB: I is capitalised since we return the token from the text, not the type we
+search for::
 
     >>> format_conc(concordance(db_cur, ['alice'], q=['"i--FELL--off!"']))
     [['alice', 197, 'I', 'fell', 'off']]
+    >>> format_conc(concordance(db_cur, ['alice'], q=['i fell off']))
+    [['alice', 197, 'I', 'fell', 'off']]
 
-The type of quote (don’t vs don't) works, and get's normalised in output too::
+Similarly, apostrophes are normalised (don’t vs don't), and we normalise
+apostrophes in the output::
 
     >>> format_conc(concordance(db_cur, ['alice'], q=["wouldn't"], contextsize=[1]))
     [['alice', 157, 'I', '**', "wouldn't", '**', 'say']]
+
+TODO: Demonstrate selecting text from quotes / other regions
+
+TODO: Once we can demonstrate regions, demonstrate that we don't (currently)
+treat regions as boundaries, i.e. You could find "duck does" in
+'''"Fuzzy duck." "Does he?"'''.
 """
 import re
 import unidecode
