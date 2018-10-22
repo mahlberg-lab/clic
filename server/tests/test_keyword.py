@@ -2,7 +2,7 @@ import unittest
 import pytest
 import pandas as pd
 
-from clic.keyword import keyword, log_likelihood, extract_keywords
+from clic.keyword import log_likelihood, extract_keywords
 
 
 class LogLikelihoodBasicTest(unittest.TestCase):
