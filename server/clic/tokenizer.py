@@ -104,7 +104,7 @@ import re
 import icu
 import unidecode
 
-DEFAULT_LOCALE = icu.Locale('en_GB')  # TODO: Get from corpora?
+from .icuconfig import DEFAULT_LOCALE
 
 QUERY_ADDITIONAL_WORD_PARTS = set((
     '*',  # Consider * to be part of a type, so we can use it as a wildcard

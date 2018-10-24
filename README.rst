@@ -29,6 +29,7 @@ Then install the following from your system repositories::
         postgresql postgresql-contrib \
         python3 python3-venv python3-dev \
         libicu-dev \
+    # NB: ICU needs to at least be version 56, postgresql at least version 9.5
 
     # Client prerequisites
     sudo apt install make nodejs yarn nginx
