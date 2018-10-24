@@ -1,13 +1,6 @@
 import unittest
 import pytest
 
-from tests.requires_postgresql import RequiresPostgresql
-
-
-class RPGWrapper(RequiresPostgresql, unittest.TestCase):
-    """A fake unit test to use for creating databases in doctests"""
-    pass
-
 
 rpg = None
 
@@ -15,6 +8,12 @@ def test_database(**books):
     """
     Create a test database, adding each book in the (books) dict
     """
+    from tests.requires_postgresql import RequiresPostgresql
+
+    class RPGWrapper(RequiresPostgresql, unittest.TestCase):
+        """A fake unit test to use for creating databases in doctests"""
+        pass
+
     global rpg
 
     RPGWrapper.setUpClass()
@@ -61,5 +60,5 @@ def doctest_extras(doctest_namespace):
 
     if rpg:
         rpg.tearDown()
-        RPGWrapper.tearDownClass()
+        rpg.__class__.tearDownClass()
         rpg = None
