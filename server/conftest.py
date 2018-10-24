@@ -48,6 +48,25 @@ def format_cluster(cluster_results):
     """Drop footer, just include results"""
     return [x for x in cluster_results if x[0] != 'footer']
 
+
+def run_tagger(content, *fns):
+    """Run a tagger function, return region tags that got applied"""
+    def short_string(s):
+        return s if len(s) < 40 else s[0:20] + '...' + s[-20:]
+
+    book = dict(content=content)
+    for fn in fns:
+        fn(book)
+    out = []
+    for rclass in book.keys():
+        if rclass == 'content':
+            continue
+        for r in book[rclass]:
+            out.append((rclass,) + r + (short_string(content[r[0]:r[1]]),) )
+    # Sort by start ascending, then end descending
+    return sorted(out, key=lambda x: (x[1], -x[2], x[0]))
+
+
 @pytest.fixture(autouse=True)
 def doctest_extras(doctest_namespace):
     global rpg
@@ -56,6 +75,7 @@ def doctest_extras(doctest_namespace):
     doctest_namespace['test_database'] = test_database
     doctest_namespace['format_conc'] = format_conc
     doctest_namespace['format_cluster'] = format_cluster
+    doctest_namespace['run_tagger'] = run_tagger
     yield doctest_namespace
 
     if rpg:
