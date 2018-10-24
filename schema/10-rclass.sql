@@ -24,11 +24,6 @@ $BODY$
 $BODY$ LANGUAGE sql;
 SELECT pg_temp.upsert_rclass(101, 'metadata.title', 'Book title');
 SELECT pg_temp.upsert_rclass(102, 'metadata.author', 'Book author');
-SELECT pg_temp.upsert_rclass(201, 'boundary.chapter', 'Whitespace between chapters');
-SELECT pg_temp.upsert_rclass(202, 'boundary.paragraph', 'Whitespace between paragraphs');
-SELECT pg_temp.upsert_rclass(203, 'boundary.sentence', 'Punctuation denoting end of sentences');
-SELECT pg_temp.upsert_rclass(204, 'boundary.quote_start', 'Opening quote mark');
-SELECT pg_temp.upsert_rclass(205, 'boundary.quote_end', 'Closing quote mark');
 SELECT pg_temp.upsert_rclass(301, 'chapter.text', 'Chapter text (value: Chapter number)');
 SELECT pg_temp.upsert_rclass(302, 'chapter.title', 'Chapter title (value: Chapter number)');
 SELECT pg_temp.upsert_rclass(401, 'chapter.paragraph', 'Paragraph (value: Number within chapter)');

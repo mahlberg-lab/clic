@@ -159,7 +159,6 @@ def xml_to_plaintext(xml_string, offset):
         close_region('quote.nonquote')
     if len(unclosed_regions) > 0:
         raise ValueError("Still have open regions: " + ",".join(unclosed_regions.keys()))
-    # TODO: Boundaries
     return book_name, out_string, out_regions
 
 
