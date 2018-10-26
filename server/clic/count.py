@@ -39,19 +39,25 @@ These are the corpora we use for the following tests::
 
     >>> db_cur = test_database(
     ... alice='''
+    ... Alice's Adventures in Wonderland
+    ... Lewis Carroll
+    ...
     ... ‘Well!’ thought Alice to herself, ‘after such a fall as this, I shall
     ... think nothing of tumbling down stairs! How brave they’ll all think me at
     ... home! Why, I wouldn’t say anything about it, even if I fell off the top
     ... of the house!’ (Which was very likely true.)
-    ... ''',
+    ... '''.strip(),
     ...
     ... willows='''
+    ... The Wind in the Willows
+    ... Kenneth Grahame
+    ...
     ... ‘Get off!’ spluttered the Rat, with his mouth full.
     ...
     ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
     ... ‘They were all in a great state of alarm along River Bank when I arrived
     ... this morning.
-    ... ''')
+    ... '''.strip())
 
 Get word counts::
 
@@ -61,10 +67,10 @@ Get word counts::
 Get word counts / word counts in longsus. The result order is dictated by the arguments::
 
     >>> sorted(list(count(db_cur, ['alice', 'willows'], ['all', 'longsus'])))
-    [('alice', 49, 0), ('willows', 38, 0)]
+    [('alice', 49, 6), ('willows', 38, 7)]
 
     >>> sorted(list(count(db_cur, ['alice', 'willows'], ['longsus', 'all'])))
-    [('alice', 0, 49), ('willows', 0, 38)]
+    [('alice', 6, 49), ('willows', 7, 38)]
 
 TODO: Actual counts in quotes
 

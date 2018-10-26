@@ -14,21 +14,21 @@ class TestConcordance(RequiresPostgresql, unittest.TestCase):
     def test_contextsize(self):
         """We can ask for different length contexts"""
         cur = self.pg_cur()
-        book_1 = self.put_book("""
+        self.put_books(ut_conc_contextsize_1="""
             A man walked into a bar. "Ouch!", he said. It was an iron bar.
         """)
 
         # Fetch without concordance
-        out = simplify(concordance(cur, [book_1], q=['bar']))
+        out = simplify(concordance(cur, ['ut_conc_contextsize_1'], q=['bar']))
         self.assertEqual(out, [
-            [book_1, 33, 'bar'],
-            [book_1, 71, 'bar'],
+            ['ut_conc_contextsize_1', 33, 'bar'],
+            ['ut_conc_contextsize_1', 71, 'bar'],
         ])
 
-        out = simplify(concordance(cur, [book_1], q=['bar'], contextsize=[2]))
+        out = simplify(concordance(cur, ['ut_conc_contextsize_1'], q=['bar'], contextsize=[2]))
         self.assertEqual(out, [
-            [book_1, 33, 'into', 'a', '**', 'bar', '**', 'Ouch', 'he'],
-            [book_1, 71, 'an', 'iron', '**', 'bar', '**'],  # NB: We have all 3 parts still, even though it's at the end
+            ['ut_conc_contextsize_1', 33, 'into', 'a', '**', 'bar', '**', 'Ouch', 'he'],
+            ['ut_conc_contextsize_1', 71, 'an', 'iron', '**', 'bar', '**'],  # NB: We have all 3 parts still, even though it's at the end
         ])
 
 

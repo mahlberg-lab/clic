@@ -11,14 +11,14 @@ class TestText(RequiresPostgresql, unittest.TestCase):
         Fetch by book
         """
         cur = self.pg_cur()
-        book_1 = self.put_book("""
+        self.put_books(ut_text_fetch="""
             A man walked into a bar. "Ouch!", he said. It was an iron bar.
         """)
 
-        out = list(text(cur, [book_1], ['chapter.text']))
+        out = list(text(cur, ["ut_text_fetch"], ['chapter.text']))
         self.assertEqual(out, [
             ('header', dict(content="""
             A man walked into a bar. "Ouch!", he said. It was an iron bar.
         """)),
-            ['chapter.text', 0, 84, 1],
+            ['chapter.text', 13, 75, 0],
         ])

@@ -92,6 +92,9 @@ These are the corpora we use for the following tests::
 
     >>> db_cur = test_database(
     ... willows='''
+    ... The Wind in the Willows
+    ... Kenneth Grahame
+    ...
     ... The Mole was so touched by his kind manner of speaking that he could
     ... find no voice to answer him; and he had to brush away a tear or two with
     ...
@@ -99,7 +102,7 @@ These are the corpora we use for the following tests::
     ... him by the back of his neck. It was the Rat, and he was evidently
     ... laughing--the Mole could FEEL him laughing, right down his arm and
     ... through his paw, and so into his--the Mole’s--neck.
-    ... ''')
+    ... '''.strip())
 
 We count "The Mole" and "the Mole" as the same, since the types are equivalent,
 however "the Mole's" doesn't count::

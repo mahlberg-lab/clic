@@ -19,8 +19,7 @@ def test_database(**books):
     RPGWrapper.setUpClass()
     rpg = RPGWrapper()
 
-    for book_name, content in books.items():
-        rpg.put_book(content, book_name=book_name)
+    rpg.put_books(**books)
     return rpg.pg_cur()
 
 

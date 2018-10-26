@@ -68,24 +68,17 @@ class RequiresPostgresql():
         self._pg_curs.append(self.pg_conn.cursor())
         return self._pg_curs[-1]
 
-    def put_book(self, content, regions=None, book_name=None):
-        from hashlib import sha1
+    def put_books(self, **book_contents):
+        """
+        Put all books in DB, using default taggers.
+        - **book_contents: dict of book name -> contents
+        """
+        from clic.region.tag import tagger
         from clic.db.book import put_book
 
         cur = self.pg_cur()
-        if not regions:
-            # Minimum-viable list of regions
-            regions = [
-                ['chapter.text', 1, 0, len(content)],
-                ['chapter.paragraph', 1, 0, len(content)],
-                ['chapter.sentence', 1, 0, len(content)],
-            ]
-        if not book_name:
-            book_name = sha1(content.encode('utf8')).hexdigest()[-10:]
 
-        put_book(cur, dict(
-            name=book_name,
-            content=content,
-            regions=regions,
-        ))
-        return book_name
+        for book_name, content in book_contents.items():
+            book = dict(name=book_name, content=content)
+            tagger(book)
+            put_book(cur, book)
