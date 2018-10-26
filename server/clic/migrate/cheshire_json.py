@@ -24,6 +24,13 @@ def from_cheshire_json(f, book_meta):
         book['name'], new_string, new_regions = xml_to_plaintext(xml_string, len(book['content']))
         book['content'] += new_string
         book['regions'].extend(new_regions)
+
+    # Munge regions into dict format
+    for r in book['regions']:
+        if r[0] not in book:
+            book[r[0]] = []
+        book[r[0]].append(r[2:] + ([r[1]] if r[1] is not None else []))
+    del book['regions']
     return book
 
 
