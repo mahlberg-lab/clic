@@ -126,7 +126,7 @@ def cluster(
     book_ids = corpora_to_book_ids(cur, corpora)
     clusterlength = int(clusterlength[0])
     api_subset = api_subset_lookup(cur)
-    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
+    rclass_ids = tuple(api_subset[s] for s in subset)
 
     # Choose cutoff
     if cutoff is not None:
@@ -164,8 +164,9 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
              , COUNT(*)
           FROM (
             SELECT book_id
-                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, LOWER(crange) ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
-                 , BOOL_AND(ttype IS NOT NULL) OVER (ORDER BY book_id, LOWER(crange) ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ngram_valid
+                   -- NB: Sort by ttype NULLS FIRST so that "[chapter.para] first words" is ordered appropriately
+                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, LOWER(crange), ttype NULLS FIRST ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
+                 , BOOL_AND(ttype IS NOT NULL) OVER (ORDER BY book_id, LOWER(crange), ttype NULLS FIRST ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ngram_valid
               FROM (
                 SELECT t.book_id, t.crange, t.ttype
                   FROM token t

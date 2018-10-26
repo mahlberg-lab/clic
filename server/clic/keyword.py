@@ -73,8 +73,8 @@ def keyword(
     pvalue = float(pvalue[0])
     clusterlength = int(clusterlength[0])
     api_subset = api_subset_lookup(cur)
-    rclass_ids = tuple(api_subset[s] for s in subset if s != 'all')
-    refrclass_ids = tuple(api_subset[s] for s in refsubset if s != 'all')
+    rclass_ids = tuple(api_subset[s])
+    refrclass_ids = tuple(api_subset[s])
 
     wordlist_analysis = facets_to_df(get_word_list(cur, book_ids, rclass_ids, clusterlength))
     total_analysis = wordlist_analysis.Count.sum()

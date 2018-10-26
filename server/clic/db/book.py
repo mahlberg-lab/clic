@@ -44,19 +44,16 @@ def put_book(cur, book):
         ) for off_start, off_end, *rvalues in book[rclass_name]))
 
     # Tokenise each chapter text region and add it to the database
-    for rclass_name, _, off_start, off_end in book['regions']:
-        if rclass_name != 'chapter.text':
-            continue
-        psycopg2.extras.execute_values(cur, """
-            INSERT INTO """ + token_tbl + """ (book_id, crange, ttype) VALUES %s
-        """, ((
-            book_id,
-            psycopg2.extras.NumericRange(off_start, off_end),
-            ttype,
-        ) for ttype, off_start, off_end in types_from_string(
-            book['content'][off_start:off_end],
-            offset=off_start
-        )))
+    psycopg2.extras.execute_values(cur, """
+        INSERT INTO """ + token_tbl + """ (book_id, crange, ttype) VALUES %s
+    """, ((
+        book_id,
+        psycopg2.extras.NumericRange(off_start, off_end),
+        ttype,
+    ) for ttype, off_start, off_end in types_from_string(
+        book['content'],
+        offset=0
+    )))
 
     # Finalise token import, let DB update metadata, indexes
     cur.execute("""
