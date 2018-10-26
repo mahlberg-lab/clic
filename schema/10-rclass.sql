@@ -26,6 +26,7 @@ SELECT pg_temp.upsert_rclass(101, 'metadata.title', 'Book title');
 SELECT pg_temp.upsert_rclass(102, 'metadata.author', 'Book author');
 SELECT pg_temp.upsert_rclass(301, 'chapter.text', 'Chapter text (value: Chapter number)');
 SELECT pg_temp.upsert_rclass(302, 'chapter.title', 'Chapter title (value: Chapter number)');
+SELECT pg_temp.upsert_rclass(303, 'chapter.part', 'Part title');
 SELECT pg_temp.upsert_rclass(401, 'chapter.paragraph', 'Paragraph (value: Number within chapter)');
 SELECT pg_temp.upsert_rclass(402, 'chapter.sentence', 'Paragraph (value: Number within chapter)');
 SELECT pg_temp.upsert_rclass(501, 'quote.quote', 'Sections enclosed by boundary.quote_start & boundary.quote_end');

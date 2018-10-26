@@ -1,12 +1,12 @@
 import json
 import re
+import urllib.request
 
 XML_TAG_REGEX = re.compile(r'<([^>]+)>([^<]*)', re.MULTILINE)
 
 
-def from_cheshire_json(f, book_meta):
+def from_cheshire_json(doc, book_meta):
     """Interprets a /text response from a CLiC 1.6 instance into a 1.7 book format"""
-    doc = json.load(f)
     book = dict(regions=[], content="")
 
     # First line should be book title
@@ -108,11 +108,25 @@ def xml_to_plaintext(xml_string, offset):
             open_region('quote.embedded.suspension.long' if 'quote.quote' in unclosed_regions else 'quote.suspension.long')
         elif part.startswith('sle '):
             close_region('quote.embedded.suspension.long' if 'quote.embedded.suspension.long' in unclosed_regions else 'quote.suspension.long')
+        elif part.startswith('alt-sss '):
+            open_region('ignore.explicit.quote.embedded.suspension.short')
+        elif part.startswith('alt-sse '):
+            close_region('ignore.explicit.quote.embedded.suspension.short')
+        elif part.startswith('alt-sls '):
+            open_region('ignore.explicit.quote.embedded.suspension.long')
+        elif part.startswith('alt-sle '):
+            close_region('ignore.explicit.quote.embedded.suspension.long')
 
         elif part.startswith('alt-qs '):
             open_region('quote.embedded')
         elif part.startswith('alt-qe '):
             close_region('quote.embedded')
+
+        # portriattwo has <i offset=\"5087\" wordOffset=\"912\"> <w o=\"21\">her</w></i>!, not sure how
+        elif part.startswith('i '):
+            open_region('ignore.italics')
+        elif part.startswith('/i'):
+            close_region('ignore.italics')
 
         elif part.startswith('p '):
             open_region('chapter.paragraph', count_paragraph)
@@ -134,8 +148,16 @@ def xml_to_plaintext(xml_string, offset):
             close_region('chapter.title')
             open_region('chapter.text', chapter_num)
             open_region('quote.nonquote')
+        elif part == 'title/':  # Empty title
+            open_region('chapter.text', chapter_num)
+            open_region('quote.nonquote')
 
         elif re.match(r'div id="\w+.\d+" book="\w+" type="chapter" num="\d+"', part):
+            # Top of chapter, note book name
+            book_name = re.search(r'book="(\w+)"', part).group(1)
+            chapter_num = re.search(r'num="(\d+)"', part).group(1)
+            pass
+        elif re.match(r'div id="\w+.\d+" subcorpus=".*?" booktitle=".*?" bookauthor=".*?" book="\w+" type="chapter" num="\d+"', part):
             # Top of chapter, note book name
             book_name = re.search(r'book="(\w+)"', part).group(1)
             chapter_num = re.search(r'num="(\d+)"', part).group(1)
@@ -159,6 +181,9 @@ def xml_to_plaintext(xml_string, offset):
         out_string = out_string + text_part
 
     close_region('chapter.text')
+    if 'quote.embedded' in unclosed_regions:
+        # Close up a final embedded quote - tapestry has one
+        close_region('quote.embedded')
     if 'quote.quote' in unclosed_regions:
         # Close up a final quote
         close_region('quote.quote')
@@ -170,37 +195,44 @@ def xml_to_plaintext(xml_string, offset):
 
 
 def script_import_cheshire_json():
+    """
+    Given a pre-1.7 CLiC instance, parse given / all books into corpora repo
+
+    Example::
+
+        server/bin/import_cheshire_json http://cal-p-clic-02.bham.ac.uk tapestry BH
+        server/bin/import_cheshire_json http://cal-p-clic-02.bham.ac.uk
+    """
     import sys
     import timeit
-    from clic.db.book import put_book
-    from clic.db.cursor import get_script_cursor
+    from clic.migrate.corpora_repo import export_book
 
-    corpora_path = sys.argv[1]
+    api_root = sys.argv[1]
+    with urllib.request.urlopen(api_root + '/api/corpora') as f:
+        corpora = json.loads(f.read().decode('utf8'))
 
-    with open(corpora_path, 'r') as f:
-        corpora = json.load(f)
     book_meta = {}
     for c in corpora['corpora']:
         for b in c['children']:
+            if b['id'].startswith('author:'):
+                continue
             book_meta[b['id']] = b
+            book_meta[b['id']]['corpora_name'] = c['id']
 
-    with get_script_cursor(for_write=True) as cur:
-        for file_path in sys.argv[2:]:
-            print("=== %s" % file_path)
+    for book_name in (sys.argv[2:] if len(sys.argv) > 2 else book_meta.keys()):
+        print("=== %s" % book_name)
 
-            print(" * Parsing...", end=" ", flush=True)
-            start_time = timeit.default_timer()
-            with open(file_path, 'r') as f:
-                book = from_cheshire_json(f, book_meta)
-            print("%.2f secs" % (timeit.default_timer() - start_time))
+        print(" * Fetching...", end=" ", flush=True)
+        start_time = timeit.default_timer()
+        with urllib.request.urlopen(api_root + '/api/text?corpora=%s' % book_name) as f:
+            book_doc = json.loads(f.read().decode('utf8'))
+        print("%.2f secs" % (timeit.default_timer() - start_time))
 
-            print(" * Adding to DB...", end=" ", flush=True)
-            start_time = timeit.default_timer()
-            put_book(cur, book)
-            print("%.2f secs" % (timeit.default_timer() - start_time))
+        print(" * Parsing...", end=" ", flush=True)
+        start_time = timeit.default_timer()
+        book = from_cheshire_json(book_doc, book_meta)
+        print("%.2f secs" % (timeit.default_timer() - start_time))
 
-            print(" * Committing...", end=" ", flush=True)
-            start_time = timeit.default_timer()
-            cur.connection.commit()
-            print("%.2f secs" % (timeit.default_timer() - start_time))
-    print("=== Updating materialised views...")
+        print(" * Exporting to corpora...", end=" ", flush=True)
+        start_time = timeit.default_timer()
+        print(export_book(book, dir=book_meta[book['name']]['corpora_name'], write_regions=True))
