@@ -8,9 +8,15 @@ def region_append_without_whitespace(book, rclass, start, end, *extra):
 
     while book['content'][start].isspace():
         start += 1
+        if start >= len(book['content']):
+            # Fallen off the end of the book, this isn't a useful region
+            return
 
     while book['content'][end - 1].isspace():
         end -= 1
+        if end < 0:
+            # Fallen off the start of the book, this isn't a useful region
+            return
 
     if end > start:
         if rclass not in book:
