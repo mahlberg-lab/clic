@@ -86,7 +86,7 @@ def import_book(book_path):
             for r in csv.reader(f):
                 if r[0] not in book:
                     book[r[0]] = []
-                book[r[0]].append(r[1:])
+                book[r[0]].append(tuple(int(x) for x in r[1:]))
 
     return book
 
