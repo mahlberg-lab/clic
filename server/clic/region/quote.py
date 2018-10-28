@@ -77,7 +77,7 @@ Quotes that spread across paragraphs are broken into separate paragraph chunks::
 quote.suspension regions
 ------------------------
 
-A suspension is defined as a ``quote.nonquote`` that is not bordered by the end
+A suspension is defined as a ``quote.nonquote`` that is not bordered by the end or start
 of a sentence. If it is longer than 5 words, then it is a long suspension. For example::
 
     >>> [x for x in run_tagger('''
@@ -100,6 +100,15 @@ of a sentence. If it is longer than 5 words, then it is a long suspension. For e
      ('quote.quote', 181, 271, '“and has never made ...er is in existence.”'),
      ('quote.quote', 273, 306, '‘And this is Schloss Adlerstein?’'),
      ('quote.nonquote', 307, 321, 'she exclaimed.')]
+
+This example doesn't count, since it starts with a sentence::
+
+    >>> [x for x in run_tagger('''
+    ... Little Benjamin said: "It spoils people's clothes to squeeze under a gate;
+    ... the proper way to get in is to climb down a pear-tree."
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.')]
+    [('quote.nonquote', 0, 21, 'Little Benjamin said:'),
+     ('quote.quote', 22, 130, '"It spoils people\\'s ...b down a pear-tree."')]
 
 .. http://unicode.org/reports/tr29/#Word_Boundaries
 """
@@ -201,6 +210,18 @@ def tagger_quote_suspension(book):
     if len(book.get('quote.suspension.short', [])) > 0 or len(book.get('quote.suspension.long', [])) > 0:
         return  # Nothing to do
 
+    # Iterator that iterates through...
+    # (a) The start of the first sentence
+    # (b) The end of all sentences (including the first)
+    # All other sentence-starts should be just after a sentence-end, so no point
+    # considering
+    def sentence_breaks_fn():
+        if len(book['chapter.sentence']) > 0:
+            yield book['chapter.sentence'][0][0]
+        for r in book['chapter.sentence']:
+            yield r[1]
+    sentence_breaks = sentence_breaks_fn()
+
     # Create a word iterator for this book
     bi = icu.BreakIterator.createWordInstance(DEFAULT_LOCALE)
     bi.setText(book['content'])
@@ -215,18 +236,17 @@ def tagger_quote_suspension(book):
                 out += 1
         return out
 
-    cur_sent = 0
+    cur_sent_b = -10  # i.e. a value we'll consider before-range
     book['quote.suspension.short'] = []
     book['quote.suspension.long'] = []
     for containing_r in book['quote.nonquote']:
-        # Try and find a sentence boundary within or near our nonquote
-        while cur_sent < len(book['chapter.sentence']) and book['chapter.sentence'][cur_sent][1] < containing_r[1] + 3:
-            if book['chapter.sentence'][cur_sent][1] > containing_r[0] - 3:
-                # Sentence boundary is within range, ignore this region
+        while cur_sent_b < containing_r[1] + 3:  # while current sentence boundary is before end-of-region
+            if cur_sent_b > containing_r[0] - 3:  # If it's after the start-of-region also
+                # There is a sentence boundary within this region, ignore and move on
                 break
-            cur_sent += 1
+            cur_sent_b = next(sentence_breaks)
         else:
-            # Didn't find a sentence boundary near our nonquote region, this is a suspension.
+            # Considered all potential sentence boundaries and none found, this is a suspension.
             if count_words(*containing_r) < 5:
                 book['quote.suspension.short'].append(containing_r)
             else:
