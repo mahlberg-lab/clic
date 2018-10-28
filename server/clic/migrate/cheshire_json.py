@@ -203,9 +203,13 @@ def script_import_cheshire_json():
         server/bin/import_cheshire_json http://cal-p-clic-02.bham.ac.uk tapestry BH
         server/bin/import_cheshire_json http://cal-p-clic-02.bham.ac.uk
     """
+    import os.path
     import sys
     import timeit
     from clic.migrate.corpora_repo import export_book
+
+    # Assume corpora is checked out at the root of the project
+    corpora_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'corpora'))
 
     api_root = sys.argv[1]
     with urllib.request.urlopen(api_root + '/api/corpora') as f:
@@ -235,4 +239,7 @@ def script_import_cheshire_json():
 
         print(" * Exporting to corpora...", end=" ", flush=True)
         start_time = timeit.default_timer()
-        print(export_book(book, dir=book_meta[book['name']]['corpora_name'], write_regions=True))
+        print(export_book(book, dir=os.path.join(
+            corpora_dir,
+            book_meta[book['name']]['corpora_name'],
+        ), write_regions=True))

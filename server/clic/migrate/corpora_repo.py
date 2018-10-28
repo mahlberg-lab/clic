@@ -1,18 +1,25 @@
 import csv
+import json
 import os
 import os.path
 
-CORPORA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'corpora')
+
+def to_region_file(book_path):
+    """Path of relevant region file for book_path"""
+    return os.path.splitext(book_path)[0] + '.regions.csv'
 
 
-def export_book(book, dir=None, write_regions=False):
-    output_file = os.path.abspath(os.path.join(
-        CORPORA_DIR,
-        dir or '',
-        book['name']))
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+def export_book(book, dir='.', write_regions=False):
+    """
+    Export book object (book) to "(dir)/(book['name']).txt"
 
-    with open(output_file + '.txt', 'w') as f:
+    If write_regions is true, write a book.regions.csv next to the book
+    containing all regions.
+    """
+    book_path = os.path.join(dir, book['name'] + '.txt')
+    os.makedirs(os.path.dirname(book_path), exist_ok=True)
+
+    with open(book_path, 'w') as f:
         f.write(book['content'])
 
     if write_regions:
@@ -23,10 +30,10 @@ def export_book(book, dir=None, write_regions=False):
                 continue
             for r in book[k]:
                 regions.append((k,) + tuple(r))
-        regions.sort(key=lambda r:(r[1], -r[2], r[0]))
+        regions.sort(key=lambda r: (r[1], -r[2], r[0]))
 
-        with open(output_file + '.regions.csv', 'w') as f:
+        with open(to_region_file(book_path), 'w') as f:
             writer = csv.writer(f)
             for r in regions:
                 writer.writerow(r)
-    return output_file + '.txt'
+    return book_path
