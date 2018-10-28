@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS token (
     PRIMARY KEY (book_id, crange),
 
     ttype TEXT NOT NULL,
-    ordering INT NULL,  -- TODO: Do we even need it, vs. LOWER(crange)?
+    ordering INT NULL,
     part_of JSONB NULL  -- NB: Ideally this would be NOT NULL DEFERRABLE but you can't do that yet
 );
 COMMENT ON TABLE  token IS $$Tokens within a book (partition root: each book gets it's own sub-table)$$;
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS region (
     rclass_id INT NOT NULL,
     FOREIGN KEY (rclass_id) REFERENCES rclass(rclass_id),
     crange INT4RANGE NOT NULL CHECK (UPPER(crange) > LOWER(crange)),
-    PRIMARY KEY (book_id, rclass_id, crange), -- TODO: Is this being unique correct? Are there regions that get nested within themselves?
+    PRIMARY KEY (book_id, rclass_id, crange),
 
     rvalue INT NULL
 );

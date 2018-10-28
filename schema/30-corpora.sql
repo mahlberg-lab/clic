@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS corpus_book (
     FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
 COMMENT ON TABLE  corpus_book IS 'Corpus <-> books many-to-many';
---TODO: Or do we have a TEXT[] of targets, i.e. iterate through resolving corpus until we get a list of books?
 
 
 COMMIT;
