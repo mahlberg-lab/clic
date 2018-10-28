@@ -4,6 +4,38 @@ import os
 import os.path
 
 
+def get_corpora_for(book_paths):
+    """
+    Return all corpora objects that contain the books in book_paths
+    """
+    if len(book_paths) == 0:
+        return []
+
+    # Assume all books sit in the same root
+    corpora_dir = os.path.dirname(os.path.dirname(book_paths[0]))
+    with open(os.path.join(corpora_dir, 'corpora.json'), 'r') as f:
+        corpora_doc = json.load(f)
+
+    # Make lookup of corpora names to details
+    corpora_lookup = {}
+    for c in corpora_doc['corpora']:
+        corpora_lookup[c['id']] = dict(
+            name=c['id'],
+            title=c['title'],
+            description=c['description'],
+            contents=[b['shorttitle'] for b in corpora_doc['content'][c['id']]],
+        )
+
+    # For each book we want, find the relevant corpora entry
+    wanted_books = set(os.path.relpath(p, corpora_dir) for p in book_paths)
+    out = {}
+    for corpora_name, books in corpora_doc['content'].items():
+        for b in books:
+            if b['path'] in wanted_books:
+                out[corpora_name] = corpora_lookup[corpora_name]
+    return out.values()
+
+
 def to_region_file(book_path):
     """Path of relevant region file for book_path"""
     return os.path.splitext(book_path)[0] + '.regions.csv'
@@ -37,3 +69,52 @@ def export_book(book, dir='.', write_regions=False):
             for r in regions:
                 writer.writerow(r)
     return book_path
+
+
+def import_book(book_path):
+    """
+    Read book at (book_path)
+    """
+    book = dict(name=os.path.basename(os.path.splitext(book_path)[0]))
+
+    with open(book_path, 'r') as f:
+        book['content'] = f.read()
+
+    region_file = to_region_file(book_path)
+    if os.path.exists(region_file):
+        with open(region_file) as f:
+            for r in csv.reader(f):
+                if r[0] not in book:
+                    book[r[0]] = []
+                book[r[0]].append(r[1:])
+
+    return book
+
+
+def script_import_corpora_repo():
+    """Import corpora book file(s) into DB"""
+    import sys
+    import timeit
+    from ..db.book import put_book
+    from ..db.corpus import put_corpus
+    from ..db.cursor import get_script_cursor
+    from ..region.tag import tagger
+
+    # Every argument is a book path, so e.g. "*/*.txt" works
+    book_paths = sys.argv[1:]
+
+    with get_script_cursor(for_write=True) as cur:
+        for p in book_paths:
+            print("* %s" % p, end=" ", flush=True)
+            start_time = timeit.default_timer()
+            book = import_book(p)  # Read book and/or regions file
+            tagger(book)  # Fill in any remaining regions
+            put_book(cur, book)  # Write to DB
+            print("%.2f secs" % (timeit.default_timer() - start_time))
+            cur.connection.commit()
+
+        for c in get_corpora_for(book_paths):
+            print("* corpora:%s" % c['name'], end=" ", flush=True)
+            start_time = timeit.default_timer()
+            put_corpus(cur, c)
+            print("%.2f secs" % (timeit.default_timer() - start_time))

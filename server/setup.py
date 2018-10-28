@@ -30,6 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'import_cheshire_json=clic.migrate.cheshire_json:script_import_cheshire_json',
+            'import_corpora_repo=clic.migrate.corpora_repo:script_import_corpora_repo',
         ],
     },
 )
