@@ -74,6 +74,14 @@ Quotes that spread across paragraphs are broken into separate paragraph chunks::
      ('quote.quote', 187, 400, '“Say a narrative was...ll the one talking.”'),
      ('quote.quote', 402, 433, '“Oh, that makes sense. Thanks!”')]
 
+Single quote marks without a match don't count::
+
+    >>> [x for x in run_tagger('''
+    ... absurd. Good Lord! mustn't a man ever--Here, give me some tobacco."...
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    []
+
+
 quote.suspension regions
 ------------------------
 
