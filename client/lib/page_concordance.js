@@ -46,7 +46,7 @@ function renderPosition(data, type, full, meta) {
 
         return '<a class="bookLink" title="Click to display concordance in book"' +
                ' onclick="event.stopPropagation();" target="_blank"' +
-               ' href="/text?book=' + data[0] + '&chapter_num=' + full[4][0] + '&word-highlight=' + data[1] + '%3A' + data[2] + '" >' +
+               ' href="/text?book=' + data[0] + '&word-highlight=' + data[1] + '%3A' + data[2] + '" >' +
                '<svg width="50px" height="15px" xmlns="http://www.w3.org/2000/svg">' +
                '<rect x="0" y="4" width="50" height="7" fill="#D6E1E8"/>' +
                '<line x1="' + xVal + '" x2="' + xVal + '" y1="0" y2="15" stroke="black" stroke-width="2px"/>' +
@@ -76,7 +76,7 @@ function renderDistributionPlot(data, type, full, meta) {
 
             return '<a' +
                 ' onclick="event.stopPropagation();" target="_blank"' +
-                ' href="/text?book=' + r[3][0] + '&chapter_num=' + r[4][0] + '&word-highlight=' + r[3][1] + '%3A' + r[3][2] + '"' +
+                ' href="/text?book=' + r[3][0] + '&word-highlight=' + r[3][1] + '%3A' + r[3][2] + '"' +
                 '><rect' +
                 ' class="' + r.DT_RowClass + '"' +
                 ' x="' + posStart + '"' +
