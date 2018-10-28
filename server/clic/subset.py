@@ -87,7 +87,41 @@ The subset search peforms the following steps:
 Examples / edge cases
 ---------------------
 
-TODO: We can't have meaningful examples until we can have quotes in tests.
+    >>> db_cur = test_database(
+    ... alice='''
+    ... ‘Well!’ thought Alice to herself, ‘after such a fall as this, I shall
+    ... think nothing of tumbling down stairs! How brave they’ll all think me at
+    ... home! Why, I wouldn’t say anything about it, even if I fell off the top
+    ... of the house!’ (Which was very likely true.)
+    ... ''',
+    ...
+    ... willows='''
+    ... ‘Get off!’ spluttered the Rat, with his mouth full.
+    ...
+    ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
+    ... ‘They were all in a great state of alarm along River Bank when I arrived
+    ... this morning.
+    ... ''')
+
+We can ask for quotes::
+
+    >>> format_conc(subset(db_cur, ['alice', 'willows'], subset=['quote']))
+    [['alice', 1, 'Well'],
+     ['alice', 35, 'after', 'such', 'a', 'fall', 'as', 'this', 'I', 'shall',
+      'think', 'nothing', 'of', 'tumbling', 'down', 'stairs', 'How', 'brave',
+      "they'll", 'all', 'think', 'me', 'at', 'home', 'Why', 'I', "wouldn't",
+      'say', 'anything', 'about', 'it', 'even', 'if', 'I', 'fell', 'off', 'the',
+      'top', 'of', 'the', 'house'],
+     ['willows', 1, 'Get', 'off'],
+     ['willows', 54, 'Thought', 'I', 'should', 'find', 'you', 'here', 'all', 'right'],
+     ['willows', 125, 'They', 'were', 'all', 'in', 'a', 'great', 'state', 'of',
+      'alarm', 'along', 'River', 'Bank', 'when', 'I', 'arrived', 'this', 'morning']]
+
+Or nonquotes, from a single book::
+
+    >>> format_conc(subset(db_cur, ['alice'], subset=['nonquote']))
+    [['alice', 9, 'thought', 'Alice', 'to', 'herself'],
+     ['alice', 231, 'Which', 'was', 'very', 'likely', 'true']]
 
 """
 from clic.concordance import to_conc

@@ -164,7 +164,24 @@ apostrophes in the output::
     >>> format_conc(concordance(db_cur, ['alice'], q=["wouldn't"], contextsize=[1]))
     [['alice', 157, 'I', '**', "wouldn't", '**', 'say']]
 
-TODO: Demonstrate selecting text from quotes / other regions
+Examples: subset selection
+--------------------------
+
+Results can be limited to regions. We can get quote concordances::
+
+    >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=["thought"], subset=["quote"], contextsize=[1]))
+    [['willows', 55, 'full', '**', 'Thought', '**', 'I']]
+
+...nonquote concordances::
+
+    >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=["thought"], subset=["nonquote"], contextsize=[1]))
+    [['alice', 9, 'Well', '**', 'thought', '**', 'Alice']]
+
+...or all (the default)::
+
+    >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=["thought"], contextsize=[1]))
+    [['alice', 9, 'Well', '**', 'thought', '**', 'Alice'],
+     ['willows', 55, 'full', '**', 'Thought', '**', 'I']]
 
 TODO: Once we can demonstrate regions, demonstrate that we don't (currently)
 treat regions as boundaries, i.e. You could find "duck does" in
