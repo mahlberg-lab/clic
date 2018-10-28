@@ -51,11 +51,10 @@ def get_script_cursor(for_write=False):
         yield conn.cursor()
         conn.commit()
         if for_write:
-            # If writing, vaccuum and rebuild views afterwards
+            # If writing, vaccuum afterwards
             conn.set_session(autocommit=True)
             cur = conn.cursor()
             cur.execute("VACUUM ANALYSE")
-            cur.execute("SELECT refresh_book_materialized_views()")
     finally:
         conn.rollback()
     conn.close()

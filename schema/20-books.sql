@@ -56,6 +56,32 @@ COMMENT ON COLUMN region.rvalue IS 'Value associated with range, e.g. chapter nu
 COMMENT ON COLUMN region.crange IS 'Character range this applies to';
 
 
+CREATE TABLE IF NOT EXISTS book_metadata (
+    book_id INT NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES book(book_id),
+    rclass_id INT NOT NULL,
+    FOREIGN KEY (rclass_id) REFERENCES rclass(rclass_id),
+    rvalue INT NULL,
+    content TEXT NOT NULL
+);
+COMMENT ON TABLE book_metadata IS 'Selected regions exacted to use for listings (chapter titles, e.g.)';
+COMMENT ON COLUMN book_metadata.content IS 'Content of this region (populated by book_import_finalise)';
+CREATE INDEX IF NOT EXISTS book_metadata_rclass_id ON book_metadata(rclass_id);
+COMMENT ON INDEX book_metadata_rclass_id IS 'Select metadata by type (e.g. author)';
+
+
+CREATE TABLE IF NOT EXISTS book_word_count (
+    book_id INT NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES book(book_id),
+    rclass_id INT NOT NULL,
+    FOREIGN KEY (rclass_id) REFERENCES rclass(rclass_id),
+    rvalue INT NULL,
+    word_count INT NOT NULL
+);
+COMMENT ON COLUMN book_word_count.word_count IS 'Number of words in region (populated by book_import_finalise)';
+COMMENT ON TABLE book_word_count IS 'Count words within a selection of regions';
+
+
 CREATE OR REPLACE FUNCTION book_import_init(new_name TEXT, new_content TEXT) RETURNS TABLE(
     book_id INT,
     token_tbl TEXT,
@@ -93,6 +119,10 @@ BEGIN
             CHECK ( book_id = %2$s )
         ) INHERITS (region)
     $$, region_tbl, new_book_id);
+
+    -- Empty metadata tables from any previous versions of book
+    DELETE FROM book_metadata bm WHERE bm.book_id = new_book_id;
+    DELETE FROM book_word_count bwc WHERE bwc.book_id = new_book_id;
 
     RETURN QUERY SELECT new_book_id, token_tbl, region_tbl;
 END;
@@ -144,6 +174,36 @@ BEGIN
            AND t.book_id = %2$s
     $$, token_tbl, new_book_id);
 
+    -- Update book metadata tables
+    INSERT INTO book_metadata (book_id, rclass_id, rvalue, content)
+         SELECT r.book_id
+              , r.rclass_id
+              , r.rvalue
+              , SUBSTRING(b.content, LOWER(r.crange) + 1, (UPPER(r.crange) - LOWER(r.crange))) AS content
+           FROM region r, book b, rclass rc
+          WHERE b.book_id = r.book_id
+            AND b.book_id = new_book_id
+            AND r.rclass_id = rc.rclass_id
+            AND rc.name IN ('metadata.title', 'metadata.author', 'chapter.title');
+    INSERT INTO book_word_count (book_id, rclass_id, rvalue, word_count)
+         SELECT r.book_id,
+                r.rclass_id,
+                r.rvalue,
+                (
+                    SELECT COUNT(t.ttype)
+                      FROM token t
+                     WHERE t.book_id = r.book_id AND t.crange <@ r.crange
+                ) word_count
+           FROM region r, rclass rc
+          WHERE r.rclass_id = rc.rclass_id
+            AND r.book_id = new_book_id
+            AND rc.name IN (
+                    'chapter.text',
+                    'quote.quote',
+                    'quote.nonquote',
+                    'quote.suspension.short',
+                    'quote.suspension.long');
+
     -- Add our indexes to the extra metadata
     EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_ordering ON %1$s (book_id, ordering)$$, token_tbl);
     EXECUTE format($$COMMENT ON INDEX %1$s_book_id_ordering IS 'Selecting tokens around a point in concordance'$$, token_tbl);
@@ -152,55 +212,6 @@ BEGIN
 END;
 $BODY$ LANGUAGE 'plpgsql' SECURITY DEFINER;
 COMMENT ON FUNCTION book_import_finalise(new_book_id INT) IS $$Update metadata and index new book data. Call once region/book tables are populated$$;
-
-
-DROP MATERIALIZED VIEW IF EXISTS book_metadata;
-CREATE MATERIALIZED VIEW book_metadata AS
-    SELECT r.book_id,
-           r.rclass_id,
-           r.rvalue,
-           SUBSTRING(b.content, LOWER(r.crange) + 1, (UPPER(r.crange) - LOWER(r.crange))) AS content
-      FROM region r, book b, rclass rc
-     WHERE b.book_id = r.book_id
-       AND r.rclass_id = rc.rclass_id
-       AND rc.name IN (
-           'metadata.title',
-           'metadata.author',
-           'chapter.title');
-COMMENT ON MATERIALIZED VIEW book_metadata IS 'Extracted metadata from book contents';
-CREATE INDEX IF NOT EXISTS book_metadata_rclass_id ON book_metadata(rclass_id);
-COMMENT ON INDEX book_metadata_rclass_id IS 'Select metadata by type (e.g. author)';
-
-
-DROP MATERIALIZED VIEW IF EXISTS book_word_count;
-CREATE MATERIALIZED VIEW book_word_count AS
-    SELECT r.book_id,
-           r.rclass_id,
-           r.rvalue,
-           (
-               SELECT COUNT(t.ttype)
-                 FROM token t
-                WHERE t.book_id = r.book_id AND t.crange <@ r.crange
-           ) word_count
-      FROM region r, rclass rc
-     WHERE r.rclass_id = rc.rclass_id
-       AND rc.name IN (
-               'chapter.text',
-               'quote.quote',
-               'quote.nonquote',
-               'quote.suspension.short',
-               'quote.suspension.long');
-COMMENT ON MATERIALIZED VIEW book_word_count IS 'Count words within a selection of regions';
-
-
-CREATE OR REPLACE FUNCTION refresh_book_materialized_views()
-RETURNS VOID SECURITY DEFINER LANGUAGE PLPGSQL
-AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW book_metadata;
-    REFRESH MATERIALIZED VIEW book_word_count;
-END $$;
-COMMENT ON FUNCTION refresh_book_materialized_views() IS 'Rebuild materialized views based on book contents';
 
 
 COMMIT;
