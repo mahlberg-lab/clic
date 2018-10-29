@@ -21,7 +21,7 @@ def corpora(cur):
            AND cb.book_id = bm.book_id
            AND bm.rclass_id IN (%(rclass_title)s, %(rclass_author)s)
       GROUP BY c.corpus_id, cb.book_id
-      ORDER BY c.ordering, b_name
+      ORDER BY c.ordering, c.title, b_name
     """, dict(
         rclass_title=rclass['metadata.title'],
         rclass_author=rclass['metadata.author'],
