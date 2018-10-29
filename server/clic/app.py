@@ -13,41 +13,17 @@ from clic.db.version import clic_version
 from clic.stream_json import stream_json, format_error, JSONEncoder
 
 
-STREAMING_APIS = [
-    clic.cluster.cluster,
-    clic.concordance.concordance,
-    clic.count.count,
-    clic.keyword.keyword,
-    clic.subset.subset,
-    clic.text.text,
+# API endpoint functions and their view type (see to_view_func)
+API_ENDPOINTS = [
+    (clic.cluster.cluster, 'stream'),
+    (clic.concordance.concordance, 'stream'),
+    (clic.count.count, 'stream'),
+    (clic.keyword.keyword, 'stream'),
+    (clic.subset.subset, 'stream'),
+    (clic.text.text, 'stream'),
+    (clic.metadata.corpora, 'json'),
+    (clic.metadata.corpora_headlines, 'json'),
 ]
-
-
-def streaming_view_func(fn):
-    def view_func():
-        with get_pool_cursor() as cur:
-            header = dict(version=clic_version(cur))
-            out = fn(cur, **request.args)
-            return Response(
-                stream_json(out, header, cls=JSONEncoder),
-                content_type='application/json',
-            )
-    return view_func
-
-
-JSON_APIS = [
-    clic.metadata.corpora,
-    clic.metadata.corpora_headlines,
-]
-
-
-def json_view_func(fn):
-    def view_func():
-        with get_pool_cursor() as cur:
-            out = fn(cur)
-            out['version'] = clic_version(cur)
-            return jsonify(out)
-    return view_func
 
 
 def create_app(config=None, app_name=None):
@@ -55,23 +31,9 @@ def create_app(config=None, app_name=None):
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
     app.json_encoder = JSONEncoder
 
-    # Register a view for all regular API calls
-    for fn in STREAMING_APIS:
-        app.add_url_rule(
-            '/api/' + fn.__name__.replace('_', '/'),
-            endpoint=fn.__name__,
-            methods=['GET'],
-            view_func=streaming_view_func(fn),
-        )
-
-    # Metadata routes are just passed through jsonify
-    for fn in JSON_APIS:
-        app.add_url_rule(
-            '/api/' + fn.__name__.replace('_', '/'),
-            endpoint=fn.__name__,
-            methods=['GET'],
-            view_func=json_view_func(fn),
-        )
+    # Register a view for all API endpoints
+    for ep in API_ENDPOINTS:
+        app.add_url_rule(**to_view_func(*ep))
 
     # Extensions
     CORS(app)
@@ -102,3 +64,36 @@ def create_app(config=None, app_name=None):
         return response
 
     return app
+
+
+def to_view_func(fn, output_mode):
+    """
+    Turn a function call into one of several views, defined by output_mode
+    - stream: Function call is a generator that generates output suitable for stream_json()
+    - json: Function call returns a dict suitable for jsonify()
+    """
+    def stream_view_func():
+        with get_pool_cursor() as cur:
+            header = dict(version=clic_version(cur))
+            out = fn(cur, **request.args)
+            return Response(
+                stream_json(out, header, cls=JSONEncoder),
+                content_type='application/json',
+            )
+    if output_mode == 'stream':
+        view_func = stream_view_func
+
+    def json_view_func():
+        with get_pool_cursor() as cur:
+            out = fn(cur, **request.args)
+            out['version'] = clic_version(cur)
+            return jsonify(out)
+    if output_mode == 'json':
+        view_func = json_view_func
+
+    return dict(
+        rule='/api/' + fn.__name__.replace('_', '/'),
+        endpoint=fn.__name__,
+        methods=['GET'],
+        view_func=view_func,
+    )
