@@ -102,15 +102,32 @@ These are the corpora we use for the following tests::
     ... him by the back of his neck. It was the Rat, and he was evidently
     ... laughing--the Mole could FEEL him laughing, right down his arm and
     ... through his paw, and so into his--the Mole’s--neck.
+    ...
+    ... ‘This is fine!’ he said to himself. ‘This is better than whitewashing!’
     ... '''.strip())
 
 We count "The Mole" and "the Mole" as the same, since the types are equivalent,
 however "the Mole's" doesn't count::
 
     >>> format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2']))
-    [('and he', 2), ('the mole', 2)]
+    [('and he', 2), ('the mole', 2), ('this is', 2)]
 
-TODO: Test quote boundaries
+When we select across all text, quotes nor paragraphs are not considered boundaries::
+
+    >>> ('fine he', 1) in format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2'], cutoff=[0]))
+    True
+    >>> ('neck this', 1) in format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2'], cutoff=[0]))
+    True
+
+... but when we get clusters from quotes, "fine he" is not included, since it
+straddles a quote boundary::
+
+    >>> format_cluster(cluster(db_cur, ['quote'], ['willows'], clusterlength=['2'], cutoff=[0]))
+    [('better than', 1),
+     ('is better', 1),
+     ('is fine', 1),
+     ('than whitewashing', 1),
+     ('this is', 2)]
 
 """
 from clic.db.corpora import corpora_to_book_ids
@@ -185,6 +202,7 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
                 SELECT r.book_id, r.crange, NULL ttype
                   FROM region r
                  WHERE book_id IN %(book_ids)s
+                   AND r.rclass_id = %(rclass_id)s
                    ) regions_and_tokens
                ) all_ngrams
          WHERE ngram_valid
