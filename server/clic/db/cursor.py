@@ -16,7 +16,8 @@ if os.environ.get('QUERY_LOG', False):
 
 class LoggingConnection(BaseLoggingConnection):
     def filter(self, msg, cur):
-        msg = msg.decode('utf8')  # String so loggers know how to print it
+        if msg:  # NB: msg == None is probably an error, but don't mask it with our own
+            msg = msg.decode('utf8')  # String so loggers know how to print it
         if explain_logger.isEnabledFor(logging.DEBUG):
             if msg.startswith("EXPLAIN "):
                 return None  # Avoid infinite recursion

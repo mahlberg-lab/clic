@@ -19,11 +19,14 @@ def get_corpora_for(book_paths):
     # Make lookup of corpora names to details
     corpora_lookup = {}
     for i, c in enumerate(corpora_doc['corpora']):
+        carousel_image_path = os.path.join(corpora_dir, 'images', "%s_0.4.jpg" % c['id'])
+
         corpora_lookup[c['id']] = dict(
             name=c['id'],
             title=c['title'],
             description=c['description'],
             contents=[b['shorttitle'] for b in corpora_doc['content'][c['id']]],
+            carousel_image_path=carousel_image_path if os.path.exists(carousel_image_path) else None,
             ordering=i,
         )
 

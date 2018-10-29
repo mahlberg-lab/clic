@@ -12,10 +12,16 @@ def put_corpus(cur, corpus):
         DELETE FROM corpus WHERE name = %(name)s;
     """, corpus)
 
+    if corpus.get('carousel_image_path', None):
+        with open(corpus['carousel_image_path'], 'rb') as f:
+            corpus['carousel_image'] = f.read()
+    else:
+        corpus['carousel_image'] = None
+
     # Add main entry
     cur.execute("""
-        INSERT INTO corpus (name, title, ordering)
-             VALUES (%(name)s, %(title)s, %(ordering)s)
+        INSERT INTO corpus (name, title, carousel_image, ordering)
+             VALUES (%(name)s, %(title)s, %(carousel_image)s, %(ordering)s)
           RETURNING corpus_id
     """, corpus)
     (corpus_id,) = cur.fetchone()

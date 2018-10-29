@@ -8,12 +8,13 @@ CREATE TABLE IF NOT EXISTS corpus (
     name TEXT NOT NULL,
     UNIQUE(name),
     title TEXT NOT NULL,
+    carousel_image BYTEA NULL,
     ordering INT NOT NULL DEFAULT 0
-    -- TODO: An image column, to store the (binary) image to return as a data: URI in /highlights? Ugly, but not many other options
 );
 COMMENT ON TABLE  corpus IS 'Groups of books';
 COMMENT ON COLUMN corpus.name IS 'Short name of corpus, e.g. ChiLit';
 COMMENT ON COLUMN corpus.title IS 'Title to show in interface, e.g. ''ChiLit - 19th Century Children''s Literature''';
+COMMENT ON COLUMN corpus.carousel_image IS 'Bytes of a JPEG carousel image, with a 0.4 width/height ratio';
 COMMENT ON COLUMN corpus.ordering IS 'Ordering of corpus items in interface, negative items are hidden';
 
 

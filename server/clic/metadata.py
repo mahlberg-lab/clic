@@ -82,3 +82,25 @@ def corpora_headlines(cur):
         ))
 
     return dict(data=out)
+
+
+def corpora_image(cur, corpora=[]):
+    """
+    Return (carousel) image for a given corpora
+    """
+    if len(corpora) != 1:
+        raise ValueError("You must specify exactly one corpora to fetch image for")
+
+    cur.execute("""
+        SELECT c.carousel_image
+          FROM corpus c
+         WHERE c.name = %(name)s
+    """, dict(
+        name=corpora[0],
+    ))
+
+    for (carousel_image,) in cur:
+        return dict(
+            response=carousel_image,
+            content_type='image/jpeg',
+        )

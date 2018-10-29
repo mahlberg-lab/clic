@@ -12,7 +12,6 @@ OUT_FILES = \
     www/js/libraries.min.js \
     www/css/libraries.min.css \
     www/css/chosen-sprite.png \
-    www/carousel-images \
     $(foreach O,$(OUTPUTS),www/$(O).html www/js/$(O).min.js www/css/$(O).min.css)
 
 LIBRARIES_JS = \
@@ -72,10 +71,6 @@ sha1_envvars = \
     for f in $(1); do \
         eval sha_$$(basename $$f | sed 's/\W/_/g')=$$(readlink $$f); \
     done;
-
-www/carousel-images:
-	mkdir -p $(dir $@)
-	ln -rsf ../server/cheshire3-server/dbs/dickens/images $@
 
 www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 	mkdir -p $(dir $@)

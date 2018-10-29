@@ -23,6 +23,7 @@ API_ENDPOINTS = [
     (clic.text.text, 'stream'),
     (clic.metadata.corpora, 'json'),
     (clic.metadata.corpora_headlines, 'json'),
+    (clic.metadata.corpora_image, 'raw'),
 ]
 
 
@@ -90,6 +91,13 @@ def to_view_func(fn, output_mode):
             return jsonify(out)
     if output_mode == 'json':
         view_func = json_view_func
+
+    def raw_view_func():
+        with get_pool_cursor() as cur:
+            out = fn(cur, **request.args)
+            return Response(**out)
+    if output_mode == 'raw':
+        view_func = raw_view_func
 
     return dict(
         rule='/api/' + fn.__name__.replace('_', '/'),
