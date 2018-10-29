@@ -18,12 +18,13 @@ def get_corpora_for(book_paths):
 
     # Make lookup of corpora names to details
     corpora_lookup = {}
-    for c in corpora_doc['corpora']:
+    for i, c in enumerate(corpora_doc['corpora']):
         corpora_lookup[c['id']] = dict(
             name=c['id'],
             title=c['title'],
             description=c['description'],
             contents=[b['shorttitle'] for b in corpora_doc['content'][c['id']]],
+            ordering=i,
         )
 
     # For each book we want, find the relevant corpora entry

@@ -14,8 +14,8 @@ def put_corpus(cur, corpus):
 
     # Add main entry
     cur.execute("""
-        INSERT INTO corpus (name, title)
-             VALUES (%(name)s, %(title)s)
+        INSERT INTO corpus (name, title, ordering)
+             VALUES (%(name)s, %(title)s, %(ordering)s)
           RETURNING corpus_id
     """, corpus)
     (corpus_id,) = cur.fetchone()
