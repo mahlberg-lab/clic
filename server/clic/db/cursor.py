@@ -10,6 +10,8 @@ _pool = None
 
 logger = logging.getLogger(__name__)
 explain_logger = logging.getLogger(__name__ + '.explain')
+if os.environ.get('QUERY_LOG', False):
+    logging.basicConfig(level=logging.DEBUG)
 
 
 class LoggingConnection(BaseLoggingConnection):
