@@ -123,6 +123,12 @@ Or nonquotes, from a single book::
     [['alice', 9, 'thought', 'Alice', 'to', 'herself'],
      ['alice', 231, 'Which', 'was', 'very', 'likely', 'true']]
 
+Context size can also be configured, but the return is only approximate::
+
+    >>> format_conc(subset(db_cur, ['alice'], subset=['nonquote'], contextsize=[3]))
+    [['alice', 9, 'Well', '**', 'thought', 'Alice', 'to', 'herself', '**', 'after', 'such', 'a', 'fall', 'as', 'this', 'I'],
+     ['alice', 231, 'off', 'the', 'top', 'of', 'the', 'house', '**', 'Which', 'was', 'very', 'likely', 'true', '**']]
+
 """
 from clic.concordance import to_conc
 
