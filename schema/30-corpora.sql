@@ -19,9 +19,9 @@ COMMENT ON COLUMN corpus.ordering IS 'Ordering of corpus items in interface, neg
 
 CREATE TABLE IF NOT EXISTS corpus_book (
     corpus_id INT NOT NULL,
-    FOREIGN KEY (corpus_id) REFERENCES corpus(corpus_id),
+    FOREIGN KEY (corpus_id) REFERENCES corpus(corpus_id) ON DELETE CASCADE,
     book_id INT NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES book(book_id)
+    FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
 );
 COMMENT ON TABLE  corpus_book IS 'Corpus <-> books many-to-many';
 
