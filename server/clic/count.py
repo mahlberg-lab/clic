@@ -64,16 +64,10 @@ Get word counts::
     >>> sorted(list(count(db_cur, ['alice', 'willows'], ['all'])))
     [('alice', 49), ('willows', 38)]
 
-Get word counts / word counts in longsus. The result order is dictated by the arguments::
+Get word counts / word counts both overall and in quotes::
 
-    >>> sorted(list(count(db_cur, ['alice', 'willows'], ['all', 'longsus'])))
-    [('alice', 49, 6), ('willows', 38, 7)]
-
-    >>> sorted(list(count(db_cur, ['alice', 'willows'], ['longsus', 'all'])))
-    [('alice', 6, 49), ('willows', 7, 38)]
-
-TODO: Actual counts in quotes
-
+    >>> sorted(list(count(db_cur, ['alice', 'willows'], ['all', 'quote'])))
+    [('alice', 49, 40), ('willows', 38, 10)]
 """
 from clic.db.book import get_book_metadata
 from clic.db.corpora import corpora_to_book_ids
