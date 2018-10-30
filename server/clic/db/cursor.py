@@ -6,6 +6,8 @@ import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import LoggingConnection as BaseLoggingConnection
 
+import appconfig
+
 _pool = None
 
 logger = logging.getLogger(__name__)
@@ -30,7 +32,7 @@ class LoggingConnection(BaseLoggingConnection):
 @contextlib.contextmanager
 def get_pool_cursor():
     global _pool
-    dsn = os.environ['DB_DSN']
+    dsn = os.environ.get('DB_DSN', appconfig.DB_DSN)
     if not _pool or dsn != _pool._kwargs['dsn']:
         _pool = ThreadedConnectionPool(1, 10, dsn=dsn, connection_factory=LoggingConnection)
     conn = _pool.getconn()
@@ -46,7 +48,7 @@ def get_pool_cursor():
 @contextlib.contextmanager
 def get_script_cursor(for_write=False):
     """Return a single cursor for a short-lived script"""
-    dsn = os.environ['DB_DSN']
+    dsn = os.environ.get('DB_DSN', appconfig.DB_DSN)
     conn = psycopg2.connect(dsn, connection_factory=LoggingConnection)
     conn.initialize(logger)
     conn.set_session(readonly=not(for_write))

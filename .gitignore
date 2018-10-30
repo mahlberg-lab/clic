@@ -39,6 +39,7 @@
 /server/.cache
 /server/lib64
 /server/pyvenv.cfg
+/server/appconfig.py
 /server/booklist.json
 /server/cheshire3-server/dbs/dickens/c3.sqlite
 /server/cheshire3-server/dbs/dickens/c3.sqlite-journal

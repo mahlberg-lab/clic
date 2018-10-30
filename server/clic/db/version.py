@@ -1,5 +1,7 @@
 import os
 
+import appconfig
+
 
 def clic_version(cur):
     """
@@ -12,6 +14,6 @@ def clic_version(cur):
     out = dict(cur)
 
     # CLiC might have been upgraded since import
-    out['clic'] = os.environ.get('PROJECT_REV', 'development')
+    out['clic'] = os.environ.get('PROJECT_REV', appconfig.PROJECT_REV)
 
     return out
