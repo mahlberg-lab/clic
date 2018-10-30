@@ -28,27 +28,23 @@ def corpora(cur):
     ))
 
     out = []
+    author_book_count = {}
     for (c_id, c_title, b_id, b_title, b_author) in cur:
         if len(out) == 0 or out[-1]['id'] != 'corpus:%s' % c_id:
             out.append(dict(id='corpus:%s' % c_id, title=c_title, children=[]))
         out[-1]['children'].append(dict(id=b_id, title=b_title, author=b_author))
 
-    cur.execute("""
-        SELECT bm.content author
-             , COUNT(*) book_count
-          FROM book_metadata bm
-         WHERE bm.rclass_id IN (%(rclass_author)s)
-      GROUP BY bm.content
-    """, dict(
-        rclass_author=rclass['metadata.author'],
-    ))
+        # Add to the book count for this author
+        if b_author not in author_book_count:
+            author_book_count[b_author] = 0
+        author_book_count[b_author] += 1
 
     out.append(dict(id=None, title='All books by author', children=[]))
-    for (b_author, b_count) in cur:
+    for author in sorted(author_book_count.keys()):
         out[-1]['children'].append(dict(
-            id='author:%s' % b_author,
-            title=b_author,
-            author='%d books' % b_count,  # NB: Just doing this to get it into brackets, ew.
+            id='author:%s' % author,
+            title=author,
+            author='%d books' % author_book_count[author],  # NB: Just doing this to get it into brackets, ew.
         ))
 
     return dict(corpora=out)

@@ -82,3 +82,16 @@ class RequiresPostgresql():
             book = dict(name=book_name, content=content)
             tagger(book)
             put_book(cur, book)
+
+    def put_corpora(self, *corpus):
+        """
+        Add a list of corpora to DB
+        """
+        from clic.db.corpus import put_corpus
+
+        cur = self.pg_cur()
+
+        for i, c in enumerate(corpus):
+            c['ordering'] = c.get('ordering', i)
+            c['title'] = c.get('title', "UT corpus %s" % c['name'])
+            put_corpus(cur, c)
