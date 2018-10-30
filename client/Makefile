@@ -7,6 +7,10 @@ SHELL=/bin/bash -o pipefail
 
 OUTPUTS := index
 
+all: test lint compile
+
+include ../conf.mk
+
 OUT_FILES = \
     www/js/polyfill.min.js \
     www/js/libraries.min.js \
@@ -25,9 +29,7 @@ LIBRARIES_CSS = \
     node_modules/nouislider/distribute/nouislider.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
-all: test lint compile
-
-compile: node_modules/ clean-unused $(OUT_FILES)
+compile: node_modules/ clean-unused $(OUT_FILES) deploy/deploy.sh
 
 start: all
 
@@ -115,15 +117,15 @@ www/css/%.min.css: lib/%.css lib/*.css package.json
 	$(call sha1_symlink,css,$@,$@)
 
 www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
-    ../.local-conf \
-    ../.git/logs/HEAD \
-    ../install.sh \
+    $(PROJECT_PATH)/conf.mk \
     build/html_compile.js \
     package.json
 	set -a; \
 	    $(call sha1_envvars,$(OUT_FILES)) \
-	    NODE_PATH="$(CURDIR)" \
-	    ../install.sh --exec $(NODE) build/html_compile.js $< $@.mktmp $^
+	    NODE_PATH="$(CURDIR)" $(NODE) build/html_compile.js $< $@.mktmp $^
 	mv $@.mktmp $@
+
+deploy/deploy.sh: $(PROJECT_PATH)/conf.mk deploy/generate.sh
+	deploy/generate.sh
 
 .PHONY: compile test start lint clean clean-unused watch

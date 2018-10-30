@@ -3,6 +3,10 @@
 /cheshire3.db_dickens*.tar.bz2
 /clic.bundle
 
+/local-conf.mk
+/*/deploy/*
+!/*/deploy/generate.sh
+
 *.mktmp
 /client/coverage
 /client/doc

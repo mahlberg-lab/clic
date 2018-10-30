@@ -3,6 +3,8 @@ SHELL=/bin/bash -o pipefail
 
 all: compile test lint
 
+include ../conf.mk
+
 bin/pip:
 	python3 -m venv .
 
@@ -15,7 +17,7 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt setup.py bin/pip
 	./bin/pip freeze | grep -v egg=$(EGG_NAME) > requirements.txt
 	touch lib/.requirements
 
-compile: lib/.requirements
+compile: lib/.requirements deploy/deploy.sh
 
 test: compile
 	./bin/pytest $(EGG_NAME) tests
@@ -36,8 +38,11 @@ start: lib/.requirements # test
 	    --processes=1 --threads=1 \
 	    --enable-threads --thunder-lock \
 	    --honour-stdin \
-	    --mount /=clic.uwsgi:app \
+	    --mount /=$(EGG_NAME).uwsgi:app \
 	    --chmod-socket=666 \
-	    -s /tmp/clic_uwsgi.development.sock
+	    -s $(API_SOCKET)
+
+deploy/deploy.sh: $(PROJECT_PATH)/conf.mk deploy/generate.sh
+	deploy/generate.sh
 
 .PHONY: compile test lint coverage start
