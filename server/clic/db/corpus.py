@@ -37,3 +37,5 @@ def put_corpus(cur, corpus):
         corpus_id=corpus_id,
         book_names=tuple(corpus['contents'])
     ))
+    if cur.rowcount != len(corpus['contents']):
+        raise ValueError("Not all books in corpus exist in database %s" % corpus['contents'])
