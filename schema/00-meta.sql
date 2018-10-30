@@ -45,4 +45,5 @@ COMMIT;
 
 -- Before we begin, vacuum any existing data, creating the
 -- MATERIALISED VIEWS can be problematic otherwise.
+-- NB: This make take several minutes
 VACUUM ANALYSE;
