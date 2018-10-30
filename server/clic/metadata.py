@@ -58,15 +58,25 @@ def corpora_headlines(cur):
     - book_count: Number of books in corpus
     - word_count: Number of words in corpus
     """
+    rclass = rclass_id_lookup(cur)
+
     cur.execute("""
         SELECT c.name
              , c.title
              , COUNT(*) book_count
-             , (SELECT SUM(word_count) FROM book_word_count bwc WHERE rclass_id = 301) word_count
+             , SUM((
+                 SELECT SUM(word_count)
+                   FROM book_word_count bwc
+                  WHERE bwc.book_id = cb.book_id
+                    AND rclass_id = %(ch_text)s
+               ))::INT word_count
           FROM corpus c, corpus_book cb
          WHERE c.corpus_id = cb.corpus_id
       GROUP BY c.corpus_id
-    """)
+      ORDER BY c.ordering, c.title
+    """, dict(
+        ch_text=rclass['chapter.text'],
+    ))
 
     out = []
     for (c_id, c_title, book_count, word_count) in cur:

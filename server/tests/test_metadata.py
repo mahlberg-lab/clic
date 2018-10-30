@@ -83,16 +83,49 @@ It was an iron bar
         ]))
 
 
-# TODO: Skip the lot
-class Skip_corpora_headlines(unittest.TestCase):
-    def skip_call(self):
+class Test_corpora_headlines(RequiresPostgresql, unittest.TestCase):
+    maxDiff = None
+
+    def test_call(self):
         """
-        get_corpus_structure should return just corpus level detail
+        corpora/headlines should return counts for all corpuses
         """
-        out = corpora_headlines("ClicDb()")
-        self.assertEqual(
-            [x['id'] for x in out],
-            [u'dickens', u'ntc', u'ChiLit', u'Other'],
+        self.put_books(
+            ut_corpora_1="""
+The book ut_corpora_1
+Bob Book
+
+A man walked into a bar.
+            """.strip(),
+            ut_corpora_2="""
+The book ut_corpora_2
+Bob Book
+
+"Ouch!", he said.
+            """.strip(),
+            ut_corpora_3="""
+The book ut_corpora_3
+Jane Journal
+
+It was an iron bar
+            """.strip(),
         )
-        for x in out:
-            self.assertEqual(x.keys(), ['title', 'id', 'word_count', 'book_count'])
+        self.put_corpora(
+            dict(name="zcorp", contents=['ut_corpora_3', 'ut_corpora_2']),
+            dict(name="acorp", contents=['ut_corpora_1']),
+        )
+        out = corpora_headlines(self.pg_cur())
+        self.assertEqual(out, dict(data=[
+            {
+                "id": "zcorp",
+                "title": "UT corpus zcorp",
+                "book_count": 2,
+                "word_count": 8,
+            },
+            {
+                "id": "acorp",
+                "title": "UT corpus acorp",
+                "book_count": 1,
+                "word_count": 6,
+            },
+        ]))
