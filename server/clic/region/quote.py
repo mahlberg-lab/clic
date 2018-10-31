@@ -55,6 +55,18 @@ Quotes should either be at least 5 words long::
      ('quote.quote', 155, 179, '"Billy Bones his fancy,"'),
      ('quote.nonquote', 180, 233, 'were very neatly\\nand...uted on the forearm.')]
 
+Plural possessives are explicitly not counted as quotes::
+
+    >>> [x for x in run_tagger('''
+    ... or two, which he had always lost after a few days’ friendship, felt as if
+    ... always very near at hand.
+    ...
+    ... After a few days' friendship, he said 'can I borrow your lawnmower?'
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.nonquote', 0, 99, 'or two, which he had...s very near at hand.'),
+     ('quote.nonquote', 101, 138, "After a few days' friendship, he said"),
+     ('quote.quote', 139, 169, "'can I borrow your lawnmower?'")]
+
 Quotes that spread across paragraphs are broken into separate paragraph chunks::
 
     >>> [x for x in run_tagger('''
@@ -191,9 +203,13 @@ def tagger_quote_quote(book):
             elif open_quote and bi.getRuleStatus() > 0:
                 quote_word_count += 1
             elif not open_quote and word in QUOTES:
-                # Not in an open quote and found one
-                open_quote = (QUOTES[word], last_b)
-                quote_word_count = 0
+                if re.fullmatch(r"s[’']", book['content'][last_b - 1:b]):
+                    # Plural posessive, ignore it.
+                    pass
+                else:
+                    # Not in an open quote and found one
+                    open_quote = (QUOTES[word], last_b)
+                    quote_word_count = 0
             last_b = b
 
 
