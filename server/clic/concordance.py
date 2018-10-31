@@ -223,65 +223,66 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         raise UserError("You must supply at least one search term", "error")
     contextsize = int(contextsize[0])
     metadata = set(metadata)
-    book_cur = cur.connection.cursor()
     book = None
 
-    for likes in like_sets:
-        # Choose an "anchor". We search for this first to narrow the possible
-        # outputs as much as possible, then consider the types around each.
-        anchor_offset = max(enumerate(likes), key=lambda l: len(l[1]))[0]
+    book_cur = cur.connection.cursor()
+    try:
+        for likes in like_sets:
+            # Choose an "anchor". We search for this first to narrow the possible
+            # outputs as much as possible, then consider the types around each.
+            anchor_offset = max(enumerate(likes), key=lambda l: len(l[1]))[0]
 
-        query = ""
-        params = dict()
-        query += """
-             SELECT t.book_id
-                  , c.node_start - 1 node_start -- NB: Postgres is 1-indexed
-                  , c.cranges full_tokens
-                  , t.part_of
-               FROM token t
-               -- i.e. for each valid anchor token, get all tokens around it, including context
-               JOIN LATERAL token_get_surrounding( t.book_id
-                                                 , %(part_of)s
-                                                 , t.ordering
-                                                 , %(anchor_offset)s
-                                                 , %(total_likes)s
-                                                 , %(contextsize)s
-                                                 ) c ON TRUE
-             WHERE t.book_id IN %(book_ids)s
-               AND t.part_of ? %(part_of)s
-        """
-        params['anchor_offset'] = anchor_offset
-        params['anchor_like'] = likes[anchor_offset]
-        params['book_ids'] = book_ids
-        params['contextsize'] = contextsize
-        params['total_likes'] = len(likes)
-        params['part_of'] = str(rclass_ids[0])
+            query = ""
+            params = dict()
+            query += """
+                 SELECT t.book_id
+                      , c.node_start - 1 node_start -- NB: Postgres is 1-indexed
+                      , c.cranges full_tokens
+                      , t.part_of
+                   FROM token t
+                   -- i.e. for each valid anchor token, get all tokens around it, including context
+                   JOIN LATERAL token_get_surrounding( t.book_id
+                                                     , %(part_of)s
+                                                     , t.ordering
+                                                     , %(anchor_offset)s
+                                                     , %(total_likes)s
+                                                     , %(contextsize)s
+                                                     ) c ON TRUE
+                 WHERE t.book_id IN %(book_ids)s
+                   AND t.part_of ? %(part_of)s
+            """
+            params['anchor_offset'] = anchor_offset
+            params['anchor_like'] = likes[anchor_offset]
+            params['book_ids'] = book_ids
+            params['contextsize'] = contextsize
+            params['total_likes'] = len(likes)
+            params['part_of'] = str(rclass_ids[0])
 
-        for i, l in enumerate(likes):
-            if i == anchor_offset:
-                # We should check the main token table for the anchor node, so
-                # postgres searches for this first
-                query += "AND t.ttype LIKE %(like_" + str(i) + ")s\n"
-            else:
-                query += "AND c.ttypes[c.node_start + " + str(i) + "] LIKE %(like_" + str(i) + ")s\n"
-            params["like_" + str(i)] = l
+            for i, l in enumerate(likes):
+                if i == anchor_offset:
+                    # We should check the main token table for the anchor node, so
+                    # postgres searches for this first
+                    query += "AND t.ttype LIKE %(like_" + str(i) + ")s\n"
+                else:
+                    query += "AND c.ttypes[c.node_start + " + str(i) + "] LIKE %(like_" + str(i) + ")s\n"
+                params["like_" + str(i)] = l
 
-        cur.execute(query, params)
-        for book_id, node_start, full_tokens, part_of in cur:
-            # Extract portion of tokens that are the node
-            node_tokens = full_tokens[node_start:node_start + len(likes)]
-            if not book or book['id'] != book_id:
-                book = get_book(book_cur, book_id, content=True)
-            yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
-                [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
-                [
-                    int(part_of[str(rclass['chapter.text'])]),
-                    int(part_of[str(rclass['chapter.paragraph'])]),
-                    int(part_of[str(rclass['chapter.sentence'])]),
+            cur.execute(query, params)
+            for book_id, node_start, full_tokens, part_of in cur:
+                # Extract portion of tokens that are the node
+                node_tokens = full_tokens[node_start:node_start + len(likes)]
+                if not book or book['id'] != book_id:
+                    book = get_book(book_cur, book_id, content=True)
+                yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
+                    [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
+                    [
+                        int(part_of[str(rclass['chapter.text'])]),
+                        int(part_of[str(rclass['chapter.paragraph'])]),
+                        int(part_of[str(rclass['chapter.sentence'])]),
+                    ]
                 ]
-            ]
-
-    book_cur.close()
+    finally:
+        book_cur.close()
 
     footer = get_book_metadata(cur, book_ids, metadata)
     if footer:
