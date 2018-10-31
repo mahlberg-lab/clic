@@ -102,6 +102,7 @@ def script_import_corpora_repo():
     from ..db.book import put_book
     from ..db.corpus import put_corpus
     from ..db.cursor import get_script_cursor
+    from ..db.version import update_version
     from ..region.tag import tagger
 
     # Every argument is a book path, so e.g. "*/*.txt" works
@@ -122,3 +123,11 @@ def script_import_corpora_repo():
             start_time = timeit.default_timer()
             put_corpus(cur, c)
             print("%.2f secs" % (timeit.default_timer() - start_time))
+
+        if len(book_paths) > 0:
+            # Update DB versions to match current CLiC & corpora repo.
+            # NB: This is a bit broken, since we might not have imported the whole
+            # repo, however insisting that you import the whole repo isn't feasible
+            # and not much else to do currently.
+            update_version(cur, 'clic:import')
+            update_version(cur, 'corpora', os.path.dirname(book_paths[0]))

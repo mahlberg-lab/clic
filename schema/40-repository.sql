@@ -2,11 +2,9 @@ BEGIN;
 
 
 CREATE TABLE IF NOT EXISTS repository (
-    repository_id SERIAL,
-    PRIMARY KEY (repository_id),
-    
-    name TEXT NOT NULL,
-    UNIQUE(name),
+    name TEXT,
+    PRIMARY KEY (name),
+
     version TEXT NOT NULL
 );
 COMMENT ON TABLE  repository IS 'Versions of repository stored';
