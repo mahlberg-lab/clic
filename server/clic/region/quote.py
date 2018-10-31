@@ -161,7 +161,6 @@ def tagger_quote_quote(book):
             if b > containing_r[1]:
                 # Outside the chapter now, so stop
                 if open_quote:
-                    # TODO: Is there any filtering worth doing?
                     region_append_without_whitespace(book, 'quote.quote', open_quote[1], b)
                 break
             word = book['content'][last_b:b]
