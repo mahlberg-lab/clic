@@ -129,7 +129,7 @@ import re
 import icu
 
 from ..icuconfig import DEFAULT_LOCALE
-from .utils import region_append_without_whitespace
+from .utils import region_append_without_whitespace, regions_invert
 
 
 QUOTES = {
@@ -138,21 +138,6 @@ QUOTES = {
     '"': '"',  # Double universal.
     "'": "'",  # Single universal.
 }
-
-
-def regions_invert(rlist, full_length=None):
-    """Given a list of regions, return the inverse. If full_length not given, ignore first and last extremities"""
-    last_b = None
-    for r in rlist:
-        b = r[0]
-        if last_b is None:
-            if full_length:
-                yield (0, b)
-        else:
-            yield (last_b, b)
-        last_b = r[1]
-    if full_length:
-        yield (last_b, full_length)
 
 
 def tagger_quote_quote(book):
