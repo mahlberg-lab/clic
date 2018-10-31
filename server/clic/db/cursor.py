@@ -1,6 +1,7 @@
 import contextlib
 import os
 import logging
+import threading
 
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
@@ -9,6 +10,7 @@ from psycopg2.extras import LoggingConnection as BaseLoggingConnection
 import appconfig
 
 _pool = None
+_pool_lock = threading.Lock()
 
 logger = logging.getLogger(__name__)
 explain_logger = logging.getLogger(__name__ + '.explain')
@@ -32,9 +34,19 @@ class LoggingConnection(BaseLoggingConnection):
 @contextlib.contextmanager
 def get_pool_cursor():
     global _pool
-    dsn = os.environ.get('DB_DSN', appconfig.DB_DSN)
-    if not _pool or dsn != _pool._kwargs['dsn']:
-        _pool = ThreadedConnectionPool(1, 10, dsn=dsn, connection_factory=LoggingConnection)
+
+    if _pool is None:
+        # Connection pool not ready yet, create. pool_lock prevents
+        # multiple threads trying to do this at the same time.
+        with _pool_lock:
+            if _pool is None:
+                _pool = ThreadedConnectionPool(
+                    minconn=1,
+                    maxconn=10,
+                    dsn=os.environ.get('DB_DSN', appconfig.DB_DSN),
+                    connection_factory=LoggingConnection
+                )
+
     conn = _pool.getconn()
     try:
         conn.initialize(logger)
