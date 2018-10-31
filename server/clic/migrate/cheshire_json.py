@@ -41,8 +41,6 @@ def xml_to_plaintext(xml_string, offset):
     out_string = ""
     out_regions = []
     unclosed_regions = {}
-    count_sentence = 1
-    count_paragraph = 1
 
     def open_region(rclass, rvalue=None):
         if rclass in unclosed_regions:
@@ -67,8 +65,7 @@ def xml_to_plaintext(xml_string, offset):
             if 'chapter.sentence' in unclosed_regions:
                 close_region('chapter.sentence')
         elif part.startswith('span class="s"'):
-            open_region('chapter.sentence', count_sentence)
-            count_sentence += 1
+            raise NotImplementedError("This form isn't actually used")
 
         # Ignore cheshire3's tokenisation
         elif part == '/w':
@@ -80,8 +77,7 @@ def xml_to_plaintext(xml_string, offset):
             close_region('chapter.sentence')
             out_string = out_string + " "
         elif part.startswith('s sid='):
-            open_region('chapter.sentence', count_paragraph)
-            count_paragraph += 1
+            open_region('chapter.sentence', re.search(r' sid="(\d+)"', part).group(1))
 
         elif part == 'txt' or part == '/txt':
             continue  # Ignore, don't add txt to document
@@ -129,8 +125,7 @@ def xml_to_plaintext(xml_string, offset):
             close_region('ignore.italics')
 
         elif part.startswith('p '):
-            open_region('chapter.paragraph', count_paragraph)
-            count_paragraph += 1
+            open_region('chapter.paragraph', re.search(r' pid="(\d+)"', part).group(1))
         elif part == '/p':
             close_region('chapter.paragraph')
 
