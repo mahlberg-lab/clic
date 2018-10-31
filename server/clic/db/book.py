@@ -175,7 +175,6 @@ def get_book_metadata(cur, book_ids, metadata):
 
         elif k.startswith('word_count_'):
             api_subset = api_subset_lookup(cur)
-            # TODO: word_count_quote not quite matching old CLiC (too high). Why?
             cur.execute("""
                 SELECT b.name
                      , SUM(bwc.word_count) AS word_count
