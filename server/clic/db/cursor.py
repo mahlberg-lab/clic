@@ -31,8 +31,11 @@ class LoggingConnection(BaseLoggingConnection):
         return msg
 
 
-@contextlib.contextmanager
 def get_pool_cursor():
+    """
+    Returns a cursor pointing at a DB connection from our pool. You should call
+    put_pool_cursor() to put it back again when done.
+    """
     global _pool
 
     if _pool is None:
@@ -48,13 +51,20 @@ def get_pool_cursor():
                 )
 
     conn = _pool.getconn()
-    try:
-        conn.initialize(logger)
-        yield conn.cursor()
-        conn.commit()
-    finally:
-        conn.rollback()
-        _pool.putconn(conn)
+    conn.initialize(logger)
+    conn.set_session(readonly=True)
+    return conn.cursor()
+
+
+def put_pool_cursor(cur):
+    """
+    Closes (cur) and returns it's associated connection back to the pool
+    """
+    conn = cur.connection
+    # NB: We don't support writing to DB within connection pools, so just rollback
+    conn.rollback()
+    cur.close()
+    _pool.putconn(conn)
 
 
 @contextlib.contextmanager

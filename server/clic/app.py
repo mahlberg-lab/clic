@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, Response, jsonify, g, stream_with_context
 from flask_cors import CORS
 
 import clic.concordance
@@ -8,7 +8,7 @@ import clic.metadata
 import clic.keyword
 import clic.subset
 import clic.text
-from clic.db.cursor import get_pool_cursor
+from clic.db.cursor import get_pool_cursor, put_pool_cursor
 from clic.db.version import clic_version
 from clic.stream_json import stream_json, format_error, JSONEncoder
 
@@ -43,6 +43,16 @@ def create_app(config=None, app_name=None):
     # from werkzeug.contrib.profiler import ProfilerMiddleware
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
+    @app.before_request
+    def get_cursor():
+        # Fetch a DB cursor for this request
+        g.cur = get_pool_cursor()
+
+    @app.teardown_request
+    def put_cursor(request):
+        # Put it back again, regardless of result
+        put_pool_cursor(g.cur)
+
     @app.after_request
     def add_header(response):
         # Everything can be cached for up to an hour
@@ -74,28 +84,26 @@ def to_view_func(fn, output_mode):
     - json: Function call returns a dict suitable for jsonify()
     """
     def stream_view_func():
-        with get_pool_cursor() as cur:
-            header = dict(version=clic_version(cur))
-            out = fn(cur, **request.args)
-            return Response(
-                stream_json(out, header, cls=JSONEncoder),
-                content_type='application/json',
-            )
+        header = dict(version=clic_version(g.cur))
+        out = fn(g.cur, **request.args)
+        return Response(
+            # NB: We need stream_with_context() to make sure the database stays open
+            stream_with_context(stream_json(out, header, cls=JSONEncoder)),
+            content_type='application/json',
+        )
     if output_mode == 'stream':
         view_func = stream_view_func
 
     def json_view_func():
-        with get_pool_cursor() as cur:
-            out = fn(cur, **request.args)
-            out['version'] = clic_version(cur)
-            return jsonify(out)
+        out = fn(g.cur, **request.args)
+        out['version'] = clic_version(g.cur)
+        return jsonify(out)
     if output_mode == 'json':
         view_func = json_view_func
 
     def raw_view_func():
-        with get_pool_cursor() as cur:
-            out = fn(cur, **request.args)
-            return Response(**out)
+        out = fn(g.cur, **request.args)
+        return Response(**out)
     if output_mode == 'raw':
         view_func = raw_view_func
 
