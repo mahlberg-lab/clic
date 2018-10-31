@@ -65,6 +65,41 @@ It's possible to not have any chapters too::
     ... '''.strip(), tagger_metadata, tagger_chapter_title, tagger_chapter_text)
     [('chapter.text', 0, 63, 0, 'Here is some text, w...s not very exciting.')]
 
+Paragraph / sentence counts reset at the start of the new chapter.
+
+    >>> [x for x in run_tagger('''
+    ... Initial text is the zero'th chapter. Second sentence.
+    ...
+    ... INTRODUCTION.
+    ...
+    ... First chapter, first sentence. Second sentence. Third sentence.
+    ...
+    ... Second paragraph, fourth sentence. Fifth!
+    ...
+    ... CHAPTER I. The first chapter
+    ...
+    ... First chapter, first sentence. Second sentence. Third.
+    ...
+    ... Second paragraph, fourth sentence. Fifth!
+    ... '''.strip(), tagger_metadata, tagger_chapter) if x[0] in ['chapter.paragraph', 'chapter.sentence']]
+    [('chapter.paragraph', 0, 53, 1, 'Initial text is the ...er. Second sentence.'),
+     ('chapter.sentence', 0, 36, 1, "Initial text is the zero'th chapter."),
+     ('chapter.sentence', 37, 53, 2, 'Second sentence.'),
+     ('chapter.paragraph', 70, 133, 1, 'First chapter, first...nce. Third sentence.'),
+     ('chapter.sentence', 70, 100, 1, 'First chapter, first sentence.'),
+     ('chapter.sentence', 101, 117, 2, 'Second sentence.'),
+     ('chapter.sentence', 118, 133, 3, 'Third sentence.'),
+     ('chapter.paragraph', 135, 176, 2, 'Second paragraph, fo...rth sentence. Fifth!'),
+     ('chapter.sentence', 135, 169, 4, 'Second paragraph, fourth sentence.'),
+     ('chapter.sentence', 170, 176, 5, 'Fifth!'),
+     ('chapter.paragraph', 208, 262, 1, 'First chapter, first...ond sentence. Third.'),
+     ('chapter.sentence', 208, 238, 1, 'First chapter, first sentence.'),
+     ('chapter.sentence', 239, 255, 2, 'Second sentence.'),
+     ('chapter.sentence', 256, 262, 3, 'Third.'),
+     ('chapter.paragraph', 264, 305, 2, 'Second paragraph, fo...rth sentence. Fifth!'),
+     ('chapter.sentence', 264, 298, 4, 'Second paragraph, fourth sentence.'),
+     ('chapter.sentence', 299, 305, 5, 'Fifth!')]
+
 chapter.paragraph / chapter.sentence regions
 --------------------------------------------
 
@@ -131,8 +166,8 @@ def tagger_chapter_part(book):
     if len(book.get('chapter.part', [])) > 0:
         return  # Nothing to do
     book['chapter.part'] = [
-        (m.span(), m.group(1))
-        for m in re.finditer(PART_BREAK_REGEX, book['content'])
+        m.span() + (i + 1,)
+        for i, m in enumerate(re.finditer(PART_BREAK_REGEX, book['content']))
     ]
 
 
@@ -174,14 +209,16 @@ def tagger_chapter_paragraph(book):
     book['chapter.paragraph'] = []
     for containing_r in book['chapter.text']:
         last_b = containing_r[0]
+        i = 1
         for m in PARAGRAPH_BREAK_REGEX.finditer(book['content'], containing_r[0], containing_r[1]):
             b = m.start()
-            region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, len(book['chapter.paragraph']) + 1)
+            region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, i)
             last_b = b
+            i += 1
 
         # Mark anything remaining as a paragraph too
         b = containing_r[1]
-        region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, len(book['chapter.paragraph']) + 1)
+        region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, i)
 
 
 def tagger_chapter_sentence(book):
@@ -194,8 +231,9 @@ def tagger_chapter_sentence(book):
     bi.setText(book['content'])
 
     book['chapter.sentence'] = []
-    for containing_r in book['chapter.paragraph']:
+    for containing_r in book['chapter.text']:
         last_b = containing_r[0]
+        i = 1
 
         # Get all sentence breaks after containing_r[0]
         bi.following(containing_r[0] - 1)
@@ -203,16 +241,16 @@ def tagger_chapter_sentence(book):
             if b > containing_r[1]:
                 # Outside the chapter now, so stop
                 break
-            if book['content'][b - 1] in set(('\n', '\r')):
-                # Unicode treat newlines as sentence breaks, ignore them.
+            if book['content'][b - 1] in set(('\n', '\r')) and book['content'][b] not in set(('\n', '\r')):
+                # Unicode treat newlines as sentence breaks, ignore them (unless it's a paragraph break)
                 continue
-            # TODO: This isn't a sentence-within-chapter count
-            region_append_without_whitespace(book, 'chapter.sentence', last_b, b, len(book['chapter.sentence']) + 1)
+            region_append_without_whitespace(book, 'chapter.sentence', last_b, b, i)
             last_b = b
+            i += 1
 
         # Mark anything remaining as a sentence too
         b = containing_r[1]
-        region_append_without_whitespace(book, 'chapter.sentence', last_b, b, len(book['chapter.sentence']) + 1)
+        region_append_without_whitespace(book, 'chapter.sentence', last_b, b, i)
 
 
 def tagger_chapter(book):
