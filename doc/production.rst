@@ -34,3 +34,28 @@ If you see the "CLiC is down for maintenance" page:
 If you see errors about missing tables, or queries are particularly slow:
 
 * Postgres may need vacuuming. Run ``sudo -upostgres psql -c "VACUUM ANALYSE" bham_clic_db``.
+
+Back-up / generating dumps
+--------------------------
+
+An import process from the raw text files can take some time.
+Instead, it can be more efficent to dump/restore a database from another CLiC
+instance.
+
+Dump the database with the following::
+
+    ./schema/deploy/db_dump clic.dump
+    sudo -upostgres pg_dump --format=c --no-owner clic_db > clic.dump
+
+Restore with the following. NB: **this will destroy all existing data**::
+
+    ./schema/deploy/db_restore clic.dump
+    sudo -upostgres pg_dump --format=c --no-owner clic_db > clic.dump
+
+If you do not want to destroy the existing database, you could set a new database name in ``local-conf.mk``::
+
+    echo "DB_NAME = my_new_clic_database" >> local-conf.mk
+
+...and then re-run ``make`` before restoring.
+
+There are server options to speed up the restore, see `this blog post <http://www.databasesoup.com/2014/09/settings-for-fast-pgrestore.html>`__.
