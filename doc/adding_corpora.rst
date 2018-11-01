@@ -1,44 +1,33 @@
 Uploading new texts
 ===================
 
-The raw texts for CLiC to process are assumed to be in the corpora repository.
-If not already, add the texts to the repository here:
+The raw texts for CLiC to process are assumed to be in the corpora repository:
+
     https://github.com/birmingham-ccr/corpora
 
-Next you need to have CLiC installed on a separate server. Running the import
-process on the live server will stop live CLiC working. Install as per the
-README, including all current data.
+If you haven't done so already, add the texts to this repository, following the instructions there.
 
-The first stage of the process is in the ``annotation`` directory, which
-contains scripts that turn copies of the texts from the corpora repository into
-XML.  For example, to convert the ChiLit texts::
+For each new book, first check the region annotation using, for example::
 
-    git clone git@github.com:birmingham-ccr/corpora.git corpora
-    git clone git@github.com:birmingham-ccr/annotationOutput.git annotationOutput
-    # Edit server/cheshire3-server/dbs/dickens/extra_data.json to include any new corpus
-    # titles
-    cd annotation
-    virtualenv .
-    ./bin/pip install -r requirements.txt
-    ./annotate.sh ../corpora/ChiLit ./annotationOutput/ChiLit
+    ./server/bin/region_preview corpora/ChiLit/alone.txt
 
-This process will take some time, but eventually will create XML output for
-each file, as well as intermediate output for investigation. You can start a
-web server to look at the output texts:
+This will show the text file with all regions marked up with different colours.
+Inspect the output to see if regions are marked up correctly by default. If the scripts have made mistakes, you have 2 options:
 
-    python -m SimpleHTTPServer
+* Fix any systematic problems in the region taggers in ``server/clic/region``
+* Export the tagged regions to a ``*.regions.csv`` file, which will override the tagger.
 
-...and go to http://localhost:8000/annotationOutput/ There is a ``styles.css``
-that the web browser will use to format the output.
+Once you are happy with the output, it needs to be imported into the CLiC database.
+Do not perform the following on a live CLiC server, as CLiC will not be available during the process.
+Instead, follow the instructions on dumping / restoring a database in `production.rst <production.rst>`__.
 
-Once you have pushed the changes to annotation output, you can view changes here:
-https://birmingham-ccr.github.io/annotationOutput/
+``import_corpora_repo`` will import all given texts into the database.
+Ideally (re-)import the entire corpora repository with::
 
-Once this has finished and you have confirmed the process worked, you can
-ingest the XML output into CLiC. Stop any running CLiC processes and run the
-following script::
+    ./server/bin/import_corpora_repo corpora/*/*.txt
 
-    ./server/bin/store_documents annotationOutput/ChiLit/final/
+...however this takes some time. It is also possible to import individual books::
 
-Restart CLiC, and you should find the new corpora available. Follow the
-instructions to upload the cheshire3 content to the live server.
+    ./server/bin/import_corpora_repo corpora/ChiLit/alone.txt
+
+Restart CLiC with ``./install.sh`` to ensure that caches are flushed.

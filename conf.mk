@@ -17,6 +17,7 @@ endif
 ###################
 # Configuration options for serving client
 
+# NGINX's service_name. Multiple space-separated values are allowed
 WWW_SERVICE_NAME ?= $(PROJECT_NAME)
 WWW_SERVER_NAME ?= $(shell hostname --fqdn)
 ifeq ($(PROJECT_MODE),development)
