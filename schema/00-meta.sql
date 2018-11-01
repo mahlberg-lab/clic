@@ -16,31 +16,6 @@ $BODY$
 $BODY$ LANGUAGE sql;
 
 
--- Disable indexes (for updates)
-CREATE OR REPLACE FUNCTION index_disable(tbl UNKNOWN) RETURNS VOID AS
-$BODY$
-    UPDATE pg_index
-       SET indisready = false
-     WHERE indrelid = (
-        SELECT oid
-          FROM pg_class
-         WHERE relname = tbl::TEXT)
-$BODY$ LANGUAGE sql SECURITY DEFINER;
-
--- Re-enable indexes, and re-index table
-CREATE OR REPLACE FUNCTION index_enable(tbl UNKNOWN) RETURNS VOID AS $$
-BEGIN
-    UPDATE pg_index
-       SET indisready = true
-     WHERE indrelid = (
-        SELECT oid
-          FROM pg_class
-         WHERE relname = tbl::TEXT);
-    EXECUTE FORMAT('REINDEX TABLE %1s', tbl);
-END;
-$$ LANGUAGE 'plpgsql' SECURITY DEFINER;
-
-
 COMMIT;
 
 -- Before we begin, vacuum any existing data, creating the
