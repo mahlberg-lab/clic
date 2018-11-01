@@ -135,6 +135,20 @@ rules, apart from breaking at the end of lines::
      ('chapter.paragraph', 355, 549, 3, '“That is Schloss Adl...lf could save thee.”'),
      ('chapter.sentence', 355, 505, 9, '“That is Schloss Adl...t a fool of\\nthyself.'),
      ('chapter.sentence', 507, 549, 10, 'If so, not Satan him...lf could save thee.”')]
+
+By default, unicode sentence breaks would occur at the end of lines without any
+punctuation. Instead, we ignore end of lines unless they would be a sentence
+break anyway::
+
+    >>> [x for x in run_tagger('''
+    ... modest-looking little shop-window, containing a few newspapers, some
+    ... Rather yellow packets of stationery, and two or three books of ballads.
+    ... Above the door was painted in very small, dingy letters, the words,
+    ... "James Oliver, News Agent."
+    ... '''.strip(), tagger_metadata, tagger_chapter) if x[0] in ('chapter.paragraph', 'chapter.sentence')]
+    [('chapter.paragraph', 0, 236, 1, 'modest-looking littl...Oliver, News Agent."'),
+     ('chapter.sentence', 0, 140, 1, 'modest-looking littl...ee books of ballads.'),
+     ('chapter.sentence', 141, 236, 2, 'Above the door was p...Oliver, News Agent."')]
 """
 import re
 
@@ -228,22 +242,19 @@ def tagger_chapter_sentence(book):
 
     # Create a sentence iterator for this book
     bi = icu.BreakIterator.createSentenceInstance(DEFAULT_LOCALE)
-    bi.setText(book['content'])
+    bi.setText(re.sub(r'\n(?!\n)', ' ', book['content']))  # Turn single newlines into spaces, so ICU ignores them.
 
     book['chapter.sentence'] = []
     for containing_r in book['chapter.text']:
         last_b = containing_r[0]
         i = 1
 
-        # Get all sentence breaks after containing_r[0]
-        bi.following(containing_r[0] - 1)
+        # Move iterator to break that starts chapter (or before), next break will be within
+        bi.preceding(containing_r[0] + 1)
         for b in bi:
             if b > containing_r[1]:
                 # Outside the chapter now, so stop
                 break
-            if book['content'][b - 1] in set(('\n', '\r')) and book['content'][b] not in set(('\n', '\r')):
-                # Unicode treat newlines as sentence breaks, ignore them (unless it's a paragraph break)
-                continue
             region_append_without_whitespace(book, 'chapter.sentence', last_b, b, i)
             last_b = b
             i += 1
