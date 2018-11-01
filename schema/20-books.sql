@@ -184,7 +184,11 @@ BEGIN
           WHERE b.book_id = r.book_id
             AND b.book_id = new_book_id
             AND r.rclass_id = rc.rclass_id
-            AND rc.name IN ('metadata.title', 'metadata.author', 'chapter.title');
+            AND rc.name IN (
+                    'metadata.title',
+                    'metadata.author',
+                    'chapter.title',
+                    'chapter.part');
     INSERT INTO book_word_count (book_id, rclass_id, rvalue, word_count)
          SELECT r.book_id,
                 r.rclass_id,
