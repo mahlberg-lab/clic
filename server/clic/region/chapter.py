@@ -226,9 +226,9 @@ def tagger_chapter_paragraph(book):
         i = 1
         for m in PARAGRAPH_BREAK_REGEX.finditer(book['content'], containing_r[0], containing_r[1]):
             b = m.start()
-            region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, i)
+            if region_append_without_whitespace(book, 'chapter.paragraph', last_b, b, i):
+                i += 1
             last_b = b
-            i += 1
 
         # Mark anything remaining as a paragraph too
         b = containing_r[1]
@@ -255,9 +255,9 @@ def tagger_chapter_sentence(book):
             if b > containing_r[1]:
                 # Outside the chapter now, so stop
                 break
-            region_append_without_whitespace(book, 'chapter.sentence', last_b, b, i)
+            if region_append_without_whitespace(book, 'chapter.sentence', last_b, b, i):
+                i += 1
             last_b = b
-            i += 1
 
         # Mark anything remaining as a sentence too
         b = containing_r[1]

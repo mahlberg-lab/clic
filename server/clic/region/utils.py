@@ -2,6 +2,8 @@ def region_append_without_whitespace(book, rclass, start, end, *extra):
     """
     Shrink the region (start, end) until there is no whitespace either end of
     the region. Then if it is non-zero, append the region to (rclass)
+
+    Return true iff a region is added.
     """
     if start is None:
         return
@@ -25,6 +27,8 @@ def region_append_without_whitespace(book, rclass, start, end, *extra):
         if rclass not in book:
             book[rclass] = []
         book[rclass].append((start, end) + extra)
+        return True
+    return False
 
 
 def regions_invert(rlist, full_length=None):
