@@ -1,8 +1,3 @@
-/.local-conf
-/clic_revision
-/cheshire3.db_dickens*.tar.bz2
-/clic.bundle
-
 /local-conf.mk
 /*/deploy/*
 !/*/deploy/generate.sh
@@ -27,6 +22,7 @@
 /client/www/js/lib-ace
 /client/www/js/node_modules
 /client/www/*.html
+/uwsgi_cache
 
 *.pyc
 /server/clic.egg-info/
@@ -40,18 +36,16 @@
 /server/lib64
 /server/pyvenv.cfg
 /server/appconfig.py
-/server/booklist.json
-/server/cheshire3-server/dbs/dickens/c3.sqlite
-/server/cheshire3-server/dbs/dickens/c3.sqlite-journal
-/server/cheshire3-server/dbs/dickens/extra_data.json
-/server/cheshire3-server/dbs/dickens/indexes/*
-/server/cheshire3-server/dbs/dickens/logs/*
-/server/cheshire3-server/dbs/dickens/stores/*
-/server/cheshire3-server/dbs/dickens/images/
-/server/clic-chapter-cache.pickle
 
+# Old files that shouldn't exist
+/.local-conf
 /cheshire3.db_dickens.tar.bz2
-
-/clic.dump
+/cheshire3.db_dickens*.tar.bz2
+/clic.bundle
+/clic_revision
+/server/cheshire3-server
+/server/clic-chapter-cache.pickle
+/server/booklist.json
 
 /corpora/
+/clic.dump
