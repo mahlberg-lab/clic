@@ -2,6 +2,7 @@ set -eu
 DEPLOY_DIR="$(dirname $(readlink -f $0))"
 
 API_UWSGI_CACHE_PATH="${PROJECT_PATH}/uwsgi_cache"
+WWW_UWSGI_CACHE_KEY="\$uri?\$args?\$upstream_http_x_version_clic?\$upstream_http_x_version_corpora"
 
 # Configure measurement protocol endpoint
 GA_API_URL="http://google-analytics.com/collect?v=1&t=pageview&tid=${GA_KEY-}"
@@ -88,9 +89,12 @@ Disallow: /api/
 
         # All API results are deterministic, cache them
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
-        uwsgi_cache_key \$uri?\$args;
+        uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
         uwsgi_cache_valid 200 302;
         expires ${WWW_UWSGI_API_CACHE_TIME};
+
+        add_header X-Uwsgi-Cache-Key "${WWW_UWSGI_CACHE_KEY}";
+        add_header X-Uwsgi-Cached "\$upstream_cache_status";
 
         ${GA_API_ACTION}
     }

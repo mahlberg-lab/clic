@@ -129,5 +129,5 @@ def script_import_corpora_repo():
             # NB: This is a bit broken, since we might not have imported the whole
             # repo, however insisting that you import the whole repo isn't feasible
             # and not much else to do currently.
-            update_version(cur, 'clic:import')
+            update_version(cur, 'clic-import')
             update_version(cur, 'corpora', os.path.dirname(book_paths[0]))

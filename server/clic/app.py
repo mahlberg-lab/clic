@@ -47,6 +47,7 @@ def create_app(config=None, app_name=None):
     def get_cursor():
         # Fetch a DB cursor for this request
         g.cur = get_pool_cursor()
+        g.clic_versions = clic_version(g.cur)
 
     @app.teardown_request
     def put_cursor(request):
@@ -58,6 +59,13 @@ def create_app(config=None, app_name=None):
         # Everything can be cached for up to an hour
         response.cache_control.max_age = 3600
         response.cache_control.public = True
+        response.vary.add('Accept-Encoding')
+
+        # Add CLiC version headers, tell the browser to vary based on them
+        for k, v in g.clic_versions.items():
+            k = 'X-Version-%s' % k.title()
+            response.headers[k] = v
+            response.vary.add(k)
         return response
 
     @app.errorhandler(404)
@@ -84,11 +92,10 @@ def to_view_func(fn, output_mode):
     - json: Function call returns a dict suitable for jsonify()
     """
     def stream_view_func():
-        header = dict(version=clic_version(g.cur))
         out = fn(g.cur, **request.args)
         return Response(
             # NB: We need stream_with_context() to make sure the database stays open
-            stream_with_context(stream_json(out, header, cls=JSONEncoder)),
+            stream_with_context(stream_json(out, dict(version=g.clic_versions), cls=JSONEncoder)),
             content_type='application/json',
         )
     if output_mode == 'stream':
@@ -96,7 +103,7 @@ def to_view_func(fn, output_mode):
 
     def json_view_func():
         out = fn(g.cur, **request.args)
-        out['version'] = clic_version(g.cur)
+        out['version'] = g.clic_versions
         return jsonify(out)
     if output_mode == 'json':
         view_func = json_view_func
