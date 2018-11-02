@@ -33,7 +33,8 @@ ExecStart=${API_UWSGI_BIN} \
     --processes=${API_UWSGI_PROCESSES} \
     --threads=${API_UWSGI_THREADS} \
     --enable-threads --thunder-lock \
-    --mount /=${EGG_NAME}.web:app \
+    --mount /=${EGG_NAME}.uwsgi:app \
+    --need-app \
     --chmod-socket=666 \
     --harakiri ${API_UWSGI_HARAKIRI} \
     -s ${API_SOCKET}

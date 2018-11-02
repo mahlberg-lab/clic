@@ -39,6 +39,7 @@ start: lib/.requirements # test
 	    --enable-threads --thunder-lock \
 	    --honour-stdin \
 	    --mount /=$(EGG_NAME).uwsgi:app \
+	    --need-app \
 	    --chmod-socket=666 \
 	    -s $(API_SOCKET)
 
