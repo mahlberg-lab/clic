@@ -1,3 +1,18 @@
+## 1.7-beta3 (2018-09-21)
+
+* subset: Use percentage of text instead of relative frequency
+* homepage: Add carousel of images
+* client: Option for searching for "All books by author"
+* keywords: Add swap button to reverse ref/target options
+* text: Show entire book on text tab
+
+## 1.7-beta2 (2018-08-14)
+
+* text: Add text tab or showing book contents
+* count: Add Counts tab for showing counts of words within books
+
+## 1.7-beta1 (2018-05-28)
+
 * api: Rearrange per-result metadata, still not to be relied on yet
 * concordance/subset: Add chapter ticks to distribution plot
 * concordance/subset: Make full book titles available in concordance/subset view
