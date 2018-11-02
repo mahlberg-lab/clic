@@ -56,9 +56,6 @@ def create_app(config=None, app_name=None):
 
     @app.after_request
     def add_header(response):
-        # Everything can be cached for up to an hour
-        response.cache_control.max_age = 3600
-        response.cache_control.public = True
         response.vary.add('Accept-Encoding')
 
         # Add CLiC version headers, tell the browser to vary based on them
@@ -66,6 +63,15 @@ def create_app(config=None, app_name=None):
             k = 'X-Version-%s' % k.title()
             response.headers[k] = v
             response.vary.add(k)
+
+        if response.status_code == 500:
+            # Errors cached briefly, to slow herds
+            response.cache_control.max_age = 10
+            response.cache_control.public = True
+        else:
+            # Valid responses can be cached for up to an hour
+            response.cache_control.max_age = 3600
+            response.cache_control.public = True
         return response
 
     @app.errorhandler(404)
