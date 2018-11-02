@@ -114,6 +114,11 @@ These are the corpora we use for the following tests::
     ... think nothing of tumbling down stairs! How brave they’ll all think me at
     ... home! Why, I wouldn’t say anything about it, even if I fell off the top
     ... of the house!’ (Which was very likely true.)
+    ...
+    ... ‘I beg your pardon,’ said Alice very humbly: ‘you had got to the fifth
+    ... bend, I think?’
+    ...
+    ... ‘I had NOT!’ cried the Mouse, sharply and very angrily.
     ... ''',
     ...
     ... willows='''
@@ -186,9 +191,13 @@ Results can be limited to regions. We can get quote concordances::
     [['alice', 9, 'Well', '**', 'thought', '**', 'Alice'],
      ['willows', 55, 'full', '**', 'Thought', '**', 'I']]
 
-TODO: Once we can demonstrate regions, demonstrate that we don't (currently)
-treat regions as boundaries, i.e. You could find "duck does" in
-'''"Fuzzy duck." "Does he?"'''.
+When searching in subsets, we do *not* consider boundaries, searching for
+"think I" finds a match that straddles 2 quotes::
+
+    >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=["think I"], subset=["quote"], contextsize=[5]))
+    [['alice', 341, 'to', 'the', 'fifth', 'bend', 'I',
+      '**', 'think', 'I', '**',
+      'had', 'NOT', 'cried', 'the', 'Mouse']]
 """
 import re
 

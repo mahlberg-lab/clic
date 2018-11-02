@@ -16,7 +16,6 @@ CREATE OR REPLACE FUNCTION token_get_surrounding(book_id INT, rclass TEXT, ancho
     cranges INT4RANGE[]
 ) AS $BODY$
                     SELECT ARRAY_POSITION(ARRAY_AGG(t.ordering = anchor_loc), TRUE) - anchor_off node_start
--- TODO: This isn't considering boundaries. -- she sat."\n"On the pavement?"\n"Yes." --> Should we be numbering all regions, and checking it's part of the same one?
                          , ARRAY_AGG(CASE WHEN t.ordering < (anchor_loc - anchor_off) THEN t.ttype -- i.e. part of the context, so rclass irrelevant
                                           WHEN t.ordering > (anchor_loc - anchor_off + node_size - 1) THEN t.ttype -- i.e. part of the context, so rclass irrelevant
                                           WHEN t.part_of ? token_get_surrounding.rclass THEN t.ttype
