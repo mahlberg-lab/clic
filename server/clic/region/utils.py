@@ -46,15 +46,18 @@ def regions_invert(rlist, full_length=None):
 
         >>> list(regions_invert([(10, 20), (50, 60)]))
         [(20, 50)]
+
+        >>> list(regions_invert([(0, 0), (10, 15), (15, 20), (50, 50)], 100))
+        [(0, 10), (20, 50), (50, 100)]
     """
     last_b = None
     for r in rlist:
         b = r[0]
         if last_b is None:
-            if full_length:
+            if full_length and b > 0:
                 yield (0, b)
-        else:
+        elif b > last_b:
             yield (last_b, b)
         last_b = r[1]
-    if full_length:
+    if full_length and full_length > (last_b or 0):
         yield (last_b or 0, full_length)
