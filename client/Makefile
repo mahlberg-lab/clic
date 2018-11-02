@@ -23,6 +23,7 @@ LIBRARIES_JS = \
     datatables.net \
     jquery/dist/jquery.slim.js \
     nouislider \
+    unidecode \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \

@@ -158,11 +158,14 @@ search for::
     >>> format_conc(concordance(db_cur, ['alice'], q=['i fell off']))
     [['alice', 197, 'I', 'fell', 'off']]
 
-Similarly, apostrophes are normalised (don’t vs don't), and we normalise
-apostrophes in the output::
+Similarly, apostrophes are normalised (don’t vs don't), so it doesn't matter
+which type of apostrophe is searched for (Note the output always matches the
+original text)::
 
     >>> format_conc(concordance(db_cur, ['alice'], q=["wouldn't"], contextsize=[1]))
-    [['alice', 157, 'I', '**', "wouldn't", '**', 'say']]
+    [['alice', 157, 'I', '**', 'wouldn’t', '**', 'say']]
+    >>> format_conc(concordance(db_cur, ['alice'], q=["wouldn’t"], contextsize=[1]))
+    [['alice', 157, 'I', '**', 'wouldn’t', '**', 'say']]
 
 Examples: subset selection
 --------------------------
@@ -188,7 +191,6 @@ treat regions as boundaries, i.e. You could find "duck does" in
 '''"Fuzzy duck." "Does he?"'''.
 """
 import re
-import unidecode
 
 from clic.db.book import get_book_metadata, get_book
 from clic.db.corpora import corpora_to_book_ids
@@ -333,9 +335,7 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
             append_if_nonempty(concs[-1], intra_word)
         # Add word token
         toks[-1].append(len(concs[-1]))
-        # TODO: Ideally we'd not mangle text, instead return the tokens here
-        # TODO: Write tokenisation scheme in JS?
-        concs[-1].append(unidecode.unidecode(full_text[t.lower:t.upper]))
+        concs[-1].append(full_text[t.lower:t.upper])
         prev_t = t
 
     # Add array of indicies that are tokens to the end

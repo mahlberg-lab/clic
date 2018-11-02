@@ -2,6 +2,7 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 var quoteattr = require('./quoteattr.js').quoteattr;
+var unidecode = require('unidecode');
 
 function choose_name(tag_columns, base_tag_name) {
     var new_tag_name = base_tag_name,
@@ -20,6 +21,15 @@ function escapeHtml(tag, s) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')) + '</' + tag + '>';
+}
+
+/*
+ * Convert token string tok to it's equivalent type. e.g. Oliv£r’s --> "olivPSr's"
+ *
+ * NB: This code should be developed in lock-step with server/clic/tokenizer.py
+ */
+function tokenToType(tok) {
+    return unidecode(tok.toLowerCase());
 }
 
 // Column is an array of tokens, mark these up as words, only sort on word content
@@ -75,7 +85,7 @@ module.exports.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
         }
 
         for (i = 0; i < word_indices.length; i++) {
-            t = tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]].toLowerCase();
+            t = tokenToType(tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]]);
             allWords[t] = true;
 
             if ((i + 1) >= span.start && kwicTerms.hasOwnProperty(t)) {

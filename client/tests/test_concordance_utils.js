@@ -4,6 +4,15 @@ var test = require('tape');
 
 var concordance_utils = require('../lib/concordance_utils.js');
 
+// Turn a space-separated list of words into a KwicTerms lookup
+function kwic_terms(words) {
+    var out = {};
+    words.split(' ').map(function (w) {
+        out[w] = 1;
+    });
+    return out;
+}
+
 test('renderTokenArray', function (t) {
     var data, short_data;
 
@@ -76,6 +85,35 @@ test('renderTokenArray', function (t) {
             'and the hammerhead-sh<a>rk said, "');
     t.equal(concordance_utils.renderTokenArray(data, 'export'),
             'and the hammerhead-sh<a>rk said, "');
+
+    t.end();
+});
+
+test('generateKwicRow', function (t) {
+    function gkr(kwic_search, node) {
+        var row = [[[]], node, [[]]],
+            allWords = {};
+
+        concordance_utils.generateKwicRow(
+            kwic_terms(kwic_search),
+            [{ignore: true, reverse: true}, {start: 0, stop: 10}, {ignore: true}],
+            row,
+            allWords
+        );
+        return {
+            kwic: row.kwic,
+            matches: row[1].matches,
+            allWords: Object.keys(allWords).sort(),
+        };
+    }
+
+    // Terms are normalised as part of the match, so apostrophes/case don't have to match
+    // and returned terms in allWords have had apostrophe's normalised
+    t.deepEqual(gkr("aren't", ['“', ' ', 'Aren’t', ' ', 'you', ' ', 'capable', [2, 4, 6]]), {
+        kwic: 1,
+        matches: [1],
+        allWords: ['aren\'t', 'capable', 'you'],
+    });
 
     t.end();
 });
