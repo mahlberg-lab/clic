@@ -1,3 +1,8 @@
+## 1.7-beta2 (2018-08-14)
+
+* text: Add text tab or showing book contents
+* count: Add Counts tab for showing counts of words within books
+
 ## 1.7-beta1 (2018-05-28)
 
 * api: Rearrange per-result metadata, still not to be relied on yet
