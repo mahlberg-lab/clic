@@ -1,3 +1,12 @@
+* server: Complete rewrite:
+  * Remove cheshire3/sqlite with
+  * Add a unified postgresql database for all content
+  * Upgrade to Python3
+* tokenisation: Defined tokenisation scheme based on unicode standard rules, used both for queries and importing books, see server/clic/tokenizer.py
+* concordance: Wildcards can now be used in queries, e.g. "he * her hair", "Oliver*"
+* region: Re-defined region tagging based on unicode standard rules, used when importing books, see server/clic/region
+* text: Shows book content verbatim from corpora repo, allows copy and paste
+
 ## 1.7-beta3 (2018-09-21)
 
 * subset: Use percentage of text instead of relative frequency
