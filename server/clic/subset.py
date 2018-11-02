@@ -184,9 +184,9 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
         yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
             [book['name'], node_crange.lower, node_crange.upper],
             [
-                int(part_of[str(rclass['chapter.text'])]),
-                int(part_of[str(rclass['chapter.paragraph'])]),
-                int(part_of[str(rclass['chapter.sentence'])]),
+                int(part_of.get(str(rclass['chapter.text']), -1)),
+                int(part_of.get(str(rclass['chapter.paragraph']), -1)),
+                int(part_of.get(str(rclass['chapter.sentence']), -1)),
             ]
         ]
 

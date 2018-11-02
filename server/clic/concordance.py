@@ -287,9 +287,9 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
                     [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
                     [
-                        int(part_of[str(rclass['chapter.text'])]),
-                        int(part_of[str(rclass['chapter.paragraph'])]),
-                        int(part_of[str(rclass['chapter.sentence'])]),
+                        int(part_of.get(str(rclass['chapter.text']), -1)),
+                        int(part_of.get(str(rclass['chapter.paragraph']), -1)),
+                        int(part_of.get(str(rclass['chapter.sentence']), -1)),
                     ]
                 ]
     finally:
