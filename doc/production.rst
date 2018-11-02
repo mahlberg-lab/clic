@@ -25,6 +25,8 @@ To see the current status, use ``systemctl status clic``.
 Troubleshooting
 ---------------
 
+Logs are available with: ``journalctl -S-1d -uclic``.
+
 If you see the NGINX default "Welcome to nginx!" page when trying to use CLiC from a web browser:
 
 * Make sure you used a ``WWW_SERVER_NAME`` that resolves to the CLiC server in ``local-conf.mk``. Re-run ``make`` and ``./install.sh``.
