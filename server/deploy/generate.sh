@@ -39,6 +39,8 @@ ExecStart=${API_UWSGI_BIN} \
     --harakiri ${API_UWSGI_HARAKIRI} \
     -s ${API_SOCKET}
 WorkingDirectory=${PROJECT_PATH}/server
+DynamicUser=yes
+RuntimeDirectory=${PROJECT_NAME}
 User=${API_USER}
 Group=${API_GROUP}
 Restart=on-failure

@@ -36,11 +36,14 @@ ifeq ($(PROJECT_MODE),development)
     # Default to user that checked out code (i.e the developer)
     API_USER ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
     API_GROUP ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
+    API_SOCKET ?= /tmp/$(PROJECT_NAME)_uwsgi.$(PROJECT_MODE).sock
 else
-    API_USER ?= nobody
-    API_GROUP ?= nogroup
+    # Assume we're using a systemd DynamicUser
+    API_USER ?= $(PROJECT_NAME)
+    API_GROUP ?= $(PROJECT_NAME)
+    # NB: This should be created by RuntimeDirectory
+    API_SOCKET ?= /run/$(PROJECT_NAME)/uwsgi.$(PROJECT_MODE).sock
 endif
-API_SOCKET ?= /tmp/$(PROJECT_NAME)_uwsgi.$(PROJECT_MODE).sock
 API_UWSGI_PROCESSES ?= 4
 API_UWSGI_THREADS ?= 4
 API_UWSGI_HARAKIRI ?= 0
