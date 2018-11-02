@@ -1,7 +1,7 @@
 import psycopg2
 import psycopg2.extras
 
-from clic.db.lookup import rclass_id_lookup, api_subset_lookup
+from clic.db.lookup import rclass_id_lookup
 from clic.tokenizer import types_from_string
 
 
@@ -94,103 +94,5 @@ def get_book(cur, book_id_name, content=False, regions=False):
             if rclass_name not in out:
                 out[rclass_name] = []
             out[rclass_name].append((crange.lower, crange.upper, rvalue))
-
-    return out
-
-
-def get_book_metadata(cur, book_ids, metadata):
-    """
-    Generate dict of metadata that should go in footer of both concordance and subsets
-    - book_ids: Array of book IDs to include
-    - metadata: Metadata items to include, a set contining some of...
-      - 'book_titles': The title / author of each book
-      - 'chapter_start': The start character for all chapters, and end of book
-      - 'word_count_(subset)': Count of words within (subset)
-    """
-    def p_params(*args):
-        return ("?, " * sum(len(x) for x in args)).rstrip(', ')
-
-    rclass = rclass_id_lookup(cur)
-
-    out = {}
-    for k in metadata:
-        out[k] = {}
-
-        if k == 'book_titles':
-            cur.execute("""
-                SELECT b.name
-                     , bm.rclass_id
-                     , bm.content
-                  FROM book b, book_metadata bm
-                 WHERE b.book_id = bm.book_id
-                   AND b.book_id IN %s
-                   AND bm.rclass_id IN %s
-            """, (
-                tuple(book_ids),
-                (rclass['metadata.title'], rclass['metadata.author']),
-            ))
-            for (book_name, rclass_id, content) in cur:
-                if book_name not in out[k]:
-                    out[k][book_name] = [None, None]
-                out[k][book_name][0 if rclass_id == rclass['metadata.title'] else 1] = content
-
-        elif k == 'chapter_start':
-            cur.execute("""
-                SELECT b.name
-                     , r.rvalue as chapter_num
-                     , r.crange crange
-                  FROM book b, region r
-                 WHERE b.book_id = r.book_id
-                   AND r.rclass_id = %s
-                   AND b.book_id IN %s
-            """, (
-                rclass['chapter.text'],
-                tuple(book_ids),
-            ))
-            for (book_name, chapter_num, crange) in cur:
-                if book_name not in out[k]:
-                    out[k][book_name] = dict()
-                out[k][book_name][chapter_num] = crange.lower
-                out[k][book_name]['_end'] = max(out[k][book_name].get('_end', 0), crange.upper)
-
-        elif k == 'word_count_chapter':
-            cur.execute("""
-                SELECT b.name
-                     , bwc.rvalue as chapter_num
-                     , bwc.word_count
-                  FROM book b, book_word_count bwc
-                 WHERE b.book_id = bwc.book_id
-                   AND bwc.rclass_id = %s
-                   AND b.book_id IN %s
-              ORDER BY bwc.book_id, bwc.rvalue
-            """, (
-                rclass['chapter.text'],
-                tuple(book_ids),
-            ))
-            for (book_name, chapter_num, word_total) in cur:
-                if book_name not in out[k]:
-                    out[k][book_name] = dict(_end=0)
-                out[k][book_name][chapter_num] = out[k][book_name]['_end']
-                out[k][book_name]['_end'] += int(word_total)
-
-        elif k.startswith('word_count_'):
-            api_subset = api_subset_lookup(cur)
-            cur.execute("""
-                SELECT b.name
-                     , SUM(bwc.word_count) AS word_count
-                  FROM book b, book_word_count bwc
-                 WHERE b.book_id = bwc.book_id
-                   AND bwc.rclass_id = %s
-                   AND b.book_id IN %s
-              GROUP BY b.book_id
-            """, (
-                api_subset[k.replace('word_count_', '')],
-                tuple(book_ids),
-            ))
-            for (book_name, word_count) in cur:
-                out[k][book_name] = int(word_count)
-
-        else:
-            raise ValueError("Unknown metadata item %s" % k)
 
     return out

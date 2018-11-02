@@ -6,7 +6,7 @@ Returns subsets of given texts, for example quotations.
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: subset to return, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
 - contextsize: Size of context window around subset. Default 0.
-- metadata: Optional data to return, see get_book_metadata in clicdb.py for all options
+- metadata: Optional data to return, see `book_metadata.py <db/book_metadata.py>`__ for all options.
 
 Parameters should be provided in querystring format, for example::
 
@@ -132,7 +132,8 @@ Context size can also be configured, but the return is only approximate::
 """
 from clic.concordance import to_conc
 
-from clic.db.book import get_book_metadata, get_book
+from clic.db.book import get_book
+from clic.db.book_metadata import get_book_metadata
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError

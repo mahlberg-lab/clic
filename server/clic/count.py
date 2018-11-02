@@ -4,7 +4,7 @@ Returns counts of words within subsets
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: Subset(s) to return counts for, one of shortsus/longsus/nonquote/quote/all.
-- metadata: Optional data to return, see clicdb:get_book_metadata() for possible values
+- metadata: Optional data to return, see `book_metadata.py <db/book_metadata.py>`__ for all options.
 
 Parameters should be provided in querystring format, for example::
 
@@ -69,7 +69,7 @@ Get word counts / word counts both overall and in quotes::
     >>> sorted(list(count(db_cur, ['alice', 'willows'], ['all', 'quote'])))
     [('alice', 49, 40), ('willows', 38, 10)]
 """
-from clic.db.book import get_book_metadata
+from clic.db.book_metadata import get_book_metadata
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup
 
