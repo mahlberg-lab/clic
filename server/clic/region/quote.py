@@ -2,6 +2,7 @@
 We need paragraph regions before we can do quote tagging::
 
     >>> from .chapter import tagger_chapter
+    >>> from .metadata import tagger_metadata
 
 quote.quote / quote.nonquote regions
 ------------------------------------
@@ -85,6 +86,35 @@ Quotes that spread across paragraphs are broken into separate paragraph chunks::
      ('quote.quote', 54, 185, '“If you closed\\nquote...ubsequent paragraph.'),
      ('quote.quote', 187, 400, '“Say a narrative was...ll the one talking.”'),
      ('quote.quote', 402, 433, '“Oh, that makes sense. Thanks!”')]
+
+Non-quote regions don't run outside chapters, so Titles aren't part of them::
+
+    >>> [x for x in run_tagger('''
+    ... The Wind in the Willows
+    ... Kenneth Grahame
+    ...
+    ... CHAPTER I. THE RIVER BANK
+    ...
+    ... The Mole had been working very hard all the morning, spring-cleaning.
+    ... ‘Hold up!’ said an elderly rabbit at the gap. ‘Sixpence for the
+    ... privilege of passing by the private road!’
+    ...
+    ... CHAPTER IV. MR. BADGER
+    ...
+    ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
+    ...
+    ... ‘They were all in a great state of alarm along River Bank when I arrived
+    ... this morning.’
+    ... '''.strip(), tagger_metadata, tagger_chapter, tagger_quote) if x[0] in set(('metadata.title', 'metadata.author', 'quote.quote', 'quote.nonquote'))]
+    [('metadata.title', 0, 23, 'The Wind in the Willows'),
+     ('metadata.author', 24, 39, 'Kenneth Grahame'),
+     ('quote.nonquote', 68, 137, 'The Mole had been wo...ng, spring-cleaning.'),
+     ('quote.quote', 138, 148, '‘Hold up!’'),
+     ('quote.nonquote', 149, 183, 'said an elderly rabbit at the gap.'),
+     ('quote.quote', 184, 244, '‘Sixpence for the\\npr...y the private road!’'),
+     ('quote.quote', 270, 313, '‘Thought I should fi...you here all right,’'),
+     ('quote.nonquote', 314, 340, 'said the Otter cheerfully.'),
+     ('quote.quote', 342, 429, '‘They were all in a ...rived\\nthis morning.’')]
 
 quote.suspension regions
 ------------------------
@@ -195,9 +225,9 @@ def tagger_quote_nonquote(book):
         return  # Nothing to do
 
     book['quote.nonquote'] = []
-    # Combine quotes and everything between paragraphs
+    # Combine quotes and everything not in a paragraph
     quotes_and_paras = book['quote.quote'][:]
-    quotes_and_paras.extend(regions_invert(book['chapter.paragraph']))
+    quotes_and_paras.extend(regions_invert(book['chapter.paragraph'], len(book['content'])))
     quotes_and_paras.sort(key=lambda r: (r[0], -r[1]))
 
     # Non-quotes are the opposite of this
