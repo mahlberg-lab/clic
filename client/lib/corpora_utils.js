@@ -70,13 +70,20 @@ module.exports.regions_to_html = function (content, regions, highlight_region) {
   * regions are available
   */
 module.exports.chapter_headings = function (content, regions) {
-    var i, out = [];
+    var i, out = [], title_prefix = "";
+
+    // Pick out part/title headings, and put them in document order
+    regions = regions.filter(function (r) {
+        return r[0] === "chapter.part" || r[0] === "chapter.title";
+    }).sort(function (a, b) { return a[1] - b[1]; });
 
     for (i = 0; i < regions.length; i++) { // ["chapter.title", (lower), (upper), (rvalue)]
-        if (regions[i][0] === "chapter.title") {
+        if (regions[i][0] === "chapter.part") {
+            title_prefix = content.slice(regions[i][1], regions[i][2]) + " ";
+        } else if (regions[i][0] === "chapter.title") {
             out.push({
                 id: regions[i][3],
-                title: content.slice(regions[i][1], regions[i][2]),
+                title: title_prefix + content.slice(regions[i][1], regions[i][2]),
             });
         }
     }

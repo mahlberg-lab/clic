@@ -215,7 +215,6 @@ PARAGRAPH_BREAK_REGEX = re.compile(r'\n\n')
 
 def tagger_chapter_part(book):
     """Add chapter.part tags to (book)"""
-    # TODO: Parts (used to be) prefixes to the chapter title. How do we do that now?
     if len(book.get('chapter.part', [])) > 0:
         return  # Nothing to do
     book['chapter.part'] = [

@@ -26,6 +26,7 @@ function PageText(content_el) {
                     regions: [
                         'metadata.title',
                         'metadata.author',
+                        'chapter.part',
                         'chapter.title',
                         'chapter.sentence',
                         'quote.quote',
