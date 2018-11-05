@@ -45,10 +45,13 @@ def format_conc(conc_results):
 
 def just_metadata(conc_results):
     """Find the book metadata and return that"""
+    import pprint
+
     for r in conc_results:
         # ('footer', footer)
         if isinstance(r, tuple) and r[0] == 'footer':
-            return r[1]
+            # NB: pprint will sort dicts for us
+            return pprint.pprint(r[1])
     raise ValueError("No footer")
 
 

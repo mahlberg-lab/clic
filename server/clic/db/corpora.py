@@ -68,8 +68,8 @@ We can use the author name to get any books by a given author::
 
     >>> just_metadata(concordance(db_cur, ['author:Jane Austen'], q=["the"], metadata=['book_titles']))
     {'book_titles':
-      {'sense': ['Sense and Sensibility', 'Jane Austen'],
-       'northanger': ['Northanger Abbey', 'Jane Austen']}}
+      {'northanger': ['Northanger Abbey', 'Jane Austen'],
+       'sense': ['Sense and Sensibility', 'Jane Austen']}}
 
 corpus name
 -----------
@@ -88,9 +88,9 @@ There are some old names that whilst are deprecated, should still work::
 
     >>> just_metadata(concordance(db_cur, ['Other'], q=["the"], metadata=['book_titles']))
     {'book_titles':
-      {'sense': ['Sense and Sensibility', 'Jane Austen'],
+      {'gulliver': ["Gulliver's Travels", 'Jonathan Swift'],
        'northanger': ['Northanger Abbey', 'Jane Austen'],
-       'gulliver': ["Gulliver's Travels", 'Jonathan Swift']}}
+       'sense': ['Sense and Sensibility', 'Jane Austen']}}
 """
 OLD_ALIASES = dict(
     dickens=['corpus:DNov'],

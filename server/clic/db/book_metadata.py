@@ -65,8 +65,8 @@ Return the position of the start of each chapter, and "_end" (of the book)::
 
     >>> just_metadata(concordance(db_cur, ['alice', 'willows'], q=["the"], metadata=['chapter_start']))
     {'chapter_start':
-      {'alice': {1: 81, '_end': 516, 2: 461},
-       'willows': {1: 68, '_end': 358, 2: 200}}}
+      {'alice': {1: 81, 2: 461, '_end': 516},
+       'willows': {1: 68, 2: 200, '_end': 358}}}
 
 word_count_chapter
 ------------------
@@ -75,8 +75,8 @@ Return the word count before the start of each chapter, and at the end of book w
 
     >>> just_metadata(concordance(db_cur, ['alice', 'willows'], q=["the"], metadata=['word_count_chapter']))
     {'word_count_chapter':
-      {'alice': {'_end': 76, 1: 0, 2: 66},
-      'willows': {'_end': 48, 1: 0, 2: 19}}}
+      {'alice': {1: 0, 2: 66, '_end': 76},
+      'willows': {1: 0, 2: 19, '_end': 48}}}
 
 word_count_quote
 ----------------
