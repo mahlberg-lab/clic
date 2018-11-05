@@ -407,11 +407,13 @@ ControlBar.prototype.new_data = function new_data(data) {
         }
     }
 
-    if (data.chapter_nums) {
+    if (data.chapter_nums || data.chapter_num_selected) {
         el = this.control_bar.querySelector('fieldset.current form').elements.chapter_num;
 
         if (el) {
-            el.innerHTML = to_options_html(data.chapter_nums);
+            if (data.chapter_nums) {
+                el.innerHTML = to_options_html(data.chapter_nums);
+            }
             jQuery(el).val(data.chapter_num_selected || data.chapter_nums[0]);
             jQuery(el).trigger("chosen:updated");
         }

@@ -68,6 +68,36 @@ function PageText(content_el) {
                 book_el.innerHTML = corpora_utils.regions_to_html(this.content, this.regions, highlight_arr);
                 content_el.appendChild(book_el);
 
+                // Hook into the scroll event, use it to keep the chapter_num parameter up-to-date
+                document.getElementById('scrollable-body').addEventListener('scroll', function event_fn(e) {
+                    if (book_el.scroll_timeout) {
+                        // Clear any previous scroll timeouts
+                        window.clearTimeout(book_el.scroll_timeout);
+                    }
+                    book_el.scroll_timeout = window.setTimeout(function () {
+                        var body_el = document.getElementById('scrollable-body'),
+                            title_els;
+
+                        if (!body_el.contains(book_el)) {
+                            // Not part of the page anymore, so tidy up
+                            body_el.removeEventListener('scroll', event_fn);
+                            return;
+                        }
+
+                        // Find all titles that are above the bottom of the page
+                        title_els = Array.prototype.filter.call(document.querySelectorAll('#content .chapter-title'), function (el) {
+                            return el.offsetParent && el.offsetTop < (el.offsetParent.scrollTop + el.offsetParent.offsetHeight);
+                        });
+                        if (title_els.length > 0) {
+                            window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
+                                args: {
+                                    chapter_num: [title_els[title_els.length - 1].className.match(/chapter-(\d+)/)[1]],
+                                },
+                            }}));
+                        }
+                    }, 300);
+                });
+
                 if (highlight_arr) {
                     content_el.querySelector('.book-content > .highlight').scrollIntoView();
                 }
@@ -114,6 +144,13 @@ function PageText(content_el) {
         }
 
         return p;
+    };
+
+    this.tweak = function tweak(page_state) {
+        // Tell controlbar about the changes
+        return Promise.resolve({
+            chapter_num_selected: page_state.arg('chapter_num'),
+        });
     };
 
     this.page_title = function () {
