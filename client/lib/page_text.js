@@ -85,7 +85,11 @@ function PageText(content_el) {
                 );
 
                 if (chapter_el) {
-                    chapter_el.scrollIntoView();
+                    if (!force_update || page_state.arg('word-highlight') === '0:0') {
+                        // There is no word-highlight to clash with, or this
+                        // isn't the first-page-load, so won't be clashing with word-highlight scrolling
+                        chapter_el.scrollIntoView();
+                    }
 
                     // Tell controlbar about the changes
                     p_data.chapter_num_selected = chapter_el.className.match(/chapter-(\d+)/)[1];
