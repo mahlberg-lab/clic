@@ -88,7 +88,7 @@ function PageText(content_el) {
                     chapter_el.scrollIntoView();
 
                     // Tell controlbar about the changes
-                    p_data.chapter_num_selected = chapter_el.getAttribute('data-num');
+                    p_data.chapter_num_selected = chapter_el.className.match(/chapter-(\d+)/)[1];
                 }
 
                 return p_data;
