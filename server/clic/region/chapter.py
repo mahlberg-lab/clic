@@ -100,6 +100,45 @@ Paragraph / sentence counts reset at the start of the new chapter.
      ('chapter.sentence', 264, 298, 4, 'Second paragraph, fourth sentence.'),
      ('chapter.sentence', 299, 305, 5, 'Fifth!')]
 
+chapter.part regions
+--------------------
+
+Chapters can be interleaved with "PART x." or "BOOK x." headings, these will
+marked a "chapter.part". They don't influence chapter counts, but aren't part
+of chapter.text. For example::
+
+    >>> [x for x in run_tagger('''
+    ... Initial text is the zero'th chapter. Second sentence.
+    ...
+    ... BOOK 1.
+    ...
+    ... CHAPTER I. The first chapter in Book 1
+    ...
+    ... The text in chapter 1.
+    ...
+    ... CHAPTER II. The second chapter
+    ...
+    ... The text in chapter 2.
+    ...
+    ... BOOK 2.
+    ...
+    ... Some introductory text at start of the book.
+    ...
+    ... CHAPTER I. The first chapter in Book 2
+    ...
+    ... First chapter. Note that the chapter numbers carry on from previous book
+    ... '''.strip(), tagger_metadata, tagger_chapter) if x[0] in ['chapter.part', 'chapter.title', 'chapter.text']]
+    [('chapter.text', 0, 53, 0, 'Initial text is the ...er. Second sentence.'),
+     ('chapter.part', 55, 62, 1, 'BOOK 1.'),
+     ('chapter.title', 64, 102, 1, 'CHAPTER I. The first chapter in Book 1'),
+     ('chapter.text', 104, 126, 1, 'The text in chapter 1.'),
+     ('chapter.title', 128, 158, 2, 'CHAPTER II. The second chapter'),
+     ('chapter.text', 160, 182, 2, 'The text in chapter 2.'),
+     ('chapter.part', 184, 191, 2, 'BOOK 2.'),
+     ('chapter.text', 193, 237, 2, 'Some introductory te...t start of the book.'),
+     ('chapter.title', 239, 277, 3, 'CHAPTER I. The first chapter in Book 2'),
+     ('chapter.text', 279, 351, 3, 'First chapter. Note ...n from previous book')]
+
 chapter.paragraph / chapter.sentence regions
 --------------------------------------------
 
@@ -161,8 +200,8 @@ from .utils import region_append_without_whitespace
 PART_BREAK_REGEX = re.compile(
     '^' +
     '(PART|BOOK)' +
-    ' ([0-9IVXLC]+)\.'
-)
+    ' ([0-9IVXLC]+)\.' +
+    '.*', re.MULTILINE)
 
 CHAPTER_BREAK_REGEX = re.compile(
     '^' +
@@ -201,18 +240,21 @@ def tagger_chapter_text(book):
         return  # Nothing to do
     book['chapter.text'] = []
 
-    # Either consider the end of metadata to be the start of the zero'th chapter, or the start of the book
-    last_title = (0, 0, 0)
-    for k in book.keys():
-        if k.startswith('metadata.'):
-            for r in book[k]:
-                if r[1] > last_title[1]:
-                    last_title = (r[0], r[1], 0)
+    # Gather anything together that shouldn't be part of a chapter, sort in document order
+    headings = (book.get('metadata.title', []) + book.get('metadata.author', []) +
+                book.get('chapter.part', []) + book.get('chapter.title', []) +
+                [(len(book['content']), len(book['content']))])
+    headings.sort(key=lambda r: (r[0], -r[1]))
 
-    for title in book['chapter.title'] + [(len(book['content']), len(book['content']))]:
-        # Fetch text between this title and the last, if we find anything
-        region_append_without_whitespace(book, 'chapter.text', last_title[1], title[0], last_title[2])
-        last_title = title
+    # Add everything outside headings to a chapter.text section, numbering with chapter counts
+    last_b = 0
+    chapter_num = 0
+    for r in headings:
+        region_append_without_whitespace(book, 'chapter.text', last_b, r[0], chapter_num)
+        if r in book.get('chapter.title', []):
+            # Text should have the same chapter number as it's title
+            chapter_num = r[2]
+        last_b = r[1]
 
 
 def tagger_chapter_paragraph(book):
