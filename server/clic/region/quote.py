@@ -20,9 +20,9 @@ the corresponding close quote mark is found::
     ...
     ... ‘And this is Schloss Adlerstein?’ she exclaimed.
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.quote', 0, 305, '“Thou find’st it out...f\\nthe Eagle’s Nest?”'),
-     ('quote.quote', 307, 340, '‘And this is Schloss Adlerstein?’'),
-     ('quote.nonquote', 341, 355, 'she exclaimed.')]
+    [('quote.quote', 0, 305, None, '“Thou find’st it out...f\\nthe Eagle’s Nest?”'),
+     ('quote.quote', 307, 340, None, '‘And this is Schloss Adlerstein?’'),
+     ('quote.nonquote', 341, 355, None, 'she exclaimed.')]
 
 Quotes should either be at least 5 words long::
 
@@ -30,8 +30,8 @@ Quotes should either be at least 5 words long::
     ... The "exotic camels" were actually dromedaries.
     ... "Four words not quote" "Five words is a quote"
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.nonquote', 0, 69, 'The "exotic camels" ...our words not quote"'),
-     ('quote.quote', 70, 93, '"Five words is a quote"')]
+    [('quote.nonquote', 0, 69, None, 'The "exotic camels" ...our words not quote"'),
+     ('quote.quote', 70, 93, None, '"Five words is a quote"')]
 
 ... or have one of ``,?.!-;_`` before the end quote, or ``--`` after::
 
@@ -43,18 +43,18 @@ Quotes should either be at least 5 words long::
     ... "Here's luck," "A fair wind," and "Billy Bones his fancy," were very neatly
     ... and clearly executed on the forearm.
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.quote', 0, 7, '"That,"'),
-     ('quote.nonquote', 8, 16, 'he said,'),
-     ('quote.quote', 17, 44, '"is a \\'veritable banquet\\'."'),
-     ('quote.quote', 46, 55, '"Because"'),
-     ('quote.nonquote', 55, 57, '--'),
-     ('quote.quote', 57, 100, '"because father and ...ma have to go away,"'),
-     ('quote.nonquote', 101, 119, 'I was going to say'),
-     ('quote.quote', 121, 135, '"Here\\'s luck,"'),
-     ('quote.quote', 136, 150, '"A fair wind,"'),
-     ('quote.nonquote', 151, 154, 'and'),
-     ('quote.quote', 155, 179, '"Billy Bones his fancy,"'),
-     ('quote.nonquote', 180, 233, 'were very neatly\\nand...uted on the forearm.')]
+    [('quote.quote', 0, 7, None, '"That,"'),
+     ('quote.nonquote', 8, 16, None, 'he said,'),
+     ('quote.quote', 17, 44, None, '"is a \\'veritable banquet\\'."'),
+     ('quote.quote', 46, 55, None, '"Because"'),
+     ('quote.nonquote', 55, 57, None, '--'),
+     ('quote.quote', 57, 100, None, '"because father and ...ma have to go away,"'),
+     ('quote.nonquote', 101, 119, None, 'I was going to say'),
+     ('quote.quote', 121, 135, None, '"Here\\'s luck,"'),
+     ('quote.quote', 136, 150, None, '"A fair wind,"'),
+     ('quote.nonquote', 151, 154, None, 'and'),
+     ('quote.quote', 155, 179, None, '"Billy Bones his fancy,"'),
+     ('quote.nonquote', 180, 233, None, 'were very neatly\\nand...uted on the forearm.')]
 
 Plural possessives are explicitly not counted as quotes::
 
@@ -64,9 +64,9 @@ Plural possessives are explicitly not counted as quotes::
     ...
     ... After a few days' friendship, he said 'can I borrow your lawnmower?'
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.nonquote', 0, 99, 'or two, which he had...s very near at hand.'),
-     ('quote.nonquote', 101, 138, "After a few days' friendship, he said"),
-     ('quote.quote', 139, 169, "'can I borrow your lawnmower?'")]
+    [('quote.nonquote', 0, 99, None, 'or two, which he had...s very near at hand.'),
+     ('quote.nonquote', 101, 138, None, "After a few days' friendship, he said"),
+     ('quote.quote', 139, 169, None, "'can I borrow your lawnmower?'")]
 
 Quotes that spread across paragraphs are broken into separate paragraph chunks::
 
@@ -81,11 +81,11 @@ Quotes that spread across paragraphs are broken into separate paragraph chunks::
     ...
     ... “Oh, that makes sense. Thanks!”
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.quote', 0, 38, '“Oh, that’s not all that complicated,”'),
-     ('quote.nonquote', 39, 53, 'J.R. answered.'),
-     ('quote.quote', 54, 185, '“If you closed\\nquote...ubsequent paragraph.'),
-     ('quote.quote', 187, 400, '“Say a narrative was...ll the one talking.”'),
-     ('quote.quote', 402, 433, '“Oh, that makes sense. Thanks!”')]
+    [('quote.quote', 0, 38, None, '“Oh, that’s not all that complicated,”'),
+     ('quote.nonquote', 39, 53, None, 'J.R. answered.'),
+     ('quote.quote', 54, 185, None, '“If you closed\\nquote...ubsequent paragraph.'),
+     ('quote.quote', 187, 400, None, '“Say a narrative was...ll the one talking.”'),
+     ('quote.quote', 402, 433, None, '“Oh, that makes sense. Thanks!”')]
 
 Non-quote regions don't run outside chapters, so Titles aren't part of them::
 
@@ -106,15 +106,15 @@ Non-quote regions don't run outside chapters, so Titles aren't part of them::
     ... ‘They were all in a great state of alarm along River Bank when I arrived
     ... this morning.’
     ... '''.strip(), tagger_metadata, tagger_chapter, tagger_quote) if x[0] in set(('metadata.title', 'metadata.author', 'quote.quote', 'quote.nonquote'))]
-    [('metadata.title', 0, 23, 'The Wind in the Willows'),
-     ('metadata.author', 24, 39, 'Kenneth Grahame'),
-     ('quote.nonquote', 68, 137, 'The Mole had been wo...ng, spring-cleaning.'),
-     ('quote.quote', 138, 148, '‘Hold up!’'),
-     ('quote.nonquote', 149, 183, 'said an elderly rabbit at the gap.'),
-     ('quote.quote', 184, 244, '‘Sixpence for the\\npr...y the private road!’'),
-     ('quote.quote', 270, 313, '‘Thought I should fi...you here all right,’'),
-     ('quote.nonquote', 314, 340, 'said the Otter cheerfully.'),
-     ('quote.quote', 342, 429, '‘They were all in a ...rived\\nthis morning.’')]
+    [('metadata.title', 0, 23, None, 'The Wind in the Willows'),
+     ('metadata.author', 24, 39, None, 'Kenneth Grahame'),
+     ('quote.nonquote', 68, 137, None, 'The Mole had been wo...ng, spring-cleaning.'),
+     ('quote.quote', 138, 148, None, '‘Hold up!’'),
+     ('quote.nonquote', 149, 183, None, 'said an elderly rabbit at the gap.'),
+     ('quote.quote', 184, 244, None, '‘Sixpence for the\\npr...y the private road!’'),
+     ('quote.quote', 270, 313, None, '‘Thought I should fi...you here all right,’'),
+     ('quote.nonquote', 314, 340, None, 'said the Otter cheerfully.'),
+     ('quote.quote', 342, 429, None, '‘They were all in a ...rived\\nthis morning.’')]
 
 quote.suspension regions
 ------------------------
@@ -132,16 +132,16 @@ of a sentence. If it is longer than 5 words, then it is a long suspension. For e
     ...
     ... ‘And this is Schloss Adlerstein?’ she exclaimed.
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.')]
-    [('quote.quote', 0, 28, '“And on what evidence, Pip,”'),
-     ('quote.nonquote', 29, 117, 'asked Mr. Jaggers, v...alf way to his nose,'),
-     ('quote.suspension.long', 29, 117, 'asked Mr. Jaggers, v...alf way to his nose,'),
-     ('quote.quote', 118, 148, '“does Provis make this\\nclaim?”'),
-     ('quote.quote', 150, 172, '“He does not make it,”'),
-     ('quote.nonquote', 173, 180, 'said I,'),
-     ('quote.suspension.short', 173, 180, 'said I,'),
-     ('quote.quote', 181, 271, '“and has never made ...er is in existence.”'),
-     ('quote.quote', 273, 306, '‘And this is Schloss Adlerstein?’'),
-     ('quote.nonquote', 307, 321, 'she exclaimed.')]
+    [('quote.quote', 0, 28, None, '“And on what evidence, Pip,”'),
+     ('quote.nonquote', 29, 117, None, 'asked Mr. Jaggers, v...alf way to his nose,'),
+     ('quote.suspension.long', 29, 117, None, 'asked Mr. Jaggers, v...alf way to his nose,'),
+     ('quote.quote', 118, 148, None, '“does Provis make this\\nclaim?”'),
+     ('quote.quote', 150, 172, None, '“He does not make it,”'),
+     ('quote.nonquote', 173, 180, None, 'said I,'),
+     ('quote.suspension.short', 173, 180, None, 'said I,'),
+     ('quote.quote', 181, 271, None, '“and has never made ...er is in existence.”'),
+     ('quote.quote', 273, 306, None, '‘And this is Schloss Adlerstein?’'),
+     ('quote.nonquote', 307, 321, None, 'she exclaimed.')]
 
 This example doesn't count, since it starts with a sentence::
 
@@ -149,8 +149,8 @@ This example doesn't count, since it starts with a sentence::
     ... Little Benjamin said: "It spoils people's clothes to squeeze under a gate;
     ... the proper way to get in is to climb down a pear-tree."
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.')]
-    [('quote.nonquote', 0, 21, 'Little Benjamin said:'),
-     ('quote.quote', 22, 130, '"It spoils people\\'s ...b down a pear-tree."')]
+    [('quote.nonquote', 0, 21, None, 'Little Benjamin said:'),
+     ('quote.quote', 22, 130, None, '"It spoils people\\'s ...b down a pear-tree."')]
 
 .. http://unicode.org/reports/tr29/#Word_Boundaries
 """

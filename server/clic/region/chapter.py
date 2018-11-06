@@ -51,8 +51,8 @@ We ignore any metadata if it's there::
     ... The introduction has some chapter text.
     ... It's not very exciting.
     ... '''.strip(), tagger_metadata, tagger_chapter_title, tagger_chapter_text)
-    [('metadata.title', 0, 11, 'Fly Fishing'),
-     ('metadata.author', 12, 23, 'J R Hartley'),
+    [('metadata.title', 0, 11, None, 'Fly Fishing'),
+     ('metadata.author', 12, 23, None, 'J R Hartley'),
      ('chapter.text', 25, 86, 0, 'Initial text is the ...not including title.'),
      ('chapter.title', 88, 101, 1, 'INTRODUCTION.'),
      ('chapter.text', 103, 166, 1, 'The introduction has...s not very exciting.')]

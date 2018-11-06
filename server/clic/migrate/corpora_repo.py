@@ -3,6 +3,8 @@ import json
 import os
 import os.path
 
+from clic.region.utils import regions_flatten
+
 
 def get_corpora_for(book_paths):
     """
@@ -59,18 +61,10 @@ def export_book(book, dir='.', write_regions=False):
         f.write(book['content'])
 
     if write_regions:
-        # Make flat list of regions
-        regions = []
-        for k in book.keys():
-            if '.' not in k:
-                continue
-            for r in book[k]:
-                regions.append((k,) + tuple(r))
-        regions.sort(key=lambda r: (r[1], -r[2], r[0]))
-
+        # Write out regions as a flattened list
         with open(to_region_file(book_path), 'w') as f:
             writer = csv.writer(f)
-            for r in regions:
+            for r in regions_flatten(book):
                 writer.writerow(r)
     return book_path
 

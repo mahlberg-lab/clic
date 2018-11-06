@@ -15,8 +15,8 @@ title / author combination::
     ...
     ... Fly Fishing: Memories of Angling Days, also published as Fly Fishing by
     ... '''.strip(), tagger_metadata)
-    [('metadata.title', 0, 11, 'Fly Fishing'),
-     ('metadata.author', 12, 23, 'J R Hartley')]
+    [('metadata.title', 0, 11, None, 'Fly Fishing'),
+     ('metadata.author', 12, 23, None, 'J R Hartley')]
 
 Anything that doesn't match this gets ignored::
 

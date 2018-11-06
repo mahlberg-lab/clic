@@ -61,3 +61,26 @@ def regions_invert(rlist, full_length=None):
         last_b = r[1]
     if full_length and full_length > (last_b or 0):
         yield (last_b or 0, full_length)
+
+
+def regions_flatten(book):
+    """
+    Flatten a book's regions down to a single array-of-arrays, suitable for exporting
+    """
+    def short_string(s):
+        return s if len(s) < 40 else s[0:20] + '...' + s[-20:]
+
+    out = []
+    for rclass in book.keys():
+        if rclass == 'content':
+            continue
+        for r in book[rclass]:
+            out.append((
+                rclass,
+                r[0],
+                r[1],
+                r[2] if len(r) > 2 else None,
+                short_string(book['content'][r[0]:r[1]]),
+            ))
+    # Sort by start ascending, then end descending
+    return sorted(out, key=lambda x: (x[1], -x[2], x[0]))
