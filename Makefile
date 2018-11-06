@@ -9,10 +9,13 @@ test:
 lint:
 	for dir in schema client server; do make -C $$dir $@; done
 
+coverage:
+	for dir in schema client server; do make -C $$dir $@; done
+
 start:
 	for dir in schema client server; do make -C $$dir $@; done
 
 deploy/deploy.sh:
 	for dir in schema client server; do make -C $$dir $@; done
 
-.PHONY: compile test lint start deploy/deploy.sh
+.PHONY: compile test lint coverage start deploy/deploy.sh

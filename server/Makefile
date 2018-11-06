@@ -26,11 +26,11 @@ lint: lib/.requirements
 	./bin/flake8 --ignore=E501 $(EGG_NAME)/ tests/
 
 coverage: compile
-	./bin/coverage run ./bin/py.test tests/
+	./bin/coverage run ./bin/py.test $(EGG_NAME)/ tests/
 	./bin/coverage html
 	mkdir -p ../client/www/coverage
-	ln -rs htmlcov ../client/www/coverage/server
-	echo Visit http://...//coverage/server/index.html
+	ln -frs htmlcov ../client/www/coverage/server
+	echo Visit http://$(WWW_SERVER_NAME)/coverage/server/index.html
 
 start: lib/.requirements # test
 	./bin/uwsgi \

@@ -39,6 +39,9 @@ test: node_modules/
 
 coverage: node_modules/
 	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
+	mkdir -p ../client/www/coverage
+	ln -frs coverage/lcov-report ../client/www/coverage/client
+	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
 lint: node_modules/
 	$(NODE_CMD) node_modules/jslint/bin/jslint */*.js
@@ -129,4 +132,4 @@ www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
 deploy/deploy.sh: $(PROJECT_PATH)/conf.mk deploy/generate.sh
 	deploy/generate.sh
 
-.PHONY: compile test start lint clean clean-unused watch
+.PHONY: compile test coverage start lint clean clean-unused watch

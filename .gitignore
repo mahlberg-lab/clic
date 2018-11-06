@@ -6,6 +6,7 @@
 /client/coverage
 /client/doc
 /client/node_modules/
+/client/www/coverage/
 /client/www/carousel-images
 /client/www/css/lib
 /client/www/css/*.min.css
@@ -36,6 +37,8 @@
 /server/lib64
 /server/pyvenv.cfg
 /server/appconfig.py
+/server/.coverage
+/server/htmlcov/
 
 # Old files that shouldn't exist
 /.local-conf

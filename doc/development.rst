@@ -29,6 +29,15 @@ To run unit tests::
 
     make -C server test
 
+Coverage reports
+----------------
+
+Coverage reports can be built for both client and server::
+
+    make coverage
+
+...the reports will be available through the reports at the end.
+
 Exercise API integration tests
 ------------------------------
 
