@@ -65,7 +65,7 @@ def export_book(book, dir='.', write_regions=False):
         with open(to_region_file(book_path), 'w') as f:
             writer = csv.writer(f)
             for r in regions_flatten(book):
-                writer.writerow(r)
+                writer.writerow((r[0], r[1], r[2], r[3], r[4].replace('\n', ' ')))
     return book_path
 
 

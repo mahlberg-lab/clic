@@ -86,3 +86,10 @@ class Test_export_book(unittest.TestCase, RequiresCorporaDir):
             'content': "I'm a book.\n",
             'chapter.text': [(0, 12)],
         })
+
+        # The newline got filtered from the CSV output
+        with open(os.path.join(corpora_dir, 'noregions/book_a.regions.csv')) as f:
+            self.assertEqual(f.read().split("\n"), [
+                "chapter.text,0,12,,I'm a book. ",
+                "",
+            ])
