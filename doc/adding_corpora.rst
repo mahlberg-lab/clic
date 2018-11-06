@@ -15,7 +15,8 @@ This will show the text file with all regions marked up with different colours.
 Inspect the output to see if regions are marked up correctly by default. If the scripts have made mistakes, you have 2 options:
 
 * Fix any systematic problems in the region taggers in ``server/clic/region``
-* Export the tagged regions to a ``*.regions.csv`` file, which will override the tagger.
+* Export the tagged regions to a ``*.regions.csv`` file using ``server/bin/region_export``,
+  any regions edited here will override the tagger.
 
 Once you are happy with the output, it needs to be imported into the CLiC database.
 Do not perform the following on a live CLiC server, as CLiC will not be available during the process.

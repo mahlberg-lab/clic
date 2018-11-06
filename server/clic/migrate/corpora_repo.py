@@ -122,3 +122,21 @@ def script_import_corpora_repo():
             # and not much else to do currently.
             update_version(cur, 'clic-import')
             update_version(cur, 'corpora', os.path.dirname(book_paths[0]))
+
+
+def script_region_export():
+    """Calculate regions and re-export them as CSV"""
+    import sys
+    import timeit
+    from ..region.tag import tagger
+
+    # Every argument is a book path, so e.g. "*/*.txt" works
+    book_paths = sys.argv[1:]
+
+    for p in book_paths:
+        print("* %s" % p, end=" ", flush=True)
+        start_time = timeit.default_timer()
+        book = import_book(p)  # Read book and/or regions file
+        tagger(book)  # Fill in any remaining regions
+        export_book(book, os.path.dirname(p), write_regions=True)  # Write it back again
+        print("%.2f secs" % (timeit.default_timer() - start_time))
