@@ -5,12 +5,13 @@ import unittest
 
 from clic.migrate.corpora_repo import import_book, export_book
 
+
 class RequiresCorporaDir():
     def tearDown(self):
         for dir in getattr(self, '_cd_dirs', []):
             dir.cleanup()
 
-        super(RequiresMockCorporaDir, self).tearDown()
+        super(RequiresCorporaDir, self).tearDown()
 
     def corpora_dir(self, contents):
         """Create a corpora directory with given contents"""
