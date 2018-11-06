@@ -2,6 +2,10 @@ Managing a production instance of CLiC
 ======================================
 
 Installation instructions are all in `README.rst <../README.rst>`__.
+For a production system, you are likely to want to install a particular release, e.g.::
+
+    git clone git://github.com/birmingham-ccr/clic /srv/clic
+    git checkout v1.7.0
 
 Note that the directory name CLiC is cloned into is used for the systemd service name and NGINX configuration.
 This allows multiple installations to live side-by-side, e.g. ``/srv/clic16`` and ``/srv/clic17`` will have systemd units ``clic16`` and ``clic17`` respectively.
@@ -21,6 +25,18 @@ If you need to stop/start CLiC outside this for whatever reason, use systemctl,
 e.g. ``systemctl stop clic``.
 
 To see the current status, use ``systemctl status clic``.
+
+Upgrading a CLiC instance
+-------------------------
+
+To upgrade a CLiC instance, first check out the code for the given release, e.g.::
+
+    git fetch && git checkout v1.7.0
+
+...then run::
+
+    make
+    sudo ./install.sh
 
 Troubleshooting
 ---------------
