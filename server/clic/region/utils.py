@@ -72,6 +72,8 @@ def regions_flatten(book):
 
     out = []
     for rclass in book.keys():
+        if rclass == 'name':
+            continue
         if rclass == 'content':
             continue
         for r in book[rclass]:

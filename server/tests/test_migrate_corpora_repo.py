@@ -3,7 +3,7 @@ import os.path
 import tempfile
 import unittest
 
-from clic.migrate.corpora_repo import import_book
+from clic.migrate.corpora_repo import import_book, export_book
 
 class RequiresCorporaDir():
     def tearDown(self):
@@ -60,4 +60,28 @@ class Test_import_book(unittest.TestCase, RequiresCorporaDir):
             'animal.name': [(0, 4)],
             'animal.noise': [(0, 4)],
             'chapter.text': [(0, 19, 1), (20, 25, 2)],
+        })
+
+
+class Test_export_book(unittest.TestCase, RequiresCorporaDir):
+    def test_call(self):
+        corpora_dir = self.corpora_dir({
+            'book1.txt': "Moo, said the cow.\n",
+        })
+
+        book_a = {'name': 'book_a', 'content': "I'm a book.\n", 'chapter.text': [(0, 12, None, "I'm a book.\n")]}
+
+        # Export a book without regions, can re-read it
+        export_book(book_a, dir=os.path.join(corpora_dir, 'noregions'), write_regions=False)
+        self.assertEqual(import_book(os.path.join(corpora_dir, 'noregions/book_a.txt')), {
+            'name': 'book_a',
+            'content': "I'm a book.\n",
+        })
+
+        # Export a book with regions, can re-read it
+        export_book(book_a, dir=os.path.join(corpora_dir, 'noregions'), write_regions=True)
+        self.assertEqual(import_book(os.path.join(corpora_dir, 'noregions/book_a.txt')), {
+            'name': 'book_a',
+            'content': "I'm a book.\n",
+            'chapter.text': [(0, 12)],
         })
