@@ -25,7 +25,6 @@ else
     WWW_UWSGI_CACHE_ZONE ?= api_cache
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
-WWW_UWSGI_API_CACHE_TIME ?= 60m
 
 ###################
 # Configuration options for running API server

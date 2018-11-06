@@ -68,6 +68,10 @@ def create_app(config=None, app_name=None):
             # Errors cached briefly, to slow herds
             response.cache_control.max_age = 10
             response.cache_control.public = True
+        elif response.content_type.startswith('image/'):
+            # Cache images for a week, we don't want to serve them ourselves
+            response.cache_control.max_age = 3600 * 24 * 7
+            response.cache_control.public = True
         else:
             # Valid responses can be cached for up to an hour
             response.cache_control.max_age = 3600

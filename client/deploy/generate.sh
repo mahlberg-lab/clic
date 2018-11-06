@@ -91,7 +91,6 @@ Disallow: /api/
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
         uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
         uwsgi_cache_valid 200 302;
-        expires ${WWW_UWSGI_API_CACHE_TIME};
 
         add_header X-Uwsgi-Cache-Key "${WWW_UWSGI_CACHE_KEY}";
         add_header X-Uwsgi-Cached "\$upstream_cache_status";
