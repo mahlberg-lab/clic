@@ -3,7 +3,7 @@ import json
 import os
 import os.path
 
-from clic.region.utils import regions_flatten
+from clic.region.utils import regions_flatten, regions_unflatten
 
 
 def get_corpora_for(book_paths):
@@ -81,10 +81,7 @@ def import_book(book_path):
     region_file = to_region_file(book_path)
     if os.path.exists(region_file):
         with open(region_file) as f:
-            for r in csv.reader(f):
-                if r[0] not in book:
-                    book[r[0]] = []
-                book[r[0]].append(tuple(int(x) for x in r[1:]))
+            book.update(regions_unflatten(csv.reader(f)))
 
     return book
 

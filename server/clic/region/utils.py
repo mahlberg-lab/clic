@@ -84,3 +84,24 @@ def regions_flatten(book):
             ))
     # Sort by start ascending, then end descending
     return sorted(out, key=lambda x: (x[1], -x[2], x[0]))
+
+
+def regions_unflatten(regions):
+    """
+    Reverse regions_flatten, return a dict to update a book with. For example::
+
+        book.update(regions_unflatten(regions))
+    """
+    out = {}
+    for r in regions:
+        if r[0] not in out:
+            out[r[0]] = []
+        out[r[0]].append((
+            int(r[1]),  # Start
+            int(r[2]),  # End
+        ) if r[3] is None or r[3] == '' else (
+            int(r[1]),  # Start
+            int(r[2]),  # End
+            int(r[3]),  # rvalue
+        ))
+    return out
