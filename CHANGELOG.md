@@ -6,6 +6,7 @@
   * Upgrade to Python3
 * tokenisation: Defined tokenisation scheme based on unicode standard rules, used both for queries and importing books, see server/clic/tokenizer.py
 * concordance: Wildcards can now be used in queries, e.g. "he * her hair", "Oliver*"
+* concordance: Search is now for exact types. "Oliver" will no longer return "Oliver's" results, you must explicitly enter "Oliver*" [BREAKING CHANGE]
 * region: Re-defined region tagging based on unicode standard rules, used when importing books, see server/clic/region
 * text: Shows book content verbatim from corpora repo, allows copy and paste
 
