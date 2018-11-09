@@ -88,17 +88,23 @@ them into percent marks, which is what the database uses to mean "0 or more
 characters" in like expressions (see `concordance <concordance.py>`__)::
 
     >>> parse_query('''
+    ... We have *books everywhere*!
+    ...
     ... Moo* * oi*-nk
     ... ''')
-    ['moo%', '%', 'oi%', 'nk']
+    ['we', 'have', '%books', 'everywhere%',
+     'moo%', '%', 'oi%', 'nk']
 
 If the same phrase was in a book, we would throw away the asterisks when
 converting to types::
 
     >>> [x[0] for x in types_from_string('''
+    ... We have *books everywhere*!
+    ...
     ... Moo* * oi*-nk
     ... ''')]
-    ['moo', 'oi', 'nk']
+    ['we', 'have', 'books', 'everywhere',
+     'moo', 'oi', 'nk']
 
 References
 ----------
