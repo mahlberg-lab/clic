@@ -6,15 +6,19 @@ Method
 ------
 
 To extract tokens, we use Unicode text segmentation as described in [UAX29],
-using the implementation in the [ICU] library.
+using the implementation in the [ICU] library and standard rules for en_GB.
 
-We search the string for word boundaries using the standard rules for en_GB.
-For example, the following string has boundaries marked with "|".
+Please read the document for a full description of ICU word boundaries, however
+as a quick example the following phrase::
+
+    The quick (“brown”) fox can’t jump 32.3 feet, right?
+
+...would have boundaries at every point marked with a ``|``::
 
     The| |quick| |(||“|brown|”|)| |fox| |can’t| |jump| |32.3| |feet|,| |right|?|
 
-If the boundary marks the end of a word/numeric section, we consider this a
-token.
+If the ``|`` marks the end of a word/numeric section, we consider everything
+until the last ``|`` mark a token.
 
 Tokens are normalised into types by:-
 
