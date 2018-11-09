@@ -1,3 +1,5 @@
+## 2.0-beta1
+
 * server: Complete rewrite:
   * Remove cheshire3/sqlite with
   * Add a unified postgresql database for all content
