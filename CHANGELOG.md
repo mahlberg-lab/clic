@@ -5,6 +5,7 @@
   * Add a unified postgresql database for all content
   * Upgrade to Python3
 * tokenisation: Defined tokenisation scheme based on unicode standard rules, used both for queries and importing books, see server/clic/tokenizer.py
+* tokenisation: Any surrounding punctuation is filtered from types, thus searching for "connisseur" will return tokens "connisseur" and "_connisseur_" [BREAKING CHANGE]
 * concordance: Wildcards can now be used in queries, e.g. "he * her hair", "Oliver*"
 * concordance: Search is now for exact types. "Oliver" will no longer return "Oliver's" results, you must explicitly enter "Oliver*" [BREAKING CHANGE]
 * region: Re-defined region tagging based on unicode standard rules, used when importing books, see server/clic/region
