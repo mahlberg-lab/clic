@@ -28,8 +28,9 @@ Tokens are normalised into types by:-
   * ``café`` -> ``cafe``.
 * Removing any surrounding underscores, e.g. ``_connoisseur_`` -> ``connoisseur``.
 
-In addition, when parsing a query we treat ``*`` as being part of a word, so
-``*Books*`` would result in ``*books*`` in query mode, and ``books`` otherwise.
+Queries for concordance searches are also turned into a list of types by this
+module. In this case we consider ``*`` as being part of a token for wildcard
+searches. See later examples for more information.
 
 Examples / edge cases
 ---------------------
@@ -82,19 +83,22 @@ word in the unicode standard::
     ... ''')]
     ['had', 'some', 'reputation', 'as', 'a', 'connoisseur']
 
-Unlike regular parsing, query parsing preserves asterisks and converts them
-into percent marks for use in database concordance queries::
-
-    >>> [x[0] for x in types_from_string('''
-    ... Moo* * oi*-nk
-    ... ''')]
-    ['moo', 'oi', 'nk']
+When we parse for concordance search queries, we preserve asterisks and convert
+them into percent marks, which is what the database uses to mean "0 or more
+characters" in like expressions (see `concordance <concordance.py>`__)::
 
     >>> parse_query('''
     ... Moo* * oi*-nk
     ... ''')
     ['moo%', '%', 'oi%', 'nk']
 
+If the same phrase was in a book, we would throw away the asterisks when
+converting to types::
+
+    >>> [x[0] for x in types_from_string('''
+    ... Moo* * oi*-nk
+    ... ''')]
+    ['moo', 'oi', 'nk']
 
 References
 ----------
