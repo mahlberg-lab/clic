@@ -13,6 +13,10 @@ To start the API server in debug mode::
 
     make start
 
+To log database queries that the API makes::
+
+     QUERY_LOG=yes make start
+
 Client-side development
 -----------------------
 
