@@ -72,11 +72,16 @@ def script_region_preview():
     import sys
     from .corpora_repo import import_book
     from ..region.tag import tagger
+    from ..tokenizer import types_from_string
 
     book_path = sys.argv[1]
     regions_to_highlight = sys.argv[2:] if len(sys.argv) > 2 else DEFAULT_HIGHLIGHT_REGIONS
 
-    book = import_book(book_path)
+    if book_path == '-':
+        book = dict(name='stdin')
+        book['content'] = sys.stdin.read()
+    else:
+        book = import_book(book_path)
     tagger(book)
 
     p = subprocess.Popen(['less', '-RFi'], stdin=subprocess.PIPE)
