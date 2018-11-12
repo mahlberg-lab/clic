@@ -24,16 +24,7 @@ the corresponding close quote mark is found::
      ('quote.quote', 307, 340, None, '‘And this is Schloss Adlerstein?’'),
      ('quote.nonquote', 341, 355, None, 'she exclaimed.')]
 
-Quotes should either be at least 5 words long::
-
-    >>> [x for x in run_tagger('''
-    ... The "exotic camels" were actually dromedaries.
-    ... "Four words not quote" "Five words is a quote"
-    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.nonquote', 0, 69, None, 'The "exotic camels" ...our words not quote"'),
-     ('quote.quote', 70, 93, None, '"Five words is a quote"')]
-
-... or have one of ``,?.!-;_`` before the end quote, or ``--`` after::
+Quotes should have one of ``,?.!-;_`` before the end quote, or ``--`` after::
 
     >>> [x for x in run_tagger('''
     ... "That," he said, "is a 'veritable banquet'."
@@ -56,19 +47,52 @@ Quotes should either be at least 5 words long::
      ('quote.quote', 155, 179, None, '"Billy Bones his fancy,"'),
      ('quote.nonquote', 180, 233, None, 'were very neatly\\nand...uted on the forearm.')]
 
-Plural possessives are explicitly not counted as quotes::
+...or be at least 5 words long, when using double quote marks::
 
     >>> [x for x in run_tagger('''
-    ... or two, which he had always lost after a few days’ friendship, felt as if
-    ... always very near at hand.
-    ...
-    ... After a few days' friendship, he said 'can I borrow your lawnmower?'
+    ... The "exotic camels" were actually dromedaries.
+    ... "Four words not quote" "Five words is a quote"
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
-    [('quote.nonquote', 0, 99, None, 'or two, which he had...s very near at hand.'),
-     ('quote.nonquote', 101, 138, None, "After a few days' friendship, he said"),
-     ('quote.quote', 139, 169, None, "'can I borrow your lawnmower?'")]
+    [('quote.nonquote', 0, 69, None, 'The "exotic camels" ...our words not quote"'),
+     ('quote.quote', 70, 93, None, '"Five words is a quote"')]
 
-Quotes that spread across paragraphs are broken into separate paragraph chunks::
+Quotes have to have one of the punctuation marks when single quotes are used,
+as false-positives are too easy, e.g. ChiLit/moonfleet.txt::
+
+    >>> [x for x in run_tagger('''
+    ... laggard; though 'twas hard enough for men to walk where the mud was over
+    ... the horses' fetlocks.
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.nonquote', 0, 94, None, "laggard; though 'twa...he horses' fetlocks.")]
+
+...or Chilit/alone.txt::
+
+    >>> [x for x in run_tagger('''
+    ... "Ah, it's not bad in the summer," said Tony, more earnestly than before:
+    ... "and I could find for the little 'un easy enough. I sleep anywhere, in
+    ... Covent Garden sometimes, and the parks--anywhere as the p'lice 'ill let
+    ... me alone. You won't go to give her up to them p'lice, will you now, and
+    ... she so pretty?"
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.quote', 0, 33, None, '"Ah, it\\'s not bad in the summer,"'),
+     ('quote.nonquote', 34, 72, None, 'said Tony, more earnestly than before:'),
+     ('quote.quote', 73, 303, None, '"and I could find fo... and\\nshe so pretty?"')]
+
+We only demand one of the types of punctuation, so quotes can start mid-sentence, e.g. ChiLit/alice.txt::
+
+    >>> [x for x in run_tagger('''
+    ... It was the White Rabbit, trotting slowly back again, and looking
+    ... anxiously about as it went, as if it had lost something; and she heard
+    ... it muttering to itself ‘The Duchess! The Duchess! Oh my dear paws! Oh
+    ... my fur and whiskers! She’ll get me executed, as sure as ferrets are
+    ... ferrets! Where CAN I have dropped them, I wonder?’ Alice guessed
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.nonquote', 0, 158, None, 'It was the White Rab... muttering to itself'),
+     ('quote.quote', 159, 324, None, '‘The Duchess! The Du...ped them, I wonder?’'),
+     ('quote.nonquote', 325, 338, None, 'Alice guessed')]
+
+Extended quotes can run on across paragraphs, with an initial quote mark to
+indicate continuation. We combine these into one quote::
 
     >>> [x for x in run_tagger('''
     ... “Oh, that’s not all that complicated,” J.R. answered. “If you closed
@@ -83,9 +107,46 @@ Quotes that spread across paragraphs are broken into separate paragraph chunks::
     ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
     [('quote.quote', 0, 38, None, '“Oh, that’s not all that complicated,”'),
      ('quote.nonquote', 39, 53, None, 'J.R. answered.'),
-     ('quote.quote', 54, 185, None, '“If you closed\\nquote...ubsequent paragraph.'),
-     ('quote.quote', 187, 400, None, '“Say a narrative was...ll the one talking.”'),
+     ('quote.quote', 54, 400, None, '“If you closed\\nquote...ll the one talking.”'),
      ('quote.quote', 402, 433, None, '“Oh, that makes sense. Thanks!”')]
+
+Extended quotes also work without curly quotes, example from ChiLit/water.txt::
+
+    >>> [x for x in run_tagger('''
+    ... "And I am very ugly.  I am the ugliest fairy in the world; and I
+    ... going to do.  It will be a very good warning for him to begin with,
+    ... before he goes to school.
+    ...
+    ... "Now, Tom, every Friday I come down here and call up all who have
+    ... ill-used little children and serve them as they served the
+    ... children."
+    ...
+    ... And at that Tom was frightened, and crept under a stone
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.quote', 0, 295, None, '"And I am very ugly....erved the\\nchildren."'),
+     ('quote.nonquote', 297, 352, None, 'And at that Tom was ... crept under a stone')]
+
+Extended quotes only carry on when a paragraph starts with a quote-mark. Erronous quotes
+in paragraphs shouldn't results in quotes running on, example from
+ChiLit/moonfleet.txt::
+
+    >>> [x for x in run_tagger('''
+    ... turning the
+    ... space 'twixt ship and shore into a boiling caldron: a minute later 'twas
+    ... all sucked back again with a roar, and we jumped.
+    ...
+    ... I fell on hands and feet where the water was a yard deep under the ship,
+    ... crash and thunder of the returning wave we were but a fathom distant
+    ... from the rope. 'Take heart, lad,' he cried; ''tis now or never,' and as
+    ... the water reached our breasts gave me a fierce shove forward with his
+    ... hands. There was a roar of water in my ears, with a great shouting of
+    ... the men upon the beach, and then I caught the rope.
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.nonquote', 0, 292, None, "turning the\\nspace 't...stant\\nfrom the rope."),
+     ('quote.quote', 293, 311, None, "'Take heart, lad,'"),
+     ('quote.nonquote', 312, 321, None, 'he cried;'),
+     ('quote.quote', 322, 342, None, "''tis now or never,'"),
+     ('quote.nonquote', 343, 541, None, 'and as\\nthe water rea...n I caught the rope.')]
 
 Non-quote regions don't run outside chapters, so Titles aren't part of them::
 
@@ -152,6 +213,28 @@ This example doesn't count, since it starts with a sentence::
     [('quote.nonquote', 0, 21, None, 'Little Benjamin said:'),
      ('quote.quote', 22, 130, None, '"It spoils people\\'s ...b down a pear-tree."')]
 
+quote.embedded regions
+----------------------
+
+A ``quote.embedded`` region follows the same rules as regular quotes, but inside a quote.
+
+For example, from ChiLit/alice.txt::
+
+    >>> [x for x in run_tagger('''
+    ... ‘I thought you did,’ said the Mouse. ‘--I proceed. “Edwin and Morcar,
+    ... the earls of Mercia and Northumbria, declared for him: and even Stigand,
+    ... the patriotic archbishop of Canterbury, found it advisable--”’
+    ...
+    ... ‘Found WHAT?’ said the Duck.
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.')]
+    [('quote.quote', 0, 20, None, '‘I thought you did,’'),
+     ('quote.nonquote', 21, 36, None, 'said the Mouse.'),
+     ('quote.quote', 37, 205, None, '‘--I proceed. “Edwin...und it advisable--”’'),
+     ('quote.embedded', 51, 204, None, '“Edwin and Morcar,\\nt...ound it advisable--”'),
+     ('quote.quote', 207, 220, None, '‘Found WHAT?’'),
+     ('quote.nonquote', 221, 235, None, 'said the Duck.')]
+
+
 .. http://unicode.org/reports/tr29/#Word_Boundaries
 """
 import re
@@ -159,6 +242,7 @@ import re
 import icu
 
 from ..icuconfig import DEFAULT_LOCALE
+from ..tokenizer import word_boundary_type
 from .utils import region_append_without_whitespace, regions_invert
 
 
@@ -168,6 +252,28 @@ QUOTES = {
     '"': '"',  # Double universal.
     "'": "'",  # Single universal.
 }
+
+
+def is_quote(s, q_start, q_end, wc):
+    """Is this pair of quote-marks a valid quote, or "other construct" that should be ignored?"""
+    # Quotes should have one of...
+
+    # ...five or more words (for double quotes)
+    if wc >= 5 and s[q_start] not in set(("’", "'")):
+        return True
+    # ... select punctuation before the quote
+    if re.search(r'(?:\-\-|\(|,|:|;)\s*$', s[q_start - 4: q_start]):
+        return True
+    # ... select punctuation at the start
+    if re.search(r'^\s*(?:\-\-)', s[q_start + 1: q_start + 6]):
+        return True
+    # ... select punctuation before the end
+    if re.search(r'--\s*$|[,?.!-;_]$', s[q_end - 5:q_end - 1]):
+        return True
+    # ... select punctuation after the quote
+    if re.search(r'^\s*--', s[q_end:q_end + 5]):
+        return True
+    return False
 
 
 def tagger_quote_quote(book):
@@ -180,42 +286,59 @@ def tagger_quote_quote(book):
     bi.setText(book['content'])
 
     book['quote.quote'] = []
+    book['quote.embedded'] = []
+    open_quote = None  # NB: Don't reset last-open-quote on each paragraph
+    embedded_quote = None
+    word_count = 0
     for containing_r in book['chapter.paragraph']:
         last_b = containing_r[0]
-        open_quote = None
-        quote_word_count = 0
+
+        if open_quote and book['content'][containing_r[0]:containing_r[0] + 1] not in QUOTES:
+            # Continuing an open_quote from a previous paragarph, but paragraph didn't start with a quote marker, ditch.
+            open_quote = None
 
         # Get all word breaks after containing_r[0]
         bi.following(containing_r[0] - 1)
         for b in bi:
             if b > containing_r[1]:
-                # Outside the chapter now, so stop
-                if open_quote:
-                    region_append_without_whitespace(book, 'quote.quote', open_quote[1], b)
+                # Outside the chapter now, so stop. Leave any open quotes still open, assume any embedded quotes broken
+                embedded_quote = None
                 break
             word = book['content'][last_b:b]
 
-            if open_quote and word == open_quote[0]:
+            if word_boundary_type(book['content'], bi, last_b):
+                # Text up to this boundary is "wordy", this includes our own extras, such as:
+                # * Posessives, "3 days' work".
+                # * Abbreviations, "'twas a dark and stormy night"
+                # ...increase our word count and ignore these characters for quote-finding purposes.
+                word_count += 1  # NB: Ideally shouldn't count over-the-top as 5, but too much of an edge case
+
+            elif embedded_quote and word == embedded_quote[0]:
+                # Found the closing quote for an embedded quote
+                if is_quote(book['content'], embedded_quote[1], b, word_count - embedded_quote[2]):
+                    book['quote.embedded'].append((embedded_quote[1], b))
+                embedded_quote = None  # Clear open-quote regardless, we matched a pair of scare-quotes
+
+            elif open_quote and last_b == containing_r[0]:
+                # Quote still open from previous paragraph, ignore it and move on
+                continue
+
+            elif open_quote and word == open_quote[0]:
                 # Found the closing quote we were looking for
-                r = (open_quote[1], b)
-                # Quotes should have either...
-                if quote_word_count >= 5:  # ...five or more words
-                    book['quote.quote'].append(r)
-                elif re.search(r'^\s*--', book['content'][b:b + 5]):  # ...a double-hyphen after it
-                    book['quote.quote'].append(r)
-                elif re.search(r'--\s*$|[,?.!-;_]$', book['content'][b - 5:b - 1]):  # ...one of several punctuation marks before it
-                    book['quote.quote'].append(r)
-                open_quote = None
-            elif open_quote and bi.getRuleStatus() > 0:
-                quote_word_count += 1
-            elif not open_quote and word in QUOTES:
-                if re.fullmatch(r"s[’']", book['content'][last_b - 1:b]):
-                    # Plural posessive, ignore it.
-                    pass
+                if is_quote(book['content'], open_quote[1], b, word_count - open_quote[2]):
+                    book['quote.quote'].append((open_quote[1], b))
+                    if embedded_quote:
+                        # Ditch any still-open embedded quote
+                        embedded_quote = None
+                open_quote = None  # Clear open-quote regardless, we matched a pair of scare-quotes
+
+            elif word in QUOTES:
+                if open_quote and QUOTES[word] != open_quote[0]:
+                    # An open-quote using a different marker within the quote, it's an embedded quote
+                    embedded_quote = (QUOTES[word], last_b, word_count)
                 else:
                     # Not in an open quote and found one
-                    open_quote = (QUOTES[word], last_b)
-                    quote_word_count = 0
+                    open_quote = (QUOTES[word], last_b, word_count)
             last_b = b
 
 
@@ -225,13 +348,13 @@ def tagger_quote_nonquote(book):
         return  # Nothing to do
 
     book['quote.nonquote'] = []
-    # Combine quotes and everything not in a paragraph
-    quotes_and_paras = book['quote.quote'][:]
-    quotes_and_paras.extend(regions_invert(book['chapter.paragraph'], len(book['content'])))
-    quotes_and_paras.sort(key=lambda r: (r[0], -r[1]))
+    # Combine quotes and everything not in a chapter
+    quotes_and_nonchaps = book['quote.quote'][:]
+    quotes_and_nonchaps.extend(regions_invert(book['chapter.text'], len(book['content'])))
+    quotes_and_nonchaps.sort(key=lambda r: (r[0], -r[1]))
 
     # Non-quotes are the opposite of this
-    for last_b, b in regions_invert(quotes_and_paras, len(book['content'])):
+    for last_b, b in regions_invert(quotes_and_nonchaps, len(book['content'])):
         region_append_without_whitespace(book, 'quote.nonquote', last_b, b)
 
 
