@@ -9,6 +9,7 @@
 * concordance: Wildcards can now be used in queries, e.g. "he * her hair", "Oliver*"
 * concordance: Search is now for exact types. "Oliver" will no longer return "Oliver's" results, you must explicitly enter "Oliver*" [BREAKING CHANGE]
 * region: Re-defined region tagging based on unicode standard rules, used when importing books, see server/clic/region
+* region: Initial text between parts and chapters is now part of the previous chapter, instead of being in it's own chapter. This will reduce chapter counts for books broken up into parts. [BREAKING CHANGE]
 * text: Shows book content verbatim from corpora repo, allows copy and paste
 
 ## 1.7-beta3 (2018-09-21)
