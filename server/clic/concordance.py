@@ -4,7 +4,7 @@ Searches texts for given phrase(s).
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
-- q: 1+ string to search for. If multiple terms are provided, they will be OR'ed together (i.e. we search for either)
+- q: 1+ string to search for. If multiple terms are provided, we will search for each in turn
 - contextsize: Size of context window around search results. Default 0.
 - metadata: Optional data to return, see `book_metadata.py <db/book_metadata.py>`__ for all options.
 
@@ -42,6 +42,18 @@ Result metadata and Position-in-book metadata are currently subject to change.
 
 The ``version`` object gives both the current version of CLiC and the revision of the
 corpora ingested in the database.
+
+Query (q parameter) format
+--------------------------
+
+Queries are broken down using the `tokenizer <tokenizer.py>`__ into lists of
+types to search for. This means any punctuation, spaces or newlines are
+ignored.
+
+Queries can use the wildcard character, ``*``, to search for 0 or more
+characters at this point. For example, ``oliver`` will find instances of
+"Oliver" and "olvier", but ``oliver*`` will find "Oliver's" in addition. The
+asterisk can be used anywhere within a type, not just at the end.
 
 Examples
 --------
