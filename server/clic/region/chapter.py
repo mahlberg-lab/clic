@@ -142,9 +142,21 @@ of chapter.text. For example::
 chapter.paragraph / chapter.sentence regions
 --------------------------------------------
 
-Paragraph tagging occurs within chapter text, we split on "\n\n". Sentence
-tagging occurs within paragraphs, and uses standard unicode sentence break
-rules, apart from breaking at the end of lines::
+All ``chapter.text`` is broken up into ``chapter.paragraph``s, paragraph
+boundaries are defined as a sequence of 2 newlines within chapter text (i.e. a
+blank line in the text).
+
+``chapter.paragraph``s are then broken up into ``chapter.sentence``s, using the
+Unicode sentence segmentation in [UAX29], using the implementation in the [ICU]
+library.
+
+* We use the ``en_GB@ss=standard`` locale (ss=standard tells ICU to not treat
+  abbreviations like "Mr. Jones" as a sentence break.)
+* Before applying the algorithm, we remove newlines from the chapter text,
+  since we do not want to treat them as sentence breaks (which ICU does by
+  default).
+
+The following shows both splitting of paragraph and sentences::
 
     >>> run_tagger('''
     ... “Thou find’st it out, child?  Ay, ’tis worth all the feather-beds and\r
@@ -175,19 +187,28 @@ rules, apart from breaking at the end of lines::
      ('chapter.sentence', 355, 505, 9, '“That is Schloss Adl...t a fool of\\nthyself.'),
      ('chapter.sentence', 507, 549, 10, 'If so, not Satan him...lf could save thee.”')]
 
-By default, unicode sentence breaks would occur at the end of lines without any
+By default using ICU, sentence breaks would occur at the end of lines without any
 punctuation. Instead, we ignore end of lines unless they would be a sentence
-break anyway::
+break anyway. We also don't break on "Mr. Oliver"::
 
     >>> [x for x in run_tagger('''
     ... modest-looking little shop-window, containing a few newspapers, some
     ... Rather yellow packets of stationery, and two or three books of ballads.
     ... Above the door was painted in very small, dingy letters, the words,
     ... "James Oliver, News Agent."
+    ...
+    ... So if you wish to stay here with my brother, Mr. Oliver, and this little
+    ... girl, Miss Dorothy Raleigh, as I suppose her name is, you must get all these things.
     ... '''.strip(), tagger_metadata, tagger_chapter) if x[0] in ('chapter.paragraph', 'chapter.sentence')]
     [('chapter.paragraph', 0, 236, 1, 'modest-looking littl...Oliver, News Agent."'),
      ('chapter.sentence', 0, 140, 1, 'modest-looking littl...ee books of ballads.'),
-     ('chapter.sentence', 141, 236, 2, 'Above the door was p...Oliver, News Agent."')]
+     ('chapter.sentence', 141, 236, 2, 'Above the door was p...Oliver, News Agent."'),
+     ('chapter.paragraph', 238, 395, 2, 'So if you wish to st...et all these things.'),
+     ('chapter.sentence', 238, 395, 3, 'So if you wish to st...et all these things.')]
+
+.. [ICU] http://userguide.icu-project.org/boundaryanalysis
+.. [UAX29] https://www.unicode.org/reports/tr29/tr29-33.html#Word_Boundaries
+.. [UNIDECODE] https://pypi.org/project/Unidecode/
 """
 import re
 
