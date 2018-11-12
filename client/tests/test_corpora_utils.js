@@ -7,7 +7,7 @@ var corpora_utils = require('../lib/corpora_utils.js');
 test('regions_to_html', function (t) {
     var out;
 
-    out = corpora_utils.regions_to_html("I don't know. Have you tried swimming?", [
+    out = corpora_utils.regions_to_html("I don't know.\nHave you tried swimming?", [
         ['chapter.sentence', 0, 13],
         ['aardvark', 2, 7],
         ['chapter.sentence', 13, 38],
@@ -20,7 +20,7 @@ test('regions_to_html', function (t) {
         '<span class="chapter-sentence"> know.',
         '<span class="boundary-sentence">',
         '<span class="boundary-sentence">',
-        '<span class="chapter-sentence"> Have you tried swimming?',
+        '<span class="chapter-sentence"><br/>Have you tried swimming?',
         '<span class="boundary-sentence">',
         '',
     ], "Can nest regions, chapter.sentence gets boundaries as a special case");

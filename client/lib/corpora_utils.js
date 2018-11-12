@@ -47,7 +47,7 @@ module.exports.regions_to_html = function (content, regions, highlight_region) {
         // If text is available, start a span with correct regions and insert it
         if (inserts[i].pos > start) {
             out += '</span><span class="' + Object.keys(open_regions).join(" ") + '">';
-            out += content.slice(start, inserts[i].pos);
+            out += content.slice(start, inserts[i].pos).replace(/\n/g, '<br/>');
             start = inserts[i].pos;
         }
 
