@@ -68,6 +68,9 @@ def script_region_preview():
 
         # Highlight just quote.quote regions
         ./server/bin/region_preview corpora/ChiLit/alice.txt quote.quote
+
+        # Highlight tokens in book
+        ./server/bin/region_preview corpora/ChiLit/alice.txt tokens
     """
     import sys
     from .corpora_repo import import_book
@@ -83,6 +86,10 @@ def script_region_preview():
     else:
         book = import_book(book_path)
     tagger(book)
+
+    if 'tokens' in regions_to_highlight:
+        # Return value for tokens is wrong way around, reverse it.
+        book['tokens'] = [(start, end, type) for type, start, end in types_from_string(book['content'])]
 
     p = subprocess.Popen(['less', '-RFi'], stdin=subprocess.PIPE)
     for out in colourise_book(book, regions_to_highlight):
