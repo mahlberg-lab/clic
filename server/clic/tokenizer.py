@@ -6,21 +6,39 @@ Method
 ------
 
 To extract tokens, we use Unicode text segmentation as described in [UAX29],
-using the implementation in the [ICU] library and standard rules for en_GB.
+using the implementation in the [ICU] library and standard rules for en_GB, and
+then apply our own additions (see later).
 
 Please read the document for a full description of ICU word boundaries, however
 as a quick example the following phrase::
 
-    The quick (“brown”) fox can’t jump 32.3 feet, right?
+    The quick (“brown”) fox can’t jump 32.3 feet in-the-air, right?
 
 ...would have boundaries at every point marked with a ``|``::
 
-    The| |quick| |(||“|brown|”|)| |fox| |can’t| |jump| |32.3| |feet|,| |right|?|
+    The| |quick| |(||“|brown|”|)| |fox| |can’t| |jump| |32.3| |feet| |in|-|the|-|air|,| |right|?|
 
-If the ``|`` marks the end of a word/numeric section, we consider everything
-until the last ``|`` mark a token.
+We consider a boundary mark to be a word-boundary if::
 
-Tokens are normalised into types by:-
+* The ICU describes it as at the end of a word, e.g. ``jump`` or number, e.g.
+  ``32.3``.
+* It is a hyphen character surrounded by alpha-numeric characters.
+* It is an apostrophe preceded with s, e.g. ``3 days' work``.
+* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``.
+
+Note that these additional rules are because ICU does not handle apostrophes on
+the outside of words, nor hyphenated-words.
+
+...so if we mark word boundaries in the example above with ``‖``::
+
+    The‖ |quick‖ |(||“|brown‖”|)| |fox‖ |can’t‖ |jump‖ |32.3‖ |feet‖ |in‖-‖the‖-‖air‖,| |right‖?|
+
+Tokens are then extracted by combining all text before adjacent word-boundaries, e.g.:
+
+* `` |feet‖`` becomes the token ``feet``.
+* `` |in‖-‖the‖-‖air‖,|`` becomes the token ``in-the-air``
+
+Tokens are then normalised into types by:-
 
 * Lower-casing, ``The`` -> ``the``.
 * Normalising any non-ascii characters with [UNIDECODE], e.g.
@@ -59,21 +77,29 @@ All surrounding punctuation is filtered out::
     ['i', 'am', 'a', 'cat', 'they', 'said', 'hear', 'me', 'roar',
      'or', 'at', 'least', 'mew']
 
-Unicode word-splitting doesn't combine hypenated words::
+Unicode word-splitting doesn't combine hypenated words, but we do::
 
     >>> [x[0] for x in types_from_string('''
     ...     It had been a close and sultry day--one of the hottest of the
     ...     dog-days--even out in the open country
     ... ''')]
     ['it', 'had', 'been', 'a', 'close', 'and', 'sultry', 'day',
-     'one', 'of', 'the', 'hottest', 'of', 'the', 'dog', 'days',
+     'one', 'of', 'the', 'hottest', 'of', 'the', 'dog-days',
      'even', 'out', 'in', 'the', 'open', 'country']
 
     >>> [x[0] for x in types_from_string('''
     ...     so many out-of-the-way things had happened lately
     ... ''')]
-    ['so', 'many', 'out', 'of', 'the', 'way', 'things',
+    ['so', 'many', 'out-of-the-way', 'things',
      'had', 'happened', 'lately']
+
+We also consider apostrophes surrounding words to be part of the word, unlike
+the standard. Preceding apostrophes have to be part of our whitelist though::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     'tis 3 days' work. 'twmade-up-word
+    ... ''')]
+    ["'tis", '3', "days'", 'work', 'twmade-up-word']
 
 We strip underscores whilst generating types, which are considered part of a
 word in the unicode standard::
@@ -93,7 +119,7 @@ characters" in like expressions (see `concordance <concordance.py>`__)::
     ... Moo* * oi*-nk
     ... ''')
     ['we', 'have', '%books', 'everywhere%',
-     'moo%', '%', 'oi%', 'nk']
+     'moo%', '%', 'oi%-nk']
 
 If the same phrase was in a book, we would throw away the asterisks when
 converting to types::
@@ -124,7 +150,64 @@ QUERY_ADDITIONAL_WORD_PARTS = set((
     '*',  # Consider * to be part of a type, so we can use it as a wildcard
 ))
 
+HYPHEN_WORD_PARTS = set((
+    # Hyphens from note in http://www.unicode.org/reports/tr29/
+    '\u002D',  # HYPHEN-MINUS
+    '\u2010',  # HYPHEN
+))
+
+APOSTROPHE_WORD_PARTS = set((
+    "’",
+    "'",
+))
+
+INITIAL_ABBREVIATIONS = set((
+    'tis',
+    'twas',
+    'twill',
+    'twould',
+))
+INITIAL_ABBREVIATIONS_MAXLEN = max(len(x) for x in INITIAL_ABBREVIATIONS)
+INITIAL_ABBREVIATIONS_REGEX = re.compile(r"^(?:%s)\W" % '|'.join(INITIAL_ABBREVIATIONS), re.I)
+
 REGEX_WORD_REMOVALS = re.compile(r'^_|_$')
+
+
+def word_boundary_type(s, bi, last_b, additional_word_parts=set()):
+    """
+    Add our own boundary types atop of what bi.getRuleStatus() returns
+    """
+    if bi.getRuleStatus() > 0:
+        # We already think it's a word-boundary, just return
+        return bi.getRuleStatus()
+
+    b = bi.current()
+    word = s[last_b:b]
+
+    if word in additional_word_parts:
+        # Part of additional word parts
+        return 200
+
+    if word in HYPHEN_WORD_PARTS:
+        # Hyphens are word-parts, but only when surrounded by letters
+        # In: over-the-top, 22-skidoo
+        # Out: over-, handled--
+        def is_wordy(ch):
+            return ch in additional_word_parts or ch.isalpha() or ch.isnumeric()
+        if not is_wordy(s[b - 2:b - 1]) or not is_wordy(s[b:b + 1]):
+            return 0
+        return 200
+
+    if word in APOSTROPHE_WORD_PARTS:
+        # ICU will handle apostrophe's in words, but not ones before/after.
+        # Open-quotes should not be trailing possessives, e.g. cows' milk
+        if s[b - 2:b - 1] == 's':
+            return 200
+        # For select words, hyphen should be part of the word
+        if re.search(INITIAL_ABBREVIATIONS_REGEX, s[b:b + INITIAL_ABBREVIATIONS_MAXLEN + 1]):
+            return 200
+
+    return 0
 
 
 def types_from_string(s, offset=0, additional_word_parts=set()):
@@ -150,7 +233,7 @@ def types_from_string(s, offset=0, additional_word_parts=set()):
     last_b = 0
     word_start = None
     for b in bi:
-        if bi.getRuleStatus() > 0 or s[last_b:b] in additional_word_parts:
+        if word_boundary_type(s, bi, last_b, additional_word_parts) > 0:
             if word_start is None:
                 # This boundary has something word-y before it, start a word
                 word_start = last_b

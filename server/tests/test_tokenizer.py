@@ -39,5 +39,5 @@ class TestParseQuery(unittest.TestCase):
         self.assertEqual(parse_query("""
             Moo* * oi*-nk b_th
         """), [
-            "moo%", "%", "oi%", "nk", "b\\_th"
+            "moo%", "%", "oi%-nk", "b\\_th"
         ])
