@@ -47,27 +47,17 @@ nav fieldset[data-name="text"] label.quote-quote input:checked + span,
 
 nav fieldset[data-name="text"] label.quote-suspension-short input:checked + span,
 .book-content.h-quote-suspension-short span.quote-suspension-short {
-  background: hsl(209, 100%, 74%);
+  background: hsl(70, 100%, 74%);
 }
 
 nav fieldset[data-name="text"] label.quote-suspension-long input:checked + span,
 .book-content.h-quote-suspension-long span.quote-suspension-long {
-  background: hsl(295, 100%, 74%);
+  background: hsl(29, 100%, 74%);
 }
 
 nav fieldset[data-name="text"] label.quote-embedded input:checked + span,
 .book-content.h-quote-embedded span.quote-embedded {
   background: hsl(123, 100%, 74%);
-}
-
-nav fieldset[data-name="text"] label.quote-embedded-suspension-short input:checked + span,
-.book-content.h-quote-embedded-suspension-short span.quote-embedded-suspension-short {
-  background: hsl(70, 100%, 74%);
-}
-
-nav fieldset[data-name="text"] label.quote-embedded-suspension-long input:checked + span,
-.book-content.h-quote-embedded-suspension-long span.quote-embedded-suspension-long {
-  background: hsl(29, 100%, 74%);
 }
 
 .book-content span.highlight {

@@ -33,8 +33,6 @@ function PageText(content_el) {
                         'quote.suspension.short',
                         'quote.suspension.long',
                         'quote.embedded',
-                        'quote.embedded.suspension.short',
-                        'quote.embedded.suspension.long',
                     ],
                 };
 
