@@ -100,7 +100,7 @@ Examples / edge cases
     ...
     ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
     ... ‘They were all in a great state of alarm along River Bank when I arrived
-    ... this morning.
+    ... this morning.’
     ... ''')
 
 We can ask for quotes::
