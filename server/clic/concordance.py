@@ -264,14 +264,19 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                       , c.cranges full_tokens
                       , t.part_of
                    FROM token t
-                   -- i.e. for each valid anchor token, get all tokens around it, including context
-                   JOIN LATERAL token_get_surrounding( t.book_id
-                                                     , %(part_of)s
-                                                     , t.ordering
-                                                     , %(anchor_offset)s
-                                                     , %(total_likes)s
-                                                     , %(contextsize)s
-                                                     ) c ON TRUE
+                   JOIN LATERAL ( -- i.e. for each valid anchor token, get all tokens around it, including context
+                       SELECT ARRAY_POSITION(ARRAY_AGG(t_surrounding.ordering = t.ordering), TRUE) - %(anchor_offset)s node_start
+                            , ARRAY_AGG(CASE WHEN t_surrounding.ordering < (t.ordering - %(anchor_offset)s) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
+                                             WHEN t_surrounding.ordering > (t.ordering - %(anchor_offset)s + %(total_likes)s - 1) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
+                                             WHEN t_surrounding.part_of ? %(part_of)s THEN t_surrounding.ttype
+                                             ELSE NULL -- part of the node, but not in the right rclass, NULL should fail any node checks later on
+                                              END) ttypes
+                            , ARRAY_AGG(t_surrounding.crange) cranges
+                         FROM token t_surrounding
+                        WHERE t_surrounding.book_id = t.book_id
+                          AND t_surrounding.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s
+                                             AND t.ordering - %(anchor_offset)s + (%(total_likes)s - 1) + %(contextsize)s
+                   ) c on TRUE
                  WHERE t.book_id IN %(book_ids)s
                    AND t.part_of ? %(part_of)s
             """
