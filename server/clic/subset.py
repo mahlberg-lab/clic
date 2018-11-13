@@ -162,15 +162,21 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
 
     query = """
         SELECT r.book_id
-             , ARRAY(SELECT tokens_in_crange(r.book_id, range_expand(r.crange, %(contextsize)s))) full_tokens
-             , ARRAY_AGG(t.crange ORDER BY t.book_id, LOWER(t.crange)) node_tokens
+             , c.full_tokens full_tokens
+             , c.is_node is_node
              , r.crange node_crange
-             , (ARRAY_AGG(t.part_of))[1] part_of
-          FROM region r, token t
-         WHERE t.book_id = r.book_id AND t.crange <@ r.crange
-           AND r.book_id IN %(book_id)s
+             , c.part_of part_of
+          FROM region r
+          JOIN LATERAL (
+              SELECT ARRAY_AGG(t_surrounding.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering) full_tokens
+                   , ARRAY_AGG(t_surrounding.crange <@ r.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering) is_node
+                   , (ARRAY_AGG(t_surrounding.part_of ORDER BY t_surrounding.book_id, t_surrounding.ordering))[1] part_of
+                FROM token t_surrounding
+               WHERE t_surrounding.book_id = r.book_id
+                 AND t_surrounding.crange <@ range_expand(r.crange, %(contextsize)s)
+               ) c ON TRUE
+          WHERE r.book_id IN %(book_id)s
            AND r.rclass_id IN %(rclass_ids)s
-      GROUP BY r.book_id, r.crange -- NB: Not using LOWER(r.crange) (generally faster) means we don't have to scan the table
     """
     params = dict(
         book_id=tuple(book_ids),
@@ -179,7 +185,8 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
     )
     cur.execute(query, params)
 
-    for book_id, full_tokens, node_tokens, node_crange, part_of in cur:
+    for book_id, full_tokens, is_node, node_crange, part_of in cur:
+        node_tokens = [crange for crange, include in zip(full_tokens, is_node) if include]
         if not book or book['id'] != book_id:
             book = get_book(book_cur, book_id, content=True)
         yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
