@@ -101,7 +101,7 @@ def regions_unflatten(regions):
         out[r[0]].append((
             int(r[1]),  # Start
             int(r[2]),  # End
-        ) if r[3] is None or r[3] == '' else (
+        ) if len(r) < 4 or r[3] is None or r[3] == '' else (
             int(r[1]),  # Start
             int(r[2]),  # End
             int(r[3]),  # rvalue
