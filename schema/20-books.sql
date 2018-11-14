@@ -211,8 +211,8 @@ BEGIN
     -- Add our indexes to the extra metadata
     EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_ordering ON %1$s (book_id, ordering)$$, token_tbl);
     EXECUTE format($$COMMENT ON INDEX %1$s_book_id_ordering IS 'Selecting tokens around a point in concordance'$$, token_tbl);
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS trgm_%1$s_ttype_part_of ON %1$s USING GIN (book_id, ttype gin_trgm_ops, part_of)$$, token_tbl);
-    EXECUTE format($$COMMENT ON INDEX trgm_%1$s_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance'$$, token_tbl);
+    EXECUTE format($$CREATE INDEX IF NOT EXISTS trgm_%1$s_book_id_ttype_part_of ON %1$s USING GIN (book_id, ttype gin_trgm_ops, part_of)$$, token_tbl);
+    EXECUTE format($$COMMENT ON INDEX trgm_%1$s_book_id_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance'$$, token_tbl);
 END;
 $BODY$ LANGUAGE 'plpgsql' SECURITY DEFINER;
 COMMENT ON FUNCTION book_import_finalise(new_book_id INT) IS $$Update metadata and index new book data. Call once region/book tables are populated$$;
