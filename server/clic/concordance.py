@@ -265,13 +265,13 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                       , t.part_of
                    FROM token t
                    JOIN LATERAL ( -- i.e. for each valid anchor token, get all tokens around it, including context
-                       SELECT ARRAY_POSITION(ARRAY_AGG(t_surrounding.ordering = t.ordering), TRUE) - %(anchor_offset)s node_start
+                       SELECT ARRAY_POSITION(ARRAY_AGG(t_surrounding.ordering = t.ordering ORDER BY book_id, ordering), TRUE) - %(anchor_offset)s node_start
                             , ARRAY_AGG(CASE WHEN t_surrounding.ordering < (t.ordering - %(anchor_offset)s) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
                                              WHEN t_surrounding.ordering > (t.ordering - %(anchor_offset)s + %(total_likes)s - 1) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
                                              WHEN t_surrounding.part_of ? %(part_of)s THEN t_surrounding.ttype
                                              ELSE NULL -- part of the node, but not in the right rclass, NULL should fail any node checks later on
-                                              END) ttypes
-                            , ARRAY_AGG(t_surrounding.crange) cranges
+                                              END ORDER BY book_id, ordering) ttypes
+                            , ARRAY_AGG(t_surrounding.crange ORDER BY book_id, ordering) cranges
                          FROM token t_surrounding
                         WHERE t_surrounding.book_id = t.book_id
                           AND t_surrounding.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s
