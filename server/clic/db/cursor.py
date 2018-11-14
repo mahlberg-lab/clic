@@ -1,11 +1,12 @@
 import contextlib
 import os
 import logging
+import time
 import threading
 
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import LoggingConnection as BaseLoggingConnection
+from psycopg2.extras import MinTimeLoggingConnection as BaseLoggingConnection
 
 import appconfig
 
@@ -16,12 +17,17 @@ logger = logging.getLogger(__name__)
 explain_logger = logging.getLogger(__name__ + '.explain')
 if os.environ.get('QUERY_LOG', False):
     logging.basicConfig(level=logging.DEBUG)
+    if os.environ['QUERY_LOG'] == 'explain':
+        explain_logger.setLevel(logging.ERROR)
 
 
 class LoggingConnection(BaseLoggingConnection):
     def filter(self, msg, cur):
         if msg:  # NB: msg == None is probably an error, but don't mask it with our own
-            msg = msg.decode('utf8')  # String so loggers know how to print it
+            msg = "%.5fms: %s" % (
+                (time.time() - cur.timestamp) * 1000,  # NB: cur.timestamp comes from using MinTimeLoggingConnection
+                msg.decode('utf8'),  # String so loggers know how to print it
+            )
         if explain_logger.isEnabledFor(logging.DEBUG):
             if msg.startswith("EXPLAIN "):
                 return None  # Avoid infinite recursion

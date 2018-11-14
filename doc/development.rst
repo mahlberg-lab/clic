@@ -16,6 +16,7 @@ To start the API server in debug mode::
 To log database queries that the API makes::
 
      QUERY_LOG=yes make start
+     QUERY_LOG=explain make start  # Also include explain plan
 
 Client-side development
 -----------------------
