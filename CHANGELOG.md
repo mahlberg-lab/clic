@@ -12,6 +12,7 @@
 * region: Initial text between parts and chapters is now part of the previous chapter, instead of being in it's own chapter. This will reduce chapter counts for books broken up into parts. [BREAKING CHANGE]
 * text: Shows book content verbatim from corpora repo, allows copy and paste
 * text: Hide embedded suspensions, since we no longer mark them up
+* cluster: Clusters now ignores boundaries, and only pays attention to token order. i.e. clusters can span adajcent quotes, but not chapters (as the title is in the way) [BREAKING CHANGE]
 
 ## 1.7-beta3 (2018-09-21)
 

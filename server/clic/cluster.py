@@ -73,17 +73,19 @@ The cluster search peforms the following steps:
    selection to a database region. If the subset 'all' is selected, use
    chapters as our region.
 
-2. Form a list of both tokens in the selected region, and the start of each
-   region. Order these by their position in book.
+2. Form a list of both tokens in the selected region. Order these by their
+   overall position in book.
 
-3. Consider each (clusterlength) set of items in the list. If one of the set is
-   a start of a region, this cluster crosses a boundary and is ignored.
+3. Consider each (clusterlength) set of items in the list. If there are any
+   gaps in their overall position, we discard the cluster. This means:
 
-4. For the remaining token-only sets, concatenate the token types together to
-   create the cluster.
+   * Clusters will span adjacent regions, e.g. a cluster spanning 2 quotes will
+     be included.
+   * Clusters will not span 2 adjacent chapters, since the chapter title tokens
+     will cause a gap in the tokens.
 
-5. Count instances of each unique cluster, applying frequency cut-off before
-   returning result.
+4. For the remaining clusters, count instances of each unique cluster, applying
+   frequency cut-off before returning result.
 
 Examples / edge cases
 ---------------------
@@ -176,12 +178,13 @@ But if we only select within quotes, we do not span to the next quote::
     ...   subset=['quote'], clusterlength=['2'], cutoff=['0'])) if 'day' in x[0]]
     [('wonderful day', 1)]
 
-If quotes are adjacent we cannot get a cluster that straddles the quote
-boundary in the 3rd and 4th paragraph::
+We do not treat end-of-quotes as a boundary. If quotes are adjacent then we
+will get a cluster that straddles the quote boundary in the 3rd and 4th
+paragraph::
 
     >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
     ...   subset=['quote'], clusterlength=['2'], cutoff=['0'])) if 'then' in x[0]]
-    [('doing then', 1)]
+    [('doing then', 1), ('then is', 1)]
 
 We do not form clusters across books when selecting multiple books::
 
@@ -237,41 +240,31 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
     - Concatenated tokens
     - Frequency of them in given text
     """
-    params = dict(
-        book_ids=tuple(book_ids),
-        extra_tokens=clusterlength - 1,
-    )
+    if len(rclass_ids) != 1:
+        raise NotImplementedError()
+
     query = """
         SELECT ttypes
              , COUNT(*)
           FROM (
             SELECT book_id
-                   -- NB: Sort by ttype NULLS FIRST so that "[chapter.para] first words" is ordered appropriately
-                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, LOWER(crange), ttype NULLS FIRST ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
-                 , BOOL_AND(ttype IS NOT NULL) OVER (ORDER BY book_id, LOWER(crange), ttype NULLS FIRST ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ngram_valid
-              FROM (
-                SELECT t.book_id, t.crange, t.ttype
-                  FROM token t
-                 WHERE book_id IN %(book_ids)s
-    """
-    if len(rclass_ids) > 0:
-        # Make sure these tokens are in an appropriate region
-        query += """
-                   AND t.part_of ? %(rclass_id)s
-        """
-        params['rclass_id'] = str(rclass_ids[0])
-        if len(rclass_ids) > 1:
-            raise NotImplementedError()
-    query += """
-                    UNION ALL
-                SELECT r.book_id, r.crange, NULL ttype
-                  FROM region r
-                 WHERE book_id IN %(book_ids)s
-                   AND r.rclass_id = %(rclass_id)s
-                   ) regions_and_tokens
+                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
+                 , MIN(ordering) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) min_ordering
+                 , MAX(ordering) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) max_ordering
+                 , COUNT(ttype) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttype_count
+              FROM token t
+             WHERE book_id IN %(book_ids)s
+               AND t.part_of ? %(rclass_id)s
                ) all_ngrams
-         WHERE ngram_valid
+         WHERE max_ordering - min_ordering = %(extra_tokens)s
+           AND ttype_count = %(extra_tokens)s + 1
+               -- NB: Technically we should check to see if they are all part of the same book, but in practice books aren't going to be short enough to trigger it
       GROUP BY ttypes
     """
+    params = dict(
+        book_ids=tuple(book_ids),
+        extra_tokens=clusterlength - 1,
+        rclass_id=str(rclass_ids[0]),
+    )
     cur.execute(query, params)
     return cur
