@@ -57,7 +57,9 @@ def just_metadata(conc_results):
 
 def format_cluster(cluster_results):
     """Drop footer, just include results"""
-    return [x for x in cluster_results if x[0] != 'footer']
+    cluster_results = [x for x in cluster_results if x[0] != 'footer']
+    cluster_results.sort(key=lambda x: x[0])
+    return cluster_results
 
 
 def run_tagger(content, *fns):

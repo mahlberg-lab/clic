@@ -91,43 +91,108 @@ Examples / edge cases
 These are the corpora we use for the following tests::
 
     >>> db_cur = test_database(
+    ... alice='''
+    ... Alice’s Adventures in Wonderland
+    ... Lewis Carroll
+    ...
+    ... CHAPTER I. Down the Rabbit-Hole
+    ...
+    ... Alice was beginning to get very tired of sitting by her sister on the
+    ... bank, and of having nothing to do:
+    ... '''.strip(),
     ... willows='''
     ... The Wind in the Willows
     ... Kenneth Grahame
     ...
-    ... The Mole was so touched by his kind manner of speaking that he could
-    ... find no voice to answer him; and he had to brush away a tear or two with
     ...
-    ... Then a firm paw gripped
-    ... him by the back of his neck. It was the Rat, and he was evidently
-    ... laughing--the Mole could FEEL him laughing, right down his arm and
-    ... through his paw, and so into his--the Mole’s--neck.
+    ... CHAPTER I. THE RIVER BANK
     ...
-    ... ‘This is fine!’ he said to himself. ‘This is better than whitewashing!’
+    ... The Rat said nothing, but stooped and unfastened a rope and hauled
+    ... on it; then lightly stepped into a little boat which the Mole had not
+    ... observed. It was painted blue outside and white within, and was just the
+    ... size for two animals; and the Mole’s whole heart went out to it at once,
+    ... even though he did not yet fully understand its uses.
+    ...
+    ... ‘This has been a wonderful day!’ said he, as the Rat shoved off and took
+    ... to the sculls again. ‘Do you know, I’ve never been in a boat before in
+    ... all my life.’
+    ...
+    ... ‘What?’ cried the Rat, open-mouthed: ‘Never been in a--you never--well
+    ... I--what have you been doing, then?’
+    ...
+    ... ‘Is it so nice as all that?’ asked the Mole shyly, though he was quite
+    ... prepared to believe it as he leant back in his seat and surveyed the
+    ... cushions, the oars, the rowlocks, and all the fascinating fittings, and
+    ... felt the boat sway lightly under him.
+    ...
+    ... CHAPTER II. THE OPEN ROAD
+    ...
+    ...
+    ... ‘Ratty,’ said the Mole suddenly, one bright summer morning, ‘if you
+    ... please, I want to ask you a favour.’
+    ...
     ... '''.strip())
 
-We count "The Mole" and "the Mole" as the same, since the types are equivalent,
-however "the Mole's" doesn't count::
+Searching for all clusters and filtering for ones with "mole" in, we see that
+"the Mole" and "the Mole's" count as different clusters::
 
-    >>> format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2']))
-    [('and he', 2), ('the mole', 2), ('this is', 2)]
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'mole' in x[0]]
+    [('mole had', 1), ('mole shyly', 1), ('mole suddenly', 1),
+     ("mole's whole", 1), ('the mole', 3), ("the mole's", 1)]
 
-When we select across all text, quotes nor paragraphs are not considered boundaries::
+There are no clusters with "willows" or "chapter" in, as they are outside the
+chapter text::
 
-    >>> ('fine he', 1) in format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2'], cutoff=[0]))
-    True
-    >>> ('neck this', 1) in format_cluster(cluster(db_cur, ['all'], ['willows'], clusterlength=['2'], cutoff=[0]))
-    True
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'willows' in x[0]]
+    []
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'chapter' in x[0]]
+    []
 
-... but when we get clusters from quotes, "fine he" is not included, since it
-straddles a quote boundary::
+Paragraphs aren't considered a boundary, as "Life.’ / ‘What" (2nd--3rd
+paragraph) is a cluster::
 
-    >>> format_cluster(cluster(db_cur, ['quote'], ['willows'], clusterlength=['2'], cutoff=[0]))
-    [('better than', 1),
-     ('is better', 1),
-     ('is fine', 1),
-     ('than whitewashing', 1),
-     ('this is', 2)]
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'life' in x[0]]
+    [('life what', 1), ('my life', 1)]
+
+...however, "him ‘Ratty" (Ch 1-- Ch 2) is not, the chapter title is in the way::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'ratty' in x[0]]
+    [('ratty said', 1)]
+
+When selecting across all text, quotes are not considered boundaries::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'day' in x[0]]
+    [('day said', 1), ('wonderful day', 1)]
+
+But if we only select within quotes, we do not span to the next quote::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['quote'], clusterlength=['2'], cutoff=['0'])) if 'day' in x[0]]
+    [('wonderful day', 1)]
+
+If quotes are adjacent we cannot get a cluster that straddles the quote
+boundary in the 3rd and 4th paragraph::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['quote'], clusterlength=['2'], cutoff=['0'])) if 'then' in x[0]]
+    [('doing then', 1)]
+
+We do not form clusters across books when selecting multiple books::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['alice', 'willows'],
+    ...   subset=['nonquote'], clusterlength=['2'], cutoff=['0'])) if 'nothing' in x[0]]
+    [('having nothing', 1), ('nothing but', 1),
+     ('nothing to', 1), ('said nothing', 1)]
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['alice', 'willows'],
+    ...   subset=['nonquote'], clusterlength=['2'], cutoff=['0'])) if 'alice' in x[0]]
+    [('alice was', 1)]
 
 """
 from clic.db.corpora import corpora_to_book_ids
