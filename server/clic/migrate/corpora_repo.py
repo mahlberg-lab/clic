@@ -22,7 +22,7 @@ def parse_corpora_bib(corpora_dir, bib_name='corpora.bib'):
                 carousel_image_path = None
 
             corpora[c_id]['name'] = c_id
-            corpora[c_id]['title'] = str(entry.rich_fields['title'])
+            corpora[c_id]['title'] = "%s - %s" % (c_id, str(entry.rich_fields['title']))
             corpora[c_id]['description'] = str(entry.rich_fields.get('abstract', ''))
             corpora[c_id]['carousel_image_path'] = carousel_image_path
             corpora[c_id]['ordering'] = int(str(entry.rich_fields['number']))

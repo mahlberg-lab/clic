@@ -162,14 +162,14 @@ class Test_parse_corpora_bib(unittest.TestCase, RequiresCorporaDir):
         self.assertEqual(out, [
             dict(
                 name='ChiLit',
-                title="Children's Literature",
+                title="ChiLit - Children's Literature",
                 description='',
                 ordering=3,
                 carousel_image_path=os.path.join(corpora_dir, 'images', 'ChiLit_0.4.jpg'),
                 contents=['brass', 'toadylion'],
             ), dict(
                 name='ArTs',
-                title='Additional Requested Texts',
+                title='ArTs - Additional Requested Texts',
                 description='',
                 ordering=4,
                 carousel_image_path=None,
