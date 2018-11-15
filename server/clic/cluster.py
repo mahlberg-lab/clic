@@ -143,6 +143,13 @@ Searching for all clusters and filtering for ones with "mole" in, we see that
     [('mole had', 1), ('mole shyly', 1), ('mole suddenly', 1),
      ("mole's whole", 1), ('the mole', 3), ("the mole's", 1)]
 
+Instances of "The Rat" and "the Rat" are combined though, since the types ignore case::
+
+    >>> [x for x in format_cluster(cluster(db_cur, corpora=['willows'],
+    ...   subset=['all'], clusterlength=['2'], cutoff=['0'])) if 'rat' in x[0]]
+    [('rat open-mouthed', 1), ('rat said', 1), ('rat shoved', 1), ('ratty said', 1),
+     ('the rat', 3)]
+
 There are no clusters with "willows" or "chapter" in, as they are outside the
 chapter text::
 
