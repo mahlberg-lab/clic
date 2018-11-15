@@ -1,45 +1,52 @@
+import collections
 import csv
-import json
 import os
 import os.path
+import pybtex.database
 
 from clic.region.utils import regions_flatten, regions_unflatten
+
+
+def parse_corpora_bib(corpora_dir, bib_name='corpora.bib'):
+    """Read in a corpora.bib, output a list of corpora dicts"""
+    pb = pybtex.database.parse_file(os.path.join(corpora_dir, bib_name))
+
+    corpora = collections.defaultdict(lambda: dict(contents=[]))
+    for _, entry in pb.entries.items():
+        keywords = [str(x) for x in entry.rich_fields['keywords'].split(',')]
+        if 'corpus' in keywords:
+            c_id = str(entry.rich_fields['shorttitle'])
+
+            carousel_image_path = os.path.join(corpora_dir, 'images', "%s_0.4.jpg" % c_id)
+            if not os.path.exists(carousel_image_path):
+                carousel_image_path = None
+
+            corpora[c_id]['name'] = c_id
+            corpora[c_id]['title'] = str(entry.rich_fields['title'])
+            corpora[c_id]['description'] = str(entry.rich_fields.get('abstract', ''))
+            corpora[c_id]['carousel_image_path'] = carousel_image_path
+            corpora[c_id]['ordering'] = int(str(entry.rich_fields['number']))
+        else:
+            for kw in keywords:
+                corpora[kw]['contents'].append(str(entry.rich_fields['shorttitle']))
+
+    return list(corpora.values())
 
 
 def get_corpora_for(book_paths):
     """
     Return all corpora objects that contain the books in book_paths
     """
-    if len(book_paths) == 0:
-        return []
+    wanted_books = set(os.path.splitext(os.path.basename(p))[0] for p in book_paths)
 
     # Assume all books sit in the same root
     corpora_dir = os.path.dirname(os.path.dirname(book_paths[0]))
-    with open(os.path.join(corpora_dir, 'corpora.json'), 'r') as f:
-        corpora_doc = json.load(f)
+    corpora = parse_corpora_bib(corpora_dir)
 
-    # Make lookup of corpora names to details
-    corpora_lookup = {}
-    for i, c in enumerate(corpora_doc['corpora']):
-        carousel_image_path = os.path.join(corpora_dir, 'images', "%s_0.4.jpg" % c['id'])
-
-        corpora_lookup[c['id']] = dict(
-            name=c['id'],
-            title=c['title'],
-            description=c['description'],
-            contents=[b['shorttitle'] for b in corpora_doc['content'][c['id']]],
-            carousel_image_path=carousel_image_path if os.path.exists(carousel_image_path) else None,
-            ordering=i,
-        )
-
-    # For each book we want, find the relevant corpora entry
-    wanted_books = set(os.path.relpath(p, corpora_dir) for p in book_paths)
-    out = {}
-    for corpora_name, books in corpora_doc['content'].items():
-        for b in books:
-            if b['path'] in wanted_books:
-                out[corpora_name] = corpora_lookup[corpora_name]
-    return out.values()
+    # For each corpora, return it if it's contents are part of wanted_books
+    for c in corpora:
+        if not wanted_books.isdisjoint(c['contents']):
+            yield c
 
 
 def to_region_file(book_path):

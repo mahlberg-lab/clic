@@ -32,3 +32,10 @@ Ideally (re-)import the entire corpora repository with::
     ./server/bin/import_corpora_repo corpora/ChiLit/alone.txt
 
 Restart CLiC with ``./install.sh`` to ensure that caches are flushed.
+
+What if my book is not appearing in CLiC?
+-----------------------------------------
+
+First, make sure that the ``corpora.bib`` file has an entry for your new book.
+Without an entry here, CLiC will not know to add it it to the corpus, and thus it will not appear in the drop-down.
+Re-import the book once this has been done.
