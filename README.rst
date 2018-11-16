@@ -5,7 +5,7 @@ The CLiC Dickens project demonstrates through corpus stylistics how computer-ass
 
 CLiC code is divided into 2 halves, the python API server in ``server/`` and the HTML/Javascript client in ``client/``.
 
-Documentation for CLiC is stored in ``doc/``.
+Documentation for CLiC is stored in ``docs/``.
 
 For more information, cf. `CLiC Dickens - University of Birmingham <http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx/>`_.
 
@@ -95,7 +95,7 @@ CLiC content is stored in the corpora repository, to add this content do the fol
 
 As of 2018, this process takes just under 3 hours.
 
-At this point CLiC should be ready for use. For more detail on various topics, see the `doc directory <doc/>`__.
+At this point CLiC should be ready for use. For more detail on various topics, see the `docs directory <docs/>`__.
 
 Acknowledgements
 ----------------
