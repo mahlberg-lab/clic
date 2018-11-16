@@ -1,7 +1,6 @@
 flake8
 coverage
 psycopg2-binary
-sphinx
 wheel
 -e .
 .[testing]

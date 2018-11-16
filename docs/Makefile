@@ -2,6 +2,7 @@ SHELL=/bin/bash -o pipefail
 EGG_NAME=clic
 
 SPHINXOPTS    =
+SPHINXBUILD   = ./bin/sphinx-build
 PAPER         =
 BUILDDIR      = $(CURDIR)/_build
 
@@ -26,13 +27,25 @@ coverage:
 
 start:
 
-_build/.buildinfo: *.rst */*.rst
+bin/pip:
+	python3 -m venv .
+
+lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
+	# Install frozen requirements
+	./bin/pip install -r requirements.txt
+	# Make sure any new requirements are available
+	./bin/pip install -r requirements-to-freeze.txt
+	# Freeze the output at current state
+	./bin/pip freeze | grep -v egg=$(EGG_NAME) > requirements.txt
+	touch lib/.requirements
+
+_build/.buildinfo: lib/.requirements *.rst */*.rst
 	[ -d "./module" ] && rm -r -- ./module || mkdir ./module
-	../server/bin/sphinx-apidoc  -H "Module documentation" -o module -e ../server/ \
+	./bin/sphinx-apidoc  -H "Module documentation" -o module -e ../server/ \
 	    '../server/appconfig.py' \
 	    '../server/conftest.py' \
 	    '../server/tests/*.py' \
 	    '../server/setup.py'
-	../server/bin/sphinx-build -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
+	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
 
 .PHONY: compile test lint coverage start
