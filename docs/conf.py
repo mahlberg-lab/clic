@@ -201,6 +201,7 @@ def run_apidoc(_):
     ])
 
 autodoc_mock_imports = """
+appconfig
 numpy pandas
 pybtex
 psycopg2
