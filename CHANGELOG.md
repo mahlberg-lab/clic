@@ -14,6 +14,7 @@
 * text: Hide embedded suspensions, since we no longer mark them up
 * cluster: Clusters now ignores boundaries, and only pays attention to token order. i.e. clusters can span adajcent quotes, but not chapters (as the title is in the way) [BREAKING CHANGE]
 * migrate: Pull corpora information directly from corpora.bib
+* keyword: Click on keyword clusters to see concordance lines
 
 ## 1.7-beta3 (2018-09-21)
 

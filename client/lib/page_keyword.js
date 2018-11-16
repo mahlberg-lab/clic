@@ -4,6 +4,18 @@
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
+/* Clusters should link back to an equivalent concordance */
+function renderCluster(data, type, full, meta) {
+    if (type === 'display') {
+        return '<a title="Click to find individual concordances" target="_blank"' +
+               ' onclick="event.stopPropagation();"' +
+               ' href="' + full.cluster_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
+               '>' + data + '</a>';
+    }
+
+    return data;
+}
+
 // PageKeyword inherits PageTable
 function PageKeyword() {
     return PageTable.apply(this, arguments);
@@ -17,7 +29,7 @@ PageKeyword.prototype.init = function () {
     this.table_opts.autoWidth = false;
     this.table_opts.columns = [
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "N-gram", data: "1"},
+        { title: "N-gram", data: "1", render: renderCluster },
         { title: "Target frequency", data: "2"},
         { title: "Ref frequency", data: "4"},
         { title: "LL", data: "8"},
@@ -55,7 +67,25 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a reference subset", "warn");
     }
 
-    return this.cached_get('keyword', api_opts);
+    return this.cached_get('keyword', api_opts).then(this.post_process.bind(this, page_state));
+};
+
+PageKeyword.prototype.post_process = function (page_state, raw_data) {
+    var i, url_prefix,
+        data = raw_data.data || [];
+
+    url_prefix = page_state.clone({doc: 'concordance', args: {
+        corpora: page_state.arg('corpora'),
+        'conc-subset': page_state.arg('subset'),
+    }}, true).to_url();
+    console.log("Parp" + url_prefix);
+
+    for (i = 0; i < data.length; i++) {
+        // Add cluster URL prefix for use in the render function
+        data[i].cluster_url_prefix = url_prefix;
+    }
+
+    return raw_data;
 };
 
 module.exports = PageKeyword;
