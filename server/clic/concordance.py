@@ -153,6 +153,16 @@ We don't match ``cheerfully`` in willows, though::
     >>> format_conc(concordance(db_cur, ['willows'], q=['f*ll *']))
     [['willows', 47, 'full', 'Thought']]
 
+Can use ``?`` to match precisely one character::
+
+    >>> format_conc(concordance(db_cur, ['willows'], q=['the?']))
+    [['willows', 126, 'They']]
+
+...where ``*`` matches 0 or many characters::
+
+    >>> format_conc(concordance(db_cur, ['willows'], q=['the*']))
+    [['willows', 23, 'the'], ['willows', 103, 'the'], ['willows', 126, 'They']]
+
 Search multiple books at the same time::
 
     >>> format_conc(concordance(db_cur, ['alice', 'willows'], q=['f*ll *']))
@@ -240,6 +250,13 @@ converting to types::
     ... ''')]
     ['we', 'have', 'books', 'everywhere',
      'moo', 'oi', 'nk']
+
+We also support ``?`` for single characters, which get turned into a like
+expression ``_``::
+
+    >>> [x for x in parse_query('''To the ?th degree''')]
+    ['to', 'the', '?th', 'degree']
+
 """
 import re
 
@@ -412,8 +429,10 @@ def parse_query(q):
         return (t.replace('\\', '\\\\')
                  .replace('%', '\\%')
                  .replace('_', '\\_')
+                 .replace('?', '_')
                  .replace('*', '%'))
 
     return list(term_to_like(t) for t, word_start, word_end in types_from_string(q, additional_word_parts=set((
-        '*',  # Consider * to be part of a type, so we can use it as a wildcard
+        '*',  # Consider * to be part of a type, 0-or-more chars
+        '?',  # Consider * to be part of a type, exactly 1 char
     ))))
