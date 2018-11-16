@@ -13,6 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import os.path
 import sys
 
 server_dir = os.path.abspath('../server')
@@ -184,7 +185,8 @@ def run_apidoc(_):
     """
     from sphinx.ext import apidoc
 
-    os.makedirs('module', exist_ok=True)
+    if not os.path.isdir('module'):
+        os.makedirs('module')
     apidoc.main([
         "--doc-project", "Module documentation",
         "--force",
