@@ -28,7 +28,7 @@ start:
 
 _build/.buildinfo: *.rst */*.rst
 	[ -d "./module" ] && rm -r -- ./module || mkdir ./module
-	../server/bin/sphinx-apidoc -o module -e ../server/ \
+	../server/bin/sphinx-apidoc  -H "Module documentation" -o module -e ../server/ \
 	    '../server/appconfig.py' \
 	    '../server/conftest.py' \
 	    '../server/tests/*.py' \
