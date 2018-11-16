@@ -14,7 +14,9 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../server'))
+
+server_dir = os.path.abspath('../server')
+sys.path.insert(0, server_dir)
 
 
 # -- Project information -----------------------------------------------------
@@ -173,8 +175,28 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
+# -- Autodoc configuration ---------------------------------------------------
+import sphinx.apidoc
 
-# -- Extension configuration -------------------------------------------------
+def run_apidoc(_):
+    """
+    Auto-run sphinx-autodoc
+    """
+    from sphinx.ext import apidoc
+
+    os.makedirs('module', exist_ok=True)
+    apidoc.main([
+        "--doc-project", "Module documentation",
+        "--force",
+        "--separate",
+        "-o", "module",
+        server_dir,
+        os.path.join(server_dir, 'appconfig.py'),
+        os.path.join(server_dir, 'clic', 'uwsgi.py'),
+        os.path.join(server_dir, 'conftest.py'),
+        os.path.join(server_dir, 'tests', '*.py'),
+        os.path.join(server_dir, 'setup.py'),
+    ])
 
 autodoc_mock_imports = """
 numpy pandas
@@ -184,3 +206,8 @@ icu
 unidecode
 flask flask_cors
 """.split()
+
+# ----------------------------------------------------------------------------
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
