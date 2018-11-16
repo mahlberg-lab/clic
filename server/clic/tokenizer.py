@@ -110,29 +110,6 @@ word in the unicode standard::
     ... had some reputation as a _connoisseur_.
     ... ''')]
     ['had', 'some', 'reputation', 'as', 'a', 'connoisseur']
-
-When we parse for concordance search queries, we preserve asterisks and convert
-them into percent marks, which is what the database uses to mean "0 or more
-characters" in like expressions (see `concordance <concordance.py>`__)::
-
-    >>> parse_query('''
-    ... We have *books everywhere*!
-    ...
-    ... Moo* * oi*-nk
-    ... ''')
-    ['we', 'have', '%books', 'everywhere%',
-     'moo%', '%', 'oi%-nk']
-
-If the same phrase was in a book, we would throw away the asterisks when
-converting to types::
-
-    >>> [x[0] for x in types_from_string('''
-    ... We have *books everywhere*!
-    ...
-    ... Moo* * oi*-nk
-    ... ''')]
-    ['we', 'have', 'books', 'everywhere',
-     'moo', 'oi', 'nk']
 """
 import re
 
@@ -140,10 +117,6 @@ import icu
 import unidecode
 
 from .icuconfig import DEFAULT_LOCALE
-
-QUERY_ADDITIONAL_WORD_PARTS = set((
-    '*',  # Consider * to be part of a type, so we can use it as a wildcard
-))
 
 HYPHEN_WORD_PARTS = set((
     # Hyphens from note in http://www.unicode.org/reports/tr29/
@@ -244,17 +217,3 @@ def types_from_string(s, offset=0, additional_word_parts=set()):
     # Convert token list to types
     # NB: This needs to be developed in lock-step with client/lib/concordance_utils.js
     return (unidecode.unidecode(s.lower()) for s in out)
-
-
-def parse_query(q):
-    """
-    Turn a query string into a list of LIKE expressions
-    """
-    def term_to_like(t):
-        """Escape any literal LIKE terms, convert * to %"""
-        return (t.replace('\\', '\\\\')
-                 .replace('%', '\\%')
-                 .replace('_', '\\_')
-                 .replace('*', '%'))
-
-    return list(term_to_like(t) for t, word_start, word_end in types_from_string(q, additional_word_parts=QUERY_ADDITIONAL_WORD_PARTS))

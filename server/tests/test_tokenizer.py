@@ -1,6 +1,6 @@
 import unittest
 
-from clic.tokenizer import types_from_string, parse_query
+from clic.tokenizer import types_from_string
 
 
 class TestTypesFromString(unittest.TestCase):
@@ -28,16 +28,4 @@ class TestTypesFromString(unittest.TestCase):
             ('am', 1002, 1004),
             ('a', 1005, 1006),
             ('cat', 1008, 1011)
-        ])
-
-
-class TestParseQuery(unittest.TestCase):
-    # NB: The main tests for tokenizer are doctests in the module
-
-    def test_main(self):
-        # Underscores are escaped as well as asterisks being converted
-        self.assertEqual(parse_query("""
-            Moo* * oi*-nk b_th
-        """), [
-            "moo%", "%", "oi%-nk", "b\\_th"
         ])

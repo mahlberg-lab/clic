@@ -211,6 +211,35 @@ When searching in subsets, we do *not* consider boundaries, searching for
     [['alice', 341, 'to', 'the', 'fifth', 'bend', 'I',
       '**', 'think', 'I', '**',
       'had', 'NOT', 'cried', 'the', 'Mouse']]
+
+Query parsing
+-------------
+
+Query parsing is done by tokenising the string using the `tokenizer module
+<../clic.tokenizer/>` into a list of types, see there for more information.
+
+When we parse for concordance search queries, we preserve asterisks and convert
+them into percent marks, which is what the database uses to mean "0 or more
+characters" in like expressions (see `concordance <concordance.py>`__)::
+
+    >>> parse_query('''
+    ... We have *books everywhere*!
+    ...
+    ... Moo* * oi*-nk
+    ... ''')
+    ['we', 'have', '%books', 'everywhere%',
+     'moo%', '%', 'oi%-nk']
+
+If the same phrase was in a book, we would throw away the asterisks when
+converting to types::
+
+    >>> [x[0] for x in types_from_string('''
+    ... We have *books everywhere*!
+    ...
+    ... Moo* * oi*-nk
+    ... ''')]
+    ['we', 'have', 'books', 'everywhere',
+     'moo', 'oi', 'nk']
 """
 import re
 
@@ -219,7 +248,7 @@ from clic.db.book_metadata import get_book_metadata
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
-from clic.tokenizer import parse_query
+from clic.tokenizer import types_from_string
 
 RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns it
 
@@ -372,3 +401,19 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     if len(concs) < 3:
         concs.append([[]])
     return [concs[1]] if contextsize == 0 else concs
+
+
+def parse_query(q):
+    """
+    Turn a query string into a list of LIKE expressions
+    """
+    def term_to_like(t):
+        """Escape any literal LIKE terms, convert * to %"""
+        return (t.replace('\\', '\\\\')
+                 .replace('%', '\\%')
+                 .replace('_', '\\_')
+                 .replace('*', '%'))
+
+    return list(term_to_like(t) for t, word_start, word_end in types_from_string(q, additional_word_parts=set((
+        '*',  # Consider * to be part of a type, so we can use it as a wildcard
+    ))))

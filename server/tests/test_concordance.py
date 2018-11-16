@@ -2,7 +2,7 @@ import unittest
 
 from psycopg2._range import NumericRange
 
-from clic.concordance import concordance, to_conc
+from clic.concordance import concordance, to_conc, parse_query
 
 from .requires_postgresql import RequiresPostgresql
 
@@ -82,6 +82,18 @@ class Test_to_conc(unittest.TestCase):
             ['a', ' ', 'bar', '.', ' ', [0, 2]],
             ['"', 'Ouch!', '",', [1]],
             [' ', 'he', ' ', 'said', [1, 3]],
+        ])
+
+
+class TestParseQuery(unittest.TestCase):
+    # NB: The main tests for tokenizer are doctests in the module
+
+    def test_main(self):
+        # Underscores are escaped as well as asterisks being converted
+        self.assertEqual(parse_query("""
+            Moo* * oi*-nk b_th
+        """), [
+            "moo%", "%", "oi%-nk", "b\\_th"
         ])
 
 
