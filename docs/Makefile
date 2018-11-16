@@ -31,7 +31,8 @@ _build/.buildinfo: *.rst */*.rst
 	../server/bin/sphinx-apidoc -o module -e ../server/ \
 	    '../server/appconfig.py' \
 	    '../server/conftest.py' \
-	    '../server/tests/*.py'
+	    '../server/tests/*.py' \
+	    '../server/setup.py'
 	../server/bin/sphinx-build -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
 
 .PHONY: compile test lint coverage start
