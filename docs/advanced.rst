@@ -7,3 +7,5 @@ Advanced topics
    advanced/adding_corpora
    advanced/api_usage
    advanced/development
+
+* :ref:`modindex`
