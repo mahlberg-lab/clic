@@ -149,7 +149,7 @@ boundaries are defined as a sequence of 2 newlines within chapter text (i.e. a
 blank line in the text).
 
 ``chapter.paragraph`` are then broken up into ``chapter.sentence``, using the
-Unicode sentence segmentation in [UAX29], using the implementation in the [ICU]
+Unicode sentence segmentation in [UAX29]_, using the implementation in the [ICU]_
 library.
 
 * We use the ``en_GB@ss=standard`` locale (ss=standard tells ICU to not treat
@@ -207,10 +207,6 @@ break anyway. We also don't break on "Mr. Oliver"::
      ('chapter.sentence', 141, 236, 2, 'Above the door was p...Oliver, News Agent."'),
      ('chapter.paragraph', 238, 395, 2, 'So if you wish to st...et all these things.'),
      ('chapter.sentence', 238, 395, 3, 'So if you wish to st...et all these things.')]
-
-.. [ICU] http://userguide.icu-project.org/boundaryanalysis
-.. [UAX29] https://www.unicode.org/reports/tr29/tr29-33.html#Word_Boundaries
-.. [UNIDECODE] https://pypi.org/project/Unidecode/
 """
 import re
 

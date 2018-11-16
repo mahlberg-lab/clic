@@ -12,6 +12,7 @@ CLiC
    advanced
    appendices
    footnotes
+   references
 
 * :ref:`genindex`
 * :ref:`search`

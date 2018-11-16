@@ -7,8 +7,8 @@ incoming texts and when parsing concordance queries
 Method
 ------
 
-To extract tokens, we use Unicode text segmentation as described in [UAX29],
-using the implementation in the [ICU] library and standard rules for en_GB, and
+To extract tokens, we use Unicode text segmentation as described in [UAX29]_,
+using the implementation in the [ICU]_ library and standard rules for en_GB, and
 then apply our own additions (see later).
 
 Please read the document for a full description of ICU word boundaries, however
@@ -43,7 +43,7 @@ Tokens are then extracted by combining all text before adjacent word-boundaries,
 Tokens are then normalised into types by:-
 
 * Lower-casing, ``The`` -> ``the``.
-* Normalising any non-ascii characters with [UNIDECODE], e.g.
+* Normalising any non-ascii characters with [UNIDECODE]_, e.g.
   * ``can’t`` -> ``can't``.
   * ``café`` -> ``cafe``.
 * Removing any surrounding underscores, e.g. ``_connoisseur_`` -> ``connoisseur``.
@@ -133,13 +133,6 @@ converting to types::
     ... ''')]
     ['we', 'have', 'books', 'everywhere',
      'moo', 'oi', 'nk']
-
-References
-----------
-
-.. [ICU] http://userguide.icu-project.org/boundaryanalysis
-.. [UAX29] https://www.unicode.org/reports/tr29/tr29-33.html#Word_Boundaries
-.. [UNIDECODE] https://pypi.org/project/Unidecode/
 """
 import re
 
