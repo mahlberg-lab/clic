@@ -7,10 +7,11 @@ from clic.tokenizer import types_from_string
 
 def put_book(cur, book):
     """
-    Import a book object
-    - name: The shortname of the book
-    - content: The full book string, as per instructions in the corpora repository
-    - An entry for each rclass, e.g. "chapter.text": See /schema/10-rclass.sql. A list of...
+    Import a book object:
+
+    * name: The shortname of the book
+    * content: The full book string, as per instructions in the corpora repository
+    * An entry for each rclass, e.g. "chapter.text": See /schema/10-rclass.sql. A list of...
       - off_start: Character offset for start of this region
       - off_end: Character offset for end of this region, non-inclusive
       - rvalue: rvalue, e.g. chapter number (see /schema/10-rclass.sql)

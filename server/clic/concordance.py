@@ -46,7 +46,7 @@ corpora ingested in the database.
 Query (q parameter) format
 --------------------------
 
-Queries are broken down using the `tokenizer <tokenizer.py>`__ into lists of
+Queries are broken down using the `tokenizer <../clic.tokenizer>`__ into lists of
 types to search for. This means any punctuation, spaces or newlines are
 ignored.
 
@@ -87,7 +87,7 @@ The concordance search peforms the following steps:
 1. Resolve the corpora option to a list of book IDs, translate the subset
    selection to a database region.
 
-2. Tokenise each provided query using the standard method in `tokenizer.py`_,
+2. Tokenise each provided query using the standard method in `tokenizer <../clic.tokenizer>`_,
    converting into a list of database `like expressions`_ for types.
    Note that the CLiC UI generally only provides
    one query, unless you select "Any word", in which case it separates on
@@ -141,13 +141,13 @@ These are the corpora we use for the following tests::
     ... this morning.
     ... ''')
 
-"f*ll *" matches fall or fell, and selects the word next to it::
+``f*ll *`` matches fall or fell, and selects the word next to it::
 
     >>> format_conc(concordance(db_cur, ['alice'], q=['f*ll *']))
     [['alice', 49, 'fall', 'as'],
      ['alice', 199, 'fell', 'off']]
 
-We don't match "cheerfully" in willows, though::
+We don't match ``cheerfully`` in willows, though::
 
     >>> format_conc(concordance(db_cur, ['willows'], q=['f*ll *']))
     [['willows', 47, 'full', 'Thought']]

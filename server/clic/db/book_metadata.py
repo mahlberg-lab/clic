@@ -51,7 +51,7 @@ We will use concordance for these examples, but the choice shouldn't matter::
 book_titles
 -----------
 
-Return title/author for each book
+Return title/author for each book::
 
     >>> just_metadata(concordance(db_cur, ['alice', 'willows'], q=["the"], metadata=['book_titles']))
     {'book_titles':
@@ -71,7 +71,7 @@ Return the position of the start of each chapter, and "_end" (of the book)::
 word_count_chapter
 ------------------
 
-Return the word count before the start of each chapter, and at the end of book with "_end":
+Return the word count before the start of each chapter, and at the end of book with "_end"::
 
     >>> just_metadata(concordance(db_cur, ['alice', 'willows'], q=["the"], metadata=['word_count_chapter']))
     {'word_count_chapter':
@@ -94,6 +94,7 @@ from clic.db.lookup import rclass_id_lookup, api_subset_lookup
 def get_book_metadata(cur, book_ids, metadata):
     """
     Generate dict of metadata that should go in footer of both concordance and subsets
+
     - book_ids: Array of book IDs to include
     - metadata: Metadata items to include, a set contining some of...
       - 'book_titles': The title / author of each book

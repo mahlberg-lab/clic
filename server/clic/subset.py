@@ -74,6 +74,7 @@ Method
 ------
 
 The subset search peforms the following steps:
+
 1. Resolve the corpora option to a list of book IDs, translate the subset
    selection to a database region.
 

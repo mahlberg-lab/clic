@@ -18,7 +18,7 @@ as a quick example the following phrase::
 
     The| |quick| |(||“|brown|”|)| |fox| |can’t| |jump| |32.3| |feet| |in|-|the|-|air|,| |right|?|
 
-We consider a boundary mark to be a word-boundary if::
+We consider a boundary mark to be a word-boundary if...
 
 * The ICU describes it as at the end of a word, e.g. ``jump`` or number, e.g.
   ``32.3``.
@@ -35,8 +35,8 @@ the outside of words, nor hyphenated-words.
 
 Tokens are then extracted by combining all text before adjacent word-boundaries, e.g.:
 
-* `` |feet‖`` becomes the token ``feet``.
-* `` |in‖-‖the‖-‖air‖,|`` becomes the token ``in-the-air``
+* ``‖ |feet‖`` becomes the token ``feet``.
+* ``‖ |in‖-‖the‖-‖air‖,|`` becomes the token ``in-the-air``
 
 Tokens are then normalised into types by:-
 

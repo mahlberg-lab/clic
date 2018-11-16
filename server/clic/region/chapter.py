@@ -142,11 +142,11 @@ of chapter.text. For example::
 chapter.paragraph / chapter.sentence regions
 --------------------------------------------
 
-All ``chapter.text`` is broken up into ``chapter.paragraph``s, paragraph
+All ``chapter.text`` is broken up into ``chapter.paragraph``, paragraph
 boundaries are defined as a sequence of 2 newlines within chapter text (i.e. a
 blank line in the text).
 
-``chapter.paragraph``s are then broken up into ``chapter.sentence``s, using the
+``chapter.paragraph`` are then broken up into ``chapter.sentence``, using the
 Unicode sentence segmentation in [UAX29], using the implementation in the [ICU]
 library.
 
