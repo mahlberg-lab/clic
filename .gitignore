@@ -52,3 +52,10 @@
 
 /corpora/
 /clic.dump
+
+/docs/_build/
+/docs/bin/
+/docs/lib/
+/docs/lib64
+/docs/pyvenv.cfg
+/docs/share/

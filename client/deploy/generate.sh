@@ -98,6 +98,10 @@ Disallow: /api/
         ${GA_API_ACTION}
     }
 
+    location /docs/ {
+        alias "${PROJECT_PATH}/docs/_build/";
+    }
+
     # Versioned resources can be cached forever
     location ~ ^(.*)\.r\w+\$ {
         try_files \$1 =404;
