@@ -36,7 +36,7 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
 	# Make sure any new requirements are available
 	./bin/pip install -r requirements-to-freeze.txt
 	# Freeze the output at current state
-	./bin/pip freeze | grep -v egg=$(EGG_NAME) > requirements.txt
+	./bin/pip freeze | grep -v egg=$(EGG_NAME)  | grep -v 'pkg-resources==0.0.0' > requirements.txt
 	touch lib/.requirements
 
 _build/.buildinfo: lib/.requirements *.rst */*.rst
