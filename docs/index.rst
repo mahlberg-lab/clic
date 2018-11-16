@@ -1,14 +1,15 @@
-CLiC (v1.6)
-==========================================
+CLiC
+====
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    introduction
    whatsnew
    systemrequirements
    cliccorpora
    clicanalysis
+   advanced
    appendices
    footnotes
 
