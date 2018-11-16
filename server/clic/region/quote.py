@@ -1,4 +1,6 @@
-"""
+"""quote.* tagger
+********************
+
 We need paragraph regions before we can do quote tagging::
 
     >>> from .chapter import tagger_chapter

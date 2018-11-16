@@ -1,4 +1,5 @@
 """Word count endpoint
+**********************
 
 Returns counts of words within subsets
 

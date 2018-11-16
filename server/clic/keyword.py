@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+'''Keyword endpoint
+*******************
 
-'''
 Module to compute keywords (words that are used significantly more frequently
 in one corpus than they are in a reference corpus).
 

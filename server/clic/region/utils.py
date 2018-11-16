@@ -1,3 +1,7 @@
+"""Tagger utilities
+*******************
+
+"""
 def region_append_without_whitespace(book, rclass, start, end, *extra):
     """
     Shrink the region (start, end) until there is no whitespace either end of

@@ -1,4 +1,5 @@
 """Concordance endpoint
+***********************
 
 Searches texts for given phrase(s).
 

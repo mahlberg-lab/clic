@@ -1,3 +1,9 @@
+"""Metadata endpoint
+********************
+
+Fetch various lists of corpora available.
+"""
+
 from clic.db.lookup import rclass_id_lookup
 
 

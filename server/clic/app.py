@@ -1,3 +1,7 @@
+"""clic.app: CLiC Flask application
+***********************************
+
+"""
 from flask import Flask, request, Response, jsonify, g, stream_with_context
 from flask_cors import CORS
 

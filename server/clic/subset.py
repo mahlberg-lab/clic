@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Subset endpoint
+******************
 
 Returns subsets of given texts, for example quotations.
 

@@ -1,4 +1,6 @@
-"""
+"""Cluster endpoint
+*******************
+
 Return a list of word clusters, and their frequency within the given texts.
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within

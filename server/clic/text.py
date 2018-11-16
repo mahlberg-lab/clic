@@ -1,4 +1,5 @@
 """Text endpoint
+****************
 
 Return the full text for a given book.
 

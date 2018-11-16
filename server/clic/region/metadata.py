@@ -1,4 +1,6 @@
-"""
+"""metadata.* tagger
+********************
+
 Add metadata.* tags to regions.
 
 metadata.title / metadata.author regions

@@ -1,4 +1,6 @@
-"""
+"""chapter.* tagger
+*******************
+
 Add chapter.* tags to regions.
 
 Chapter tagging depends on metadata region tags::
