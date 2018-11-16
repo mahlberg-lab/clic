@@ -175,3 +175,12 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+autodoc_mock_imports = """
+numpy pandas
+pybtex
+psycopg2
+icu
+unidecode
+flask flask_cors
+""".split()

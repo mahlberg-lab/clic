@@ -43,6 +43,7 @@ _build/.buildinfo: lib/.requirements *.rst */*.rst
 	[ -d "./module" ] && rm -r -- ./module || mkdir ./module
 	./bin/sphinx-apidoc  -H "Module documentation" -o module -e ../server/ \
 	    '../server/appconfig.py' \
+	    '../server/clic/uwsgi.py' \
 	    '../server/conftest.py' \
 	    '../server/tests/*.py' \
 	    '../server/setup.py'
