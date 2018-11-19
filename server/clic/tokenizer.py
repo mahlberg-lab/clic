@@ -130,6 +130,7 @@ APOSTROPHE_WORD_PARTS = set((
 ))
 
 INITIAL_ABBREVIATIONS = set((
+    'em',  # e.g. alice.txt: "No, tie ’em together first"
     'tis',
     'twas',
     'twill',
