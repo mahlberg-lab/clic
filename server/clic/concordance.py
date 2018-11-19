@@ -255,7 +255,7 @@ We also support ``?`` for single characters, which get turned into a like
 expression ``_``::
 
     >>> [x for x in parse_query('''To the ?th degree''')]
-    ['to', 'the', '?th', 'degree']
+    ['to', 'the', '_th', 'degree']
 
 """
 import re
