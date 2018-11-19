@@ -103,6 +103,13 @@ the standard. Preceding apostrophes have to be part of our whitelist though::
     ... ''')]
     ["'tis", '3', "days'", 'work', 'twmade-up-word']
 
+Preceding apostrophes have to curve the right direction to be detected::
+
+    >>> [x[0] for x in types_from_string('''
+    ...     Closing ’em. Opening ‘em.
+    ... ''')]
+    ["closing", "’em", "opening", "em"]
+
 We strip underscores whilst generating types, which are considered part of a
 word in the unicode standard::
 
