@@ -236,6 +236,28 @@ For example, from ChiLit/alice.txt::
      ('quote.quote', 207, 220, None, '‘Found WHAT?’'),
      ('quote.nonquote', 221, 235, None, 'said the Duck.')]
 
+Embedded quotes can also be found in multi-paragraph quotes, example from ChiLit/overtheway.txt::
+
+    >>> [x for x in run_tagger('''
+    ... "'Poor man! Did he ever marry?'
+    ...
+    ... "'Yes, and very happily--a charming woman. But the strange part of the
+    ... story is, that he came quite unexpectedly into a large property that
+    ... was in his family.'
+    ...
+    ... "'Did he? Then he would have been as good a match as most of her
+    ... admirers?'
+    ...
+    ... "'Better. It was a fine estate. Poor Anastatia!'
+    ...
+    ... "'Serve her right,' said my aunt, shortly."
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.')]
+    [('quote.quote', 0, 364, None, '"\\'Poor man! Did he e...d my aunt, shortly."'),
+     ('quote.embedded', 1, 31, None, "'Poor man! Did he ever marry?'"),
+     ('quote.embedded', 34, 192, None, "'Yes, and very happi...\\nwas in his family.'"),
+     ('quote.embedded', 195, 269, None, "'Did he? Then he wou...st of her\\nadmirers?'"),
+     ('quote.embedded', 272, 319, None, "'Better. It was a fi...te. Poor Anastatia!'"),
+     ('quote.embedded', 322, 340, None, "'Serve her right,'")]
 
 .. http://unicode.org/reports/tr29/#Word_Boundaries
 """
@@ -323,7 +345,7 @@ def tagger_quote_quote(book):
 
             elif open_quote and last_b == containing_r[0]:
                 # Quote still open from previous paragraph, ignore it and move on
-                continue
+                pass
 
             elif open_quote and word == open_quote[0]:
                 # Found the closing quote we were looking for
