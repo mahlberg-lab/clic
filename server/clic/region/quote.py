@@ -93,7 +93,7 @@ We only demand one of the types of punctuation, so quotes can start mid-sentence
      ('quote.quote', 159, 324, None, '‘The Duchess! The Du...ped them, I wonder?’'),
      ('quote.nonquote', 325, 338, None, 'Alice guessed')]
 
-Extended quotes can run on across paragraphs, with an initial quote mark to
+Extended quotes can run on across paragraphs, with an initial quote mark or indent to
 indicate continuation. We combine these into one quote::
 
     >>> [x for x in run_tagger('''
@@ -111,6 +111,29 @@ indicate continuation. We combine these into one quote::
      ('quote.nonquote', 39, 53, None, 'J.R. answered.'),
      ('quote.quote', 54, 400, None, '“If you closed\\nquote...ll the one talking.”'),
      ('quote.quote', 402, 433, None, '“Oh, that makes sense. Thanks!”')]
+
+Indents are also valid ways of continuing a quote, for example from ChiLit/overtheway.txt::
+
+    >>> [x for x in run_tagger('''
+    ... "Aunt Harriet was introduced as 'My daughter Harriet,' and made a
+    ... stiff curtsey as Mrs. Moss smiled, and nodded, and bade her 'sit down,
+    ... my dear.' Throughout the whole interview she seemed to be looked upon
+    ... by both ladies as a child, and played the part so well, sitting prim
+    ... and silent on her chair, that I could hardly help humming as I looked
+    ... at her:
+    ...
+    ...     'Hold up your head,
+    ...     Turn out your toes,
+    ...     Speak when you're spoken to,
+    ...     Mend your clothes.'
+    ...
+    ... "I was introduced, too, as 'a grandchild,' made a curtsey the shadow of
+    ... Aunt Harriet's, received a nod, the shadow of that bestowed upon her,
+    ... and got out of the way as soon as I could, behind my aunt's chair,
+    ... where, coming unexpectedly upon three fat pug-dogs on a mat, I sat
+    ... down among them and felt quite at home."
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.quote', 0, 777, None, '"Aunt Harriet was in...felt quite at home."')]
 
 Extended quotes also work without curly quotes, example from ChiLit/water.txt::
 
@@ -317,8 +340,8 @@ def tagger_quote_quote(book):
     for containing_r in book['chapter.paragraph']:
         last_b = containing_r[0]
 
-        if open_quote and book['content'][containing_r[0]:containing_r[0] + 1] not in QUOTES:
-            # Continuing an open_quote from a previous paragarph, but paragraph didn't start with a quote marker, ditch.
+        if open_quote and not(book['content'][containing_r[0]:containing_r[0] + 1] in QUOTES or book['content'][containing_r[0] - 3:containing_r[0]] == '   '):
+            # Continuing an open_quote from a previous paragarph, but paragraph didn't start with a quote marker or indent, ditch.
             open_quote = None
 
         # Get all word breaks after containing_r[0]
