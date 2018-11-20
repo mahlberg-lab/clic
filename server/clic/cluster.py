@@ -5,7 +5,7 @@ Return a list of word clusters, and their frequency within the given texts.
 
 - corpora: 1+ corpus name (e.g. 'dickens') or book name ('AgnesG') to search within
 - subset: subset to search through, one of shortsus/longsus/nonquote/quote/all. Default 'all' (i.e. all text)
-- clusterlength: cluster length to search for, one of 1/3/4/5 (NB: There is no 2). Default 1
+- clusterlength: cluster length to search for, 1 or more. Default 1
 - cutoff: The cutoff frequency, if an cluster occurs less times than this it is not returned. Default '5'
 
 Parameters should be provided in querystring format, for example::
