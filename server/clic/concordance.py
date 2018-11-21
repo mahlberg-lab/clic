@@ -382,6 +382,8 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
         if s:
             l.append(s)
 
+    if len(node_tokens) == 0:
+        raise NotImplementedError("We don't support empty nodes")
     prev_t = None
     for t in full_tokens:
         # Non-word characters before this word

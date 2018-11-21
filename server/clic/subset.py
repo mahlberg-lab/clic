@@ -103,6 +103,12 @@ Examples / edge cases
     ... ‘Thought I should find you here all right,’ said the Otter cheerfully.
     ... ‘They were all in a great state of alarm along River Bank when I arrived
     ... this morning.’
+    ... ''',
+    ...
+    ... mansfield='''
+    ... over the various advertisements of “A most desirable
+    ... Estate in South Wales”; “To Parents and Guardians”; and a “Capital
+    ... season’d Hunter.”
     ... ''')
 
 We can ask for quotes::
@@ -130,6 +136,11 @@ Context size can also be configured, but the return is only approximate::
     >>> format_conc(subset(db_cur, ['alice'], subset=['nonquote'], contextsize=[3]))
     [['alice', 9, 'Well', '**', 'thought', 'Alice', 'to', 'herself', '**', 'after', 'such', 'a', 'fall', 'as', 'this', 'I'],
      ['alice', 231, 'off', 'the', 'top', 'of', 'the', 'house', '**', 'Which', 'was', 'very', 'likely', 'true', '**']]
+
+Suspensions without any words inside aren't returned::
+
+    >>> format_conc(subset(db_cur, ['mansfield'], subset=['shortsus'], contextsize=[3]))
+    [['mansfield', 104, 'To', 'Parents', 'and', 'Guardians', '**', 'and', 'a', '**', 'Capital', 'season’d', 'Hunter']]
 
 """
 from clic.concordance import to_conc
@@ -189,6 +200,8 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
 
     for book_id, full_tokens, is_node, node_crange, part_of in cur:
         node_tokens = [crange for crange, include in zip(full_tokens, is_node) if include]
+        if len(node_tokens) == 0:
+            continue  # Ignore empty suspensions
         if not book or book['id'] != book_id:
             book = get_book(book_cur, book_id, content=True)
         yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [

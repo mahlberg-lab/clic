@@ -61,6 +61,16 @@ class Test_to_conc(unittest.TestCase):
             ['man', ' ', 'walked', ' ', 'into', [0, 2, 4]],
         ])
 
+    def test_nonode(self):
+        """Nothing sensible to do without a node atm"""
+        with self.assertRaises(NotImplementedError):
+            to_conc(
+                FULL_TEXT,
+                [R_A, R_MAN, R_WALKED, R_INTO, R_A2, R_BAR],
+                [],
+                2
+            )
+
     def test_windowsplit(self):
         """We split windows on nearest space"""
         self.assertEqual(to_conc(
