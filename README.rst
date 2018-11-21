@@ -61,9 +61,9 @@ For development, defaults should be sufficient and you can ignore ``local-conf.m
 For production, the following is a minimal example::
 
     cat <<EOF > local-conf.mk
-    PROJECT_MODE = "production"
-    WWW_SERVER_NAME = "clic.bham.ac.uk"
-    GA_KEY = "UA-XXXXX-Y"
+    PROJECT_MODE = production
+    WWW_SERVER_NAME = clic.bham.ac.uk another.dns.name
+    GA_KEY = UA-XXXXX-Y
     EOF
 
 ``WWW_SERVER_NAME`` controls the DNS entry the web server responds to.

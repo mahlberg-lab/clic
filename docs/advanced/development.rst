@@ -4,7 +4,7 @@ Developing the system
 Set-up of the development environment is very similar to a production
 environment, see README.rst for details on how to do this.
 
-The main difference is to use ``PROJECT_MODE="development"`` (or not include any
+The main difference is to use ``PROJECT_MODE= development`` (or not include any
 PROJECT_MODE, development is default), in your ``local-conf.mk``. This will stop
 CLiC from being started automatically so you can run the server in debug mode.
 It will also disable NGINX's server cache so you won't get stale responses.
