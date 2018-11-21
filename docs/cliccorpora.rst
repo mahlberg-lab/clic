@@ -1,12 +1,12 @@
 The CLiC corpora
 ================
 
-The CLiC homepage, part of which is shown in
-Figure, acts as a table of contents for all
-the books and their chapters; when clicking onto any of the chapter
-links you are taken to the full text of that section. As of version
-1.6.1, released in November 2017, CLiC contains 138 texts, mainly from
-the 19th century; for a full list of titles please refer to Appendix 1.
+An overview of the corpora available in CLiC can be seen from the Counts tab. 
+Simply choose the corpus for which you want to see the list of books and the 
+Counts tab will provide a table showing the names of the books and the word 
+counts for each book and the corpus in total.
+As of version 1.6.1, released in November 2017, CLiC contains 138 texts, 
+mainly from the 19th century; for a full list of titles please refer to Appendix 1.
 The procedure followed for retrieving, cleaning and importing the most
 recent texts is described in detail on our GitHub
 repository\ `[5] <footnotes.html>`__. The texts can be
@@ -52,7 +52,7 @@ Figure).
    selecting all of Jane Austen's novels
 
 The CLiC corpora have been marked up to distinguish between several
-textual subsets of novels. Example
+textual subsets of novels. The Example
 from Great Expectations below illustrates the subsets and
 Figure shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
@@ -94,4 +94,4 @@ the homepage.
 
 A more detailed discussion of the subsets in CLiC – and the rationale
 behind this division – can be found in the open access article by
-Mahlberg et al. (2016)`[7] <footnotes.html>`__.
+Mahlberg et al. (2016)\ `[7] <footnotes.html>`__.
