@@ -3,8 +3,9 @@ The CLiC corpora
 
 An overview of the corpora available in CLiC can be seen from the Counts tab. 
 Simply choose the corpus for which you want to see the list of books and the 
-Counts tab will provide a table showing the names of the books and the word 
-counts for each book and the corpus in total.
+Counts tab will provide a table listing the names and word counts for each book, 
+per subset and in total.
+
 As of version 1.6.1, released in November 2017, CLiC contains 138 texts, 
 mainly from the 19th century; for a full list of titles please refer to Appendix 1.
 The procedure followed for retrieving, cleaning and importing the most
@@ -38,17 +39,16 @@ You can select the pre-selected corpora in their entirety or you can
 pick individual books from them, effectively creating your own
 subcorpus. For example, you could select several books from Dickens,
 several books from the 19th Century Reference Corpus (19C) and several
-books from the 19th Century Children's Literature Corpus (ChiLit). You
-could also create an author-based corpus, for example by selecting all
-of Jane Austen's novels by typing *austen* into the textbox (which is
-not case-sensitive); this will pull out the relevant novels from any of
-the corpora for individual selection (see
-Figure).
+books from the 19th Century Children's Literature Corpus (ChiLit). 
+
+You can also select an author-based corpus from the drop-down. For example,
+typing *austen* into the textbox (which is not case-sensitive) gives you the option of selecting all 
+books by Jane Austen at once (see Figure).
 
 .. figure:: images/figure-corpora-authorbased.png
    :alt: figure-corpora-authorbased
 
-   **Figure:** Example of creating a (temporary) author-based corpus:
+   **Figure:** Example of creating an author-based corpus:
    selecting all of Jane Austen's novels
 
 The CLiC corpora have been marked up to distinguish between several
@@ -92,6 +92,8 @@ the homepage.
    (in book) button in a concordance of asked Mr Jaggers very coolly),
    exemplifying the mark-up of subsets
 
-A more detailed discussion of the subsets in CLiC – and the rationale
-behind this division – can be found in the open access article by
-Mahlberg et al. (2016)\ `[7] <footnotes.html>`__.
+The rationale behind the division of the subsets can be found in the open access article by
+Mahlberg et al. (2016)\ `[7] <footnotes.html>`__. However, the tagging procedure for CLiC 
+corpora has changed since the publciation of this paper - please see the 
+`tagger documentation <https://github.com/birmingham-ccr/clic/blob/2.0-beta1/server/clic/region/quote.py>`__
+for the technical details.
