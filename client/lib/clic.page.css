@@ -50,9 +50,8 @@ header {
 header h1 {
     float: left;
     margin: 0;
-    line-height: 2.3rem;
+    line-height: 1.3rem;
     font-size: 41px;
-    font-family: Georgia, Helvetica, serif;
     font-weight: normal;
 }
 header, header h1 a, header, header h1 a:link, header h1 a:visited {
@@ -65,8 +64,7 @@ header h1 a:hover, header h1 a:active {
 }
 header h1 small {
     display: block;
-    padding-right: 0.5rem;
-    line-height: 1.1rem;
+    line-height: 1.4rem;
     font-size: .8rem;
     text-align: right;
     color: #444;
