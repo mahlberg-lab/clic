@@ -1,3 +1,5 @@
+* text: Preserve white-space before indented text (e.g. songs)
+
 ## 2.0.0-beta2 (2018-11-22)
 
 * server: Make sure initial errors are thrown as a 500 status

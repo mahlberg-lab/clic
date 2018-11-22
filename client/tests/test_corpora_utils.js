@@ -43,6 +43,19 @@ test('regions_to_html', function (t) {
         '',
     ], "Can overlap regions, apply all relevant tags");
 
+    out = corpora_utils.regions_to_html("And he said:\n    'Play the best song in the world, or I'll eat your soul.'", [
+        ['chapter.sentence', 0, 74],
+        ['quote.quote', 17, 74],
+    ]).split('</span>');
+    t.deepEqual(out, [
+        '<span>',
+        '<span class="boundary-sentence">',
+        '<span class="chapter-sentence">And he said:<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+        '<span class="chapter-sentence quote-quote">\'Play the best song in the world, or I\'ll eat your soul.\'',
+        '<span class="boundary-sentence">',
+        '',
+    ], "Preserve initial space by inserting &nbsp;'s");
+
     t.end();
 });
 

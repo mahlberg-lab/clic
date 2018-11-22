@@ -9,6 +9,16 @@
 module.exports.regions_to_html = function (content, regions, highlight_region) {
     var out = '<span>', i, start = 0, inserts = [], open_regions = {};
 
+    function repl_with_nbsp(m) {
+        var j;
+
+        out = m[0];
+        for (j = 0; j < m.length; j++) {
+            out += "&nbsp;";
+        }
+        return out;
+    }
+
     // For each region, add opening and closing inserts
     for (i = 0; i < regions.length; i++) { // ["chapter.title", (lower), (upper), (rvalue)]
         inserts.push({
@@ -47,7 +57,7 @@ module.exports.regions_to_html = function (content, regions, highlight_region) {
         // If text is available, start a span with correct regions and insert it
         if (inserts[i].pos > start) {
             out += '</span><span class="' + Object.keys(open_regions).join(" ") + '">';
-            out += content.slice(start, inserts[i].pos).replace(/\n/g, '<br/>');
+            out += content.slice(start, inserts[i].pos).replace(/\n +/g, repl_with_nbsp).replace(/\n/g, '<br/>');
             start = inserts[i].pos;
         }
 
