@@ -51,6 +51,7 @@ If you see the NGINX default "Welcome to nginx!" page when trying to use CLiC fr
 If any CLiC query responds with the error "The CLiC server did not respond, the query may have taken too long.":
 
 * Make sure that CLiC is started with ``systemctl start clic``.
+* Any error messages are cached by NGINX and your web browser briefly, clear your cache and try again. You can also re-run ``./install.sh`` to clear the NGINX cache.
 
 If you see the "CLiC is down for maintenance" page:
 
