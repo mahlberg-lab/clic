@@ -101,7 +101,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].kwic, 0, 'No matches, kwic 0');
         t.deepEqual(data.allWords, {}, 'Ignoring all rows, so no words found');
         t.deepEqual(pt.extra_info, [
-            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 10000.00',  // i.e. (1 / 100) * 1 000 000
+            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 10000.00 pm',  // i.e. (1 / 100) * 1 000 000
             'from 1 book',
         ], "Extra info updated");
 
@@ -130,7 +130,7 @@ test('post_process', function (t) {
         t.deepEqual(data.data[0].kwic, 1, 'Overall 1 match');
         t.deepEqual(data.allWords, {'you\'ve': true, gotten: true, us: true, into: true}, 'Found words in middle, right');
         t.deepEqual(pt.extra_info, [
-            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 5000.00',  // i.e. (1 / 200) * 1 000 000
+            '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 5000.00 pm',  // i.e. (1 / 200) * 1 000 000
             'from 1 book',
             '1 line / 1 book with 1 KWIC match',
         ], "Extra info updated");
@@ -234,14 +234,14 @@ test('post_process:extra_info', function (t) {
     t.deepEqual(ei([
         string_to_line("", "No monkeying about", ""),
     ], { "AgnesG": {0: 0, _end: 5555} }), [
-        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 180.02',  // (1 / 5555) * 1000000
+        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 180.02 pm',  // (1 / 5555) * 1000000
         "from 1 book",
     ], "We just count books");
 
     t.deepEqual(ei([
         string_to_line("", "No monkeying about", ""),
     ], { "AgnesG": {0: 0, _end: 5555} }, undefined, { "AgnesG": 500 }), [
-        '<abbr title="Lines per milion words from somesubset subsets">Rel. Freq.</abbr> 2000.00',  // (1 / 500) * 1000000
+        '<abbr title="Lines per milion words from somesubset subsets">Rel. Freq.</abbr> 2000.00 pm',  // (1 / 500) * 1000000
         "from 1 book",
     ], "We can use different subsets to calculate rel.freq");
 
@@ -259,7 +259,7 @@ test('post_process:extra_info', function (t) {
         string_to_line("", "chimp ape gorilla", "", ['AgnesH', 99, 100, 103]),
         string_to_line("", "No monkeying about", "", ['AgnesG', 99, 100, 103]),
     ], { "AgnesG": {0: 100, _end: 5555}, "AgnesH": {0: 100, _end: 5555} }), [
-        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 630.06',  // (7 / (2*5555)) * 1000000
+        '<abbr title="Lines per milion words overall">Rel. Freq.</abbr> 630.06 pm',  // (7 / (2*5555)) * 1000000
         "from 2 books",
         '3 lines / 1 book with 3 KWIC matches',
         '2 lines / 2 books with 2 KWIC matches',

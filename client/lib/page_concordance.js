@@ -379,7 +379,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
             this.extra_info.push(this.relative_frequency_title(page_state) + ' ' + this.relative_frequency(
                 raw_data.data,  // All lines
                 Object.keys(raw_data[word_count_key]).reduce(function (a, k) { return a + raw_data[word_count_key][k]; }, 0)  // Counts from all books
-            ));
+            ) + ' pm');
         }
 
         // Book count
