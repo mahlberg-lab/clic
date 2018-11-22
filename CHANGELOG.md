@@ -1,4 +1,10 @@
-## 2.0-beta1
+## 2.0.0-beta2
+
+* concordance: Fix count of unique books, add "pm" unit
+* client: Add new CLiC logo
+* subset: Ignore empty regions, e.g. empty suspensions in ArTs
+
+## 2.0.0-beta1 (2018-11-21)
 
 * server: Complete rewrite:
   * Remove cheshire3/sqlite with
