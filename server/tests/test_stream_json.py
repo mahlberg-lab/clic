@@ -7,7 +7,9 @@ from clic.errors import UserError
 
 class Test_stream_json(unittest.TestCase):
     def sj(self, gen, header={}):
-        out = "\r".join(stream_json(gen, header))
+        sj_gen = stream_json(gen, header)
+        assert(next(sj_gen) is None)
+        out = "\r".join(sj_gen)
         json.loads(out)  # Parse to validate
         return out
 
@@ -55,23 +57,18 @@ class Test_stream_json(unittest.TestCase):
         )
 
     def test_initialerror(self):
-        """Initial errors are caught"""
+        """Initial errors are thrown upwards to be handled"""
         def fn():
             raise ValueError("Erk")
             yield 1
             yield 2
             yield 3
 
-        out = json.loads(self.sj(fn(), {"a": 1, "b": 2}))
-        self.assertEqual(out['data'], [])
-        self.assertEqual(out['error'], dict(
-            message="ValueError: Erk",
-            stack=out['error']['stack'],
-        ))
-        self.assertIn("ValueError: Erk", out['error']['stack'])
+        with self.assertRaisesRegex(ValueError, "Erk"):
+            json.loads(self.sj(fn(), {"a": 1, "b": 2}))
 
     def test_intermediateerror(self):
-        """Intermediate errors are caught"""
+        """Intermediate errors are caught and written out"""
         def fn():
             yield 1
             yield 2

@@ -107,11 +107,13 @@ def to_view_func(fn, output_mode):
     """
     def stream_view_func():
         out = fn(g.cur, **request.args.to_dict(flat=False))
-        return Response(
-            # NB: We need stream_with_context() to make sure the database stays open
-            stream_with_context(stream_json(out, dict(version=g.clic_versions), cls=JSONEncoder)),
-            content_type='application/json',
-        )
+        # NB: We need stream_with_context() to make sure the database stays open
+        out = stream_with_context(stream_json(out, dict(version=g.clic_versions), cls=JSONEncoder))
+
+        # Consume nonsense item, so we know generator is ready to output a header, and any
+        # initial errors cause a 500 response
+        assert(next(out) is None)
+        return Response(out, content_type='application/json')
     if output_mode == 'stream':
         view_func = stream_view_func
 

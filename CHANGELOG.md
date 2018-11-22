@@ -1,5 +1,6 @@
 ## 2.0.0-beta2
 
+* server: Make sure initial errors are thrown as a 500 status
 * concordance: Fix count of unique books, add "pm" unit
 * client: Add new CLiC logo
 * subset: Ignore empty regions, e.g. empty suspensions in ArTs

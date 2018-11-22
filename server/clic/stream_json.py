@@ -56,13 +56,17 @@ def stream_json(generator, header={}, cls=json.JSONEncoder):
                 if header_written:
                     yield ',\n' + json.dumps(x, separators=(',', ':'), cls=cls)
                 else:
+                    yield None  # Nonsense item to consume and bin
                     yield format_header(header)
                     yield '\n' + json.dumps(x, separators=(',', ':'), cls=cls)
                     header_written = True
     except Exception as e:
+        if not header_written:
+            raise
         footer.update(format_error(e))
 
     if not header_written:
+        yield None  # Nonsense item to consume and bin
         yield format_header(header)
 
     if len(footer) > 0:
