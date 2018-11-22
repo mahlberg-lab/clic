@@ -247,8 +247,8 @@ test('post_process:extra_info', function (t) {
 
     t.deepEqual(ei([
     ], { "AgnesG": {0: 0, _end: 5555}, "AgnesH": {0: 0, _end: 5555} }), [
-        "from 2 books",
-    ], "We just count books");
+        "from 0 books",
+    ], "We count books in results, not the metadata");
 
     t.deepEqual(ei([
         string_to_line("", "An ape", "", ['AgnesG', 99, 100, 103]),

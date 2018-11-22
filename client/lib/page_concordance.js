@@ -276,7 +276,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
 PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSpan, raw_data) {
     var i, j, r, groupedData,
         word_count_key,
-        allWords = {}, allMatches = {},
+        allWords = {}, allMatches = {}, allBooks = {},
         data = raw_data.data,
         tag_state = page_state.state('tag_columns'),
         tag_column_order = page_state.state('tag_column_order');
@@ -314,6 +314,9 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         for (j = 0; j < tag_column_order.length; j++) {
             data[i][tag_column_order[j]] = !!tag_state[tag_column_order[j]][data[i].DT_RowId];
         }
+
+        // Add book to unique count
+        allBooks[data[i][3][0]] = true;
 
         // Link to chapter starts for ticks, length of entire book, number of books
         data[i].chapter_start = raw_data.chapter_start[data[i][3][0]];
@@ -380,7 +383,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         }
 
         // Book count
-        this.extra_info.push("from " + plural(Object.keys(raw_data.chapter_start).length, "book"));
+        this.extra_info.push("from " + plural(Object.keys(allBooks).length, "book"));
     }
 
     // Add KWIC summary
