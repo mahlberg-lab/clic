@@ -11,25 +11,30 @@ Alerts.prototype.clear = function () {
 };
 
 Alerts.prototype.show = function (msg, level) {
+    var html = '';
+
     // If handed an array, display all of them
     if (Array.isArray(msg)) {
         return msg.forEach(this.show.bind(this));
     }
 
-    // Escape HTML if necessary
-    if (!msg.is_html) {
-        msg.message = '<div>' + new Option(msg.message).innerHTML + '</div>';
+    if (msg.is_html) {
+        // Copy string instead of referencing (and altering) it
+        html = msg.message + ' ';
+    } else {
+        // Escape text into a div
+        html = '<div>' + new Option(msg.message).innerHTML + '</div>';
     }
 
     // Append any stack output
     if (msg.stack) {
-        msg.message += '<pre>' + new Option(msg.stack).innerHTML + '</pre>';
+        html += '<pre>' + new Option(msg.stack).innerHTML + '</pre>';
     }
 
     // Append to output
     this.alert_el.insertAdjacentHTML(
         'beforeend',
-        '<div class="level-' + (level || 'info') + '">' + msg.message + '</div>'
+        '<div class="level-' + (level || 'info') + '">' + html + '</div>'
     );
 };
 
