@@ -376,10 +376,14 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
     if (page_state.arg('table-type') !== 'dist_plot') {
         if (raw_data.data.length > 0 && Object.keys(raw_data[word_count_key]).length > 0) {  // NB: Strictly we should check the sum is > 0, but close enough
             // Rel freq
-            this.extra_info.push(this.relative_frequency_title(page_state) + ' ' + this.relative_frequency(
-                raw_data.data,  // All lines
-                Object.keys(raw_data[word_count_key]).reduce(function (a, k) { return a + raw_data[word_count_key][k]; }, 0)  // Counts from all books
-            ) + ' pm');
+            this.extra_info.push([
+                this.relative_frequency_title(page_state),
+                this.relative_frequency(
+                    raw_data.data,  // All lines
+                    Object.keys(raw_data[word_count_key]).reduce(function (a, k) { return a + raw_data[word_count_key][k]; }, 0)  // Counts from all books
+                ),
+                this.relative_frequency_unit(),
+            ].join(" ").trim());
         }
 
         // Book count
@@ -409,6 +413,11 @@ PageConcordance.prototype.relative_frequency_title = function (page_state) {
         title = 'Lines per milion words from ' + page_state.arg('conc-subset') + ' subsets';
     }
     return '<abbr title="' + title + '">Rel. Freq.</abbr>';
+};
+
+
+PageConcordance.prototype.relative_frequency_unit = function () {
+    return 'pm';
 };
 
 

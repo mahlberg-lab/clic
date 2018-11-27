@@ -57,6 +57,9 @@ PageSubset.prototype.relative_frequency_title = function (page_state) {
     return '<abbr title="percentage of total words that are in ' + page_state.arg('subset-subset') + ' subsets">%age</abbr>';
 };
 
+PageSubset.prototype.relative_frequency_unit = function () {
+    return '';
+};
 
 PageSubset.prototype.relative_frequency = function (lines, total_words) {
     var words_in_subset = lines.reduce(function (total, l) {

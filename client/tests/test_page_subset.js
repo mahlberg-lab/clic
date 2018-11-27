@@ -95,7 +95,7 @@ test('post_process:extra_info', function (t) {
     t.deepEqual(ei([
         string_to_line("", "No monkeying about", ""),
     ], { "AgnesG": {0: 0, _end: 5555} }, undefined), [
-        '<abbr title="percentage of total words that are in longsus subsets">%age</abbr> 0.05 pm', // (3 / 5555) * 100
+        '<abbr title="percentage of total words that are in longsus subsets">%age</abbr> 0.05', // (3 / 5555) * 100
         "from 1 book",
     ], "Subsets use %ages, not rel.freq");
 
