@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from clic.metadata import corpora, corpora_headlines
+from clic.metadata import OLD_ALIASES, corpora, corpora_headlines
 
 from .requires_postgresql import RequiresPostgresql
 
@@ -36,7 +36,7 @@ It was an iron bar
             dict(name="acorp", contents=['ut_corpora_1']),
         )
         out = corpora(self.pg_cur())
-        self.assertEqual(out, dict(corpora=[
+        self.assertEqual(out['corpora'], [
             {
                 "id": "corpus:zcorp",  # NB: This comes first since they are in ordering order
                 "title": "UT corpus zcorp",
@@ -80,7 +80,8 @@ It was an iron bar
                     },
                 ]
             },
-        ]))
+        ])
+        self.assertEqual(out['aliases'], OLD_ALIASES)
 
 
 class Test_corpora_headlines(RequiresPostgresql, unittest.TestCase):

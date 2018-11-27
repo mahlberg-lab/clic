@@ -4,6 +4,7 @@
 Fetch various lists of corpora available.
 """
 
+from clic.db.corpora import OLD_ALIASES
 from clic.db.lookup import rclass_id_lookup
 
 
@@ -53,7 +54,7 @@ def corpora(cur):
             author='%d books' % author_book_count[author],  # NB: Just doing this to get it into brackets, ew.
         ))
 
-    return dict(corpora=out)
+    return dict(corpora=out, aliases=OLD_ALIASES)
 
 
 def corpora_headlines(cur):
