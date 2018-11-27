@@ -40,7 +40,7 @@ The text tab shows full book contents (to replace the chapter-by-chapter selecti
 
 * **New Counts tab**
 
-The Counts tab shows an interactive overview of the corpora, with word counts of within corpora, books and subsets.
+The Counts tab shows an interactive overview of the corpora, with word counts within corpora, books and subsets.
 
 
 .. figure:: images/figure-new-homescreen.png
