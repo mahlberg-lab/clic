@@ -117,13 +117,13 @@ It was an iron bar
         out = corpora_headlines(self.pg_cur())
         self.assertEqual(out, dict(data=[
             {
-                "id": "zcorp",
+                "id": "corpus:zcorp",
                 "title": "UT corpus zcorp",
                 "book_count": 2,
                 "word_count": 8,
             },
             {
-                "id": "acorp",
+                "id": "corpus:acorp",
                 "title": "UT corpus acorp",
                 "book_count": 1,
                 "word_count": 6,

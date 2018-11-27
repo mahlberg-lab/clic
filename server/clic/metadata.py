@@ -87,7 +87,7 @@ def corpora_headlines(cur):
     out = []
     for (c_id, c_title, book_count, word_count) in cur:
         out.append(dict(
-            id=c_id,
+            id='corpus:%s' % c_id,
             title=c_title,
             book_count=book_count,
             word_count=word_count,
@@ -102,13 +102,14 @@ def corpora_image(cur, corpora=[]):
     """
     if len(corpora) != 1:
         raise ValueError("You must specify exactly one corpora to fetch image for")
+    c_id = corpora[0].replace('corpus:', '')
 
     cur.execute("""
         SELECT c.carousel_image
           FROM corpus c
          WHERE c.name = %(name)s
     """, dict(
-        name=corpora[0],
+        name=c_id,
     ))
 
     for (carousel_image,) in cur:
@@ -116,3 +117,4 @@ def corpora_image(cur, corpora=[]):
             response=carousel_image,
             content_type='image/jpeg',
         )
+    raise ValueError("No image for %s" % c_id)
