@@ -323,15 +323,17 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Set values from page options, or defaults
         Array.prototype.forEach.call(elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
+                var new_val = page_state.arg(el.name);
+
                 if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
                     Math.floor(0);
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
-                    el.checked = Array.isArray(page_state.arg(el.name)) ? page_state.arg(el.name).indexOf(el.value) > -1 : (page_state.arg(el.name) === el.value);
+                    el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
                 } else if (el.tagName === 'INPUT' && el.type === "radio") {
-                    el.checked = page_state.arg(el.name) === el.value;
+                    el.checked = new_val === el.value;
                 } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
                     // Trigger slider update
-                    el.slider_div.noUiSlider.set(page_state.arg(el.name).split(':'));
+                    el.slider_div.noUiSlider.set(new_val.split(':'));
                 } else if (el.tagName === 'SELECT') {
                     if (el.name === "kwic-terms") {
                         // Make sure we consider existing options valid
@@ -343,6 +345,10 @@ ControlBar.prototype.reload = function reload(page_state) {
                                 return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                             }), c.title);
                         }).join("");
+                        // Resolve aliases in corpora selection, and turn back into a flat list
+                        new_val = [].concat.apply([], new_val.map(function (c) {
+                            return corpora.aliases[c] || [c];
+                        }));
                     } else if (el.name === "book") {
                         // Populate book dropdowns
                         el.innerHTML = self.corpora.corpora.map(function (c) {
@@ -351,9 +357,9 @@ ControlBar.prototype.reload = function reload(page_state) {
                             }), c.title);
                         }).join("");
                     }
-                    jQuery(el).val(page_state.arg(el.name));
+                    jQuery(el).val(new_val);
                 } else {
-                    el.value = page_state.arg(el.name);
+                    el.value = new_val;
                 }
             });
         });
