@@ -1,3 +1,5 @@
+## 2.0.0-beta3 (2018-11-27)
+
 * text: Preserve white-space before indented text (e.g. songs)
 
 ## 2.0.0-beta2 (2018-11-22)
