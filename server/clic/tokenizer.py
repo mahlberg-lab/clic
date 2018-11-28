@@ -26,7 +26,7 @@ We consider a boundary mark to be a word-boundary if...
   ``32.3``.
 * It is a hyphen character surrounded by alpha-numeric characters.
 * It is an apostrophe preceded with s, e.g. ``3 days' work``.
-* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``.
+* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``, see :const:`~INITIAL_ABBREVIATIONS`.
 
 Note that these additional rules are because ICU does not handle apostrophes on
 the outside of words, nor hyphenated-words.
@@ -136,6 +136,8 @@ APOSTROPHE_WORD_PARTS = set((
     "'",
 ))
 
+#: A list of words that, if prepended with an apostrophe, we should consider
+#: the apostrophe part of the token, rather than the start of a quote.
 INITIAL_ABBREVIATIONS = set((
     'em',  # e.g. alice.txt: "No, tie ’em together first"
     'tis',
