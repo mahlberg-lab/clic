@@ -19,28 +19,6 @@ Keywords tab, you can compare the frequency of words and clusters in one corpus 
 another; CLiC will provide a list of those items that are significantly "overused"
 in the first corpus (for more information, see Section 5.5 on keywords).
 
-The tokenisation from CLiC 2.0 onwards is based on unicode standard rules
-(i.e. Unicode word boundaries implemented with the [ICU]_ library), used
-both for queries and importing books.
-
-We consider a boundary mark to be a word-boundary if...
-* The [ICU]_ library describes it as at the end of a word, e.g. ``jump`` or number, e.g.
-  ``32.3``.
-* It is a single hyphen character surrounded by alpha-numeric characters.
-* It is an apostrophe preceded with ``s``, e.g. ``3 days' work``.
-* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``.
-
-Two hyphens separate words: for example, *Char--lotte* in Oliver
-Twist (OT.c6.p20) “Oliver's gone mad! Char--lotte!” counts as two
-tokens.
-
-The **'filter'** function in the concordance and subset tabs works differently from
-the other search functions. The filter does not follow the tokenisation procedure
-but simply filters for character sequences, i.e. also punctuation. This means that
-you can filter for round brackets, colons etc. if this is useful for your research.
-
-For the detailed technical documentation and more examples see server/clic/tokenizer.py
-
 .. rubric:: Functions common to all tabs
    :name: functions-common-to-all-tabs
 
@@ -130,14 +108,49 @@ suspensions', 'quotes' and 'non-quotes' (cf. Section 4).
 
 This is the fundamental parameter of the concordance search – it lets
 you determine the node word or phrase that forms the basis of the
-concordance. When you type your search word(s), keep in mind the notes
-from the tokenisation section above. The node has to be a valid token
-according to the white-space tokenisation: for example, a search for a
+concordance.
+
+
+The tokenisation from CLiC 2.0 onwards is based on unicode standard rules
+(i.e. Unicode word boundaries implemented with the [ICU]_ library), used
+both for queries and importing books.
+
+We consider a boundary mark to be a word-boundary if...
+* The [ICU]_ library describes it as at the end of a word, e.g. ``jump`` or number, e.g. ``32.3``.
+* It is a single hyphen character surrounded by alpha-numeric characters.
+* It is an apostrophe preceded with ``s``, e.g. ``3 days' work``.
+* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``.
+
+CLiC 2.0 and onwards supports **wildcards**:
+
+* ``*`` means "zero or more characters", for example:
+  
+  Placing * at the end of a the sequence ``can`` serves as a placeholder for
+  any sequence of characters (or zero) and therefore retrieves all instances of 
+  words starting with this sequence, including ``can``, ``cannot`` and ``can't``
+  (but also ``candle``, ``candles``, ``candlestick`` etc.)
+  
+  ``*`` in ``with * hands`` serves as a placeholder for any word token
+  between ``with`` and ``hands``, retrieving sequences like ``with her hands``, 
+  ``with his hands``, ``with their hands``, ``with both hands``, 
+  ``with clean hands`` etc.
+
+* ``?`` means "one"
+
+The search will only retrieve valid tokens according to the rules above.
+This means that the search will ignore punctuation in your search query except for 
 punctuation sign will not retrieve any results. If your research focuses
 on punctuation markers you can evade this issue by using the filter
 function in the subset tab: Go to the subset tab, select the relevant
 subset, for example non-quotes, and filter the rows to the punctuation
 marker of interest.
+Two hyphens separate words: for example, *Char--lotte* in Oliver
+Twist (OT.c6.p20) “Oliver's gone mad! Char--lotte!” counts as two
+tokens.
+
+For the detailed technical documentation and more examples see server/clic/tokenizer.py
+
+
 
 .. rubric:: 'Whole phrase' or 'Any word'
    :name: whole-phrase-or-any-word
@@ -200,7 +213,7 @@ concordance of ``head`` in *Oliver Twist* for ``eat`` yields both
 occurrences of the verb ``eat``, and the instance ``threatened``, which
 contains the same sequence of letters (see Figure).
 
-Thefilter function is cruder than the KWICGrouper; it can be usefully
+The filter function is cruder than the KWICGrouper; it can be usefully
 applied to filter down a large set of results before you do a more
 fine-grained categorisation. You might want to filter down the results
 to rows containing similar word forms. For example, filtering for ``girl``
