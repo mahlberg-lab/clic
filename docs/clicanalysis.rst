@@ -1,44 +1,45 @@
 The CLiC analysis tabs
 ======================
 
-The homepage shows the table of contents of the books in CLiC. Click
-onto one of the tabs in the side bar to start your analysis. The CLiC
+The landing page shows a rotating summary of the CLiC corpora. Click
+onto one of the tabs in the control bar on the right side to start your analysis. The CLiC
 logo will take you back to the homepage if you want to see the content
 page again at a later point. The CLiC functions can be divided into two
 groups:
 
-**A:** The **'Concordance'** and **'Subsets'** tabs both display text
+* **A:** The **'Concordance'** and **'Subsets'** tabs both display text
 (patterns) from the selected books in context. This is where you can
 analyse the use of particular words and phrases.
 
-**B:** The **'Cluster'** and **'Keywords'** tabs both show lists of
+* **B:** The **'Clusters'** and **'Keywords'** tabs both show lists of
 frequent patterns (without context), but they differ in their
-applications. The Cluster tab lists frequent words and phrases in a
-single corpus. In the keywords tab, you can compare the frequency of
-words and phrases in one corpus with another; the tool will provide a
-list of those items that are significantly 'overused' in the first
-corpus (for more information, see Section 5.5 on keywords).
+applications. The Clusters tab lists frequent words and word sequences ('clusters')
+in a single corpus (or several corpora if you have selected more than one). In the
+Keywords tab, you can compare the frequency of words and clusters in one corpus with
+another; CLiC will provide a list of those items that are significantly "overused"
+in the first corpus (for more information, see Section 5.5 on keywords).
 
-The CLiC analysis is based on 'white-space tokenisation'. This means
-that any sequence of letters that is not interrupted by a white space is
-considered a word. Some special cases arise, however:
+The tokenisation from CLiC 2.0 onwards is based on unicode standard rules
+(i.e. Unicode word boundaries implemented with the [ICU]_ library), used
+both for queries and importing books.
 
--  As mentioned in 2.1 below, the **'filter'** function in the
-   concordance and subset tabs works differently from the other search
-   functions. The filter does not follow the tokenisation procedure but
-   simply filters for character sequences, i.e. also punctuation. This
-   means that you can filter for round brackets, colons etc. if this is
-   useful for your research.
--  Apostrophes: *Oliver* and *Oliver's* count as the same type in CLiC.
-   Therefore, when you search for *Oliver* in *Oliver Twist* you will
-   retrieve all instances of *Oliver* and *Oliver's* (and vice versa;
-   826 results). Note, however, that the filter searches by word form:
-   So if you want to find only *Oliver's*, for example, you can filter
-   the 826 rows and retrieve 100 entries of *Oliver's*.
--  Two hyphens separate words: for example, *Char--lotte* in Oliver
-   Twist (OT.c6.p20) “Oliver's gone mad! Char--lotte!” counts as two
-   tokens.
+We consider a boundary mark to be a word-boundary if...
+* The [ICU]_ library describes it as at the end of a word, e.g. ``jump`` or number, e.g.
+  ``32.3``.
+* It is a single hyphen character surrounded by alpha-numeric characters.
+* It is an apostrophe preceded with ``s``, e.g. ``3 days' work``.
+* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``.
 
+Two hyphens separate words: for example, *Char--lotte* in Oliver
+Twist (OT.c6.p20) “Oliver's gone mad! Char--lotte!” counts as two
+tokens.
+
+The **'filter'** function in the concordance and subset tabs works differently from
+the other search functions. The filter does not follow the tokenisation procedure
+but simply filters for character sequences, i.e. also punctuation. This means that
+you can filter for round brackets, colons etc. if this is useful for your research.
+
+For the detailed technical documentation and more examples see server/clic/tokenizer.py
 
 .. rubric:: Functions common to all tabs
    :name: functions-common-to-all-tabs
@@ -67,7 +68,7 @@ The buttons in the top row apply to all analysis tabs:
    as for your personal record) and saving any manual changes (e.g.
    comments, highlights, filtered lines) in a separate version. Also
    note that the 'Load' function will replace any existing tags in CLiC
-   with those from the file; unlike 'Merge', see below
+   with those from the file; unlike 'Merge', see below.
 -  **'Merge':** The 'Merge' function will add the tags from the CSV file
    to any pre-existing tags. You can also use this function when you
    have more than one CSV (for example with annotations from several
@@ -91,10 +92,9 @@ file will not preserve any of the colours or the highlighting that you
 may have created with the KWICGrouper function (see the subsection
 'Concordance – KWICGrouper' in 5.2 below). In order to print the output
 in colour, go to the Chrome printing menu, click on 'More settings' and
-tick 'Background graphics' (see
-Figure; other browsers
+tick 'Background graphics' (see Figure; other browsers
 should have similar settings). The layout also tends to print best in
-Landscape. You can then “print” the output to a PDF file (as in
+landscape format. You can then “print” the output to a PDF file (as in
 Figure) or straight to
 your printer.
 
@@ -115,10 +115,8 @@ to search in (see the Section 4 on 'The CLiC Corpora' above).
    :name: search-the-corpora
 
 This is where you select a corpus to search in (cf. Section 4). The
-selection is very flexible and lets you pick a pre-defined corpus (19th
-Century Novels Reference Corpus, Dickens's Novels or Children's
-Literature) or choose your own subcorpus – either from books from only
-one of these corpora or combining books across the pre-defined corpora.
+selection is very flexible and lets you pick a pre-defined corpus (see :ref:`CLiC-corpora-label`)
+or choose your own subcorpus – with any of the books available in CLiC.
 
 .. rubric:: Only in subsets
    :name: only-in-subsets
@@ -162,14 +160,14 @@ Figure).
 .. figure:: images/figure-analysis-concordance-cotext-inbookbutton.png
    :alt: figure-analysis-concordance-cotext-inbookbutton
 
-   **Figure:** The 'in bk.' (in book) button leads to the chapter view
+   **Figure:** The 'in bk.' (in book) button leads to the book view
    of the occurrence
 
 .. figure:: images/figure-analysis-concordance-cotext-inbookchapter.png
    :alt: figure-analysis-concordance-cotext-inbookchapter
 
-   **Figure:** The 'in bk.' view shows the whole chapter – in the case
-   of this preface it is a very short chapter. (Note that all authorial
+   **Figure:** The 'in bk.' view shows the relevant section in the whole book.
+   The preface shown here is a very short chapter. (Note that all authorial
    text occurring before the official first chapter, is counted as
    'chapter 0' in CLiC). This preface contains no quotes or suspensions;
    compare to the subset markup in the chapter view of Figure.
@@ -185,28 +183,28 @@ displayed.
 
 This filter option lets you filter the concordance output by the rows
 that contain a particular sequence of letters (both in the node and
-co-text). For example, searching for hands in *Oliver Twist* yields 124
+co-text). For example, searching for ``hands`` in *Oliver Twist* yields 124
 results; when we use the option **'filter rows'** and search for
-*pockets*, this is filtered down to 8 results as illustrated in
+``pockets``, this is filtered down to 8 results as illustrated in
 Figure.
 
 .. figure:: images/figure-analysis-concordance-results-filter.png
    :alt: figure-analysis-concordance-results-filter
 
-   **Figure:** Concordance of hands in Oliver Twist filtered down to
-   pockets in the co-text
+   **Figure:** Concordance of ``hands`` in *Oliver Twist* filtered down to
+   ``pockets`` in the co-text
 
 Note that the filter, when searching for character sequences does not
 necessarily search for complete words: for example, filtering a
-concordance of *head* in *Oliver Twist* for *eat* yields both
-occurrences of the verb *eat*, and the instance *threatened*, which
-contains the same sequence of letters (see
-Figure). The
-filter function is cruder than the KWICGrouper; it can be usefully
+concordance of ``head`` in *Oliver Twist* for ``eat`` yields both
+occurrences of the verb ``eat``, and the instance ``threatened``, which
+contains the same sequence of letters (see Figure).
+
+Thefilter function is cruder than the KWICGrouper; it can be usefully
 applied to filter down a large set of results before you do a more
 fine-grained categorisation. You might want to filter down the results
-to rows containing similar word forms. For example, filtering for *girl*
-will also retrieve rows containing *girlish* and *girls*. Moreover,
+to rows containing similar word forms. For example, filtering for ``girl``
+will also retrieve rows containing ``girlish`` and ``girls``. Moreover,
 unlike the main concordance search and the KWICGrouper, the filter lets
 you search for particular types of punctuation (e.g. round brackets used
 in suspensions).
@@ -214,15 +212,29 @@ in suspensions).
 .. figure:: images/figure-analysis-concordance-results-filtersequence.png
    :alt: figure-analysis-concordance-results-filtersequence
 
-   **Figure:** Filtering for the letter sequence "eat" returns forms of
-   the verb eat and other words containing the sequence
+   **Figure:** Filtering for the letter sequence ``eat`` returns forms of
+   the verb ``eat`` and other words containing the sequence
 
-.. rubric:: Show metadata columns
-   :name: show-metadata-columns
+.. rubric:: View as
+   :name: view-as
 
-Show the chapter, paragraph and sentence number for each row. (Used to
-be “Toggle Metadata” until CLiC 1.5). This illustrates where in the book
-you are and can be the basis for sorting (see section on sorting below).
+From CLiC 2.0 onwards there are three options to view the concordance results:
+
+1. Basic results: concordance lines + book short title; link to "in bk." view
+2. Full metadata: concordance lines + book short title; chapter, paragraph & 
+   sentence numbers; link to "in bk." view
+3. Distribution plot: overview of matching lines per book 
+
+The default view is 1. and 2. gives more information on the same view. View 3.
+is completely different: it does not show the text in concordance lines but plots
+the distribution of matching concordance lines across the searched books. 
+Note that if a book in the searched corpus has zero matches it will not be shown in
+the distribution plot (for example, ``donkey`` only occurs in 11 out of 15 books in
+DNov and the corresponding distribution plot view only displays the 11 matching
+books).
+
+The "view as" options represent an expansion of the “Show metadata columns” option
+in CLiC 1.6.
 
 
 .. rubric:: Basic sorting
