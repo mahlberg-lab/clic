@@ -1,6 +1,4 @@
 /local-conf.mk
-/*/deploy/*
-!/*/deploy/generate.sh
 
 *.mktmp
 /client/coverage
@@ -39,6 +37,8 @@
 /server/appconfig.py
 /server/.coverage
 /server/htmlcov/
+
+/schema/bin
 
 # Old files that shouldn't exist
 /.local-conf

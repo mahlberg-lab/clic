@@ -30,9 +30,12 @@ LIBRARIES_CSS = \
     node_modules/nouislider/distribute/nouislider.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
-compile: node_modules/ clean-unused $(OUT_FILES) deploy/deploy.sh
+compile: node_modules/ clean-unused $(OUT_FILES)
 
 start: all
+
+install:
+	./install.sh
 
 test: node_modules/
 	$(NODE_CMD) node_modules/.bin/tape tests/test_*.js
@@ -129,7 +132,4 @@ www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
 	    NODE_PATH="$(CURDIR)" $(NODE) build/html_compile.js $< $@.mktmp $^
 	mv $@.mktmp $@
 
-deploy/deploy.sh: $(PROJECT_PATH)/conf.mk deploy/generate.sh
-	deploy/generate.sh
-
-.PHONY: compile test coverage start lint clean clean-unused watch
+.PHONY: compile test coverage start install lint clean clean-unused watch

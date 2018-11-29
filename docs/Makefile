@@ -27,6 +27,8 @@ coverage:
 
 start:
 
+install:
+
 bin/pip:
 	python3 -m venv .
 
@@ -42,4 +44,4 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
 _build/.buildinfo: lib/.requirements *.rst */*.rst
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
 
-.PHONY: compile test lint coverage start
+.PHONY: compile test lint coverage start install _build/.buildinfo

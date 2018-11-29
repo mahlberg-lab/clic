@@ -70,12 +70,12 @@ instance.
 
 Dump the database with the following::
 
-    ./schema/deploy/db_dump clic.dump
+    ./schema/bin/db_dump clic.dump
     sudo -upostgres pg_dump --format=c --no-owner clic_db > clic.dump
 
 Restore with the following. NB: **this will destroy all existing data**::
 
-    ./schema/deploy/db_restore clic.dump
+    ./schema/bin/db_restore clic.dump
     sudo -upostgres pg_dump --format=c --no-owner clic_db > clic.dump
 
 If you do not want to destroy the existing database, you could set a new database name in ``local-conf.mk``::

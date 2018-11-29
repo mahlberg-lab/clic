@@ -1,3 +1,5 @@
+* install: Remove generated deploy.sh scripts, just use "make install" instead
+
 ## 2.0.0-beta3 (2018-11-27)
 
 * text: Preserve white-space before indented text (e.g. songs)
