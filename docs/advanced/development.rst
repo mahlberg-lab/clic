@@ -56,3 +56,15 @@ Favico regeneration
 
 Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
 ```client/www/index.html`` and ``client/www/iconx`` as appropriate.
+
+Documentation
+-------------
+
+Whilst generally we use readthedocs for documentation sphinx will also be run
+locally for testing, and if it proves useful in future.
+
+To re-build documentation::
+
+    make -C docs
+
+To view the documenation built, go to ``/local-docs/`` for your instance.
