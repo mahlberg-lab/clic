@@ -105,7 +105,9 @@ the standard. Preceding apostrophes have to be part of our whitelist though::
     ... ''')]
     ["'tis", '3', "days'", 'work', 'twmade-up-word']
 
-Preceding apostrophes have to curve the right direction to be detected::
+Preceding apostrophes have to curve the right direction to be included
+as part of the token (and thus the type), so that the first
+``’em`` keeps the apostrophe and the second one doesn't::
 
     >>> [x[0] for x in types_from_string('''
     ...     Closing ’em. Opening ‘em.
