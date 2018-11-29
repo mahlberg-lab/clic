@@ -9,9 +9,10 @@ We need paragraph regions before we can do quote tagging::
 quote.quote / quote.nonquote regions
 ------------------------------------
 
-Quotes are discovered by parsing text using unicode word boundary rules. If a
-word is found that matches the list of quote marks, then a quote is formed when
-the corresponding close quote mark is found::
+Quotes are discovered by parsing text using :mod:`clic.tokenizer` word boundary
+rules. Open quotes are found when the text between any 2 word boundaries
+matches one of our list of quote marks, and then a quote is formed when the
+corresponding close quote mark is found::
 
     >>> [x for x in run_tagger('''
     ... “Thou find’st it out, child?  Ay, ’tis worth all the feather-beds and\r
