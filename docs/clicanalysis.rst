@@ -8,16 +8,15 @@ page again at a later point. The CLiC functions can be divided into two
 groups:
 
 * **A:** The **'Concordance'** and **'Subsets'** tabs both display text
-(patterns) from the selected books in context. This is where you can
-analyse the use of particular words and phrases.
-
+  (patterns) from the selected books in context. This is where you can
+  analyse the use of particular words and phrases.
 * **B:** The **'Clusters'** and **'Keywords'** tabs both show lists of
-frequent patterns (without context), but they differ in their
-applications. The Clusters tab lists frequent words and word sequences ('clusters')
-in a single corpus (or several corpora if you have selected more than one). In the
-Keywords tab, you can compare the frequency of words and clusters in one corpus with
-another; CLiC will provide a list of those items that are significantly "overused"
-in the first corpus (for more information, see Section 5.5 on keywords).
+  frequent patterns (without context), but they differ in their
+  applications. The Clusters tab lists frequent words and word sequences ('clusters')
+  in a single corpus (or several corpora if you have selected more than one). In the
+  Keywords tab, you can compare the frequency of words and clusters in one corpus with
+  another; CLiC will provide a list of those items that are significantly "overused"
+  in the first corpus (for more information, see Section 5.5 on keywords).
 
 .. rubric:: Functions common to all tabs
    :name: functions-common-to-all-tabs
