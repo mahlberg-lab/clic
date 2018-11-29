@@ -44,8 +44,10 @@ Tokens are then normalised into types by:-
 
 * Lower-casing, ``The`` -> ``the``.
 * Normalising any non-ascii characters with [UNIDECODE]_, e.g.
+
   * ``can’t`` -> ``can't``.
   * ``café`` -> ``cafe``.
+
 * Removing any surrounding underscores, e.g. ``_connoisseur_`` -> ``connoisseur``.
 
 Queries for concordance searches are also turned into a list of types by this
