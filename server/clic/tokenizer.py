@@ -55,7 +55,7 @@ searches. See later examples for more information.
 Examples / edge cases
 ---------------------
 
-A type is lower-case, ASCII-representable term, and "fancy" apostrophe's are normalised::
+A type is lower-case, ASCII-representable term, and "fancy" apostrophes are normalised::
 
     >>> [x[0] for x in types_from_string('''
     ...     I am a café cat, don’t you k'now.
