@@ -91,8 +91,12 @@ Disallow: /api/
         ${GA_API_ACTION}
     }
 
-    location /docs/ {
-        alias "${PROJECT_PATH}/docs/_build/";
+    location /local-docs {
+        alias "/srv/devel/bham-clic/docs/_build";
+    }
+
+    location /docs {
+        rewrite /docs(/.*) ${WWW_RTD_BASE_URL}\$1  redirect;
     }
 
     # Versioned resources can be cached forever

@@ -25,6 +25,7 @@ else
     WWW_UWSGI_CACHE_ZONE ?= api_cache
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
+WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git rev-parse --abbrev-ref HEAD)
 
 ###################
 # Configuration options for running API server
