@@ -93,7 +93,7 @@ to search in (see the Section 4 on 'The CLiC Corpora' above).
    :name: search-the-corpora
 
 This is where you select a corpus to search in (cf. Section 4). The
-selection is very flexible and lets you pick a pre-defined corpus (see :ref:`CLiC-corpora-label`)
+selection is very flexible and lets you pick a pre-defined corpus (see :ref:`The CLiC corpora`)
 or choose your own subcorpus – with any of the books available in CLiC.
 
 .. rubric:: Only in subsets

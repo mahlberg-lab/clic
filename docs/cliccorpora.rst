@@ -1,4 +1,3 @@
-.. _CLiC-corpora-label:
 The CLiC corpora
 ================
 
