@@ -1,3 +1,4 @@
+* server/region_preview: Read from stdin by default
 * docs: Make /docs deep-redirect to readthedocs, add link in help
 * install: Remove generated deploy.sh scripts, just use "make install" instead
 

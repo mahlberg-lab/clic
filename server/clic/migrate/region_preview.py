@@ -77,7 +77,7 @@ def script_region_preview():
     from ..region.tag import tagger
     from ..tokenizer import types_from_string
 
-    book_path = sys.argv[1]
+    book_path = sys.argv[1] if len(sys.argv) > 1 else '-'
     regions_to_highlight = sys.argv[2:] if len(sys.argv) > 2 else DEFAULT_HIGHLIGHT_REGIONS
 
     if book_path == '-':
