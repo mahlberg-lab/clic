@@ -35,8 +35,8 @@ bin/db_restore: ../conf.mk
 'sudo -u "$(DB_SUDO_USER)" pg_restore --format=c -d "$(DB_NAME)" --verbose $${1-clic.dump}'\\n\
 ''\\n\
 '# Re-run build.sh to make sure DB is sane'\\n\
-'(cd $(PROJECT_PATH)/schema && \'\\n\
-'    sudo -u "$(DB_SUDO_USER)" ./build.sh "$(DB_NAME)" "$(DB_USER)" "$(DB_PASS)"; \'\\n\
+'(cd $(PROJECT_PATH)/schema && '\\n\
+'    sudo -u "$(DB_SUDO_USER)" ./build.sh "$(DB_NAME)" "$(DB_USER)" "$(DB_PASS)"; '\\n\
 '    )'\\n\
 	    > $@
 	@chmod a+x $@
