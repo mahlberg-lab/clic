@@ -22,11 +22,11 @@ as a quick example the following phrase::
 
 We consider a boundary mark to be a word-boundary if...
 
-* The ICU describes it as at the end of a word, e.g. ``jump`` is one token, or number, e.g.
-  ``32.3`` counts as one token.
-* It is a hyphen character surrounded by alpha-numeric characters.
-* It is an apostrophe preceded with s, e.g. ``3 days' work`` contains the three tokens ``3``, ``days'`` and ``work``.
-* It is one of a whitelist of words preceded with an apostrophe, e.g. ``'tis``, see :const:`~INITIAL_ABBREVIATIONS`.
+* The type of the boundary according to ICU is at the end of a word (e.g. after ``jump``) or the end of a number (e.g. after ``32.3``).
+* It is after a hyphen character surrounded by alpha-numeric characters, e.g. after all hyphens in ``|in|-|the|-|air|``.
+* It is after an apostrophe preceded with s, e.g. after the ``'`` in ``3| |days|'| |work|``.
+* It is after an apostrophe followed by one of a whitelist of words (see :const:`~INITIAL_ABBREVIATIONS`),
+  e.g. after the ``'`` in ``'|tis| nothing|``.
 
 Note that these additional rules are because ICU does not handle apostrophes on
 the outside of words, nor hyphenated-words.
