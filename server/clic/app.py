@@ -105,8 +105,16 @@ def to_view_func(fn, output_mode):
     - stream: Function call is a generator that generates output suitable for stream_json()
     - json: Function call returns a dict suitable for jsonify()
     """
+    def get_args(request):
+        out = {}
+        for k, v in request.files.items():
+            out[k] = [v.stream.read().decode('utf8')]
+        out.update(request.form.to_dict(flat=False))
+        out.update(request.args.to_dict(flat=False))
+        return out
+
     def stream_view_func():
-        out = fn(g.cur, **request.args.to_dict(flat=False))
+        out = fn(g.cur, **get_args(request))
         # NB: We need stream_with_context() to make sure the database stays open
         out = stream_with_context(stream_json(out, dict(version=g.clic_versions), cls=JSONEncoder))
 
@@ -118,14 +126,14 @@ def to_view_func(fn, output_mode):
         view_func = stream_view_func
 
     def json_view_func():
-        out = fn(g.cur, **request.args.to_dict(flat=False))
+        out = fn(g.cur, **get_args(request))
         out['version'] = g.clic_versions
         return jsonify(out)
     if output_mode == 'json':
         view_func = json_view_func
 
     def raw_view_func():
-        out = fn(g.cur, **request.args.to_dict(flat=False))
+        out = fn(g.cur, **get_args(request))
         return Response(**out)
     if output_mode == 'raw':
         view_func = raw_view_func
@@ -133,6 +141,6 @@ def to_view_func(fn, output_mode):
     return dict(
         rule='/api/' + fn.__name__.replace('_', '/'),
         endpoint=fn.__name__,
-        methods=['GET'],
+        methods=['GET', 'POST'],
         view_func=view_func,
     )
