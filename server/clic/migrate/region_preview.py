@@ -58,6 +58,35 @@ def colourise_book(book, regions_to_highlight):
     yield REGION_COLOURS[0]
 
 
+def region_preview(cur, book_content=[""], highlight=DEFAULT_HIGHLIGHT_REGIONS):
+    '''
+    Endpoint that will mark up incoming text. This is temporary, and will be
+    removed when a full UI is available.
+
+    Example::
+
+        curl -v --form 'book_content=@alice.txt' \\
+            http://.../api/region/preview? | less -RFi
+    '''
+    from .corpora_repo import import_book
+    from ..region.tag import tagger
+    from ..tokenizer import types_from_string
+
+    # Create book and tag it
+    book = dict(name='stdin')
+    book['content'] = "".join(book_content)
+    tagger(book)
+
+    if 'tokens' in highlight:
+        # Return value for tokens is wrong way around, reverse it.
+        book['tokens'] = [(start, end, type) for type, start, end in types_from_string(book['content'])]
+
+    return dict(
+        response=colourise_book(book, highlight),
+        content_type='text/plain',
+    )
+
+
 def script_region_preview():
     """
     Given a .txt file and any region.csv file, output a version with tags coloured.

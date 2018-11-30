@@ -14,6 +14,7 @@ import clic.subset
 import clic.text
 from clic.db.cursor import get_pool_cursor, put_pool_cursor
 from clic.db.version import clic_version
+from clic.migrate.region_preview import region_preview
 from clic.stream_json import stream_json, format_error, JSONEncoder
 
 
@@ -28,6 +29,7 @@ API_ENDPOINTS = [
     (clic.metadata.corpora, 'json'),
     (clic.metadata.corpora_headlines, 'json'),
     (clic.metadata.corpora_image, 'raw'),
+    (region_preview, 'raw'),
 ]
 
 
