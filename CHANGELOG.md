@@ -1,3 +1,5 @@
+## 2.0.0-beta4 (2018-11-30)
+
 * server/region_preview: Add (temporary!) endpoint for previewing regions
 * server: API should respond to POST requests as well as GET
 * server/region_preview: Read from stdin by default
