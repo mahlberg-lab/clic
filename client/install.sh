@@ -92,7 +92,7 @@ Disallow: /api/
     }
 
     location /local-docs {
-        alias "/srv/devel/bham-clic/docs/_build";
+        alias "${PROJECT_PATH}/docs/_build";
     }
 
     location /docs {
