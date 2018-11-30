@@ -25,7 +25,8 @@ else
     WWW_UWSGI_CACHE_ZONE ?= api_cache
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
-WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git rev-parse --abbrev-ref HEAD)
+# Make a guess at branch name, since production instances will be detached HEAD
+WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev=0 | grep -oE '[0-9]+\.[0-9]+')
 
 ###################
 # Configuration options for running API server
