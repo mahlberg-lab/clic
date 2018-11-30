@@ -26,7 +26,7 @@ We consider a boundary mark to be a word-boundary if...
 * It is after a hyphen character surrounded by alpha-numeric characters, e.g. after all hyphens in ``|in|-|the|-|air|``.
 * It is after an apostrophe preceded with s, e.g. after the ``'`` in ``3| |days|'| |work|``.
 * It is after an apostrophe followed by one of a whitelist of words (see :const:`~INITIAL_ABBREVIATIONS`),
-  e.g. after the ``'`` in ``'|tis| nothing|``.
+  e.g. after the ``'`` in ``'|tis| |nothing|``.
 
 Note that these additional rules are because ICU does not handle apostrophes on
 the outside of words, nor hyphenated-words.
