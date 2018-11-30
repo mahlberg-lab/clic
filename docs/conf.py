@@ -14,6 +14,7 @@
 #
 import os
 import os.path
+import subprocess
 import sys
 
 server_dir = os.path.abspath('../server')
@@ -23,13 +24,15 @@ sys.path.insert(0, server_dir)
 # -- Project information -----------------------------------------------------
 
 project = 'CLiC User Guide'
-copyright = '2018, Michaela Mahlberg'
+copyright = '%s, Michaela Mahlberg' % (
+    subprocess.check_output("git log -1 --format=%ai".split()).decode('utf8').split('-', 1)[0],
+)
 author = 'Michaela Mahlberg'
 
 # The short X.Y version
-version = ''
+version = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip()
 # The full version, including alpha/beta/rc tags
-release = '1.6.0'
+release = subprocess.check_output("git describe --abbrev=0".split()).decode('utf8').strip()
 
 
 # -- General configuration ---------------------------------------------------
