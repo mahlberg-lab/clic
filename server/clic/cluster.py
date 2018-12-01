@@ -82,7 +82,7 @@ The cluster search peforms the following steps:
 3. Consider each (clusterlength) set of items in the list. If there are any
    gaps in their overall position, we discard the cluster. This means:
 
-   * Clusters will span adjacent regions, e.g. a cluster spanning 2 adjacent quotes 
+   * Clusters will span adjacent regions, e.g. a cluster spanning 2 adjacent quotes
      (i.e. without intervening non-quote text) will be included.
    * Clusters will not span 2 adjacent chapters, since the chapter title tokens
      will cause a gap in the tokens.

@@ -72,7 +72,6 @@ def region_preview(cur, book_content=[""], highlight=DEFAULT_HIGHLIGHT_REGIONS):
         curl -v --form 'book_content=@alice.txt' \\
             http://.../api/region/preview? | less -RFi
     '''
-    from .corpora_repo import import_book
     from ..region.tag import tagger
     from ..tokenizer import types_from_string
 
