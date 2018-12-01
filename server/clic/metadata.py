@@ -1,5 +1,6 @@
-"""Metadata endpoint
-********************
+"""
+clic.metadata: Metadata endpoint
+********************************
 
 Fetch various lists of corpora available.
 """

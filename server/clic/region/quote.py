@@ -1,5 +1,6 @@
-"""quote.* tagger
-********************
+"""
+clic.region.quote: Tag quote.* regions
+**************************************
 
 We need paragraph regions before we can do quote tagging::
 

@@ -1,5 +1,6 @@
-"""Region Tagger
-****************
+"""
+clic.region.tag: Tag a book with all region taggers
+***************************************************
 
 Applies all the tagging modules on a book in turn
 """

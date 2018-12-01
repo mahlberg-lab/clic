@@ -1,4 +1,7 @@
 """
+clic.db.book_metadata: Fetch additional book information
+********************************************************
+
 get_book_metadata
 =================
 

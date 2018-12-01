@@ -1,3 +1,7 @@
+'''
+clic.migrate.region_preview: Mark up regions in text with ANSI colour codes
+***************************************************************************
+'''
 import subprocess
 
 REGION_COLOURS = [

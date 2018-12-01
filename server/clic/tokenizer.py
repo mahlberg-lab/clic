@@ -1,5 +1,6 @@
-"""Tokenizer
-************
+"""
+clic.tokenizer: Tokenize strings to types
+*****************************************
 
 This module provides the core tokenisation used in CLiC, used both when parsing
 incoming texts and when parsing concordance queries

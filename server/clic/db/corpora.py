@@ -1,4 +1,7 @@
 """
+clic.db.corpora: Resolve corpora lists
+**************************************
+
 corpora_to_book_ids
 ===================
 

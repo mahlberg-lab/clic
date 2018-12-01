@@ -1,3 +1,7 @@
+'''
+clic.migrate.corpora_repo: Import books from the CCR corpora repository
+***********************************************************************
+'''
 import collections
 import csv
 import os

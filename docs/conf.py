@@ -195,6 +195,7 @@ def run_apidoc(_):
         "--doc-project", "Module documentation",
         "--force",
         "--separate",
+        "--no-headings",
         "-o", "module",
         server_dir,
         os.path.join(server_dir, 'appconfig.py'),

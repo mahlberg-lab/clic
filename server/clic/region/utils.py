@@ -1,5 +1,6 @@
-"""Tagger utilities
-*******************
+"""
+clic.region.utils: Internal utilities for tagging
+*************************************************
 
 """
 

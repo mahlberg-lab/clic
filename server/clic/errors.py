@@ -1,3 +1,8 @@
+'''
+clic.errors: Error objects returned by API
+******************************************
+'''
+
 
 class UserError(Exception):
     """An error that should be shown as a regular message to user"""

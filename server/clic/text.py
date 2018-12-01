@@ -1,5 +1,6 @@
-"""Text endpoint
-****************
+"""
+clic.text: Text endpoint
+************************
 
 Return the full text for a given book.
 

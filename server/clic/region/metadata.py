@@ -1,5 +1,6 @@
-"""metadata.* tagger
-********************
+"""
+clic.region.metadata: Tag metadata.* regions
+********************************************
 
 Add metadata.* tags to regions.
 

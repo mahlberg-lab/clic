@@ -1,3 +1,7 @@
+'''
+clic.stream_json: Wrapper to stream JSON arrays to client
+*********************************************************
+'''
 import decimal
 import json
 

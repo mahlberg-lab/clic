@@ -1,3 +1,7 @@
+'''
+clic.icuconfig: Global locale used for ICU
+******************************************
+'''
 import icu
 
 # NB: ss=standard adds sentence break rules for ignoring "Mr. Jones".

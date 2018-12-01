@@ -1,3 +1,9 @@
+'''
+clic.db.corpora: Get/put corpora dicts to DB
+********************************************
+'''
+
+
 def put_corpus(cur, corpus):
     """
     Add a corpus (i.e. a set of books) object to the database.

@@ -1,5 +1,6 @@
-"""Concordance endpoint
-***********************
+"""
+clic.concordance: Concordance endpoint
+**************************************
 
 Searches texts for given phrase(s).
 

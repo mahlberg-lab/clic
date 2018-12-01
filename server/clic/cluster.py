@@ -1,5 +1,6 @@
-"""Cluster endpoint
-*******************
+"""
+clic.cluster: Cluster endpoint
+******************************
 
 Return a list of word clusters, and their frequency within the given texts.
 

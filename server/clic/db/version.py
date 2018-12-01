@@ -1,3 +1,7 @@
+'''
+clic.db.version: Get/set corpora version in DB
+**********************************************
+'''
 import os
 import subprocess
 

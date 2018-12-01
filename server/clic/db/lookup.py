@@ -1,5 +1,10 @@
+'''
+clic.db.lookup: Translate forms of region class
+***********************************************
+'''
 _tables = dict()
 
+#: Translate public API subset names back to regions
 API_SUBSETS = dict(
     all='chapter.text',
     quote='quote.quote',

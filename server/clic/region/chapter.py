@@ -1,5 +1,6 @@
-"""chapter.* tagger
-*******************
+"""
+clic.region.chapter: Tag chapter.* regions
+******************************************
 
 Add chapter.* tags to regions.
 

@@ -1,3 +1,7 @@
+'''
+clic.db.cursor: Connect to CLiC DB
+**********************************
+'''
 import contextlib
 import os
 import logging

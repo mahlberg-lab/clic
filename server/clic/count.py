@@ -1,5 +1,6 @@
-"""Word count endpoint
-**********************
+"""
+clic.count: Word count endpoint
+*******************************
 
 Returns counts of words within subsets
 

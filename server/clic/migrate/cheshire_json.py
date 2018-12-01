@@ -1,3 +1,7 @@
+'''
+clic.migrate.cheshire_json: Import books from a CLiC 1.7 instance
+*****************************************************************
+'''
 import json
 import re
 import urllib.request

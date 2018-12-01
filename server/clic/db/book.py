@@ -1,3 +1,7 @@
+'''
+clic.db.book: Fetch/store book dicts to DB
+******************************************
+'''
 import psycopg2
 import psycopg2.extras
 
