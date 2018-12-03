@@ -196,6 +196,7 @@ def run_apidoc(_):
         "--force",
         "--separate",
         "--no-headings",
+        "--maxdepth", "10",
         "-o", "module",
         server_dir,
         os.path.join(server_dir, 'appconfig.py'),
