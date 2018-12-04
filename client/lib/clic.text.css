@@ -1,6 +1,7 @@
 #content>.book-content {
   max-width: 960px;
-  margin: 10px auto;
+  margin: auto;
+  padding: 10px;
   font-family: serif;
   font-size: 1.1em;
 }
