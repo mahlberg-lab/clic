@@ -8,5 +8,4 @@ Advanced topics
    advanced/api_usage
    advanced/development
    advanced/production
-   advanced/glossary
    module/modules
