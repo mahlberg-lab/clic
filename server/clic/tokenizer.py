@@ -23,7 +23,7 @@ as a quick example the following phrase::
 
 We consider a boundary mark to be a word-boundary if...
 
-* The "Rule Status value" of the boundary according to ICU (see [ICU_Rule_Status_Values]_) is at the end of a word (e.g. after ``jump``) or the end of a number (e.g. after ``32.3``).
+* The "Rule Status value" of the boundary according to ICU (see [ICU_RSV]_) is at the end of a word (e.g. after ``jump``) or the end of a number (e.g. after ``32.3``).
 
 In addition, we introduce these rules for CLiC:
 
