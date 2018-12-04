@@ -1,3 +1,5 @@
+* client/text: Make sure there's padding around text in mobile views
+
 ## 2.0.0-beta4 (2018-11-30)
 
 * server/region_preview: Add (temporary!) endpoint for previewing regions
