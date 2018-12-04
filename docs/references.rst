@@ -2,6 +2,6 @@ References
 ==========
 
 .. [ICU] http://userguide.icu-project.org/boundaryanalysis
-.. [ICU_Rule_Status_Values] http://userguide.icu-project.org/boundaryanalysis#TOC-Rule-Status-Values
+.. [ICU_RSV] http://userguide.icu-project.org/boundaryanalysis#TOC-Rule-Status-Values
 .. [UAX29] https://www.unicode.org/reports/tr29/tr29-33.html#Word_Boundaries
 .. [UNIDECODE] https://pypi.org/project/Unidecode/
