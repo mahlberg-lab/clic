@@ -162,9 +162,14 @@ Extended quotes also work without curly quotes, example from ChiLit/water.txt::
     [('quote.quote', 0, 295, None, '"And I am very ugly....erved the\\nchildren."'),
      ('quote.nonquote', 297, 352, None, 'And at that Tom was ... crept under a stone')]
 
-Extended quotes only carry on when a paragraph starts with a quote-mark. Erronous quotes
-in paragraphs shouldn't results in quotes running on, example from
-ChiLit/moonfleet.txt::
+Extended quotes only carry on when a paragraph starts with a quote-mark. Erroneous quotes
+in paragraphs shouldn't result in quotes running on. E.g. in the first paragraph
+of the following example from ChiLit/moonfleet.txt, there's a ``'twixt``, 
+which as this isn't in our whitelist, could be the start of a quote. 
+There's no end-quote mark in the paragraph (the 'tis is in our whitelist), 
+so either this is an extended quote or an apostrophe that should be ignored.
+Since the second paragraph doesn't start with a quote mark or is indented, 
+it's something to be ignored, so we make sure we ignore it.::
 
     >>> [x for x in run_tagger('''
     ... turning the
