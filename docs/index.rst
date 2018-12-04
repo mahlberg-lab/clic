@@ -12,6 +12,7 @@ CLiC
    advanced
    appendices
    footnotes
+   glossary
    references
 
 * :ref:`genindex`
