@@ -95,5 +95,5 @@ the homepage.
 The rationale behind the division of the subsets can be found in the open access article by
 Mahlberg et al. (2016)\ `[7] <footnotes.html>`__. However, the tagging procedure for CLiC 
 corpora has changed since the publciation of this paper - please see the 
-`tagger documentation <https://github.com/birmingham-ccr/clic/blob/2.0-beta1/server/clic/region/quote.py>`__
+`tagger documentation <https://clic.readthedocs.io/en/latest/module/clic.region.html>`__
 for the technical details.
