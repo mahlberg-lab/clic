@@ -28,6 +28,15 @@ corresponding close quote mark is found::
      ('quote.quote', 307, 340, None, '‘And this is Schloss Adlerstein?’'),
      ('quote.nonquote', 341, 355, None, 'she exclaimed.')]
 
+In the all examples, the columns are:
+
+1. Region class/type ('rclass'): e.g. 'quote.quote'
+2. Start position, in characters through the text file: e.g. '0'
+3. End position, in characters through the text file: e.g. '305'
+4. Value, e.g. chapter number, paragraph-in-chapter number. As we don't number quotes and non-quotes, this will always say 'None' for these region classes.
+5. A preview of the text that the region applies to, shortened if it's longer than 40 characters, purely for illustration.
+
+
 Quotes should have one of ``,?.!-;_`` before the end quote, or ``--`` after::
 
     >>> [x for x in run_tagger('''
