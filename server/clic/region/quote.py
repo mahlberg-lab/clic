@@ -222,7 +222,8 @@ quote.suspension regions
 ------------------------
 
 A suspension is defined as a ``quote.nonquote`` that is not bordered by the end or start
-of a sentence (see :mod:`chapter.paragraph / chapter.sentence regions`). If it is longer than 5 words, then it is a long suspension. For example::
+of a sentence (see :mod:`clic.region.chapter.html`). 
+If it is longer than 5 words, then it is a long suspension. For example::
 
     >>> [x for x in run_tagger('''
     ... “And on what evidence, Pip,” asked Mr. Jaggers, very coolly, as he
