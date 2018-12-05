@@ -61,8 +61,7 @@ textual subsets of novels. The Example
 from Great Expectations below illustrates the subsets and
 Figure shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
-button in concordances (see Section 5.2) and the table of contents on
-the homepage.
+button in concordances (see Section 5.2) and the Text tab.
 
    "And on what evidence, Pip," asked Mr. Jaggers, very coolly, as he
    paused with his handkerchief half way to his nose,"does Provis make
