@@ -34,6 +34,11 @@ Section 5.2), as illustrated in Figure.
 
    **Figure:** Selecting corpora in the Concordance tab (same procedure
    in Subsets and Clusters; for Keywords see Section 5.5)
+   
+.. figure:: images/figure-corpora-select_2.png
+   :alt: figure-corpora-select_2
+
+   **Figure:** The dropdown menu for selecting corpora
 
 You can select the pre-selected corpora in their entirety or you can
 pick individual books from them, effectively creating your own
