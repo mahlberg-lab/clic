@@ -1,5 +1,5 @@
-.. rubric:: Concordance
-   :name: concordance
+Concordance
+===========
 
 Clicking onto the **'Concordance'** tab will take you to the concordance
 view. In order to create a concordance, you will need to select a corpus

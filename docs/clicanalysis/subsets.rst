@@ -1,5 +1,5 @@
-.. rubric:: Subsets
-   :name: subsets
+Subsets
+=======
 
 The Subsets tab can display the full subset of your choice for the
 selected corpus. Therefore, you can retrieve all quotes or all long

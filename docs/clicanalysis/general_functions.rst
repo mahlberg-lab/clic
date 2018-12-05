@@ -1,5 +1,5 @@
-The CLiC analysis tabs
-======================
+General functions
+=================
 
 The landing page shows a rotating summary of the CLiC corpora. Click
 onto one of the tabs in the control bar on the right side to start your analysis. The CLiC

@@ -1,5 +1,5 @@
-.. rubric:: Clusters
-   :name: clusters
+Clusters
+========
 
 The output of the cluster tool generates frequency lists of single words
 and 'clusters' (repeated sequences of words). Clusters are also called

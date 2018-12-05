@@ -1,5 +1,5 @@
-.. rubric:: Keywords
-   :name: keywords
+Keywords
+========
 
 The keywords tool finds words (and phrases) that are used significantly
 more often in one corpus compared to another. CLiC incorporates the
