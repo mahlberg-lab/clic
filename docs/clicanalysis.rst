@@ -3,9 +3,9 @@ The CLiC analysis tabs
 
 The landing page shows a rotating summary of the CLiC corpora. Click
 onto one of the tabs in the control bar on the right side to start your analysis. The CLiC
-logo will take you back to the homepage if you want to see the content
-page again at a later point. The CLiC functions can be divided into two
-groups:
+logo will take you back to the landing page. 
+
+The CLiC functions can be divided into two groups:
 
 * **A:** The **'Concordance'** and **'Subsets'** tabs both display text
   (patterns) from the selected books in context. This is where you can
