@@ -21,24 +21,24 @@ titles (please see Appendix 2 for an overview of all CLiC texts listed
 in the AQA, OCR and Edexcel GCSE and A-Level English specifications).
 
 In order to **select texts** in any of the CLiC analysis tabs, go to
-control bar on the right-hand side (circled in
-Figure above). You can select any or all of
+control bar on the right-hand side (circled in the
+figure below). You can select any or all of
 the texts by picking the corpora from a drop-down list or typing their
 names into a textbox. For example, in the Concordance tool, once you
 have clicked on the Concordance tab, a textbox labeled **'Search the
 corpora'** will appear (for more information on the Concordance tab, see
-Section 5.2), as illustrated in Figure.
+Section 5.2), as illustrated in the two figures.
 
 .. figure:: images/figure-corpora-select.png
    :alt: figure-corpora-select
 
-   **Figure:** Selecting corpora in the Concordance tab (same procedure
+   Selecting corpora in the Concordance tab (same procedure
    in Subsets and Clusters; for Keywords see Section 5.5)
    
 .. figure:: images/figure-corpora-select_2.png
    :alt: figure-corpora-select_2
 
-   **Figure:** The dropdown menu for selecting corpora
+   The dropdown menu for selecting corpora
 
 You can select the pre-selected corpora in their entirety or you can
 pick individual books from them, effectively creating your own
@@ -48,18 +48,18 @@ books from the 19th Century Children's Literature Corpus (ChiLit).
 
 You can also select an author-based corpus from the drop-down. For example,
 typing *austen* into the textbox (which is not case-sensitive) gives you the option of selecting all 
-books by Jane Austen at once (see Figure).
+books by Jane Austen at once, as illustrated in the following figure).
 
 .. figure:: images/figure-corpora-authorbased.png
    :alt: figure-corpora-authorbased
 
-   **Figure:** Example of creating an author-based corpus:
+   Example of creating an author-based corpus:
    selecting all of Jane Austen's novels
 
 The CLiC corpora have been marked up to distinguish between several
 textual subsets of novels. The Example
-from Great Expectations below illustrates the subsets and
-Figure shows how these are marked up
+from Great Expectations below illustrates the subsets and the following
+figure shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
 button in concordances (see Section 5.2) and the Text tab.
 
@@ -92,7 +92,7 @@ button in concordances (see Section 5.2) and the Text tab.
 .. figure:: images/figure-corpora-markupsubsets.png
    :alt: figure-corpora-markupsubsets
 
-   **Figure:** Chapter view of example (1) (retrieved via the 'in bk.'
+   Chapter view of example (1) (retrieved via the 'in bk.'
    (in book) button in a concordance of asked Mr Jaggers very coolly),
    exemplifying the mark-up of subsets
 

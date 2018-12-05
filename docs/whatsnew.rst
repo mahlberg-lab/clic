@@ -46,5 +46,5 @@ The Counts tab shows an interactive overview of the corpora, with word counts wi
 .. figure:: images/figure-new-homescreen.png
    :alt: figure-new-homescreen
 
-   **Figure:** The CLiC home screen with the menu in the side panel on
+   The CLiC home screen with the menu in the side panel on
    the right

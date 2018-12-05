@@ -22,13 +22,12 @@ The CLiC functions can be divided into two groups:
    :name: functions-common-to-all-tabs
 
 At any point, you can close the menu on the right by clicking on the
-menu icon in the top right corner (see
-Figure).
+menu icon in the top right corner (see the following figure).
 
 .. figure:: images/figure-analysis-common-menuicon.png
    :alt: figure-analysis-common-menuicon
 
-   **Figure:** Close the sidebar menu by clicking on the menu icon in
+   Close the sidebar menu by clicking on the menu icon in
    the top right corner
 
 .. rubric:: Saving plain and annotated results
@@ -69,16 +68,15 @@ file will not preserve any of the colours or the highlighting that you
 may have created with the KWICGrouper function (see the subsection
 'Concordance – KWICGrouper' in 5.2 below). In order to print the output
 in colour, go to the Chrome printing menu, click on 'More settings' and
-tick 'Background graphics' (see Figure; other browsers
+tick 'Background graphics' (see the following figure; other browsers
 should have similar settings). The layout also tends to print best in
-landscape format. You can then “print” the output to a PDF file (as in
-Figure) or straight to
+landscape format. You can then “print” the output to a PDF file or straight to
 your printer.
 
 .. figure:: images/figure-analysis-common-printing-settings.png
    :alt: figure-analysis-common-printing-settings
 
-   **Figure:** Settings for printing CLiC output in colour using the
+   Settings for printing CLiC output in colour using the
    Chrome print menu
 
 .. rubric:: Concordance
@@ -167,22 +165,23 @@ The maximum number of words in the co-text is set at 10 on either side
 in a concordance (depending on the length of the words and the size of
 the screen you might see fewer). You can see the full chapter view by
 clicking on **'in bk.' (in book) button** at the end of any row (see
-Figure).
+the following figures).
 
 .. figure:: images/figure-analysis-concordance-cotext-inbookbutton.png
    :alt: figure-analysis-concordance-cotext-inbookbutton
 
-   **Figure:** The 'in bk.' (in book) button leads to the book view
+   The 'in bk.' (in book) button leads to the book view
    of the occurrence
 
 .. figure:: images/figure-analysis-concordance-cotext-inbookchapter.png
    :alt: figure-analysis-concordance-cotext-inbookchapter
 
-   **Figure:** The 'in bk.' view shows the relevant section in the whole book.
+   The 'in bk.' view shows the relevant section in the whole book.
+   
    The preface shown here is a very short chapter. (Note that all authorial
    text occurring before the official first chapter, is counted as
    'chapter 0' in CLiC). This preface contains no quotes or suspensions;
-   compare to the subset markup in the chapter view of Figure.
+   compare to the subset markup in the chapter view shown above.
 
 .. rubric:: Results
    :name: results
@@ -198,19 +197,19 @@ that contain a particular sequence of letters (both in the node and
 co-text). For example, searching for ``hands`` in *Oliver Twist* yields 124
 results; when we use the option **'filter rows'** and search for
 ``pockets``, this is filtered down to 8 results as illustrated in
-Figure.
+the following figure.
 
 .. figure:: images/figure-analysis-concordance-results-filter.png
    :alt: figure-analysis-concordance-results-filter
 
-   **Figure:** Concordance of ``hands`` in *Oliver Twist* filtered down to
+   Concordance of ``hands`` in *Oliver Twist* filtered down to
    ``pockets`` in the co-text
 
 Note that the filter, when searching for character sequences does not
 necessarily search for complete words: for example, filtering a
 concordance of ``head`` in *Oliver Twist* for ``eat`` yields both
 occurrences of the verb ``eat``, and the instance ``threatened``, which
-contains the same sequence of letters (see Figure).
+contains the same sequence of letters (see the figure above).
 
 The filter function is cruder than the KWICGrouper; it can be usefully
 applied to filter down a large set of results before you do a more
@@ -224,7 +223,7 @@ in suspensions).
 .. figure:: images/figure-analysis-concordance-results-filtersequence.png
    :alt: figure-analysis-concordance-results-filtersequence
 
-   **Figure:** Filtering for the letter sequence ``eat`` returns forms of
+   Filtering for the letter sequence ``eat`` returns forms of
    the verb ``eat`` and other words containing the sequence
 
 .. rubric:: View as
@@ -267,8 +266,7 @@ the order of sorting.
 Note that you can create a **“sorting sequence”** by clicking on various
 headers while pressing the **shift key**. For example, you could sort a
 concordance first by the words on the right and then by book, as
-illustrated in
-Figure,
+illustrated in the following figure,
 which shows a concordance of *fireplace* sorted first by book – so that
 results from *Barnaby Rudge (BR)* come first – and then ordered by the
 co-text on the right.
@@ -276,7 +274,7 @@ co-text on the right.
 .. figure:: images/figure-analysis-concordance-sorting-fireplacecombined.png
    :alt: figure-analysis-concordance-sorting-fireplacecombined
 
-   **Figure:** Concordance of fireplace in DNov (Dickens's Novels) –
+   Concordance of fireplace in DNov (Dickens's Novels) –
    first ordered by book, then by the first word on the right
 
 
@@ -309,29 +307,25 @@ these, the colours with repeat.) The KWICGrouper gives you two options:
    limit on how many words you add.
 
 The total number of matching rows will be displayed at the top; the
-process is illustrated in
-Figure and
-Figure.
-Figure shows
-the plain concordance lines as returned when searching for *fire* in
-Dickens's novels.
+process is illustrated in the following two figures, which show 1. the 
+plain concordance lines as returned when searching for *fire* in
+Dickens's novels and 2. the process of choosing types (forms of words) 
+from co-text surrounding *fire* in the concordance in order to group the 
+concordance lines.
 
 .. figure:: images/figure-analysis-concordance-kwicgrouper-fireplain.png
    :alt: figure-analysis-concordance-kwicgrouper-fireplain
 
-   **Figure:** The first concordance lines of fire in DNov (Dickens's
+   The first concordance lines of fire in DNov (Dickens's
    Novels) with the default sorting by 'in bk'
 
 .. figure:: images/figure-analysis-concordance-kwicgrouper-firetypes.png
    :alt: figure-analysis-concordance-kwicgrouper-firetypes
 
-   **Figure:** Selecting types related to sitting from the KWICGrouper
+   Selecting types related to sitting from the KWICGrouper
    to group the concordance lines
 
-Figure
-illustrates the process of choosing types (forms of words) from co-text
-surrounding *fire* in the concordance in order to group the concordance
-lines. The dropdown only contains those word forms that actually appear
+The dropdown only contains those word forms that actually appear
 around the node term in the specified search span. Therefore, while
 *sitiwation* is listed here, it wouldn't be listed if we had searched
 for another node term or used other books; it only appears once in this
@@ -349,14 +343,14 @@ set in the following Example context:
 .. figure:: images/figure-analysis-concordance-kwicgrouper-fireresults.png
    :alt: figure-analysis-concordance-kwicgrouper-fireresults
 
-   **Figure:** The resulting 'KWICGrouped' concordance lines: the
+   The resulting 'KWICGrouped' concordance lines: the
    selected types are listed in the search box on the right; and in the
    case of this example it is suitable to restrict the search span to
    only the left side of the node
 
 The KWICGrouper only searches through a number of words to the left and
 right of the node term, as specified by the search span.
-Figure shows
+The following figure shows
 the resulting concordance lines according to the KWICGrouper settings
 after manually choosing types related to the action of sitting. Apart
 from the selected search types the search span has also been restricted
@@ -366,7 +360,7 @@ visible.
 .. figure:: images/figure-analysis-concordance-kwicgrouper-fireback.png
    :alt: figure-analysis-concordance-kwicgrouper-fireback
 
-   **Figure:** The first lines of fire co-occurring with back (i.e. one
+   The first lines of fire co-occurring with back (i.e. one
    KWICGrouper match) are highlighted and moved to the top
 
 Apart from looking for characters sitting by the fire, it might also be
@@ -375,7 +369,7 @@ in our previous work (see chapter 6 of Mahlberg
 2013\ `[9] <footnotes.html>`__) that the cluster with *his
 back to the fire* is prominent in Dickens's and 19th century novels by
 other writers.
-Figure shows the
+The previos figure shows the
 first concordance lines of *fire* with *back* on the left (sorted to the
 left).
 
@@ -388,7 +382,7 @@ Figure, the
 message says “36 entries with 1 KWIC match”, this means that 36 lines
 contain both *fire* and *back*. This function becomes useful when we now
 look for gendered pronouns. As shown in
-Figure, there
+the following figure, there
 are 27 lines in which *fire* co-occurs with both *back* and *his*. Most
 of these occurrences appear in the pattern with *his back to the fire*,
 as becomes obvious when we reverse the sorting on the left so that the
@@ -401,13 +395,13 @@ Dickens's novels contain only instance of *fire* co-occurring with
 .. figure:: images/figure-analysis-concordance-kwicgrouper-firebackhis.png
    :alt: figure-analysis-concordance-kwicgrouper-firebackhis
 
-   **Figure:** The 27 lines with two matches (here, back and his) are
+   The 27 lines with two matches (here, back and his) are
    highlighted in a darker green
 
 .. figure:: images/figure-analysis-concordance-kwicgrouper-firebackher.png
    :alt: figure-analysis-concordance-kwicgrouper-firebackher
 
-   **Figure:** Only one line contains both back and her; it is
+   Only one line contains both back and her; it is
    highlighted and shown above single match lines
 
 .. rubric:: Manage tag columns
@@ -425,7 +419,7 @@ according to who is dreaming.
 .. figure:: images/figure-analysis-concordance-tagcolumns-dream.png
    :alt: figure-analysis-concordance-tagcolumns-dream
 
-   **Figure:** Tagged concordance lines of dream in Oliver Twist
+   Tagged concordance lines of dream in Oliver Twist
 
 In order to tag the lines, click on **'manage tag columns'** (shown in
 the bottom right corner of
@@ -447,12 +441,12 @@ new row.
 .. figure:: images/figure-analysis-concordance-tagcolumns-menu.png
    :alt: figure-analysis-concordance-tagcolumns-menu
 
-   **Figure:** The menu for adding and renaming tags
+   The menu for adding and renaming tags
 
 .. figure:: images/figure-analysis-concordance-tagcolumns-selectline.png
    :alt: figure-analysis-concordance-tagcolumns-selectline
 
-   **Figure:** Select a line (by clicking on it) in order to apply an
+   Select a line (by clicking on it) in order to apply an
    existing tag; once tagged, the tick in the sidebar will appear green
    for the selected line. A tick will also be added to the tag column in
    the concordance itself
@@ -478,7 +472,7 @@ will also need to choose a corpus.
 .. figure:: images/figure-analysis-subsets-show-options.png
    :alt: figure-analysis-subsets-show-options
 
-   **Figure:** The basic subset options
+   The basic subset options
 
 Figure shows sample
 lines from the subset of long suspensions in *Oliver Twist*. You can
@@ -489,7 +483,7 @@ annotate rows with noteworthy patterns
 .. figure:: images/figure-analysis-subsets-show-longsuspensions.png
    :alt: figure-analysis-subsets-show-longsuspensions
 
-   **Figure:** The first few lines from the subset of 'long suspensions'
+   The first few lines from the subset of 'long suspensions'
    in Oliver Twist
 
 .. rubric:: Results
@@ -510,12 +504,12 @@ suspensions for particular speech verbs like *cried*
 .. figure:: images/figure-analysis-subsets-results-filter-cried.png
    :alt: figure-analysis-subsets-results-filter-cried
 
-   **Figure:** Filtering long suspensions in Oliver Twist for cried
+   Filtering long suspensions in Oliver Twist for cried
 
 .. figure:: images/figure-analysis-subsets-results-filter-cotext.png
    :alt: figure-analysis-subsets-results-filter-cotext
 
-   **Figure:** Filtering the co-text of long suspensions for perhaps in
+   Filtering the co-text of long suspensions for perhaps in
    Oliver Twist
 
 Note, however, that the filter will search through the whole row and
@@ -541,7 +535,7 @@ for an illustration of the Subset KWICGrouper searching for lines with
 .. figure:: images/figure-analysis-subsets-kwicgrouper-criedscreamedsobbed.png
    :alt: figure-analysis-subsets-kwicgrouper-criedscreamedsobbed
 
-   **Figure:** The search span of the Subset KWICGrouper applies to the
+   The search span of the Subset KWICGrouper applies to the
    subset; not to the co-text
 
 .. rubric:: Manage tag columns
@@ -550,7 +544,7 @@ for an illustration of the Subset KWICGrouper searching for lines with
 .. figure:: images/figure-analysis-subsets-tagcolumns-gender.png
    :alt: figure-analysis-subsets-tagcolumns-gender
 
-   **Figure:** Tagging subsets – here, long suspensions in ChiLit
+   Tagging subsets – here, long suspensions in ChiLit
    containing cried are tagged for character gender
 
 Just like in the Concordance tab (Section 5.2), subset rows can be
@@ -579,7 +573,7 @@ by*), as illustrated in Figure.
 .. figure:: images/figure-analysis-clusters-ngrams.png
    :alt: figure-analysis-clusters-ngrams
 
-   **Figure:** Cluster options
+   Cluster options
 
 As in the other tabs, you can restrict the search to a particular subset
 (see Figure – **'Only in subsets:
@@ -619,14 +613,14 @@ Figure):
 .. figure:: images/figure-analysis-keywords-settings.png
    :alt: figure-analysis-keywords-settings
 
-   **Figure:** The settings for the keywords tab require you to select
+   The settings for the keywords tab require you to select
    two sets of corpora for the keyword comparison – target and reference
    – and their corresponding subsets
 
 .. figure:: images/figure-analysis-keywords-19thcentury.png
    :alt: figure-analysis-keywords-19thcentury
 
-   **Figure:** Key 5-word clusters in Oliver Twist 'quotes' compared to
+   Key 5-word clusters in Oliver Twist 'quotes' compared to
    'quotes' in the 19th Century Reference Corpus
 
 Note that you have to select a subset for each of the two corpora or
