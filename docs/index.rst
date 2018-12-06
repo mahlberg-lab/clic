@@ -15,8 +15,7 @@ CLiC
    glossary
    references
 
-Indices and tables
-==================
+.. only:: format_html
 
-* :ref:`genindex`
-* :ref:`search`
+    * :ref:`genindex`
+    * :ref:`search`
