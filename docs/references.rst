@@ -1,5 +1,7 @@
-References
-==========
+.. only:: format_html
+
+    References
+    ==========
 
 .. [ICU] http://userguide.icu-project.org/boundaryanalysis
 .. [ICU_RSV] http://userguide.icu-project.org/boundaryanalysis#TOC-Rule-Status-Values
