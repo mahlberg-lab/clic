@@ -86,13 +86,13 @@ the screen you might see fewer). You can see the full chapter view by
 clicking on **'in bk.' (in book) button** at the end of any row (see
 the following figures).
 
-.. figure:: images/figure-analysis-concordance-cotext-inbookbutton.png
+.. figure:: ../images/figure-analysis-concordance-cotext-inbookbutton.png
    :alt: figure-analysis-concordance-cotext-inbookbutton
 
    The 'in bk.' (in book) button leads to the book view
    of the occurrence
 
-.. figure:: images/figure-analysis-concordance-cotext-inbookchapter.png
+.. figure:: ../images/figure-analysis-concordance-cotext-inbookchapter.png
    :alt: figure-analysis-concordance-cotext-inbookchapter
 
    The 'in bk.' view shows the relevant section in the whole book.
@@ -118,7 +118,7 @@ results; when we use the option **'filter rows'** and search for
 ``pockets``, this is filtered down to 8 results as illustrated in
 the following figure.
 
-.. figure:: images/figure-analysis-concordance-results-filter.png
+.. figure:: ../images/figure-analysis-concordance-results-filter.png
    :alt: figure-analysis-concordance-results-filter
 
    Concordance of ``hands`` in *Oliver Twist* filtered down to
@@ -139,7 +139,7 @@ unlike the main concordance search and the KWICGrouper, the filter lets
 you search for particular types of punctuation (e.g. round brackets used
 in suspensions).
 
-.. figure:: images/figure-analysis-concordance-results-filtersequence.png
+.. figure:: ../images/figure-analysis-concordance-results-filtersequence.png
    :alt: figure-analysis-concordance-results-filtersequence
 
    Filtering for the letter sequence ``eat`` returns forms of
@@ -190,7 +190,7 @@ which shows a concordance of *fireplace* sorted first by book – so that
 results from *Barnaby Rudge (BR)* come first – and then ordered by the
 co-text on the right.
 
-.. figure:: images/figure-analysis-concordance-sorting-fireplacecombined.png
+.. figure:: ../images/figure-analysis-concordance-sorting-fireplacecombined.png
    :alt: figure-analysis-concordance-sorting-fireplacecombined
 
    Concordance of fireplace in DNov (Dickens's Novels) –
@@ -232,13 +232,13 @@ Dickens's novels and 2. the process of choosing types (forms of words)
 from co-text surrounding *fire* in the concordance in order to group the 
 concordance lines.
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireplain.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireplain.png
    :alt: figure-analysis-concordance-kwicgrouper-fireplain
 
    The first concordance lines of fire in DNov (Dickens's
    Novels) with the default sorting by 'in bk'
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firetypes.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firetypes.png
    :alt: figure-analysis-concordance-kwicgrouper-firetypes
 
    Selecting types related to sitting from the KWICGrouper
@@ -259,7 +259,7 @@ set in the following Example context:
 
    *[Pickwick Papers, Chapter LI.]*
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireresults.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireresults.png
    :alt: figure-analysis-concordance-kwicgrouper-fireresults
 
    The resulting 'KWICGrouped' concordance lines: the
@@ -276,7 +276,7 @@ from the selected search types the search span has also been restricted
 to the left side so that clearer patterns of sitting by the fire become
 visible.
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireback.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireback.png
    :alt: figure-analysis-concordance-kwicgrouper-fireback
 
    The first lines of fire co-occurring with back (i.e. one
@@ -311,13 +311,13 @@ Figure,
 Dickens's novels contain only instance of *fire* co-occurring with
 *back* and *her* (with *her back to the fire*).
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firebackhis.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackhis.png
    :alt: figure-analysis-concordance-kwicgrouper-firebackhis
 
    The 27 lines with two matches (here, back and his) are
    highlighted in a darker green
 
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firebackher.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackher.png
    :alt: figure-analysis-concordance-kwicgrouper-firebackher
 
    Only one line contains both back and her; it is
@@ -335,7 +335,7 @@ user-defined so you can create tags that are relevant to your project.
 In this case, occurrences of *dream* in *Oliver Twist* have been tagged
 according to who is dreaming.
 
-.. figure:: images/figure-analysis-concordance-tagcolumns-dream.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-dream.png
    :alt: figure-analysis-concordance-tagcolumns-dream
 
    Tagged concordance lines of dream in Oliver Twist
@@ -357,12 +357,12 @@ columns as mentioned in the sorting section above. Selected and tagged
 rows will be automatically deselected when you click on (i.e. select) a
 new row.
 
-.. figure:: images/figure-analysis-concordance-tagcolumns-menu.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-menu.png
    :alt: figure-analysis-concordance-tagcolumns-menu
 
    The menu for adding and renaming tags
 
-.. figure:: images/figure-analysis-concordance-tagcolumns-selectline.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-selectline.png
    :alt: figure-analysis-concordance-tagcolumns-selectline
 
    Select a line (by clicking on it) in order to apply an

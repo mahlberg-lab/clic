@@ -11,7 +11,7 @@ generally expect.) CLiC currently supports 1-grams (single words),
 3-grams (like *i don't know*) 4-grams and 5-grams (*what do you mean
 by*), as illustrated in Figure.
 
-.. figure:: images/figure-analysis-clusters-ngrams.png
+.. figure:: ../images/figure-analysis-clusters-ngrams.png
    :alt: figure-analysis-clusters-ngrams
 
    Cluster options

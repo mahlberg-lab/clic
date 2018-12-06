@@ -24,14 +24,14 @@ Figure):
 -  **'n-gram':** Do you want to compare single words (1-grams) or
    phrases (2-grams up to 5-grams
 
-.. figure:: images/figure-analysis-keywords-settings.png
+.. figure:: ../images/figure-analysis-keywords-settings.png
    :alt: figure-analysis-keywords-settings
 
    The settings for the keywords tab require you to select
    two sets of corpora for the keyword comparison – target and reference
    – and their corresponding subsets
 
-.. figure:: images/figure-analysis-keywords-19thcentury.png
+.. figure:: ../images/figure-analysis-keywords-19thcentury.png
    :alt: figure-analysis-keywords-19thcentury
 
    Key 5-word clusters in Oliver Twist 'quotes' compared to

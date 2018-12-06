@@ -24,7 +24,7 @@ The CLiC functions can be divided into two groups:
 At any point, you can close the menu on the right by clicking on the
 menu icon in the top right corner (see the following figure).
 
-.. figure:: images/figure-analysis-common-menuicon.png
+.. figure:: ../images/figure-analysis-common-menuicon.png
    :alt: figure-analysis-common-menuicon
 
    Close the sidebar menu by clicking on the menu icon in
@@ -73,7 +73,7 @@ should have similar settings). The layout also tends to print best in
 landscape format. You can then “print” the output to a PDF file or straight to
 your printer.
 
-.. figure:: images/figure-analysis-common-printing-settings.png
+.. figure:: ../images/figure-analysis-common-printing-settings.png
    :alt: figure-analysis-common-printing-settings
 
    Settings for printing CLiC output in colour using the

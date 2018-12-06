@@ -16,7 +16,7 @@ Figure) to select a relevant
 subset (short suspensions, long suspensions, quotes or non-quotes). You
 will also need to choose a corpus.
 
-.. figure:: images/figure-analysis-subsets-show-options.png
+.. figure:: ../images/figure-analysis-subsets-show-options.png
    :alt: figure-analysis-subsets-show-options
 
    The basic subset options
@@ -27,7 +27,7 @@ then use the filter option to narrow down the lines and group them using
 the KWICGrouper. As in the concordance tab, you can create tags to
 annotate rows with noteworthy patterns
 
-.. figure:: images/figure-analysis-subsets-show-longsuspensions.png
+.. figure:: ../images/figure-analysis-subsets-show-longsuspensions.png
    :alt: figure-analysis-subsets-show-longsuspensions
 
    The first few lines from the subset of 'long suspensions'
@@ -48,12 +48,12 @@ filter function in the Concordance tab. For example, you could filter
 suspensions for particular speech verbs like *cried*
 (Figure).
 
-.. figure:: images/figure-analysis-subsets-results-filter-cried.png
+.. figure:: ../images/figure-analysis-subsets-results-filter-cried.png
    :alt: figure-analysis-subsets-results-filter-cried
 
    Filtering long suspensions in Oliver Twist for cried
 
-.. figure:: images/figure-analysis-subsets-results-filter-cotext.png
+.. figure:: ../images/figure-analysis-subsets-results-filter-cotext.png
    :alt: figure-analysis-subsets-results-filter-cotext
 
    Filtering the co-text of long suspensions for perhaps in
@@ -79,7 +79,7 @@ Figure
 for an illustration of the Subset KWICGrouper searching for lines with
 *cried*, *screamed* and *sobbed*.
 
-.. figure:: images/figure-analysis-subsets-kwicgrouper-criedscreamedsobbed.png
+.. figure:: ../images/figure-analysis-subsets-kwicgrouper-criedscreamedsobbed.png
    :alt: figure-analysis-subsets-kwicgrouper-criedscreamedsobbed
 
    The search span of the Subset KWICGrouper applies to the
@@ -88,7 +88,7 @@ for an illustration of the Subset KWICGrouper searching for lines with
 .. rubric:: Manage tag columns
    :name: manage-tag-columns-1
 
-.. figure:: images/figure-analysis-subsets-tagcolumns-gender.png
+.. figure:: ../images/figure-analysis-subsets-tagcolumns-gender.png
    :alt: figure-analysis-subsets-tagcolumns-gender
 
    Tagging subsets – here, long suspensions in ChiLit
