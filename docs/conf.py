@@ -114,6 +114,9 @@ htmlhelp_basename = 'clic-userguidedoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
+# Include the appendices that are hidden in index.rst
+latex_appendices = ['appendices', 'footnotes', 'glossary']
+
 latex_elements = {
     'preamble': '''
 \\addto\\captionsenglish{\\renewcommand{\\bibname}{References}}

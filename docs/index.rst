@@ -10,12 +10,18 @@ CLiC
    cliccorpora
    clicanalysis
    advanced
-   appendices
-   footnotes
-   glossary
    references
 
 .. only:: format_html
+
+    .. NB: For LaTeX, appendices are added in latex_appendices in conf.py
+
+    .. toctree::
+        :caption: Appendices
+
+        appendices
+        footnotes
+        glossary
 
     * :ref:`genindex`
     * :ref:`search`
