@@ -115,6 +115,10 @@ htmlhelp_basename = 'clic-userguidedoc'
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
+    'preamble': '''
+\\addto\\captionsenglish{\\renewcommand{\\bibname}{References}}
+    ''',
+
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -122,10 +126,6 @@ latex_elements = {
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
 
     # Latex figure (float) alignment
     #
