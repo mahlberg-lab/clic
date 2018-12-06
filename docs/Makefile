@@ -43,5 +43,6 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
 
 _build/.buildinfo: lib/.requirements *.rst */*.rst
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
+	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 
 .PHONY: compile test lint coverage start install _build/.buildinfo
