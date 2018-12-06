@@ -45,4 +45,7 @@ _build/.buildinfo: lib/.requirements *.rst */*.rst
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 
+pdf: _build/.buildinfo
+	(cd $(BUILDDIR)/latex && make)
+
 .PHONY: compile test lint coverage start install _build/.buildinfo

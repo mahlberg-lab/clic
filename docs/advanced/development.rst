@@ -68,3 +68,18 @@ To re-build documentation::
     make -C docs
 
 To view the documenation built, go to ``/local-docs/`` for your instance.
+
+By default, this only generates the LaTeX needed for the PDF output, which will
+be available in ``docs/_build/latex/clic-userguide.tex``. To build a PDF from
+this, you first need to install::
+
+    apt install texlive-latex-recommended \
+                texlive-fonts-recommended \
+                texlive-latex-extra \
+                latexmk
+
+...then you can build with::
+
+    make -C docs pdf
+
+The pdf will be available at ``/local-docs/latex/clic-userguide.pdf``.
