@@ -30,6 +30,8 @@ The new subset output shows percentage of text instead of relative frequency (un
 
 The clusters search now ignores boundaries and only pays attention to token order. i.e. clusters can span adjacent quotes, but not chapters (as the title is in the way). You can also click on a cluster to retrieve a **matching concordance search**. If only one book is selected the frequency cutoff is 2.
 
+In previous versions of CLiC there were minor discrepancies between concordance and cluster counts. In CLiC 2.0, these have been resolved.
+
 * **Keywords tab**
 
 The keyword output has been simplified (the expected target/ref columns have been removed). You can click on a keyword or key cluster to retrieve a **matching concordance search** and a new **swap button** will reverse the target and reference corpus options.
