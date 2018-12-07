@@ -1,3 +1,4 @@
+* client/table: Don't stay on current page if query changes
 * client/text: Make sure there's padding around text in mobile views
 
 ## 2.0.0-beta4 (2018-11-30)

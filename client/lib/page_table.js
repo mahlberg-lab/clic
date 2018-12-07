@@ -56,10 +56,14 @@ PageTable.prototype.reload = function reload(page_state) {
                 if (self.last_fetched_data instanceof Error) {
                     reject(self.last_fetched_data);
                 } else {
-                    // Only switch pages if there's enough data available
-                    if (self.table.page.info().pages > old_page) {
+                    // Only switch pages if...
+                    // * The querystring still matches (i.e. KWICGrouper goes to start, tagging stays in same place)
+                    // * There's enough data available, and we won't switch to an empty page.
+                    // The net result should be only staying on current page when tags are applied.
+                    if (self.init_querystring === window.location.search && self.table.page.info().pages > old_page) {
                         self.table.page(old_page).draw('page');
                     }
+                    self.init_querystring = window.location.search;
                     resolve(self.last_fetched_data);
                 }
             }, true); // i.e. reset the current page (we'll handle switching back ourselves)
@@ -75,6 +79,7 @@ PageTable.prototype.reload = function reload(page_state) {
             table_opts = shallow_clone(self.table_opts);
             table_opts.fnInitComplete = function (table, data) {
                 self.init_cols = columns_string(self.table_opts.columns);
+                self.init_querystring = window.location.search;
                 resolve(data);
             };
             table_opts.search = { search: page_state.arg('table-filter'), smart: false };
