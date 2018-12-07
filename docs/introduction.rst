@@ -1,9 +1,9 @@
 Introduction
 ============
 
-The CLiC web app\ `[1] <footnotes.html>`__ has been developed
+The CLiC web app (http://clic.bham.ac.uk) has been developed
 as part of the CLiC Dickens
-project\ `[2] <footnotes.html>`__, which demonstrates
+project (see [CLiC_project_page]_), which demonstrates
 through corpus stylistics how computer-assisted methods can be used to
 study literary texts and lead to new insights into how readers perceive
 fictional characters. CLiC Dickens started at the University of

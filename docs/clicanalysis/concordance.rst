@@ -284,8 +284,7 @@ visible.
 
 Apart from looking for characters sitting by the fire, it might also be
 of interest to look for characters standing by the fire. We have shown
-in our previous work (see chapter 6 of Mahlberg
-2013\ `[9] <footnotes.html>`__) that the cluster with *his
+in our previous work (see Chapter 6 of [Mahlberg_2013]_) that the cluster with *his
 back to the fire* is prominent in Dickens's and 19th century novels by
 other writers.
 The previos figure shows the

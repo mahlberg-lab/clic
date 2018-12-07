@@ -1,7 +1,7 @@
 What's new in this version of CLiC
 ==================================
 
-There have been major changes to the back-end as the underlying database infrastructure has been replaced. For further technical details of this replacement, please refer to our GitHub repository\ `[3] <footnotes.html>`__. The focus of this user guide is the CLiC interface\ `[4] <footnotes.html>`__.  Due to the changes of the database, some of the basic functions of CLiC – like the concordance – will give slightly different results.
+There have been major changes to the back-end as the underlying database infrastructure has been replaced. For further technical details of this replacement, please refer to the [GitHub_CLiC]_ repository. The focus of this user guide is the CLiC interface.  Due to the changes of the database, some of the basic functions of CLiC – like the concordance – will give slightly different results.
 
 The main changes from previous versions to CLiC 2.0 that users should be aware of are:
 

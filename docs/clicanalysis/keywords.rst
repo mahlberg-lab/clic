@@ -3,8 +3,7 @@ Keywords
 
 The keywords tool finds words (and phrases) that are used significantly
 more often in one corpus compared to another. CLiC incorporates the
-keyword extraction formula reported by Rayson and Garside
-(2000)`[10] <footnotes.html>`__. Apart from comparing single
+keyword extraction formula reported by [Rayson_&_Garside_2000]_. Apart from comparing single
 words, CLiC also allows you to compare clusters. Whereas the cluster tab
 focuses only on one corpus, the Keywords function can compare cluster
 lists. You have to make selections for the following options (also see

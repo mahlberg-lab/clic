@@ -1,6 +1,8 @@
 Appendices
 ==========
 
+The appendices only act as an overview. For up-to-date information and the documentation of how the corpus texts were cleaned, please refer to the README in the [GitHub_corpora]_ repository. You can also create a dynamic list of the books in the corpora (and their word counts) using the :ref:`Counts` tab.
+
 .. rubric:: A list of texts available in CLiC
    :name: a-list-of-texts-available-in-clic
 
@@ -183,7 +185,7 @@ Appendices
    the GLARE project
    :name: titles-in-chilit-a-corpus-compiled-by-anna-cermakova-for-the-glare-project
 
-`[11] <footnotes.html>`__
+Also see the [GLARE_project_page]_.
 
 +-----------------------+-----------------------+-----------------------+
 | Title                 | Author                | Corpus                |
