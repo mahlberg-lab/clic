@@ -2,7 +2,7 @@
 set -eu
 
 API_UWSGI_CACHE_PATH="${PROJECT_PATH}/uwsgi_cache"
-WWW_UWSGI_CACHE_KEY="\$uri?\$args?\$upstream_http_x_version_clic?\$upstream_http_x_version_corpora"
+WWW_UWSGI_CACHE_KEY="\$uri?\$args?${PROJECT_REV}"
 
 # Configure measurement protocol endpoint
 GA_API_URL="http://google-analytics.com/collect?v=1&t=pageview&tid=${GA_KEY-}"
