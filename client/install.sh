@@ -26,7 +26,9 @@ upstream uwsgi_server {
     server unix://${API_SOCKET};
 }
 
-uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=api_cache:8m inactive=24h max_size=${API_UWSGI_CACHE_SIZE};
+# NB: inactive items get thrown away entirely, uwsgi_cache_background_update
+# won't save us.
+uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=api_cache:8m inactive=2w max_size=${API_UWSGI_CACHE_SIZE};
 
 server {
     listen      80;
@@ -84,6 +86,13 @@ Disallow: /api/
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
         uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
         uwsgi_cache_valid 200 302;
+        uwsgi_cache_methods GET HEAD;
+        # Less thundering herd
+        uwsgi_cache_lock on;
+        uwsgi_cache_min_uses 3;
+        # Allow serving of stale responses during update
+        uwsgi_cache_use_stale updating;
+        uwsgi_cache_background_update on;
 
         add_header X-Uwsgi-Cache-Key "${WWW_UWSGI_CACHE_KEY}";
         add_header X-Uwsgi-Cached "\$upstream_cache_status";
