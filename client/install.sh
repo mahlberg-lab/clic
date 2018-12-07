@@ -87,6 +87,7 @@ Disallow: /api/
 
         add_header X-Uwsgi-Cache-Key "${WWW_UWSGI_CACHE_KEY}";
         add_header X-Uwsgi-Cached "\$upstream_cache_status";
+        add_header X-Uwsgi-Generated "\$upstream_http_x_generated";
 
         ${GA_API_ACTION}
     }

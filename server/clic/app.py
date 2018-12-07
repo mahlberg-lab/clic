@@ -2,6 +2,8 @@
 ***********************************
 
 """
+import datetime
+
 from flask import Flask, request, Response, jsonify, g, stream_with_context
 from flask_cors import CORS
 
@@ -63,6 +65,9 @@ def create_app(config=None, app_name=None):
     @app.after_request
     def add_header(response):
         response.vary.add('Accept-Encoding')
+
+        # Say when this response was generated, so we know how old cache entries are
+        response.headers['X-Generated'] = datetime.datetime.now().isoformat()
 
         # Add CLiC version headers, tell the browser to vary based on them
         for k, v in g.clic_versions.items():
