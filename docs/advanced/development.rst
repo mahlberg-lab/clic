@@ -57,6 +57,18 @@ Favico regeneration
 Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
 ```client/www/index.html`` and ``client/www/iconx`` as appropriate.
 
+Preparing a release
+-------------------
+
+Steps for making a release::
+
+     VERSION="2.0.0-beta5"
+     echo -e "## ${VERSION} ($(date +'%Y-%m-%d'))\n" | cat - CHANGELOG.md > CHANGELOG.md.n
+     mv CHANGELOG.md.n CHANGELOG.md
+     commit -m "CHANGELOG: Release ${VERSION}" CHANGELOG.md
+     git tag -am "Release ${VERSION}" v${VERSION} HEAD
+     git push && git push --tags
+
 Documentation
 -------------
 
