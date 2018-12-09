@@ -255,6 +255,26 @@ This example doesn't count, since it starts with a sentence::
     [('quote.nonquote', 0, 21, None, 'Little Benjamin said:'),
      ('quote.quote', 22, 130, None, '"It spoils people\\'s ...b down a pear-tree."')]
 
+The start of a chapter should not count as a suspension either, as there is a
+start-of-sentence at the start/ From ``ChiLit/stalky.txt``::
+
+    >>> [x for x in run_tagger('''
+    ... The black gown tore past like a thunder-storm, and in its wake, three
+    ... abreast, arms linked, the Aladdin company rolled up the big corridor to
+    ... prayers, singing with most innocent intention:
+    ...
+    ... CHAPTER 3. AN UNSAVORY INTERLUDE.
+    ...
+    ... It was a maiden aunt of Stalky who sent him both books, with the
+    ... inscription, “To dearest Artie, on his sixteenth birthday;” it was
+    ... McTurk who ordered their hypothecation.
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0].startswith('quote.') or x[0] == 'chapter.title']
+    [('quote.nonquote', 0, 188, None, 'The black gown tore ... innocent intention:'),
+     ('chapter.title', 190, 223, 1, 'CHAPTER 3. AN UNSAVORY INTERLUDE.'),
+     ('quote.nonquote', 225, 302, None, 'It was a maiden aunt...ith the\\ninscription,'),
+     ('quote.quote', 303, 349, None, '“To dearest Artie, o...sixteenth birthday;”'),
+     ('quote.nonquote', 350, 396, None, 'it was\\nMcTurk who or...their hypothecation.')]
+
 quote.embedded regions
 ----------------------
 
@@ -427,15 +447,10 @@ def tagger_quote_suspension(book):
     if len(book.get('quote.suspension.short', [])) > 0 or len(book.get('quote.suspension.long', [])) > 0:
         return  # Nothing to do
 
-    # Iterator that iterates through...
-    # (a) The start of the first sentence
-    # (b) The end of all sentences (including the first)
-    # All other sentence-starts should be just after a sentence-end, so no point
-    # considering
+    # Iterator that iterates through the start and end of each sentence
     def sentence_breaks_fn():
-        if len(book['chapter.sentence']) > 0:
-            yield book['chapter.sentence'][0][0]
         for r in book['chapter.sentence']:
+            yield r[0]
             yield r[1]
     sentence_breaks = sentence_breaks_fn()
 

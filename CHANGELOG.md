@@ -1,3 +1,5 @@
+* tagger/quote: Don't mis-tag starts of chapters as suspensions
+
 ## 2.0.0-beta5 (2018-12-07)
 
 * client/table: Don't stay on current page if query changes
