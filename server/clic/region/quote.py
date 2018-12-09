@@ -104,6 +104,22 @@ We only demand one of the types of punctuation, so quotes can start mid-sentence
      ('quote.quote', 159, 324, None, '‘The Duchess! The Du...ped them, I wonder?’'),
      ('quote.nonquote', 325, 338, None, 'Alice guessed')]
 
+CLiC cannot detect quotes with a comma on the outside, as differentiating them
+from labels would be impossible, e.g. ChiLit/moonfleet.txt::
+
+    >>> [x for x in run_tagger('''
+    ... 'So understand', she went on, 'that I will not have you out again this
+    ... evening, no, nor any other evening, after dusk.'
+    ...
+    ... 'So understand,' she went on, 'that I will not have you out again this
+    ... evening, no, nor any other evening, after dusk.'
+    ... '''.strip(), tagger_chapter, tagger_quote) if x[0] in set(('quote.quote', 'quote.nonquote'))]
+    [('quote.nonquote', 0, 29, None, "'So understand', she went on,"),
+     ('quote.quote', 30, 119, None, "'that I will not hav...vening, after dusk.'"),
+     ('quote.quote', 121, 137, None, "'So understand,'"),
+     ('quote.nonquote', 138, 150, None, 'she went on,'),
+     ('quote.quote', 151, 240, None, "'that I will not hav...vening, after dusk.'")]
+
 Extended quotes can run on across paragraphs, with an initial quote mark or indent to
 indicate continuation. We combine these into one quote::
 
