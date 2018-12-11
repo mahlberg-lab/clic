@@ -137,23 +137,28 @@ CREATE OR REPLACE FUNCTION book_import_finalise(new_book_id INT) RETURNS VOID AS
 DECLARE
     token_tbl TEXT;
     region_tbl TEXT;
+    t TEXT;
 BEGIN
     token_tbl = 'token_' || new_book_id;
     region_tbl = 'region_' || new_book_id;
 
     -- Index region partition
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_rclass_id ON %1$s (rclass_id)$$, region_tbl);
-    EXECUTE format($$COMMENT ON INDEX %1$s_rclass_id IS 'Get regions by rclass'$$, region_tbl);
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS gist_%1$s_book_id_crange ON %1$s USING GIST (book_id, crange)$$, region_tbl);
-    EXECUTE format($$COMMENT ON INDEX gist_%1$s_book_id_crange IS 'Finding regions in a range, joining to tokens'$$, region_tbl);
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_lower_crange ON %1$s (book_id, LOWER(crange))$$, region_tbl);
-    EXECUTE format($$COMMENT ON INDEX %1$s_book_id_lower_crange IS 'Sorting on LOWER(crange)'$$, region_tbl);
+    FOREACH t IN ARRAY array['region', region_tbl] LOOP
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_rclass_id ON %1$s (rclass_id)$$, t);
+        EXECUTE format($$COMMENT ON INDEX %1$s_rclass_id IS 'Get regions by rclass'$$, t);
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS gist_%1$s_book_id_crange ON %1$s USING GIST (book_id, crange)$$, t);
+        EXECUTE format($$COMMENT ON INDEX gist_%1$s_book_id_crange IS 'Finding regions in a range, joining to tokens'$$, t);
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_lower_crange ON %1$s (book_id, LOWER(crange))$$, t);
+        EXECUTE format($$COMMENT ON INDEX %1$s_book_id_lower_crange IS 'Sorting on LOWER(crange)'$$, t);
+    END LOOP;
 
     -- Index token partition
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS gist_%1$s_book_id_crange ON %1$s USING GIST (book_id, crange)$$, token_tbl);
-    EXECUTE format($$COMMENT ON INDEX gist_%1$s_book_id_crange IS 'Finding tokens in a range, joining to regions'$$, token_tbl);
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_lower_crange ON %1$s (book_id, LOWER(crange))$$, token_tbl);
-    EXECUTE format($$COMMENT ON INDEX %1$s_book_id_lower_crange IS 'Joining with a scalar equivalent to the PK'$$, token_tbl);
+    FOREACH t IN ARRAY array['token', token_tbl] LOOP
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS gist_%1$s_book_id_crange ON %1$s USING GIST (book_id, crange)$$, t);
+        EXECUTE format($$COMMENT ON INDEX gist_%1$s_book_id_crange IS 'Finding tokens in a range, joining to regions'$$, t);
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS %1$s_book_id_lower_crange ON %1$s (book_id, LOWER(crange))$$, t);
+        EXECUTE format($$COMMENT ON INDEX %1$s_book_id_lower_crange IS 'Joining with a scalar equivalent to the PK'$$, t);
+    END LOOP;
 
     -- Add extra token metadata to this partition
     EXECUTE format($$
@@ -209,10 +214,12 @@ BEGIN
                     'quote.suspension.long');
 
     -- Add our indexes to the extra metadata
-    EXECUTE format($$CREATE UNIQUE INDEX IF NOT EXISTS unique_%1$s_book_id_ordering ON %1$s (book_id, ordering)$$, token_tbl);
-    EXECUTE format($$COMMENT ON INDEX unique_%1$s_book_id_ordering IS 'Selecting tokens around a point in concordance'$$, token_tbl);
-    EXECUTE format($$CREATE INDEX IF NOT EXISTS trgm_%1$s_book_id_ttype_part_of ON %1$s USING GIN (book_id, ttype gin_trgm_ops, part_of)$$, token_tbl);
-    EXECUTE format($$COMMENT ON INDEX trgm_%1$s_book_id_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance'$$, token_tbl);
+    FOREACH t IN ARRAY array['token', token_tbl] LOOP
+        EXECUTE format($$CREATE UNIQUE INDEX IF NOT EXISTS unique_%1$s_book_id_ordering ON %1$s (book_id, ordering)$$, t);
+        EXECUTE format($$COMMENT ON INDEX unique_%1$s_book_id_ordering IS 'Selecting tokens around a point in concordance'$$, t);
+        EXECUTE format($$CREATE INDEX IF NOT EXISTS trgm_%1$s_book_id_ttype_part_of ON %1$s USING GIN (book_id, ttype gin_trgm_ops, part_of)$$, t);
+        EXECUTE format($$COMMENT ON INDEX trgm_%1$s_book_id_ttype_part_of IS 'Select tokens by partial types & part_of regions in concorcance'$$, t);
+    END LOOP;
 END;
 $BODY$ LANGUAGE 'plpgsql' SECURITY DEFINER;
 COMMENT ON FUNCTION book_import_finalise(new_book_id INT) IS $$Update metadata and index new book data. Call once region/book tables are populated$$;
