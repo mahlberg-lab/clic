@@ -258,17 +258,16 @@ def get_word_list(cur, book_ids, rclass_ids, clusterlength):
              , COUNT(*)
           FROM (
             SELECT book_id
-                 , STRING_AGG(ttype, ' ') OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttypes
-                 , MIN(ordering) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) min_ordering
-                 , MAX(ordering) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) max_ordering
-                 , COUNT(ttype) OVER (ORDER BY book_id, ordering, ttype ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW) ttype_count
+                 , CASE WHEN MAX(ordering) OVER ngram - MIN(ordering) OVER ngram = %(extra_tokens)s
+                         AND COUNT(ttype) OVER ngram = %(extra_tokens)s + 1
+                        THEN STRING_AGG(ttype, ' ')  OVER ngram
+                         END ttypes
               FROM token t
              WHERE book_id IN %(book_ids)s
                AND t.part_of ? %(rclass_id)s
+            WINDOW ngram AS (PARTITION BY book_id ORDER BY ordering ROWS BETWEEN %(extra_tokens)s PRECEDING AND CURRENT ROW)
                ) all_ngrams
-         WHERE max_ordering - min_ordering = %(extra_tokens)s
-           AND ttype_count = %(extra_tokens)s + 1
-               -- NB: Technically we should check to see if they are all part of the same book, but in practice books aren't going to be short enough to trigger it
+         WHERE ttypes IS NOT NULL
       GROUP BY ttypes
     """
     params = dict(
