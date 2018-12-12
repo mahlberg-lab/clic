@@ -59,7 +59,7 @@ If you see the "CLiC is down for maintenance" page:
 
 If you see errors about missing tables, or queries are particularly slow:
 
-* Postgres may need vacuuming. Run ``sudo -upostgres psql -c "VACUUM ANALYSE" bham_clic_db``.
+* Postgres may need vacuuming. Run ``sudo -upostgres psql -c "VACUUM ANALYSE" clic_db``.
 
 Back-up / generating dumps
 --------------------------
