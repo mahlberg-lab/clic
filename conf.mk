@@ -19,10 +19,13 @@ endif
 
 # NGINX's server_name. Multiple space-separated values are allowed
 WWW_SERVER_NAME ?= $(shell hostname --fqdn)
+WWW_SERVER_ALIASES ?=
 ifeq ($(PROJECT_MODE),development)
     WWW_UWSGI_CACHE_ZONE ?= off
+    WWW_CERT_PATH ?=
 else
     WWW_UWSGI_CACHE_ZONE ?= api_cache
+    WWW_CERT_PATH ?= /var/lib/dehydrated
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
 # Make a guess at branch name, since production instances will be detached HEAD

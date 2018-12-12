@@ -39,6 +39,9 @@ Then install the following from your system repositories::
     # Client prerequisites
     sudo apt install make nodejs yarn nginx
 
+    # If you require web traffic to be encrypted (read: production)
+    sudo apt install dehydrated ssl-cert
+
 Installation
 ------------
 
@@ -62,7 +65,8 @@ For production, the following is a minimal example::
 
     cat <<EOF > local-conf.mk
     PROJECT_MODE = production
-    WWW_SERVER_NAME = clic.bham.ac.uk another.dns.name
+    WWW_SERVER_NAME = clic.bham.ac.uk
+    WWW_SERVER_ALIASES = another.dns.name yet.another.dns.name
     GA_KEY = UA-XXXXX-Y
     EOF
 
@@ -96,6 +100,27 @@ CLiC content is stored in the corpora repository, to add this content do the fol
 As of 2018, this process takes just under 3 hours.
 
 At this point CLiC should be ready for use. For more detail on various topics, see the `docs directory <docs/>`__.
+
+SSL Certificates
+----------------
+
+For production installations using dehydrated, at this point CLiC will be using an invalid cert.
+However, dehydrated will have been configured as part of the install. Run::
+
+    sudo /usr/bin/dehydrated -c
+
+...to update the certs, then re-run ``sudo ./install.sh`` to reconfigure CLiC with the new certs.
+
+You will also want to ensure dehydrated is run weekly, with a cron-job such as::
+
+    echo <<EOF > /etc/cron.weekly/dehydrated
+    #!/bin/sh -e
+
+    date >> /var/log/dehydrated.log
+    /usr/bin/dehydrated -c >> /var/log/dehydrated.log 2>> /var/log/dehydrated.log
+    systemctl reload nginx
+    EOF
+    chmod a+x /etc/cron.weekly/dehydrated
 
 Acknowledgements
 ----------------
