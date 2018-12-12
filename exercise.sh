@@ -32,7 +32,8 @@ for f in "${TESTS[@]}"; do
 
     echo $ENDPOINT > "${OUTPUT}"
     echo "" > "/tmp/exercise.sh.$(basename ${OUTPUT}).err"
-    { time /usr/bin/curl -sS "$HOST$ENDPOINT" | sed -E 's/,$//g ; s/\\n/ /g ; s/\\u[0-9a-f]+/'"'"'/g' | sort -dib; } >> ${OUTPUT} 2>>/tmp/exercise.sh.$(basename ${OUTPUT}).err
+    # NB: POST to disable caching
+    { time /usr/bin/curl -X POST -sS "$HOST$ENDPOINT" | sed -E 's/,$//g ; s/\\n/ /g ; s/\\u[0-9a-f]+/'"'"'/g' | sort -dib; } >> ${OUTPUT} 2>>/tmp/exercise.sh.$(basename ${OUTPUT}).err
     cat /tmp/exercise.sh.$(basename ${OUTPUT}).err >> ${OUTPUT}
     rm /tmp/exercise.sh.$(basename ${OUTPUT}).err
 
