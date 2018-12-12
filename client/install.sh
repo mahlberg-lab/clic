@@ -66,7 +66,7 @@ server {
     server_name ${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES};
 
     location /.well-known/acme-challenge/ {
-        alias "${WWW_CERT_PATH}/acme-challenge/";
+        alias "${WWW_CERT_PATH}/acme-challenges/";
     }
 
     ssl_certificate      "${WWW_CERT_FILE}";
