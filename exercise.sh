@@ -29,11 +29,12 @@ for f in "${TESTS[@]}"; do
     [ -n "${MONITOR}" ] && OUTPUT=/tmp/exercise.sh.tmp || OUTPUT="$f"
     ENDPOINT="$(head -n 1 $f)"
     [ -z "${MONITOR}" ] && echo "$f: $HOST$ENDPOINT"
-    {
-        echo $ENDPOINT
-        time /usr/bin/curl -sS "$HOST$ENDPOINT"
-        echo
-    } > ${OUTPUT} 2>&1 | tee -a ${OUTPUT}
+
+    echo $ENDPOINT > "${OUTPUT}"
+    echo "" > "/tmp/exercise.sh.$(basename ${OUTPUT}).err"
+    { time /usr/bin/curl -sS "$HOST$ENDPOINT" | sed -E 's/,$//g ; s/\\n/ /g ; s/\\u[0-9a-f]+/'"'"'/g' | sort -dib; } >> ${OUTPUT} 2>>/tmp/exercise.sh.$(basename ${OUTPUT}).err
+    cat /tmp/exercise.sh.$(basename ${OUTPUT}).err >> ${OUTPUT}
+    rm /tmp/exercise.sh.$(basename ${OUTPUT}).err
 
     if [ -n "${MONITOR}" ]; then
         diff -u \
