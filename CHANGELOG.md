@@ -1,3 +1,5 @@
+## 2.0.0-beta6 (2018-12-12)
+
 * server/cluster: Improve cluster performance
 * tagger/quote: Don't mis-tag starts of chapters as suspensions
 
