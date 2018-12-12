@@ -38,9 +38,9 @@
 ["91","looking","28","16194","2","10278",18.35,11.65,16.61,"+","p < 0.0001"]
 ["97","white","28","16194","2","10278",18.35,11.65,16.61,"+","p < 0.0001"]
 ["99","eyes","28","16194","1","10278",17.74,11.26,20.71,"+","p < 0.0001"]
-{"info":{"message":"The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed."},"version":{"clic":"v2.0.0-beta5","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"info":{"message":"The results are limited to 3000 rows. Generally there will be fewer results. Only overused (positive) keywords are displayed."},"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
 
 
-real	0m0.212s
-user	0m0.019s
-sys	0m0.008s
+real	0m0.237s
+user	0m0.008s
+sys	0m0.019s

@@ -4,9 +4,9 @@
 ], "info":{"message":"1790 clusters with a frequency less than 5 are not shown"}}
 ["said in a",6]
 ["said with a",7]
-{"version":{"clic":"v2.0.0-beta5","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
 
 
 real	0m0.084s
 user	0m0.008s
-sys	0m0.007s
+sys	0m0.014s

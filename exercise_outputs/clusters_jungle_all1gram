@@ -2411,7 +2411,7 @@
 ["valley",10]
 ["veranda",8]
 ["verse",3]
-{"version":{"clic":"v2.0.0-beta5","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
 ["very",138]
 ["viceroy",6]
 ["village",33]
@@ -2611,6 +2611,6 @@
 ["zaharrof's",2]
 
 
-real	0m0.288s
-user	0m0.035s
-sys	0m0.015s
+real	0m0.264s
+user	0m0.041s
+sys	0m0.011s

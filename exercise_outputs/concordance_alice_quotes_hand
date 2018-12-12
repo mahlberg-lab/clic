@@ -4,9 +4,9 @@
 [["I"," ","wish"," ","they'"," ","get"," ","the"," ","trial"," ","done",",' ","she"," ","thought",", '","and"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",[0]],[" ","round"," ","the"," ","refreshments","!' ","But"," ","there"," ","seemed"," ","to"," ","be"," ","no"," ","chance",[1,3,5,7,9,11,13,15,17,19]],["alice",122951,122955],[11,1,2]]
 [["jury"," ","all"," ","looked"," ","puzzled",".)  '","He"," ","must"," ","have"," ","imitated"," ","somebody"," ","else's"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",",'",[0]],[" ","said"," ","the"," ","King",". (","The"," ","jury"," ","all"," ","brightened"," ","up"," ","again",".)  '","Please",[1,3,5,7,9,11,13,15,17,19]],["alice",136797,136801],[12,31,46]]
 [["on",", ","turning"," ","to"," ","Alice",".  '","Only"," ","a"," ","thimble",",' ","said"," ","Alice"," ","sadly",".","  ",[0,2,4,6,8,10,12,14,16,18]],["'","Hand",[1]],[" ","it"," ","over"," ","here",",' ","said"," ","the"," ","Dodo",".  ","Then"," ","they"," ","all"," ","crowded",[1,3,5,7,9,11,13,15,17,19]],["alice",27465,27469],[3,27,60]]
-{"version":{"clic":"v2.0.0-beta5","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
 
 
-real	0m0.123s
-user	0m0.008s
-sys	0m0.019s
+real	0m0.100s
+user	0m0.004s
+sys	0m0.021s

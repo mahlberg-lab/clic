@@ -63,13 +63,13 @@
 [["to"," ","commemorate"," ","his"," ","triumph"," ","he"," ","fashioned"," ","a"," ","statue"," ","of"," ","himself"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",",",[0]],[" ","and"," ","of"," ","the"," ","fair"," ","woman"," ","who"," ","touched"," ","him"," ","on"," ","the",[1,3,5,7,9,11,13,15,17,19]],["quatermain",268492,268500],[12,33,191]]
 [["to"," ","get"," ","her"," ","breakfast",".  ","Oh",", ","surely"," ","she"," ","must"," ","have"," ","been"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",".",[0]],["  ","But",", ","on"," ","the"," ","other"," ","hand",", ","there"," ","were"," ","the"," ","leaves",". ","Mrs",[1,3,5,7,9,11,13,15,17,19]],["pan",13883,13891],[1,43,113]]
 [["up"," ","the"," ","stairs",", ","not"," ","quite"," ","sure"," ","that"," ","she"," ","was"," ","not"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",",",[0]],[" ","suddenly"," ","a"," ","great"," ","longing"," ","woke"," ","up"," ","in"," ","her"," ","heart"," ","to",[1,3,5,7,9,11,13,15,17,19]],["princess",94371,94379],[11,4,32]]
-{"version":{"clic":"v2.0.0-beta5","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
 [["was"," ","night"," ","time","; ","but"," ","he"," ","addressed"," ","all"," ","who"," ","might"," ","be"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",[0]],[" ","of"," ","the"," ","Neverland",", ","and"," ","who"," ","were"," ","therefore"," ","nearer"," ","to"," ","him",[1,3,5,7,9,11,13,15,17,19]],["pan",189275,189283],[13,54,139]]
 [["who"," ","were"," ","lost","; ","and"," ","from"," ","that"," ","point"," ","he"," ","went"," ","on"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",[0]],[" ","all"," ","that"," ","had"," ","happened"," ","since"," ","he"," ","met"," ","the"," ","princess"," ","and",[1,3,5,7,9,11,13,15,17,19]],["princess",240072,240080],[27,1,3]]
 [["won't"," ","listen"," ","to"," ","me",".  ","Won't"," ","I","?  ","I"," ","suppose"," ","I"," ","was"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",[0]],[" ","with"," ","my"," ","eyes"," ","open",".  ","You"," ","see",", ","I"," ","have"," ","been"," ","so",[1,3,5,7,9,11,13,15,17,19]],["howwhy",373884,373892],[13,250,492]]
 [["you"," ","could"," ","not"," ","dismiss"," ","it"," ","by"," ","saying"," ","she"," ","had"," ","been"," ",[0,2,4,6,8,10,12,14,16,18]],["dreaming",".",[0]],["  ","'","My"," ","child",",' ","the"," ","mother"," ","cried",", '","why"," ","did"," ","you"," ","not"," ","tell",[2,4,6,8,10,12,14,16,18,20]],["pan",13695,13703],[1,40,109]]
 
 
-real	0m0.259s
-user	0m0.006s
-sys	0m0.009s
+real	0m0.321s
+user	0m0.013s
+sys	0m0.008s
