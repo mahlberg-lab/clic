@@ -117,7 +117,7 @@ htmlhelp_basename = 'clic-userguidedoc'
 # Add CLiC logo to title page
 # NB: Ideally we would use sphinxcontrib-svg2pdfconverter, but rsvg-convert not available:
 # https://github.com/rtfd/readthedocs-docker-images/pull/79
-latex_logo = 'clic.pdf'
+latex_logo = 'clic-logo.pdf'
 
 # Include the appendices that are hidden in index.rst
 latex_appendices = ['appendices', 'glossary']
