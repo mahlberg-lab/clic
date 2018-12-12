@@ -61,6 +61,10 @@ If you see errors about missing tables, or queries are particularly slow:
 
 * Postgres may need vacuuming. Run ``sudo -upostgres psql -c "VACUUM ANALYSE" clic_db``.
 
+If the home page is particularly slow:
+
+The homepage entries aren't cached yet, reload the page ~3 times until it is.
+
 Back-up / generating dumps
 --------------------------
 
