@@ -113,7 +113,7 @@ However, dehydrated will have been configured as part of the install. Run::
 
 You will also want to ensure dehydrated is run weekly, with a cron-job such as::
 
-    echo <<EOF > /etc/cron.weekly/dehydrated
+    cat <<EOF > /etc/cron.weekly/dehydrated
     #!/bin/sh -e
 
     date >> /var/log/dehydrated.log
