@@ -20,7 +20,6 @@ CLiC
         :caption: Appendices
 
         appendices
-        footnotes
         glossary
 
     * :ref:`genindex`

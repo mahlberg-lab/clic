@@ -118,7 +118,7 @@ htmlhelp_basename = 'clic-userguidedoc'
 latex_logo = '../client/www/logos/clic-ogimage.png'
 
 # Include the appendices that are hidden in index.rst
-latex_appendices = ['appendices', 'footnotes', 'glossary']
+latex_appendices = ['appendices', 'glossary']
 
 latex_elements = {
     'preamble': '''
