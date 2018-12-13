@@ -99,9 +99,8 @@ The concordance search peforms the following steps:
    * "latter pavement" (any word) results in 2 queries, ``['latter']`` and ``['pavement']``
 
 3. For each query, choose an "anchor" type. The aim here is to find the least
-   frequent term that will filter the results the fastest. Currently we choose
-   the longest search term. ``["on", "*", "pavement"]`` will use ``pavement``
-   as the anchor.
+   frequent term that will filter the results the fastest. See
+   :func:`find_anchor_offset` for details.
 
 4. Search the database for all types that match this anchor in the given books,
    and within the given region. For example if our query was ``oliver*``, this
@@ -271,6 +270,10 @@ from clic.tokenizer import types_from_string
 RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns it
 
 
+#: Most frequent words in entirety of corpora, as of 2018-12-13
+STOPWORDS = set(("the", "and", "to", "of", "a", "i", "in", "he", "was", "that"))
+
+
 def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
     """
     Main entry function for concordance search
@@ -302,7 +305,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         for likes in like_sets:
             # Choose an "anchor". We search for this first to narrow the possible
             # outputs as much as possible, then consider the types around each.
-            anchor_offset = max(enumerate(likes), key=lambda l: len(l[1]))[0]
+            anchor_offset = find_anchor_offset(*likes)
 
             query = ""
             params = dict()
@@ -364,6 +367,46 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     footer = get_book_metadata(cur, book_ids, metadata)
     if footer:
         yield ('footer', footer)
+
+
+def find_anchor_offset(*types):
+    """
+    Choose our anchor node in types and return the offset of the anchor node
+    (i.e. 0 for the first word, 1 for the second...)
+
+    In general longest word is chosen::
+
+        >>> find_anchor_offset('our', 'reckoning')
+        1
+
+        >>> find_anchor_offset('finding', 'nemo')
+        0
+
+    Stopwords (see :const:`~STOPWORDS`) *aren't* chosen, even when they are shorter::
+
+        >>> find_anchor_offset('the', 'fog')
+        1
+
+        >>> find_anchor_offset('joe', 'that')
+        0
+
+    If all stopwords, the longest is chosen::
+
+        >>> find_anchor_offset('he', 'was', 'that')
+        2
+
+    Wildcards aren't counted when considering length::
+
+        >>> find_anchor_offset('so', 'h%ds')
+        1
+
+        >>> find_anchor_offset('jazz', 'h%ds')
+        0
+    """
+    def type_score(t):
+        return (0 if t in STOPWORDS else 100) + len(t) - t.count('%') - t.count('_')
+
+    return max(enumerate(types), key=lambda l: type_score(l[1]))[0]
 
 
 def to_conc(full_text, full_tokens, node_tokens, contextsize):

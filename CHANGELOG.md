@@ -1,3 +1,4 @@
+* server/concordance: More intelligent choice of anchor nodes, speeding up queries
 * install: Add HTTPS support
 
 ## 2.0.0-beta6 (2018-12-12)
