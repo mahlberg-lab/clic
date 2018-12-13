@@ -1,3 +1,5 @@
+* install: Add HTTPS support
+
 ## 2.0.0-beta6 (2018-12-12)
 
 * server/cluster: Improve cluster performance
