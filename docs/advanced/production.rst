@@ -18,6 +18,15 @@ Default settings for Postgres will result in a working CLiC, but it's suggested 
 
 * ``work_mem``: The amount of memory which can be used for sorts. ``60MB`` handles the worst likely queries but will use potentially an extra 1G of server memory.
 
+Cache warming
+-------------
+
+Repeatedly used CLiC API calls will be cached by NGINX to speed up CLiC. There
+is a script to ensure that the most commonly-used calls are in the cache. For
+example::
+
+    ./cache-warm.sh https://clic.bham.ac.uk
+
 Start / stop the CLiC service
 -----------------------------
 
