@@ -180,11 +180,11 @@ Extended quotes also work without curly quotes, example from ChiLit/water.txt::
 
 Extended quotes only carry on when a paragraph starts with a quote-mark. Erroneous quotes
 in paragraphs shouldn't result in quotes running on. E.g. in the first paragraph
-of the following example from ChiLit/moonfleet.txt, there's a ``'twixt``, 
-which as this isn't in our whitelist, could be the start of a quote. 
-There's no end-quote mark in the paragraph (the 'tis is in our whitelist), 
+of the following example from ChiLit/moonfleet.txt, there's a ``'twixt``,
+which as this isn't in our whitelist, could be the start of a quote.
+There's no end-quote mark in the paragraph (the 'tis is in our whitelist),
 so either this is an extended quote or an apostrophe that should be ignored.
-Since the second paragraph doesn't start with a quote mark or is indented, 
+Since the second paragraph doesn't start with a quote mark or is indented,
 it's something to be ignored, so we make sure we ignore it.::
 
     >>> [x for x in run_tagger('''
@@ -238,7 +238,7 @@ quote.suspension regions
 ------------------------
 
 A suspension is defined as a ``quote.nonquote`` that is not bordered by the end or start
-of a sentence (see :mod:`clic.region.chapter`). 
+of a sentence (see :mod:`clic.region.chapter`).
 If it is longer than 5 words, then it is a long suspension. For example::
 
     >>> [x for x in run_tagger('''
