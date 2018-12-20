@@ -34,6 +34,7 @@ PageCluster.prototype.init = function () {
         { title: "Frequency", data: "1"},
     ];
     this.table_opts.order = [[2, "desc"]];
+    this.table_opts.orderFixed = { post: [['1', 'asc']] };
     this.table_count_column = 0;
 };
 
