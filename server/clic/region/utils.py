@@ -74,8 +74,10 @@ def regions_flatten(book):
     """
     Flatten a book's regions down to a single array-of-arrays, suitable for exporting
     """
+    example_length = 20
+
     def short_string(s):
-        return s if len(s) < 40 else s[0:20] + '...' + s[-20:]
+        return s if len(s) < example_length * 2 else s[0:example_length] + '...' + s[-example_length:]
 
     out = []
     for rclass in book.keys():
