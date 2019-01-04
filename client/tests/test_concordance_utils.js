@@ -16,7 +16,7 @@ function kwic_terms(words) {
 test('renderTokenArray', function (t) {
     var data, short_data;
 
-    data = ['and', ' ', 'the', ' ', 'hammerhead', '-', 'sh<a>rk', ' ', 'said', ',', ' ', '"', [0, 2, 4, 6, 8]];
+    data = ['and', '\n', 'the', ' ', 'hammerhead', '-', 'sh<a>rk', ' ', 'said', ',', ' ', '"\n\n', [0, 2, 4, 6, 8]];
     data.matches = [];
     data.kwicSpan = {};
 
@@ -28,7 +28,7 @@ test('renderTokenArray', function (t) {
     t.equal(concordance_utils.renderTokenArray(data, 'display'),
             '<div class="l">' +
             '<mark>and</mark>' +
-            '<span> </span>' +
+            '<span>\n</span>' +
             '<mark>the</mark>' +
             '<span> </span>' +
             '<mark>hammerhead</mark>' +
@@ -38,7 +38,7 @@ test('renderTokenArray', function (t) {
             '<mark>said</mark>' +
             '<span>,</span>' +
             '<span> </span>' +
-            '<span>&quot;</span>' +
+            '<span>&quot; ¶ </span>' +
             '</div>');
 
     // Reverse mode just changes the div class
@@ -46,7 +46,7 @@ test('renderTokenArray', function (t) {
     t.equal(concordance_utils.renderTokenArray(data, 'display'),
             '<div class="r">' +
             '<mark>and</mark>' +
-            '<span> </span>' +
+            '<span>\n</span>' +
             '<mark>the</mark>' +
             '<span> </span>' +
             '<mark>hammerhead</mark>' +
@@ -56,14 +56,14 @@ test('renderTokenArray', function (t) {
             '<mark>said</mark>' +
             '<span>,</span>' +
             '<span> </span>' +
-            '<span>&quot;</span>' +
+            '<span>&quot; ¶ </span>' +
             '</div>');
 
     // Matches get added to class
     data.matches = [1, 3];
-    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="r m1 m3">');
+    t.equal(concordance_utils.renderTokenArray(data, 'display').match(/<div.*?>/)[0], '<div class="r m1 m3">');
     data.kwicSpan = {};
-    t.equal(concordance_utils.renderTokenArray(data, 'display').replace(/>.*/, ">"), '<div class="l m1 m3">');
+    t.equal(concordance_utils.renderTokenArray(data, 'display').match(/<div.*?>/)[0], '<div class="l m1 m3">');
 
     // Sort mode, get first/last three words, ignore whitespace
     t.equal(concordance_utils.renderTokenArray(data, 'sort'),
@@ -82,9 +82,9 @@ test('renderTokenArray', function (t) {
 
     // Filter and export mode just return string
     t.equal(concordance_utils.renderTokenArray(data, 'filter'),
-            'and the hammerhead-sh<a>rk said, "');
+            'and\nthe hammerhead-sh<a>rk said, "\n\n');
     t.equal(concordance_utils.renderTokenArray(data, 'export'),
-            'and the hammerhead-sh<a>rk said, "');
+            'and\nthe hammerhead-sh<a>rk said, "\n\n');
 
     t.end();
 });

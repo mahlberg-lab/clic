@@ -44,7 +44,7 @@ module.exports.renderTokenArray = function renderTokenArray(data, type, full, me
         out += '">';
 
         for (i = 0; i < data.length - 1; i++) {
-            out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i]);
+            out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i].replace(/\n{2,}/g, " ¶ "));
         }
 
         return out + '</div>';

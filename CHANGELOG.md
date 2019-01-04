@@ -1,3 +1,4 @@
+* client/concordance: Show pilcrow marks at paragraph breaks
 * cluster: Tie-break sorting of clusters alphanumerically
 * server/concordance: More intelligent choice of anchor nodes, speeding up queries
 * install: Add HTTPS support
