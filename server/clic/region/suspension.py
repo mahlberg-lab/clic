@@ -16,7 +16,7 @@ A suspension is ``quote.nonquote`` (see :mod:`clic.region.quote`) region that...
 * Has at least one word
 * Does not start at a ``chapter.paragraph`` start.
 * Does not contain the end of a ``chapter.sentence`` region.
-* The first letter of the region is lower-case.
+* Either does not start at a ``chapter.sentence`` start, or the first letter of the region is lower-case.
 
 This implies that all suspensions are between 2 quote regions. If not, either...
 
@@ -57,10 +57,10 @@ This implies that all suspensions are between 2 quote regions. If not, either...
      ('quote.quote', 101, 150, None, '“As they comprehend ...bsolute perfection,”'),
      ('quote.nonquote', 151, 165, None, 'said Margaret.')]
 
-We do not consider how the preceding quote ends, only that the
-``quote.nonquote`` region does not start with an upper case letter. Thus the
-preceding quote can still end with exclamation mark, or other sentence-final
-punctuation. From ``ChiLit/daisy.txt``::
+If the non-quote region starts a new sentence, we also make sure that it does
+not start with an upper case letter. Thus the preceding quote can still end
+with exclamation mark, or other sentence-final punctuation, but the non-quote
+region will still be considered a suspension. From ``ChiLit/daisy.txt``::
 
     >>> [x for x in run_tagger('''
     ... “My dear Miss Flora!” began Miss Rich, adhering to her as they parted
@@ -122,6 +122,19 @@ From ``ChiLit/alice.txt``::
      ('quote.nonquote', 98, 266, None, '(Alice thought this ...her’s Latin Grammar,'),
      ('quote.quote', 267, 319, None, '‘A mouse--of\\na mouse...--a mouse--O mouse!’'),
      ('quote.nonquote', 319, 320, None, ')')]
+
+...but if the non-quote region doesn't start a new sentence, then this is not a
+problem. From ``ChiLit/winning.txt``::
+
+    >>> [x for x in run_tagger('''
+    ... "No, no, Cousin Cnut," Cuthbert said, "thou canst not say that I have
+    ... ever broken the forest laws, though I have looked on often and often,
+    ... whilst you have done so."
+    ... '''.strip(), tagger_chapter, tagger_quote, tagger_quote_suspension) if x[0].startswith('quote.')]
+    [('quote.quote', 0, 22, None, '"No, no, Cousin Cnut,"'),
+     ('quote.nonquote', 23, 37, None, 'Cuthbert said,'),
+     ('quote.suspension.short', 23, 37, None, 'Cuthbert said,'),
+     ('quote.quote', 38, 165, None, '"thou canst not say ...t you have done so."')]
 
 If it is longer than 5 words, then it is a long suspension. For example::
 
@@ -199,15 +212,17 @@ def tagger_quote_suspension(book):
     book['quote.suspension.long'] = []
     s_i = 0
     paragraph_starts = set(r[0] for r in book['chapter.paragraph'])
+    sentence_starts = set(r[0] for r in book['chapter.sentence'])
     for containing_r in book['quote.nonquote']:
         if containing_r[0] in paragraph_starts:
             # Starts with a paragraph break, so not a suspension
             continue
 
-        m = INITIAL_ALPHANUMERIC_REGEX.match(book['content'][containing_r[0]:containing_r[1]])
-        if m and m.group(1).isupper():
-            # First alphanumeric is an upper case character, ignore
-            continue
+        if containing_r[0] in sentence_starts:
+            m = INITIAL_ALPHANUMERIC_REGEX.match(book['content'][containing_r[0]:containing_r[1]])
+            if m and m.group(1).isupper():
+                # First alphanumeric is an upper case character, ignore
+                continue
 
         while cur_sent_b < containing_r[1]:  # while current sentence boundary is before end-of-region
             if cur_sent_b > containing_r[0]:  # If it's after the start-of-region also
