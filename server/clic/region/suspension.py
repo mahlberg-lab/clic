@@ -216,8 +216,10 @@ def tagger_quote_suspension(book):
             # Find the next end-of-sentence (NB: regions are end-exclusive, so go back one)
             s_i += 1
             if s_i >= len(book['chapter.sentence']):
-                break
-            cur_sent_b = book['chapter.sentence'][s_i][1] - 1
+                # Run out of sentences, move to end of book.
+                cur_sent_b = len(book['content'])
+            else:
+                cur_sent_b = book['chapter.sentence'][s_i][1] - 1
         else:
             # Considered all potential sentence boundaries and none found, this is a suspension.
             word_count = count_words(*containing_r)
