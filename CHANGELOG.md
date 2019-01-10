@@ -1,3 +1,4 @@
+* server/region/suspension: Redefine suspensions, ignoring sentence breaks in quotes before
 * server: Bump PyYAML for CVE-2017-18342
 * client/concordance: Show pilcrow marks at paragraph breaks
 * cluster: Tie-break sorting of clusters alphanumerically
