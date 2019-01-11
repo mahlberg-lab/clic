@@ -137,12 +137,15 @@ def xml_to_plaintext(xml_string, offset):
             out_string = out_string + "\n\n\n"
             open_region('chapter.title', chapter_num)
             # Reformat the text part before it gets added
-            text_part = re.sub(
-                r'^(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)?\s?([0-9IVXLC]*)\.*\s*',
-                lambda m: (m.group(1) or 'CHAPTER').upper() + (' ' + m.group(2) if m.group(2) else '') + '. ',
+            m = re.match(
+                r'^(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|MORAL)?\s?([0-9IVXLC]*(?=\.|--|\s|$))(\.|--)?\s*',
                 text_part,
                 flags=re.IGNORECASE
             )
+            if m:
+                text_part = (m.group(1) or 'CHAPTER').upper() + (' ' + m.group(2) if m.group(2) else '') + '. ' + text_part[m.end():]
+            else:
+                text_part = 'CHAPTER. ' + text_part
         elif part == '/title':
             close_region('chapter.title')
             open_region('chapter.text', chapter_num)
