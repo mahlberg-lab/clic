@@ -52,6 +52,7 @@ var state_defaults = {
     'chapter_num': 0,
     'chapter_id': -1,
     'word-highlight': '0:0',
+    'scroll-pos': -1,
     'chap-highlight': [],
 };
 

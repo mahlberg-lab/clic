@@ -92,14 +92,19 @@ function PageText(content_el) {
                                 args: {
                                     chapter_num: [title_els[title_els.length - 1].className.match(/chapter-(\d+)/)[1]],
                                 },
+                                state: {
+                                    "scroll-pos": body_el.scrollTop,
+                                },
+                            }}));
+                        } else {
+                            window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
+                                state: {
+                                    "scroll-pos": body_el.scrollTop,
+                                },
                             }}));
                         }
                     }, 300);
                 });
-
-                if (highlight_arr) {
-                    content_el.querySelector('.book-content > .highlight').scrollIntoView();
-                }
 
                 return p_data;
             }.bind(this));
@@ -114,12 +119,6 @@ function PageText(content_el) {
                 );
 
                 if (chapter_el) {
-                    if (!force_update || page_state.arg('word-highlight') === '0:0') {
-                        // There is no word-highlight to clash with, or this
-                        // isn't the first-page-load, so won't be clashing with word-highlight scrolling
-                        chapter_el.scrollIntoView();
-                    }
-
                     // Tell controlbar about the changes
                     p_data.chapter_num_selected = chapter_el.className.match(/chapter-(\d+)/)[1];
                 }
@@ -141,6 +140,24 @@ function PageText(content_el) {
             });
             this.current['chap-highlight'] = JSON.stringify(page_state.arg('chap-highlight'));
         }
+
+        p = p.then(function (p_data) {
+            if (!force_update && p_data.chapter_num_selected) {
+                // chapter_num changed after page load, scroll to that (and ignore any scroll-pos)
+                content_el.querySelector('.book-content > .chapter-title.chapter-' + page_state.arg('chapter_num')).scrollIntoView();
+            } else if (page_state.state('scroll-pos') > -1) {
+                // Scroll position already set, scroll to that
+                document.getElementById('scrollable-body').scrollTop = page_state.state('scroll-pos');
+            } else if (page_state.arg('word-highlight') !== '0:0') {
+                // Fresh load from link with a highlight, scroll to that
+                content_el.querySelector('.book-content > .highlight').scrollIntoView();
+            } else if (page_state.arg('chapter_num') > 0) {
+                // Fresh load from link with chapter_num, scroll to that
+                content_el.querySelector('.book-content > .chapter-title.chapter-' + page_state.arg('chapter_num')).scrollIntoView();
+            }
+
+            return p_data;
+        }.bind(this));
 
         return p;
     };
