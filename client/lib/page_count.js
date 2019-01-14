@@ -28,7 +28,7 @@ PageChapter.prototype.init = function () {
         { title: "Total Words", data: "1", className: "numeric", render: renderNumeric },
         { title: "In Quotes", data: "2", className: "numeric", render: renderNumeric },
         { title: "In Non-quotes", data: "3", className: "numeric", render: renderNumeric },
-        { title: "In Suspensions", data: "4", className: "numeric", render: renderNumeric },
+        { title: "In Short Suspensions", data: "4", className: "numeric", render: renderNumeric },
         { title: "In Long suspensions", data: "5", className: "numeric", render: renderNumeric },
     ];
     this.table_opts.order = [[1, "asc"]];
@@ -80,7 +80,7 @@ PageChapter.prototype.post_process = function (page_state, raw_data) {
         renderNumeric.display(totals[0]) + " total words",
         renderNumeric.display(totals[1]) + " in Quotes",
         renderNumeric.display(totals[2]) + " in Non-quotes",
-        renderNumeric.display(totals[3]) + " in Suspensions",
+        renderNumeric.display(totals[3]) + " in Short Suspensions",
         renderNumeric.display(totals[4]) + " in Long suspensions",
     ];
 
