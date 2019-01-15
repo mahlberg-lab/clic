@@ -1,3 +1,4 @@
+* client: Update institution logos
 * server/migrate/cheshire_json: Don't mangle chapter headings
 * client/text: Remember position in book last scrolled to
 * server/region/suspension: Redefine suspensions, ignoring sentence breaks in quotes before
