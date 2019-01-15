@@ -1,3 +1,5 @@
+## 2.0.0-beta7 (2019-01-15)
+
 * client: Update institution logos
 * server/migrate/cheshire_json: Don't mangle chapter headings
 * client/text: Remember position in book last scrolled to
