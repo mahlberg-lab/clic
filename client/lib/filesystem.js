@@ -54,7 +54,7 @@ module.exports.save = function (data) {
 
     blob = new Blob(data.map(function (d) {
         return d.map(function (val) {
-            return '"' + val.toString().replace(/"/g, '""') + '"';
+            return '"' + val.toString().replace(/"/g, '""').replace(/\n{2,}/g, "¶ ").replace(/\n+/g, ' ') + '"';
         }).join(',') + '\r\n';
     }), { type: "text/csv;charset=utf-8" });
     FileSaver.saveAs(blob, filename);
