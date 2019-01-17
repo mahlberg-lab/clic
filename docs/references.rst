@@ -9,7 +9,7 @@
 .. [GitHub_corpora] https://github.com/birmingham-ccr/corpora
 .. [GitHub_corpora_initial_Arts] https://github.com/birmingham-ccr/corpora/tree/026a8436bf9ea3282d283a05725c0153e023d74c/Other
 .. [GitHub_corpora_initial_ChiLit] https://github.com/birmingham-ccr/corpora/tree/a020b2a7153baf8849056be833861ecb3d77e7a1/ChiLit
-.. [GLARE_project_page]
+.. [GLARE_project_page] http://birmingham.ac.uk/GLARE
 .. [ICU] http://userguide.icu-project.org/boundaryanalysis
 .. [ICU_RSV] http://userguide.icu-project.org/boundaryanalysis#TOC-Rule-Status-Values
 .. [Mahlberg_2013]_ Mahlberg, M. (2013). Corpus Stylistics and Dickens’s Fiction. London: Routledge.
