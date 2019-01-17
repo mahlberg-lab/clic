@@ -9,6 +9,7 @@ CLiC
    systemrequirements
    cliccorpora
    clicanalysis
+   known-issues
    advanced
    references
 
