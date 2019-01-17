@@ -12,10 +12,10 @@ recent texts is described in detail on our [GitHub_corpora]_
 repository. That repository also contains the full text of the corpus files 
 after any manual cleaning changes have been implemented. The history of the 
 Corpora repository lists the changes and you can refer to the original versions, 
-as downloaded from the Project Gutenberg page:
-for:
+as downloaded from the Project Gutenberg page for:
 
-* the ArTs corpus [GitHub_corpora_initial_Arts]_
+* the ArTs corpus [GitHub_corpora_initial_ArTs]_ (note that the
+  ArTs corpus used to be called "Other", hence that name in the repository's history)
 * the ChiLit corpus [GitHub_corpora_initial_ChiLit]_
 
 The texts can be
