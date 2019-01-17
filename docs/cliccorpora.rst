@@ -6,11 +6,19 @@ Simply choose the corpus for which you want to see the list of books and the
 Counts tab will provide a table listing the names and word counts for each book, 
 per subset and in total.
 
-As of version 1.6.1, released in November 2017, CLiC contains 138 texts, 
-mainly from the 19th century; for a full list of titles please refer to Appendix 1.
+For a full list of titles in CLiC please refer to Appendix 1.
 The procedure followed for retrieving, cleaning and importing the most
 recent texts is described in detail on our [GitHub_corpora]_
-repository. The texts can be
+repository. That repository also contains the full text of the corpus files 
+after any manual cleaning changes have been implemented. The history of the 
+Corpora repository lists the changes and you can refer to the original versions, 
+as downloaded from the Project Gutenberg page:
+for:
+
+* the ArTs corpus [GitHub_corpora_initial_Arts]_
+* the ChiLit corpus [GitHub_corpora_initial_ChiLit]_
+
+The texts can be
 selected individually and combined freely for analysis in any of the
 CLiC tools. You can also choose from
 one of our four pre-selected corpora: DNov – Dickens's Novels (15
