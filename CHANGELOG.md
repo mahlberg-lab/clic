@@ -1,3 +1,4 @@
+* tagger/chapter: Add EPILOGUE to list of magic chapter words
 * client/filesystem: Ensure newlines are escaped when saving CSV output
 
 ## 2.0.0-beta7 (2019-01-15)
