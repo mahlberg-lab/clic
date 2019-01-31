@@ -1,3 +1,5 @@
+## 2.0.0 (2019-01-31)
+
 * client/controlbar: Allow searching for parts of words in chosen dropdowns
 * tagger/chapter: Add EPILOGUE to list of magic chapter words
 * client/filesystem: Ensure newlines are escaped when saving CSV output
