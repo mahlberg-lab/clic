@@ -8,7 +8,7 @@ per subset and in total.
 
 For a full list of titles in CLiC please refer to Appendix 1.
 The procedure followed for retrieving, cleaning and importing the most
-recent texts is described in detail on our [GitHub_corpora]_
+recent texts is described in detail in our [GitHub_corpora]_
 repository. That repository also contains the full text of the corpus files 
 after any manual cleaning changes have been implemented. The history of the 
 Corpora repository lists the changes and you can refer to the original versions, 
@@ -24,15 +24,14 @@ CLiC tools. You can also choose from
 one of our four pre-selected corpora: DNov – Dickens's Novels (15
 texts), 19C – 19th Century Reference Corpus (29 texts), ChiLit – 19th
 Century Children's Literature Corpus (71 texts) and ArTs – Additional
-Requested Texts (23 texts). ArTs includes additional GCSE and A-Level
+Requested Texts (31 texts). ArTs includes additional GCSE and A-Level
 titles (please see Appendix 2 for an overview of all CLiC texts listed
 in the AQA, OCR and Edexcel GCSE and A-Level English specifications).
 The ArTs corpus was not designed to be analysed as a whole, but rather to
 add individual requests to CLiC.
 
 In order to **select texts** in any of the CLiC analysis tabs, go to
-control bar on the right-hand side (circled in the
-figure below). You can select any or all of
+controlbar on the right-hand side. You can select any or all of
 the texts by picking the corpora from a drop-down list or typing their
 names into a textbox. For example, in the Concordance tool, once you
 have clicked on the Concordance tab, a textbox labeled **'Search the
@@ -50,7 +49,7 @@ Section 5.2), as illustrated in the two figures.
 
    The dropdown menu for selecting corpora
 
-You can select the pre-selected corpora in their entirety or you can
+You can search the pre-selected corpora in their entirety or you can
 pick individual books from them, effectively creating your own
 subcorpus. For example, you could select several books from Dickens,
 several books from the 19th Century Reference Corpus (19C) and several
@@ -58,7 +57,7 @@ books from the 19th Century Children's Literature Corpus (ChiLit).
 
 You can also select an author-based corpus from the drop-down. For example,
 typing *austen* into the textbox (which is not case-sensitive) gives you the option of selecting all 
-books by Jane Austen at once, as illustrated in the following figure).
+books by Jane Austen at once, as illustrated in the following figure.
 
 .. figure:: images/figure-corpora-authorbased.png
    :alt: figure-corpora-authorbased
@@ -67,23 +66,23 @@ books by Jane Austen at once, as illustrated in the following figure).
    selecting all of Jane Austen's novels
 
 The CLiC corpora have been marked up to distinguish between several
-textual subsets of novels. The Example
-from Great Expectations below illustrates the subsets and the following
+textual subsets of novels. The example
+from *Great Expectations* below illustrates the subsets and the following
 figure shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
 button in concordances (see Section 5.2) and the Text tab.
 
-   "And on what evidence, Pip," asked Mr. Jaggers, very coolly, as he
-   paused with his handkerchief half way to his nose,"does Provis make
-   this claim?”
-
-   "He does not make it," said I, "and has never made it, and has no
-   knowledge or belief that his daughter is in existence.”
-
-   For once, the powerful pocket-handkerchief failed. My reply was so
-   unexpected that Mr. Jaggers put the handkerchief back into his pocket
-   without completing the usual performance, folded his arms, and looked
-   with stern attention at me, though with an immovable face.
+   >>> "And on what evidence, Pip," asked Mr. Jaggers, very coolly, as he
+   ... paused with his handkerchief half way to his nose,"does Provis make
+   ... this claim?”
+   ...
+   ... "He does not make it," said I, "and has never made it, and has no
+   ... knowledge or belief that his daughter is in existence.”
+   ...
+   ... For once, the powerful pocket-handkerchief failed. My reply was so
+   ... unexpected that Mr. Jaggers put the handkerchief back into his pocket
+   ... without completing the usual performance, folded his arms, and looked
+   ... with stern attention at me, though with an immovable face.
 
    *[Great Expectations, Chapter 51]*
 
@@ -107,7 +106,6 @@ button in concordances (see Section 5.2) and the Text tab.
    exemplifying the mark-up of subsets
 
 The rationale behind the division of the subsets can be found in the open access article by
-[Mahlberg_et_al._(2016)]_. However, the tagging procedure for CLiC 
-corpora has changed since the publciation of this paper - please see the 
-`tagger documentation <https://clic.readthedocs.io/en/latest/module/clic.region.html>`__
-for the technical details.
+[Mahlberg_et_al._(2016)]_. The procedure described in that article refers to the
+earliest CLiC corpora, DNov and 19C. The tagging procedure for the most recently added
+corpora – ChiLit and ArTs – differs in the technical implementation – see :mod:`clic.region` for details.
