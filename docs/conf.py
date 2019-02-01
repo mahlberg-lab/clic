@@ -24,10 +24,10 @@ sys.path.insert(0, server_dir)
 # -- Project information -----------------------------------------------------
 
 project = 'CLiC User Guide'
-copyright = '%s, Michaela Mahlberg' % (
+copyright = '%s, Viola Wiegand, Michaela Mahlberg, Jamie Lentin & Anthony Hennessey' % (
     subprocess.check_output("git log -1 --format=%ai".split()).decode('utf8').split('-', 1)[0],
 )
-author = 'Michaela Mahlberg'
+author = 'Viola Wiegand, Michaela Mahlberg, Jamie Lentin & Anthony Hennessey'
 
 # The short X.Y version
 version = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip()
