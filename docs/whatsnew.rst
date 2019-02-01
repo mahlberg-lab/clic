@@ -16,7 +16,7 @@ The tokenisation of texts has changed from CLiC 2.0. It is now based on based on
  1. Word forms ending in `'s` are now distinct types. So, a search for `mother` or `Oliver` will no longer include `mother's` or `Oliver's`.
  2. Any surrounding punctuation is filtered from types, thus searching for "connisseur" will return tokens "connisseur" and "_connisseur_".
  
-Also see the explanation of the Concordance tab :ref: `Search the corpora`. More examples and the detailed technical documentation of the tokenizer is available from :mod:`clic.tokenizer`.
+Also see the explanation of the Concordance tab :ref:`Search the corpora`. More examples and the detailed technical documentation of the tokenizer is available from :mod:`clic.tokenizer`.
 
 * **Searching all books by one author**
 
