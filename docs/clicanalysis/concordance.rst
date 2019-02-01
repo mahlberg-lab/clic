@@ -5,19 +5,22 @@ Clicking onto the **'Concordance'** tab will take you to the concordance
 view. In order to create a concordance, you will need to select a corpus
 to search in (see the Section 4 on 'The CLiC Corpora' above).
 
-= Search the corpora
+Search the corpora
+------------------
 
 This is where you select a corpus to search in (cf. Section 4). The
 selection is very flexible and lets you pick a pre-defined corpus (see :ref:`The CLiC corpora`)
 or choose your own subcorpus – with any of the books available in CLiC.
 
-= Only in subsets
+Only in subsets
+---------------
 
 Here you can decide whether you want to search through 'all text' – the
 whole book(s) – or just one of the subsets: 'short suspensions', 'long
 suspensions', 'quotes' and 'non-quotes' (cf. Section 4).
 
-= Search for terms
+Search for terms
+----------------
 
 This is the fundamental parameter of the concordance search – it lets
 you determine the node word or phrase that forms the basis of the
@@ -65,15 +68,16 @@ For the detailed technical documentation and more examples see server/clic/token
 
 
 
-= 'Whole phrase' or 'Any word'
+'Whole phrase' or 'Any word'
+---------------------------
 
 When you have entered several terms, you need to specify whether it is
 to be searched as one phrase (equivalent to using double quotes in a
 search engine, e.g. *dense fog*) or any of the words individually
 (*dense* and *fog*).
 
-= Co-text
-
+Co-text
+-------
 
 The maximum number of words in the co-text is set at 10 on either side
 in a concordance (depending on the length of the words and the size of
@@ -102,7 +106,8 @@ the following figures).
 These options allow you to adjust the way the concordance output is
 displayed.
 
-= Filter rows
+Filter rows
+-----------
 
 This filter option lets you filter the concordance output by the rows
 that contain a particular sequence of letters (both in the node and
@@ -138,7 +143,8 @@ in suspensions).
    Filtering for the letter sequence ``eat`` returns forms of
    the verb ``eat`` and other words containing the sequence
 
-= View as
+View as
+-------
 
 From CLiC 2.0 onwards there are three options to view the concordance results:
 
@@ -159,8 +165,8 @@ The "view as" options represent an expansion of the “Show metadata columns” 
 in CLiC 1.6.
 
 
-= Basic sorting
-
+Basic sorting
+-------------
 
 The concordance lines can be sorted by any of the columns in the
 concordance by clicking on the header, which will then be marked with
@@ -188,7 +194,8 @@ co-text on the right.
    first ordered by book, then by the first word on the right
 
 
-= KWICGrouper
+KWICGrouper
+-----------
 
 The KWICGrouper is a tool that allows you to quickly group the
 concordance lines according to patterns that you find as you go through
@@ -310,7 +317,8 @@ Dickens's novels contain only instance of *fire* co-occurring with
    Only one line contains both back and her; it is
    highlighted and shown above single match lines
 
-= Manage tag columns
+Manage tag columns
+------------------
 
 Once you have identified lines with patterns of interest, you might want
 to place these into one or more categories. CLiC provides a flexible
