@@ -7,11 +7,16 @@ The main changes from previous versions to CLiC 2.0 that users should be aware o
 
 * **New look**: 
 
-The table of contents on the landing page has been replaced with a carousel of images. An interactive overview of the corpora can now be found in the **Counts tab**.
+The table of contents on the landing page has been replaced with a carousel of summary images for the corpora. An interactive overview of the corpora can now be found in the **Counts tab**.
 
-* **Tokenisation**
+* Changes to the **tokenisation** (i.e. what CLiC recognises as a "word")
 
-The tokenisation is now based on based on unicode standard rules, used both for queries and importing books. Any surrounding punctuation is filtered from types, thus searching for "connisseur" will return tokens "connisseur" and "_connisseur_" see server/clic/tokenizer.py
+The tokenisation of texts has changed from CLiC 2.0. It is now based on based on unicode standard rules, used both for queries and importing books. By contrast to previous versions, the main changes include:
+
+ 1. Word forms ending in `'s` are now distinct types. So, a search for `mother` or `Oliver` will no longer include `mother's` or `Oliver's`.
+ 2. Any surrounding punctuation is filtered from types, thus searching for "connisseur" will return tokens "connisseur" and "_connisseur_".
+ 
+Also see the explanation of the Concordance tab :ref: `search-the-corpora`. More examples and the detailed technical documentation of the tokenizer is available from :mod:`clic.tokenizer`.
 
 * **Searching all books by one author**
 
@@ -20,6 +25,7 @@ Across all tabs, the "search the corpora" field now allows you to select all boo
 * **Concordances tab**
 
 In concordances, short titles of books are now always visible and full titles can be seen hovering over the short title. Concordance queries now follow the new tokenisation rules (and searches for exact types, e.g. "Oliver" will no longer resturn "Oliver's") and accept wildcards (e.g. you can now query "Oliver*" to find both "Oliver" and "Oliver's"). Information on **relative frequencies** has been added to the output to simple concordances and to the new **distribution plot view**.
+See the documentation of the Concordance tab for more details: :ref: `Concordance`.
 
 * **Subset**: 
 
@@ -38,7 +44,7 @@ The keyword output has been simplified (the expected target/ref columns have bee
 
 * **New Text tab**
 
-The text tab shows full book contents (to replace the chapter-by-chapter selection on CLiC 1.6 landing page). The text can now be copied and pasted into Microsoft Word documents etc.
+The text tab shows full book contents (to replace the chapter-by-chapter selection on CLiC 1.6 landing page). This tab is designed to show one book at a time and allows you to navigate to particular chapters. You can select which levels of annotation to display on the text (e.g. Sentences, Quotes, Short suspensions, Long suspensions, Embedded quotes). The text can now be easily copied and pasted into Microsoft Word documents etc.
 
 * **New Counts tab**
 
