@@ -72,19 +72,21 @@ figure shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
 button in concordances (see Section 5.2) and the Text tab.
 
-   >>> "And on what evidence, Pip," asked Mr. Jaggers, very coolly, as he
-   ... paused with his handkerchief half way to his nose,"does Provis make
-   ... this claim?”
-   ...
-   ... "He does not make it," said I, "and has never made it, and has no
-   ... knowledge or belief that his daughter is in existence.”
-   ...
-   ... For once, the powerful pocket-handkerchief failed. My reply was so
-   ... unexpected that Mr. Jaggers put the handkerchief back into his pocket
-   ... without completing the usual performance, folded his arms, and looked
-   ... with stern attention at me, though with an immovable face.
+::
 
-   *[Great Expectations, Chapter 51]*
+    "And on what evidence, Pip," asked Mr. Jaggers, very coolly, as he
+    paused with his handkerchief half way to his nose,"does Provis make
+    this claim?”
+
+    "He does not make it," said I, "and has never made it, and has no
+    knowledge or belief that his daughter is in existence.”
+
+    For once, the powerful pocket-handkerchief failed. My reply was so
+    unexpected that Mr. Jaggers put the handkerchief back into his pocket
+    without completing the usual performance, folded his arms, and looked
+    with stern attention at me, though with an immovable face.
+
+ [*Great Expectations*, Chapter 51]
 
 -  quotes: any text listed in quotes, i.e. mostly character speech but
    also thoughts or songs that might appear in quotes
