@@ -24,8 +24,9 @@ will also need to choose a corpus.
 Figure shows sample
 lines from the subset of long suspensions in *Oliver Twist*. You can
 then use the filter option to narrow down the lines and group them using
-the KWICGrouper. As in the concordance tab, you can create tags to
-annotate rows with noteworthy patterns
+the KWICGrouper. For subsets, the "relative frequency" is not given in terms of
+frequency per million words, as in the Concordance tab, but as the percentage of
+total words in the corpus found in the selected subset.
 
 .. figure:: ../images/figure-analysis-subsets-show-longsuspensions.png
    :alt: figure-analysis-subsets-show-longsuspensions
