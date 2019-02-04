@@ -24,8 +24,8 @@ The CLiC functions can be divided into two groups:
 At any point, you can close the menu on the right by clicking on the
 menu icon in the top right corner (see the following figure).
 
-.. figure:: ../images/figure-analysis-common-menuicon.png
-   :alt: figure-analysis-common-menuicon
+.. figure:: ../images/figure-landing-page-2_0_0_19C_menu.png
+   :alt: figure-landing-page-2_0_0_19C_menu
 
    Close the sidebar menu by clicking on the menu icon in
    the top right corner

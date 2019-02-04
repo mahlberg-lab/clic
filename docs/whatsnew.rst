@@ -51,8 +51,8 @@ The text tab shows full book contents (to replace the chapter-by-chapter selecti
 The Counts tab shows an interactive overview of the corpora, with word counts within corpora, books and subsets.
 
 
-.. figure:: images/figure-new-homescreen.png
-   :alt: figure-new-homescreen
+.. figure:: images/figure-landing-page-2_0_0_19C.png
+   :alt: figure-landing-page-2_0_0_19C.png
 
    The CLiC home screen with the menu in the side panel on
    the right
