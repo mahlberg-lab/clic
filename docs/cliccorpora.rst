@@ -86,7 +86,7 @@ button in concordances (see Section 5.2) and the Text tab.
     without completing the usual performance, folded his arms, and looked
     with stern attention at me, though with an immovable face.
 
- [*Great Expectations*, Chapter 51]
+[*Great Expectations*, Chapter 51]
 
 -  quotes: any text listed in quotes, i.e. mostly character speech but
    also thoughts or songs that might appear in quotes
@@ -106,6 +106,9 @@ button in concordances (see Section 5.2) and the Text tab.
    Chapter view of example (1) (retrieved via the 'in bk.'
    (in book) button in a concordance of asked Mr Jaggers very coolly),
    exemplifying the mark-up of subsets
+   
+.. figure:: images/figure-corpora-highlight-subsets.png
+   :alt: figure-corpora-highlight-subsets
 
 The rationale behind the division of the subsets can be found in the open access article by
 [Mahlberg_et_al._(2016)]_. The procedure described in that article refers to the
