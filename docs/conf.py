@@ -76,6 +76,8 @@ exclude_patterns = ['lib', 'lib64']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# -- Numbering figures -------------------------------------------------------
+numfig = True
 
 # -- Options for HTML output -------------------------------------------------
 
