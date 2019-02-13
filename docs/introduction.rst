@@ -15,3 +15,9 @@ Council, grant reference AH/P504634/1. Project team: Prof. Michaela Mahlberg, Pr
 Wiegand*
 
 *The CLiC web app is part-funded by GLARE. GLARE is a project funded by the European Commission within Marie Sklodowska-Curie Actions (reference number EU 749521). Project team: Prof. Michaela Mahlberg, Dr. Anna Cermakova.*
+
+We are grateful to colleagues who have commented on previous versions of this guide and/or the CLiC interface: Anna
+Cermakova, Emma Curry, Elizabeth Kelly, Lorenzo Mastropierro and Pete Orford.
+
+The user guide is a work in progress. Please get in touch via clic@contacts.birmingham.ac.uk if you have further questions or suggestions for
+improvement.
