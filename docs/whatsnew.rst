@@ -7,7 +7,13 @@ The main changes from previous versions to CLiC 2.0 that users should be aware o
 
 * **New look**: 
 
-The table of contents on the landing page has been replaced with a carousel of summary images for the corpora. An interactive overview of the corpora can now be found in the **Counts tab**.
+The table of contents on the landing page has been replaced with a carousel of summary images for the corpora (see `figure-landing-page-2_0_0_19C`). An interactive overview of the corpora can now be found in the **Counts tab**.
+
+.. _figure-landing-page-2_0_0_19C:
+.. figure:: images/figure-landing-page-2_0_0_19C.png
+
+   The CLiC home screen with the menu in the side panel on
+   the right
 
 * Changes to the **tokenisation** (i.e. what CLiC recognises as a "word")
 
@@ -49,10 +55,3 @@ The text tab shows full book contents (to replace the chapter-by-chapter selecti
 * **New Counts tab**
 
 The Counts tab shows an interactive overview of the corpora, with word counts within corpora, books and subsets.
-
-
-.. figure:: images/figure-landing-page-2_0_0_19C.png
-   :alt: figure-landing-page-2_0_0_19C.png
-
-   The CLiC home screen with the menu in the side panel on
-   the right
