@@ -21,7 +21,7 @@ lists. You have to make selections for the following options (also see
    -  'within subset': Specify the subset for the reference corpus.
 
 -  **'n-gram':** Do you want to compare single words (1-grams) or
-   phrases (2-grams up to 5-grams
+   phrases (2-grams up to 7-grams)
 
 .. _figure-analysis-keywords-settings:
 .. figure:: ../images/figure-analysis-keywords-settings.png
