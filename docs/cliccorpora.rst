@@ -103,14 +103,14 @@ individually select and deselect.
       -  short suspensions have a length up to four words
       -  long suspensions have a length of five or more words
 
-.. _figure-corpora-markupsubsets
+.. _figure-corpora-markupsubsets:
 .. figure:: images/figure-corpora-markupsubsets.png
 
    Chapter view of example (1) (retrieved via the 'in bk.'
    (in book) button in a concordance of asked Mr Jaggers very coolly),
    exemplifying the mark-up of subsets
    
-.. _figure-corpora-highlight-subsets
+.. _figure-corpora-highlight-subsets:
 .. figure:: images/figure-corpora-highlight-subsets.png
 
 The rationale behind the division of the subsets can be found in the open access article by

@@ -15,7 +15,7 @@ Click onto the dropdown **'Show subsets'** (see :numref:`figure-analysis-subsets
 subset (short suspensions, long suspensions, quotes or non-quotes). You
 will also need to choose a corpus.
 
-.. _figure-analysis-subsets-show-options
+.. _figure-analysis-subsets-show-options:
 .. figure:: ../images/figure-analysis-subsets-show-options.png
 
    The basic subset options
@@ -27,7 +27,7 @@ the KWICGrouper. For subsets, the "relative frequency" is not given in terms of
 frequency per million words, as in the Concordance tab, but as the percentage of
 total words in the corpus found in the selected subset.
 
-.. _figure-analysis-subsets-show-longsuspensions
+.. _figure-analysis-subsets-show-longsuspensions:
 .. figure:: ../images/figure-analysis-subsets-show-longsuspensions.png
 
    The first few lines from the subset of 'long suspensions'
@@ -48,12 +48,12 @@ subsection of the Concordance tab documentation. For example, you could filter
 suspensions for particular speech verbs like *cried*
 (:numref:`figure-analysis-subsets-results-filter-cried`).
 
-.. _figure-analysis-subsets-results-filter-cried
+.. _figure-analysis-subsets-results-filter-cried:
 .. figure:: ../images/figure-analysis-subsets-results-filter-cried.png
 
    Filtering long suspensions in Oliver Twist for *cried*
 
-.. _figure-analysis-subsets-results-filter-cotext
+.. _figure-analysis-subsets-results-filter-cotext:
 .. figure:: ../images/figure-analysis-subsets-results-filter-cotext.png
 
    Filtering the co-text of long suspensions for *perhaps* in
@@ -78,7 +78,7 @@ of its search span which operates only on the subset itself. See
 for an illustration of the Subset KWICGrouper searching for lines with
 *cried*, *screamed* and *sobbed*.
 
-.. _figure-analysis-subsets-kwicgrouper-criedscreamedsobbed
+.. _figure-analysis-subsets-kwicgrouper-criedscreamedsobbed:
 .. figure:: ../images/figure-analysis-subsets-kwicgrouper-criedscreamedsobbed.png
 
    The search span of the Subset KWICGrouper applies to the
@@ -87,7 +87,7 @@ for an illustration of the Subset KWICGrouper searching for lines with
 .. rubric:: Manage tag columns
    :name: manage-tag-columns-1
 
-.. _figure-analysis-subsets-tagcolumns-gender
+.. _figure-analysis-subsets-tagcolumns-gender:
 .. figure:: ../images/figure-analysis-subsets-tagcolumns-gender.png
 
    Tagging subsets – here, long suspensions in ChiLit
