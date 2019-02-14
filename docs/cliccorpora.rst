@@ -35,17 +35,18 @@ controlbar on the right-hand side. You can select any or all of
 the texts by picking the corpora from a drop-down list or typing their
 names into a textbox. For example, in the Concordance tool, once you
 have clicked on the Concordance tab, a textbox labeled **'Search the
-corpora'** will appear (for more information on the Concordance tab, see
-Section 5.2), as illustrated in the two figures.
+corpora'** will appear (see the :ref:`Concordance` section), 
+as illustrated in :numref:`figure-corpora-select` and :numref:`figure-corpora-select_2`.
 
+.. _figure-corpora-select:
 .. figure:: images/figure-corpora-select.png
-   :alt: figure-corpora-select
 
    Selecting corpora in the Concordance tab (same procedure
-   in Subsets and Clusters; for Keywords see Section 5.5)
+   in Subsets and Clusters; see the :ref:`Keywords` section on how to
+   select target and reference corpora)
    
+.. _figure-corpora-select_2:   
 .. figure:: images/figure-corpora-select_2.png
-   :alt: figure-corpora-select_2
 
    The dropdown menu for selecting corpora
 
@@ -57,20 +58,22 @@ books from the 19th Century Children's Literature Corpus (ChiLit).
 
 You can also select an author-based corpus from the drop-down. For example,
 typing *austen* into the textbox (which is not case-sensitive) gives you the option of selecting all 
-books by Jane Austen at once, as illustrated in the following figure.
+books by Jane Austen at once, as illustrated in :numref:`figure-corpora-authorbased`.
 
+.. _figure-corpora-authorbased:
 .. figure:: images/figure-corpora-authorbased.png
-   :alt: figure-corpora-authorbased
 
    Example of creating an author-based corpus:
    selecting all of Jane Austen's novels
 
 The CLiC corpora have been marked up to distinguish between several
 textual subsets of novels. The example
-from *Great Expectations* below illustrates the subsets and the following
-figure shows how these are marked up
+from *Great Expectations* below illustrates the subsets and :numref:`figure-corpora-markupsubsets` shows how these are marked up
 in the chapter views, which can be retrieved from the 'in bk.' (in book)
-button in concordances (see Section 5.2) and the Text tab.
+button in concordances (see the :ref:`Concordance` section for details)
+and the Text tab. The "in book" view also contains a legend of the markup
+layers (see :numref:`figure-corpora-highlight-subsets`), which you can
+individually select and deselect.
 
 ::
 
@@ -100,15 +103,15 @@ button in concordances (see Section 5.2) and the Text tab.
       -  short suspensions have a length up to four words
       -  long suspensions have a length of five or more words
 
+.. _figure-corpora-markupsubsets
 .. figure:: images/figure-corpora-markupsubsets.png
-   :alt: figure-corpora-markupsubsets
 
    Chapter view of example (1) (retrieved via the 'in bk.'
    (in book) button in a concordance of asked Mr Jaggers very coolly),
    exemplifying the mark-up of subsets
    
+.. _figure-corpora-highlight-subsets
 .. figure:: images/figure-corpora-highlight-subsets.png
-   :alt: figure-corpora-highlight-subsets
 
 The rationale behind the division of the subsets can be found in the open access article by
 [Mahlberg_et_al._(2016)]_. The procedure described in that article refers to the

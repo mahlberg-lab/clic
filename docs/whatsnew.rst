@@ -31,7 +31,7 @@ Across all tabs, the "search the corpora" field now allows you to select all boo
 * **Concordances tab**
 
 In concordances, short titles of books are now always visible and full titles can be seen hovering over the short title. Concordance queries now follow the new tokenisation rules (and searches for exact types, e.g. "Oliver" will no longer resturn "Oliver's") and accept wildcards (e.g. you can now query "Oliver*" to find both "Oliver" and "Oliver's"). Information on **relative frequencies** has been added to the output to simple concordances and to the new **distribution plot view**.
-See the documentation of the Concordance tab for more details: :ref: `Concordance`.
+See the documentation of the Concordance tab for more details: :ref:`Concordance`.
 
 * **Subset**: 
 

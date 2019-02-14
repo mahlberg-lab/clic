@@ -8,10 +8,10 @@ and 'clusters' (repeated sequences of words). Clusters are also called
 Twist*, for example, the top 10 words retrieved from this tool are *the,
 and, to, of, a, he, in, his, that* – all function words, as we would
 generally expect.) From version 2.0 onwards, CLiC supports clusters of length
-1 (single words) up to 7 (`i am very much obliged to you`).
+1 (single words) up to 7 (`i am very much obliged to you`), as illustrated in :numref:`figure-analysis-clusters-ngrams`
 
+.. _figure-analysis-clusters-ngrams
 .. figure:: ../images/figure-analysis-clusters-ngrams.png
-   :alt: figure-analysis-clusters-ngrams
 
    Cluster options
 
