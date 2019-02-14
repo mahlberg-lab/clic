@@ -3,7 +3,7 @@ Keywords
 
 The keywords tool finds words (and phrases) that are used significantly
 more often in one corpus compared to another. CLiC incorporates the
-keyword extraction formula reported by [Rayson_&_Garside_2000]_. Apart from comparing single
+keyword extraction formula reported by [Rayson_Garside_2000]_. Apart from comparing single
 words, CLiC also allows you to compare clusters. Whereas the cluster tab
 focuses only on one corpus, the Keywords function can compare cluster
 lists. You have to make selections for the following options (also see
@@ -43,7 +43,7 @@ Century Reference Corpus (quotes), we retrieve the results displayed in
 :numref:`figure-analysis-keywords-19thcentury` (for a p-value of
 0.0001). The keyword output is by default ordered by the log-likelihood
 (LL) value, the 'keyness' statistic used here (for more details on the
-calculation, please refer to Rayson and Garside, 2000).
+calculation, please refer to [Rayson_Garside_2000]_).
 
 The frequency threshold of 5 used for the cluster tab is not applied to
 the keyword tab, so that all frequencies are compared. The keyword

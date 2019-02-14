@@ -114,6 +114,6 @@ individually select and deselect.
 .. figure:: images/figure-corpora-highlight-subsets.png
 
 The rationale behind the division of the subsets can be found in the open access article by
-[Mahlberg_et_al._(2016)]_. The procedure described in that article refers to the
+[Mahlberg_et_al_2016]_. The procedure described in that article refers to the
 earliest CLiC corpora, DNov and 19C. The tagging procedure for the most recently added
 corpora – ChiLit and ArTs – differs in the technical implementation – see :mod:`clic.region` for details.
