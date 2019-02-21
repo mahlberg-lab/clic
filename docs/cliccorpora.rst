@@ -9,7 +9,16 @@ per subset and in total.
 For a full list of titles in CLiC please refer to Appendix 1.
 The procedure followed for retrieving, cleaning and importing the most
 recent texts is described in detail in our [GitHub_corpora]_
-repository. That repository also contains the full text of the corpus files 
+repository. Every change ("commit") to the repository is marked with a "commit" number (actually a sequence of characters and numbers) in GitHub, circled in green in :numref:`figure-version-numbers-github`. From CLiC 2.0.0 onwards, this "commit" number is also displayed on the CLiC interface – circled in green in :numref:`figure-version-numbers`– to indicate which version of the corpora is used. **We recommend that users record both the version number of CLiC itself** (displayed directly under the CLiC logo, circled in red in :numref:`figure-version-numbers`, i.e. in this case "2.0.0") **and the version of the corpora** (i.e. in this case "db61de3") **when saving results**. This ensure that if at a later stage there should be differences in search results it is possible to investigate which changes to the interface or the corpora caused this discrepancy.
+
+.. _figure-version-numbers-github:
+.. figure:: images/figure-version-numbers-github.png
+
+.. _figure-version-numbers:
+.. figure:: images/figure-version-numbers.png
+
+
+The Corpora repository also contains the full text of the corpus files 
 after any manual cleaning changes have been implemented. The history of the 
 Corpora repository lists the changes and you can refer to the original versions, 
 as downloaded from the Project Gutenberg page for:

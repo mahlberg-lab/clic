@@ -9,6 +9,8 @@ The main changes from previous versions to CLiC 2.0 that users should be aware o
 
 The table of contents on the landing page has been replaced with a carousel of summary images for the corpora (see :numref:`figure-landing-page-2_0_0_19C`). An interactive overview of the corpora can now be found in the **Counts tab**.
 
+Another change to the look is that in addition to the CLiC version number (i.e. the "release" of CLiC), the interface now also displays the version of the corpora. For a more detailed explanation see :ref:`The CLiC corpora`.
+
 .. _figure-landing-page-2_0_0_19C:
 .. figure:: images/figure-landing-page-2_0_0_19C.png
 
