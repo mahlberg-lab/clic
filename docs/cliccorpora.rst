@@ -14,8 +14,12 @@ repository. Every change ("commit") to the repository is marked with a "commit" 
 .. _figure-version-numbers-github:
 .. figure:: images/figure-version-numbers-github.png
 
+   The "commit" version number of the Github corpora repository
+
 .. _figure-version-numbers:
 .. figure:: images/figure-version-numbers.png
+
+   The CLiC release and corpora version numbers in the CLiC interface
 
 
 The Corpora repository also contains the full text of the corpus files 
