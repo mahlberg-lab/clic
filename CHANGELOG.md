@@ -1,3 +1,5 @@
+## 2.0.1 (2019-03-06)
+
 * client/index: Add links to paper, maintenance schedule, documentation
 
 ## 2.0.0 (2019-01-31)
