@@ -154,12 +154,21 @@ From CLiC 2.0 onwards there are three options to view the concordance results:
 
 The default view is 1. and 2. gives more information on the same view. View 3.
 is completely different: it does not show the text in concordance lines but plots
-the distribution of matching concordance lines across the searched books. 
-Note that if a book in the searched corpus has zero matches it will not be shown in
-the distribution plot (for example, ``donkey`` only occurs in 11 out of 15 books in
-DNov and the corresponding distribution plot view only displays the 11 matching
-books).
+the distribution of matching concordance lines across the searched books. Note that if a book in the searched corpus has zero matches it will not be shown in
+the distribution plot (hence, :numref:`figure_distribution_plot_workhouse` only shows 10 out of the 15 books in the DNov corpus).
 
+.. _figure_distribution_plot_workhouse:
+.. figure:: ../images/figure_distribution_plot_workhouse.png
+
+   Distribution plot of `workhouse` in DNov
+ 
+Like the concordance view, the distribution plot view can show "KWICGrouped lines" i.e. lines that contain particular patterns in the proximity of the nodes (see the :ref:`KWICGrouper` section below for a detailed example). Once the KWICGrouper is activated by selecting word types in KWICGrouper box in the menu bar, the corresponding instances in the distribution plot are coloured. :numref:`figure_distribution_plot_workhouse_KWICGroup` shows coloured lines containing references to children (`boy`, `chance-child`, `charity-boy`, `child`, `children`, `girl` and `orphan`). Light green represents one match in the concordance line, a darker green two and purple three matches. (Not displayed here: a line with four matches would be shown in pink.)
+ 
+.. _figure_distribution_plot_workhouse_KWICGroup:
+.. figure:: ../images/figure_distribution_plot_workhouse_KWICGroup.png
+
+   Distribution plot of `workhouse` in DNov, KWICGrouped for references to children
+ 
 The "view as" options represent an expansion of the “Show metadata columns” option
 in CLiC 1.6.
 

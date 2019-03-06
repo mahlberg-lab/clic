@@ -66,6 +66,19 @@ suspensions in *Oliver Twist* and filtering rows for *perhaps* the
 results originate only from the co-text, as *perhaps* does not occur in
 long suspensions (see :numref:`figure-analysis-subsets-results-filter-cotext`).
 
+.. rubric:: View as
+   :name: view-as-1
+
+Like the :ref:`View as`) options for the Concordance tab, in Subsets you can view the 'Basic results' (concordance lines; book short title; link to 'in bk.' view) the 'full metadata' (+ chapter, paragraph & sentence numbers) or the 'distribution plot', which gives an overview of matching lines per book.
+
+.. _figure_distribution_plot_quotes:
+.. figure:: ../images/figure_distribution_plot_quotes.png
+
+   The distribution plot view in the Subsets tab
+
+In the case of the Subsets tab, these lines obviously are not concordance lines, but instances of the subset e.g. a quote or non-quote element or a short/long suspension. When you then create a distribution plot of a selected subset, you will therefore see how the subset is distributed across a book or corpus. Note that this operation may take a moment to load for a large corpus. :numref:`figure_distribution_plot_quotes` gives an example of three particular books with rather distinct quote distributions: whereas *Pride and Prejudice* contains a lot of dialogue – as you can see from the white quote subsets interspersed by grey non-quotes – both *The Time Machine* and *Heart of Darkness* contain much longer quote chunks by a key character telling a story.
+
+
 .. rubric:: KWICGrouper
    :name: kwicgrouper-1
 
