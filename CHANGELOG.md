@@ -1,3 +1,5 @@
+* client/index: Add links to paper, maintenance schedule, documentation
+
 ## 2.0.0 (2019-01-31)
 
 * client/controlbar: Allow searching for parts of words in chosen dropdowns
