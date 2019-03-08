@@ -18,11 +18,11 @@
 [["Rabbit"," ","just"," ","under"," ","the"," ","window",", ","she"," ","suddenly"," ","spread"," ","out"," ","her"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",",",[0]],[" ","and"," ","made"," ","a"," ","snatch"," ","in"," ","the"," ","air",". ","She"," ","did"," ","not",[1,3,5,7,9,11,13,15,17,19]],["alice",37832,37836],[4,15,59]]
 [["said"," ","anxiously"," ","to"," ","herself",", '","Which"," ","way","? ","Which"," ","way","?', ","holding"," ","her"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",[0]],[" ","on"," ","the"," ","top"," ","of"," ","her"," ","head"," ","to"," ","feel"," ","which"," ","way",[1,3,5,7,9,11,13,15,17,19]],["alice",10987,10991],[1,26,85]]
 [["the"," ","Hatter",". ","He"," ","came"," ","in"," ","with"," ","a"," ","teacup"," ","in"," ","one"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",[0]],[" ","and"," ","a"," ","piece"," ","of"," ","bread-and-butter"," ","in"," ","the"," ","other",". '","I"," ","beg",[1,3,5,7,9,11,13,15,17,19]],["alice",126043,126047],[11,16,35]]
-{"version":{"clic":"v2.0.0-beta6","clic-import":"v2.0.0-beta5","corpora":"2509a39"},"data":[
+{"version":{"clic":"v2.0.1","clic-import":"v2.0.1","corpora":"db61de3"},"data":[
 [["was"," ","the"," ","Duchess's"," ","cook",". ","She"," ","carried"," ","the"," ","pepper-box"," ","in"," ","her"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",",",[0]],[" ","and"," ","Alice"," ","guessed"," ","who"," ","it"," ","was",", ","even"," ","before"," ","she"," ","got",[1,3,5,7,9,11,13,15,17,19]],["alice",131265,131269],[11,64,107]]
 [["you",", ","you"," ","coward","!' ","and"," ","at"," ","last"," ","she"," ","spread"," ","out"," ","her"," ",[0,2,4,6,8,10,12,14,16,18]],["hand",[0]],[" ","again",", ","and"," ","made"," ","another"," ","snatch"," ","in"," ","the"," ","air",". ","This"," ","time",[1,3,5,7,9,11,13,15,17,19]],["alice",38914,38918],[4,23,81]]
 
 
-real	0m0.125s
-user	0m0.014s
-sys	0m0.009s
+real	0m0.240s
+user	0m0.041s
+sys	0m0.016s
