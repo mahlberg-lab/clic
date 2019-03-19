@@ -9,4 +9,5 @@ CLiC analysis tabs
    clicanalysis/subsets
    clicanalysis/clusters
    clicanalysis/keywords
-   
+   clicanalysis/counts
+   clicanalysis/texts
