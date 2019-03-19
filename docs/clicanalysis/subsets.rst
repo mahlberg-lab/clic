@@ -69,7 +69,7 @@ long suspensions (see :numref:`figure-analysis-subsets-results-filter-cotext`).
 .. rubric:: View as
    :name: view-as-1
 
-Like the :ref:`View as`) options for the Concordance tab, in Subsets you can view the 'Basic results' (concordance lines; book short title; link to 'in bk.' view) the 'full metadata' (+ chapter, paragraph & sentence numbers) or the 'distribution plot', which gives an overview of matching lines per book.
+Like the :ref:`View as` options for the Concordance tab, in Subsets you can view the 'Basic results' (concordance lines; book short title; link to 'in bk.' view) the 'full metadata' (+ chapter, paragraph & sentence numbers) or the 'distribution plot', which gives an overview of matching lines per book.
 
 .. _figure_distribution_plot_quotes:
 .. figure:: ../images/figure_distribution_plot_quotes.png
