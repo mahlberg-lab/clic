@@ -7,3 +7,5 @@ By default the text view is plain, i.e. it won't show any annotation unless you 
 
 .. _figure-analysis-texts:
 .. figure:: ../images/figure-analysis-texts.png
+
+   View of Chapter 3 in *Pride and Prejudice*
