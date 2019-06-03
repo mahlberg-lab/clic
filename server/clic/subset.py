@@ -181,8 +181,8 @@ def subset(cur, corpora=['dickens'], subset=['all'], contextsize=['0'], metadata
              , c.part_of part_of
           FROM region r
           JOIN LATERAL (
-              SELECT ARRAY_AGG(t_surrounding.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering) full_tokens
-                   , ARRAY_AGG(t_surrounding.crange <@ r.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering) is_node
+              SELECT COALESCE(ARRAY_AGG(t_surrounding.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering), '{}'::INT4RANGE[]) full_tokens
+                   , COALESCE(ARRAY_AGG(t_surrounding.crange <@ r.crange ORDER BY t_surrounding.book_id, t_surrounding.ordering), '{}'::BOOL[]) is_node
                    , (ARRAY_AGG(t_surrounding.part_of ORDER BY t_surrounding.book_id, t_surrounding.ordering))[1] part_of
                 FROM token t_surrounding
                WHERE t_surrounding.book_id = r.book_id
