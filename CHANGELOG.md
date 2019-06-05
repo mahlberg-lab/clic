@@ -1,3 +1,5 @@
+* server/subset: Tokenless subsets should be [], not NULL (crash when searching for quote subsets with R client)
+
 ## 2.0.1 (2019-03-06)
 
 * client/index: Add links to paper, maintenance schedule, documentation
