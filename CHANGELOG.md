@@ -1,5 +1,7 @@
 ## 2.0.3-beta1 (2019-10-08)
 
+## 2.0.3-beta1 (2019-10-08)
+
 * client/index: Add AAW beta release & update GLARE info
 * cache-warm.sh: update convenience cache-warming script to add AAW image
 
