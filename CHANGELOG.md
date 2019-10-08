@@ -1,3 +1,8 @@
+## 2.0.3-beta1 (2019-10-08)
+
+* client/index: Add AAW beta release & update GLARE info
+* cache-warm.sh: update convenience cache-warming script to add AAW image
+
 ## 2.0.2 (2019-08-23)
 
 * server/subset: Tokenless subsets should be [], not NULL (crash when searching for quote subsets with R client)
