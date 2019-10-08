@@ -12,6 +12,7 @@ for ENDPOINT in \
         /api/corpora/image?corpora=corpus%3A19C \
         /api/corpora/image?corpora=corpus%3AChiLit \
         /api/corpora/image?corpora=corpus%3AArTs \
+        /api/corpora/image?corpora=corpus%3AAAW \
         /api/corpora/headlines \
         /api/corpora
 do
