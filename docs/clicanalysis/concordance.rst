@@ -209,7 +209,7 @@ The KWICGrouper is a tool that allows you to quickly group the
 concordance lines according to patterns that you find as you go through
 the concordance. For a basic introduction to the KWICGrouper
 functionality (in the CLiC 1.5 interface) you can watch our KWICGrouper
-video tutorial from May 2017\ `[8] <footnotes.html>`__
+video tutorial from May 2017 [CLiC_KWICGrouper_video]_
 
 The idea of the KWICGrouper is that you look for patterns as you search
 for particular words. Any matching lines will be highlighted and moved

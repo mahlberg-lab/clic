@@ -20,7 +20,7 @@ Inspect the output to see if regions are marked up correctly by default. If the 
 
 Once you are happy with the output, it needs to be imported into the CLiC database.
 Do not perform the following on a live CLiC server, as CLiC will not be available during the process.
-Instead, follow the instructions on dumping / restoring a database in `production.rst <production.rst>`__.
+Instead, follow the instructions on dumping / restoring a database in :ref:`Managing a production instance of CLiC`.
 
 ``import_corpora_repo`` will import all given texts into the database.
 Ideally (re-)import the entire corpora repository with::

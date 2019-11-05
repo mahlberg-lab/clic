@@ -2,7 +2,7 @@ Developing the system
 =====================
 
 Set-up of the development environment is very similar to a production
-environment, see README.rst for details on how to do this.
+environment, see README.rst (:ref:`CLiC: A corpus tool to support the analysis of literary texts`) for details on how to do this.
 
 The main difference is to use ``PROJECT_MODE= development`` (or not include any
 PROJECT_MODE, development is default), in your ``local-conf.mk``. This will stop

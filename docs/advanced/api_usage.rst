@@ -29,11 +29,11 @@ In the example code the corpora endpoint is called using the ``get_lookup()`` fu
 The subset endpoint is used to retrieve tokenized text for all or parts of one or more of the corpora.
 This endpoint is called 'subset' because you can restrict the retrieved tokens to a specific subset of the whole text, these subsets are: quoted text, non-quoted text, long suspensions or short suspensions.
 In the example code the subset endpoint is called using the ``get_tokens()`` function.
-The subset endpoint is documented at `server/clic/subset.py <../server/clic/subset.py>`_.
+The subset endpoint is documented at :mod:`clic.subset`.
 
 The *cluster* endpoint is used to retrieve n-grams and their counts.
 In the example code the clusters endpoint is called using the ``get_clusters()`` function.
-The cluster endpoint is documented at `server/clic/cluster.py <../server/clic/cluster.py>`_.
+The cluster endpoint is documented at :mod:`clic.cluster`.
 
 We would be interested to hear about how you use the CLiC API and are always happy to consider CLiC related guest posts for the `CLiC blog <https://blog.bham.ac.uk/clic-dickens/>`_.
 To let us know how you are using the CLiC API, to give us feedback, or if you need any help that you cannot find here or through the `CLiC homepage <https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/>`_ you can contact us at `clic@contacts.bham.ac.uk <clic@contacts.bham.ac.uk>`_.

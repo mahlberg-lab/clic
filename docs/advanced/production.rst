@@ -1,7 +1,7 @@
 Managing a production instance of CLiC
 ======================================
 
-Installation instructions are all in `README.rst <../README.rst>`__.
+Installation instructions are all in the README (:ref:`CLiC: A corpus tool to support the analysis of literary texts`).
 For a production system, you are likely to want to install a particular release, e.g.::
 
     git clone git://github.com/birmingham-ccr/clic /srv/clic

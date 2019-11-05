@@ -7,7 +7,7 @@ book:
 region:
     A labelled portion of a book. Each region will have:
 
-    * A name (or rclass), for example 'chapter.sentence'. For all possible names, see `10-rclass.sql <../schema/10-rclass.sql>`__.
+    * A name (or rclass), for example 'chapter.sentence'. For all possible names, see :doc:`../schema/10-rclass.sql`.
     * A start and end character position within the full book text
     * (optionally) a number (or rvalue), for example it's position within a chapter.
 
