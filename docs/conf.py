@@ -47,7 +47,11 @@ release = subprocess.check_output("git describe --abbrev=0".split()).decode('utf
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.extlinks',
 ]
+
+extlinks = {'github':
+('https://github.com/birmingham-ccr/clic/blob/2.0/', '')}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']
