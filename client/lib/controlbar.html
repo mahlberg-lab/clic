@@ -17,16 +17,16 @@
       <label for="corpora">Search the corpora:</label>
       <select name="corpora" title="corpora" data-placeholder="" class="chosen-select" multiple>
       </select>
-      <label>Only in subsets:</label>
-      <select name="conc-subset" data-placeholder="" class="chosen-select">
+      <label for="conc-subset">Only in subsets:</label>
+      <select name="conc-subset" title="conc-subset" data-placeholder="" class="chosen-select">
         <option value="all" selected="selected">All text</option>
         <option value="shortsus">Short Suspensions</option>
         <option value="longsus">Long suspensions</option>
         <option value="quote">Quotes</option>
         <option value="nonquote">Non-quotes</option>
       </select>
-      <label>Search for terms:</label>
-      <input type="text" name="conc-q" placeholder="e.g. 'dense fog'" class="form-control">
+      <label for="conc-q">Search for terms:</label>
+      <input type="text" name="conc-q" title="conc-q" placeholder="e.g. 'dense fog'" class="form-control">
       <div class="conc-type">
         <label>
           <input name="conc-type" type="radio" value="whole" checked="checked">Whole phrase
@@ -41,14 +41,14 @@
       <label><input name="table-type" type="radio" value="basic" checked="checked">Basic results</label>
       <label><input name="table-type" type="radio" value="full" checked="">Full metadata</label>
       <label><input name="table-type" type="radio" value="dist_plot" checked="">Distribution plot</label>
-      <label>Filter rows:</label>
-      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+      <label for="table-filter">Filter rows:</label>
+      <input type="text" name="table-filter" title="table-filter" placeholder="e.g. 'hands'" class="form-control">
 
       <h4><span>KWICGrouper</span></h4>
       <label>Search in span:</label>
       <input name="kwic-span" type="nouislider">
-      <label>Search for types:</label>
-      <select name="kwic-terms" class="chosen-select" multiple="multiple"></select>
+      <label for="kwic-terms">Search for types:</label>
+      <select name="kwic-terms" title="kwic-terms" class="chosen-select" multiple="multiple"></select>
 
       <h4><span>Tags</span></h4>
       <label>Selected rows are part of:</label>
