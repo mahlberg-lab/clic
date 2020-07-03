@@ -371,6 +371,10 @@ ControlBar.prototype.reload = function reload(page_state) {
             jQuery(el).attr('title', 'chosen');
         });
 
+        $(".chosen-search-input").each(function(){
+            $(this).attr('title', 'chosen');
+        });
+
         // Update swaps URLs
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.swap-state'), function (el, i) {
             el.setAttribute('href', swaps_to_url(
