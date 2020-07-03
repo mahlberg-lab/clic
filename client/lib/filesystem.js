@@ -112,7 +112,7 @@ module.exports.file_loader = function file_loader(document, fn) {
     var el = document.createElement('SPAN');
 
     // Create input element
-    el.innerHTML = '<input type="file" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">';
+    el.innerHTML = '<label for="file" style="display: none;"></label><input type="file" title="file" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">';
     el = el.children[0];
     document.body.appendChild(el);
 
