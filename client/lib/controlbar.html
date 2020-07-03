@@ -138,11 +138,11 @@
     <legend><a href="/keywords">Keywords</a></legend>
     <form>
 
-      <label>Target corpora:</label>
-      <select name="corpora" class="chosen-select" multiple>
+      <label for="corpora">Target corpora:</label>
+      <select name="corpora" label="corpora" class="chosen-select" multiple>
       </select>
-      <label>...within subset:</label>
-      <select name="subset" class="chosen-select">
+      <label for="subset">...within subset:</label>
+      <select name="subset" label="subset" class="chosen-select">
         <option value="all" selected="selected">All text</option>
         <option value="shortsus">Short Suspensions</option>
         <option value="longsus">Long suspensions</option>
@@ -150,8 +150,8 @@
         <option value="nonquote">Non-quotes</option>
       </select>
 
-      <label>n-gram:</label>
-      <select name="clusterlength" class="chosen-select">
+      <label for="clusterlength">n-gram:</label>
+      <select name="clusterlength" title="clusterlength" class="chosen-select">
         <option value="1" selected="selected">1-gram</option>
         <option value="2">2-gram</option>
         <option value="3">3-gram</option>
@@ -162,11 +162,11 @@
       </select>
 
       <h4><span>Reference Corpora</span></h4>
-      <label>Reference corpora:</label>
-      <select name="refcorpora" class="chosen-select" multiple>
+      <label for="refcorpora">Reference corpora:</label>
+      <select name="refcorpora" title="refcorpora" class="chosen-select" multiple>
       </select>
-      <label>...within subset:</label>
-      <select name="refsubset" class="chosen-select">
+      <label for="refsubset">...within subset:</label>
+      <select name="refsubset" title="refsubset" class="chosen-select">
         <option value="all" selected="selected">All text</option>
         <option value="shortsus">Short Suspensions</option>
         <option value="longsus">Long suspensions</option>
@@ -175,8 +175,8 @@
       </select>
       <p><br/><a href="#" class="swap-state" data-arg="corpora:refcorpora,subset:refsubset">Swap target and reference corpora</a></p>
 
-      <label>p-value cut-off:</label>
-      <select name="pvalue" class="chosen-select">
+      <label for="pvalue">p-value cut-off:</label>
+      <select name="pvalue" title="pvalue" class="chosen-select">
         <option>0.05</option>
         <option>0.01</option>
         <option>0.001</option>
@@ -184,8 +184,8 @@
       </select>
 
       <h4><span>Results</span></h4>
-      <label>Filter rows:</label>
-      <input type="text" name="table-filter" placeholder="e.g. 'hands'" class="form-control">
+      <label for="table-filter">Filter rows:</label>
+      <input type="text" name="table-filter" title="table-filter" placeholder="e.g. 'hands'" class="form-control">
 
     </form>
   </fieldset>
