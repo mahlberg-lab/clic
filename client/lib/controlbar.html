@@ -193,8 +193,8 @@
   <fieldset data-name="count">
     <legend><a href="/count">Counts</a></legend>
     <form>
-      <label>Search the corpora:</label>
-      <select name="corpora" class="chosen-select" multiple>
+      <label for="corpora">Search the corpora:</label>
+      <select name="corpora" title="corpora" class="chosen-select" multiple>
       </select>
     </form>
   </fieldset>
@@ -203,11 +203,11 @@
     <legend><a href="/text">Texts</a></legend>
     <form>
 
-    <label>Book:</label>
-    <select name="book" data-placeholder="Select a book..." class="chosen-select">
+    <label for="book">Book:</label>
+    <select name="book" title="book" data-placeholder="Select a book..." class="chosen-select">
     </select>
-    <label>Chapter:</label>
-    <select name="chapter_num" data-placeholder="" class="chosen-select">
+    <label for="chapter">Chapter:</label>
+    <select name="chapter_num" title="chapter_num" data-placeholder="" class="chosen-select">
     </select>
 
     <h4><span>Highlight subsets</span></h4>
@@ -245,7 +245,7 @@
       <button name="tag-column-delete" style="float: right">Delete selected</button>
 
       <h4><span>Rename selected tag column</span></h4>
-      <input type="text" name="tag-column-rename" placeholder="" class="form-control">
+      <input type="text" name="tag-column-rename" title="tag-column-rename" placeholder="" class="form-control">
 
     </div>
   </form>
