@@ -372,6 +372,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         });
 
         $(".chosen-search-input").each(function(){
+            console.log(1);
             $(this).attr('title', 'chosen');
         });
 
