@@ -437,4 +437,6 @@ ControlBar.prototype.tweak = function tweak(page_state) {
     }));
 };
 
+jQuery.each('.chosen-search-input').attr('title', 'chosen');
+
 module.exports = ControlBar;
