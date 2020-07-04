@@ -84,8 +84,8 @@ var pp = new PagePromise(select_components, state_defaults);
 if (window) {
     pp.wire_events();
 
-    var inputs = document.getElementsByClassName("chosen-search-input");
-    for (var i = 0; i < inputs.length; i++) {
-        inputs.item(i).setAttribute("title", "test"); 
-    }
+//     var inputs = document.getElementsByClassName("chosen-search-input");
+//     for (var i = 0; i < inputs.length; i++) {
+//         inputs.item(i).setAttribute("title", "test"); 
+//     }
 }
