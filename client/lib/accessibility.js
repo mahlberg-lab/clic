@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, browser: true */
-/*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 
 // Add accessibility attributes to the dynamically added content that has to be added retrospectively
