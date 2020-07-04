@@ -4,6 +4,7 @@
 var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
+var accessibility = require('./accessibility.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
@@ -83,4 +84,5 @@ var pp = new PagePromise(select_components, state_defaults);
 
 if (window) {
     pp.wire_events();
+    accessibility.add_attributes();
 }
