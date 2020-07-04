@@ -7,7 +7,7 @@ var jQuery = require('jquery/dist/jquery.slim.js');
 // (e.g. content inserted by a 3rd party library)
 module.exports.add_attributes = function () {
     // 'chosen-search-input' fields (added by chosen.js plugin)
-    jQuery('.chosen-search-input').each(function(){
+    jQuery('.chosen-search-input').each(function() {
        jQuery(this).attr('title', 'chosen-search-input');
     });
 
