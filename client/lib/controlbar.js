@@ -437,7 +437,4 @@ ControlBar.prototype.tweak = function tweak(page_state) {
     }));
 };
 
-// Add accessibility attributes to the dynamically added 'chosen-search-input' fields (added by chosen.js plugin)
-jQuery.each('.chosen-search-input').attr('title', 'chosen-search-input');
-
 module.exports = ControlBar;
