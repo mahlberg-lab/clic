@@ -4,7 +4,6 @@
 var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
-var accessibility = require('./accessibility.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
