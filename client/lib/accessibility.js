@@ -7,7 +7,7 @@
 module.exports.add_attributes = function () {
     // 'chosen-search-input' fields (added by chosen.js plugin)
     var inputs = document.getElementsByClassName("chosen-search-input");
-    for (var i = 0; i < inputs.length; i++) {
-        inputs.item(i).setAttribute("title", "test"); 
-    }
+    // for (var i = 0; i < inputs.length; i++) {
+    //     inputs.item(i).setAttribute("title", "test"); 
+    // }
 };
