@@ -8,7 +8,8 @@ var jQuery = require('jquery/dist/jquery.slim.js');
 module.exports.add_attributes = function () {
     // 'chosen-search-input' fields (added by chosen.js plugin)
     jQuery('.chosen-search-input').each(function(index) {
-       jQuery(this).attr('title', 'chosen-search-input');
+    //    jQuery(this).attr('title', 'chosen-search-input');
+        console.log(1);
     });
 
 };
