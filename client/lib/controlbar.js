@@ -220,7 +220,7 @@ function ControlBar(control_bar) {
         jQuery(el).chosen({ width: '100%', search_contains: true }).change(function (e) {
             // Chosen's change event isn't bubbling to the form, do it ourselves.
             self.control_bar.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-        }).attr('title', 'test');
+        });
     });
 
     // Turn "nouislider"-type inputs into an actual nouislider
@@ -367,6 +367,11 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
             jQuery(el).trigger("chosen:updated");
+            // Add accessibility attributes to each element
+            jQuery(el).attr('title', 'chosen');
+        });
+
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-search-input'), function (el, i) {
             // Add accessibility attributes to each element
             jQuery(el).attr('title', 'chosen');
         });
