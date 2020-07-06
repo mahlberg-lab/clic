@@ -220,7 +220,7 @@ function ControlBar(control_bar) {
         jQuery(el).chosen({ width: '100%', search_contains: true }).change(function (e) {
             // Chosen's change event isn't bubbling to the form, do it ourselves.
             self.control_bar.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-        });
+        }).attr('title', 'test');
     });
 
     // Turn "nouislider"-type inputs into an actual nouislider
