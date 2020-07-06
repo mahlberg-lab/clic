@@ -368,12 +368,12 @@ ControlBar.prototype.reload = function reload(page_state) {
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
             jQuery(el).trigger("chosen:updated");
             // Add accessibility attributes to each element
-            jQuery(el).attr('title', 'chosen');
+            jQuery(el).attr('title', 'chosen-select');
         });
 
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-search-input'), function (el, i) {
             // Add accessibility attributes to each element
-            jQuery(el).attr('title', 'chosen');
+            jQuery(el).attr('title', 'chosen-search-input');
         });
 
         // Update swaps URLs
