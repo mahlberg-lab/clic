@@ -36,12 +36,18 @@ function showCookieMessage() {
         var html_to_inject = '\
 <div id="cookie-message-popup" style="text-align: center; z-index: 10000; background: black; width: 96vw; padding: 1em; color: white; position: fixed; bottom: 2vw; right: 2vw;">\
     The CLiC website uses cookies. By using the CLiC website, you accept our use of cookies. See our <a href="/cookies/" style="color: white; text-decoration: underline;">cookies policy</a> for more information.\
-    <button onClick="document.cookie = \'cookieMessageApprove=1; expires=Mon, 31 Dec 2040 23:59:59 GMT\'; document.querySelector("#cookie-message-popup").style.display = \'none\'" style="display: inline-block; background: white; color: black; padding: 0.4em 1.7em; margin-left: 1em; cursor: pointer; vertical-align: middle;">Accept</button>\
+    <button id="cookie-message-popup-accept" style="display: inline-block; background: white; color: black; padding: 0.4em 1.7em; margin-left: 1em; cursor: pointer; vertical-align: middle;">Accept</button>\
 </div>';
 
         // Add the HTML message to the page
         document.body.innerHTML += html_to_inject;
     }
+
+    // Add event listener for 'accept' button to set the cookie and hide the message
+    document.getElementById("cookie-message-popup-accept").addEventListener("click", function () {
+        document.cookie = "cookieMessageApprove=1; expires=Mon, 31 Dec 2040 23:59:59 GMT";
+        document.getElementById("#cookie-message-popup").style.display = "none";
+    });
 }
 
 module.exports = showCookieMessage;
