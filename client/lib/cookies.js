@@ -1,6 +1,4 @@
-"use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
+
 
 var getCookie = function (name) {
 	var value = "; " + document.cookie;
