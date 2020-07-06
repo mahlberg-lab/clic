@@ -1,10 +1,18 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var jQuery = require('jquery/dist/jquery.slim.js');
+
+var getCookie = function (name) {
+	var value = "; " + document.cookie;
+	var parts = value.split("; " + name + "=");
+	if (parts.length == 2) return parts.pop().split(";").shift();
+};
+
 
 function x() {
-    console.log(1);
+    document.cookie = 'testCookie=testValue; expires=Fri, 31 Dec 2024 23:59:59 GMT';
+
+    console.log(getCookie('test'));
 }
 
 module.exports = x;
