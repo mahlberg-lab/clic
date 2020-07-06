@@ -5,9 +5,8 @@ function getCookie(name) {
     var c = "; " + document.cookie.split("; " + name + "=");
     if (c.length === 2) {
         return c.pop().split(";").shift();
-    } else {
-        return 0;
     }
+    return 0;
 }
 
 
