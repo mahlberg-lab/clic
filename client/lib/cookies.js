@@ -6,13 +6,15 @@ function getCookie(name) {
     if (c.length === 2) {
         return c.pop().split(";").shift();
     }
-    return c.length;
+    
+    console.log(c.length);
+    console.log(c);
 }
 
 
 function x() {
     document.cookie = 'testCookie=testValue; expires=Fri, 31 Dec 2024 23:59:59 GMT';
-    console.log(getCookie('test'));
+    getCookie('test');
 }
 
 module.exports = x;
