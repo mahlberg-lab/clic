@@ -6,7 +6,7 @@ function getCookie(name) {
     if (c.length === 2) {
         return c.pop().split(";").shift();
     }
-    
+
     console.log(c.length);
     console.log(c);
 }
