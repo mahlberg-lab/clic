@@ -49,10 +49,10 @@ function showCookieMessage() {
             document.cookie = "cookieMessageApprove=1; expires=Mon, 31 Dec 2040 23:59:59 GMT";
             document.getElementById("cookie-message-popup").style.display = "none";
         });
-    } catch (error) {
+    } catch (ignore) {
         // Ignore error, as it's expected to fail when user has already approved (as cookie popup won't show)
     }
-    
+
 }
 
 module.exports = showCookieMessage;
