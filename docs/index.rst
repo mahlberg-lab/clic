@@ -10,6 +10,7 @@ CLiC
    cliccorpora
    clicanalysis
    known-issues
+   policies
    advanced
    references
 
