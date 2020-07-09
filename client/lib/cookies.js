@@ -35,7 +35,7 @@ function showCookieMessage() {
         // Generate HTML message
         var html_to_inject = '\
 <div id="cookie-message-popup" style="text-align: center; z-index: 10000; background: black; width: 96vw; padding: 1em; color: white; position: fixed; bottom: 2vw; right: 2vw;">\
-    The CLiC website uses cookies. By using the CLiC website, you accept our use of cookies. See our <a href="/cookies/" style="color: white; text-decoration: underline;">cookies policy</a> for more information.\
+    The CLiC website uses cookies. By using the CLiC website, you accept our use of cookies. See our <a href="https://clic.readthedocs.io/en/latest/policies/cookies.html" style="color: white; text-decoration: underline;">cookies policy</a> for more information.\
     <button id="cookie-message-popup-accept" style="display: inline-block; background: white; color: black; padding: 0.4em 1.7em; margin-left: 1em; cursor: pointer; vertical-align: middle;">Accept</button>\
 </div>';
 
