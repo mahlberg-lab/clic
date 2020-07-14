@@ -53,7 +53,6 @@ module.exports.get = function (endpoint, qs) {
                     if (data.error) {
                         throw api_error_object(data);
                     }
-                    console.log(data);
                     return data;
                 });
             }
