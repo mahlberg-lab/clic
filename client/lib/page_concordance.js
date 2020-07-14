@@ -181,6 +181,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
             { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
             { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
             { title: "Book", data: "3.0", render: concordance_utils.renderBook.bind(this, 'abbr'), searchable: false }, // Book
+            { title: "Year", data: "3.0", render: concordance_utils.renderBook.bind(this, 'abbr'), searchable: false }, // Year
             { title: "Ch.", data: "4.0", class: "metadataColumn", searchable: false }, // Chapter
             { title: "Par.", data: "4.1", class: "metadataColumn", searchable: false }, // Paragraph-in-chapter
             { title: "Sent.", data: "4.2", class: "metadataColumn", searchable: false }, // Sentence-in-chapter
