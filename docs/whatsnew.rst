@@ -57,3 +57,5 @@ The text tab shows full book contents (to replace the chapter-by-chapter selecti
 * **New Counts tab**
 
 The Counts tab shows an interactive overview of the corpora, with word counts within corpora, books and subsets.
+
+CLiC v2.1 adds features to improve the accessibility of the website and share more about the website's policies with the users.
