@@ -38,13 +38,14 @@
     font-family: Georgia,Helvetica,serif;
     line-height: normal;
     color: ivory;
-    text-shadow: -1px 0px 5px #1e345e,
+    background: black;
+    /* text-shadow: -1px 0px 5px #1e345e,
                   1px 0px 5px #1e345e,
                   0px -1px 5px #1e345e,
-                  0px  1px 5px #1e345e;
+                  0px  1px 5px #1e345e; */
 }
 .carousel li a:active, .carousel li a:hover, .carousel li a:focus {
-    text-shadow: 0 0 5px brown;
+    /* text-shadow: 0 0 5px brown; */
     text-decoration: none;
 }
 
