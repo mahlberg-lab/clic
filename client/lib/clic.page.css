@@ -71,6 +71,8 @@ header h1 small {
 }
 header .sponsors {
     float: right;
+    height: 35px;
+    margin: 0.5rem 1rem;
 }
 
 #alerts {
