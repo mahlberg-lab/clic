@@ -3,13 +3,13 @@
     height: 0;
 
     margin: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 
     padding: 0;
     padding-bottom: 40%; /* i.e. carousel has fixed ratio dimensions */
     overflow: hidden;
 
-    box-shadow: 0 0 10px #1e345e;
+    /* box-shadow: 0 0 10px #1e345e; */
 }
 .carousel li {
     display: block;
