@@ -41,7 +41,7 @@
     text-decoration: none;
 }
 
-.carousel li a h3 {
+.carousel li a .carousel-title {
     margin-bottom: 0!important;
     font-size: 100%;
 }

@@ -25,7 +25,7 @@ PageContents.prototype.reload = function reload(page_state) {
         function gen_carousel_item(d) {
             return [
                 '<li style="background-image: url(/api/corpora/image?corpora=' + encodeURIComponent(d.id) + '"><a href="/concordance?corpora=' + d.id + '">',
-                '  <h3>' + d.title + '</h3>',
+                '  <span class="carousel-title">' + d.title + '</span>',
                 '  <strong>' + d.book_count.toLocaleString() + '</strong> books,<br/>',
                 '  <strong>' + d.word_count.toLocaleString() + '</strong> total words</a>',
                 '</li>',
