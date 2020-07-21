@@ -33,12 +33,13 @@
     bottom: 0;
     left: 0;
     right: 0;
-    margin: 1rem;
+    margin: 0rem;
 
     font-family: Georgia,Helvetica,serif;
     line-height: normal;
     color: ivory;
-    background: black;
+    background: rgba(0,0,0,0.6);
+    padding: 0.5rem;
     /* text-shadow: -1px 0px 5px #1e345e,
                   1px 0px 5px #1e345e,
                   0px -1px 5px #1e345e,
