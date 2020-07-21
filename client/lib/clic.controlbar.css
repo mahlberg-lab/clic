@@ -10,6 +10,14 @@
     border-left: 1px solid #AAA;
 }
 
+#control-bar a {
+    color: #154D84;
+}
+
+#control-bar a:hover {
+    color: #0B2947;
+}
+
 #control-bar .header {
     padding: 20px;
     border-bottom: 1px solid #AAA;
