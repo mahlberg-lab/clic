@@ -79,6 +79,10 @@ header .sponsors a img {
 header .sponsors a:hover {
     text-decoration: none;
 }
+#sponsors-uob {
+    position: relative;
+    top: 8px;
+}
 
 #alerts {
     transform: scaleY(0);
