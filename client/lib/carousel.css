@@ -1,15 +1,11 @@
 .carousel {
     position: relative;
     height: 0;
-
     margin: 0;
     margin-bottom: 2rem;
-
     padding: 0;
     padding-bottom: 40%; /* i.e. carousel has fixed ratio dimensions */
     overflow: hidden;
-
-    /* box-shadow: 0 0 10px #1e345e; */
 }
 .carousel li {
     display: block;
@@ -34,19 +30,14 @@
     left: 0;
     right: 0;
     margin: 0rem;
-
     font-family: Georgia,Helvetica,serif;
     line-height: normal;
     color: ivory;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     padding: 1rem;
-    /* text-shadow: -1px 0px 5px #1e345e,
-                  1px 0px 5px #1e345e,
-                  0px -1px 5px #1e345e,
-                  0px  1px 5px #1e345e; */
 }
 .carousel li a:active, .carousel li a:hover, .carousel li a:focus {
-    text-shadow: 0 0 5px rgba(255,255,255,0.3);
+    text-shadow: 0 0 5px rgba(255,255,255,0.5);
     text-decoration: none;
 }
 
