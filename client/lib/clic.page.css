@@ -71,8 +71,13 @@ header h1 small {
 }
 header .sponsors {
     float: right;
+}
+header .sponsors a img {
     height: 35px;
-    margin: 0.5rem 1rem;
+    margin-right: 2rem;
+}
+header .sponsors a:hover {
+    text-decoration: none;
 }
 
 #alerts {
