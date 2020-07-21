@@ -46,8 +46,8 @@
                   0px  1px 5px #1e345e; */
 }
 .carousel li a:active, .carousel li a:hover, .carousel li a:focus {
-    /* text-shadow: 0 0 5px brown; */
-    text-decoration: underline;
+    text-shadow: 0 0 5px rgba(255,255,255,0.7);
+    /* text-decoration: underline; */
 }
 
 .carousel li a h3 {
