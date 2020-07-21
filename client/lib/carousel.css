@@ -47,7 +47,7 @@
 }
 .carousel li a:active, .carousel li a:hover, .carousel li a:focus {
     /* text-shadow: 0 0 5px brown; */
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 .carousel li a h3 {
