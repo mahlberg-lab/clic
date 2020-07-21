@@ -44,6 +44,7 @@
 .carousel li a .carousel-title {
     margin-bottom: 0!important;
     font-size: 100%;
+    display: block;
 }
 
 .carousel li a strong {
