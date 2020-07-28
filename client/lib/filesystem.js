@@ -5,7 +5,7 @@ var FileSaver = require('file-saver');
 
 module.exports.format_dt = function (dt) {
     var out = [], row = [],
-        row_ids = dt.rows().ids().toArray(),
+        row_ids = dt.rows({ search: 'applied' }).ids().toArray(),
         include_column = dt.columns().visible().toArray();
 
     // Format header row
