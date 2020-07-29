@@ -1,5 +1,14 @@
 ## 2.1.1 (2020-07-23)
 
+* minor fixes to get changelog and docs to display correctly
+
+## 2.1.0 (2020-07-23)
+
+* Fixes accessibility issues of the website (now passes Pa11y and WAVE tests)
+* Adds policies about privacy, cookies, accessibility, etc. to the docs
+* Adds cookie pop-up message, where users can accept the use of cookies on the site
+* Makes minor UI improvements
+
 ## 2.0.3 (2019-10-14)
 
 ## 2.0.3 (2019-10-14)

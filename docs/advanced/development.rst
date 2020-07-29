@@ -72,8 +72,15 @@ Steps for making a release::
 Documentation
 -------------
 
-Whilst generally we use readthedocs for documentation sphinx will also be run
-locally for testing, and if it proves useful in future.
+readthedocs is used for our documentation. In order for newly released versions of CLiC (as managed by tags, e.g. v2.1.2) to be included in readthedocs please make sure to follow the above instructions in 'Preparing a release' when updating CLiC on the production server.
+
+You can access the settings for CLiC's readthedocs by going to: https://readthedocs.org/projects/clic/
+
+If you have maintainer access you can modify which versions of CLiC are included in the readthedocs, including what the 'latest' version is. Tags are pulled through automatically, but branches are not, so these will need to be manually set.
+
+If you need maintainer access, please request from an existing maintainer.
+
+Sphinx will also be run locally for testing, and if it proves useful in future.
 
 To re-build documentation::
 

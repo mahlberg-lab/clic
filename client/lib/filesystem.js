@@ -5,7 +5,7 @@ var FileSaver = require('file-saver');
 
 module.exports.format_dt = function (dt) {
     var out = [], row = [],
-        row_ids = dt.rows().ids().toArray(),
+        row_ids = dt.rows({ search: 'applied' }).ids().toArray(),
         include_column = dt.columns().visible().toArray();
 
     // Format header row
@@ -113,7 +113,7 @@ module.exports.file_loader = function file_loader(document, fn) {
 
     // Create input element
     el.innerHTML = '<label for="file" style="display: none;">File system</label><input type="file" title="file" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">';
-    el = el.children[0];
+    el = el.children[1];
     document.body.appendChild(el);
 
     // Attach events
