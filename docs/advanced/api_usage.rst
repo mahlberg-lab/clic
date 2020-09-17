@@ -251,6 +251,4 @@ An now lets get some clusters for the Jane Austen novels::
 R
 ^
 
-Functions to access the CLiC API from R are available in an `R package <https://github.com/birmingham-ccr/clicclient>`_.
-The package contains a *Getting Started* vignette which includes code samples.
-
+Functions to access the CLiC API from R are available in the `clicclient R package <https://github.com/birmingham-ccr/clicclient>`_. This package is still under development to work with CLiC 2.0. If you would like to contribute to this package, please get in touch at `clic@contacts.bham.ac.uk <clic@contacts.bham.ac.uk>`_.
