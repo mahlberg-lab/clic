@@ -131,4 +131,4 @@ Please reference CLiC as the following:
  
 Michaela Mahlberg, Peter Stockwell, Johan de Joode, Catherine Smith, Matthew Brook O’Donnell (forthcoming). “CLiC Dickens – Novel uses of concordances for the integration of corpus stylistics and cognitive poetics”, *Corpora*
 
-This work is released under `AGPL-v3 <LICENSE.rst>`__.
+This work is released under `MIT <LICENSE.rst>`__.

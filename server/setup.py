@@ -23,6 +23,7 @@ setup(
     author='Jamie Lentin',
     author_email='jamie.lentin@shuttlethread.com',
     url='https://github.com/birmingham-ccr/clic',
+    license="MIT",
     packages=find_packages(),
     install_requires=requires,
     extras_require=dict(
