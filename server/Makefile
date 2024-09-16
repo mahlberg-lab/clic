@@ -8,6 +8,9 @@ include ../conf.mk
 bin/pip:
 	python3 -m venv .
 
+requirements.txt:
+	touch requirements.txt
+
 lib/.requirements: requirements.txt requirements-to-freeze.txt setup.py bin/pip
 	# Install frozen requirements
 	./bin/pip install -r requirements.txt
