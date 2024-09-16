@@ -3,4 +3,4 @@ coverage
 psycopg2-binary
 wheel
 -e .
-.[testing]
+-e .[testing]
