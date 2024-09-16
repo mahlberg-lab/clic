@@ -7,6 +7,7 @@ import csv
 import os
 import os.path
 import pybtex.database
+from pylatexenc.latex2text import LatexNodes2Text
 
 from clic.region.utils import regions_flatten, regions_unflatten
 
@@ -14,25 +15,26 @@ from clic.region.utils import regions_flatten, regions_unflatten
 def parse_corpora_bib(corpora_dir, bib_name='corpora.bib'):
     """Read in a corpora.bib, output a list of corpora dicts"""
     pb = pybtex.database.parse_file(os.path.join(corpora_dir, bib_name))
+    lt2txt = LatexNodes2Text()
 
     corpora = collections.defaultdict(lambda: dict(contents=[]))
     for _, entry in pb.entries.items():
-        keywords = [str(x) for x in entry.rich_fields['keywords'].split(',')]
+        keywords = [lt2txt.latex_to_text(x) for x in entry.fields['keywords'].split(',')]
         if 'corpus' in keywords:
-            c_id = str(entry.rich_fields['shorttitle'])
+            c_id = lt2txt.latex_to_text(entry.fields['shorttitle'])
 
             carousel_image_path = os.path.join(corpora_dir, 'images', "%s_0.4.jpg" % c_id)
             if not os.path.exists(carousel_image_path):
                 carousel_image_path = None
 
             corpora[c_id]['name'] = c_id
-            corpora[c_id]['title'] = "%s - %s" % (c_id, str(entry.rich_fields['title']))
-            corpora[c_id]['description'] = str(entry.rich_fields.get('abstract', ''))
+            corpora[c_id]['title'] = "%s - %s" % (c_id, lt2txt.latex_to_text(entry.fields['title']))
+            corpora[c_id]['description'] = lt2txt.latex_to_text(entry.fields.get('abstract', ''))
             corpora[c_id]['carousel_image_path'] = carousel_image_path
-            corpora[c_id]['ordering'] = int(str(entry.rich_fields['number']))
+            corpora[c_id]['ordering'] = int(lt2txt.latex_to_text(entry.fields['number']))
         else:
             for kw in keywords:
-                corpora[kw]['contents'].append(str(entry.rich_fields['shorttitle']))
+                corpora[kw]['contents'].append(lt2txt.latex_to_text(entry.fields['shorttitle']))
 
     return list(corpora.values())
 

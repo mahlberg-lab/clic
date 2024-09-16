@@ -7,7 +7,7 @@ import json
 
 import numpy
 
-from flask.json import JSONEncoder as BaseJSONEncoder
+from json import JSONEncoder as BaseJSONEncoder
 
 
 class JSONEncoder(BaseJSONEncoder):

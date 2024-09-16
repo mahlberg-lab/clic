@@ -7,6 +7,7 @@ requires = [
     'pandas',
     'psycopg2',
     'pybtex',
+    'pylatexenc',
     'pyicu',
     'unidecode',
 ]
