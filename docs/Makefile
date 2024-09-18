@@ -32,6 +32,9 @@ install:
 bin/pip:
 	python3 -m venv .
 
+requirements.txt:
+	touch requirements.txt
+
 lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
 	# Install frozen requirements
 	./bin/pip install -r requirements.txt
