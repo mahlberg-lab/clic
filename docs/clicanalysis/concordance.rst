@@ -69,7 +69,7 @@ For the detailed technical documentation and more examples see :mod:`clic.tokeni
 
 
 'Whole phrase' or 'Any word'
----------------------------
+----------------------------
 
 When you have entered several terms, you need to specify whether it is
 to be searched as one phrase (equivalent to using double quotes in a

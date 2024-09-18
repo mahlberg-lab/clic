@@ -1,5 +1,5 @@
 CLiC analysis tabs
-===============
+==================
 
 .. toctree::
    :maxdepth: 1
