@@ -101,6 +101,11 @@ BEGIN
     -- Destroy / recreate token table for this book
     token_tbl = 'token_' || new_book_id;
     EXECUTE format($$
+        DROP INDEX IF EXISTS %1$s_rclass_id;
+        DROP INDEX IF EXISTS gist_%1$s_book_id_crange;
+        DROP INDEX IF EXISTS %1$s_book_id_lower_crange;
+        DROP INDEX IF EXISTS gist_%1$s_book_id_crange;
+        DROP INDEX IF EXISTS %1$s_book_id_lower_crange;
         DROP TABLE IF EXISTS %1$s
     $$, token_tbl);
     EXECUTE format($$
@@ -160,24 +165,21 @@ BEGIN
         EXECUTE format($$COMMENT ON INDEX %1$s_book_id_lower_crange IS 'Joining with a scalar equivalent to the PK'$$, t);
     END LOOP;
 
-    -- Add extra token metadata to this partition
+    -- Update tokens-part-of-regions lookup
     EXECUTE format($$
-        WITH token_ordering AS
+        WITH token_nesting AS
         (
-            SELECT t.book_id
-                 , t.crange
-                 , ROW_NUMBER() OVER (ORDER BY t.book_id, t.crange) ordering
-              FROM %1$s t
-             WHERE t.book_id = %2$s
+            SELECT t.crange
+                 , JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) part_of
+              FROM token_%1$s t, region_%1$s r
+             WHERE t.crange <@ r.crange
+          GROUP BY t.crange
         )
-        UPDATE %1$s t
-           SET ordering = o.ordering
-             , part_of = (SELECT JSONB_OBJECT_AGG(r.rclass_id, r.rvalue) FROM region r WHERE t.book_id = r.book_id AND t.crange <@ r.crange)
-          FROM token_ordering o
-         WHERE t.book_id = o.book_id
-           AND t.crange = o.crange
-           AND t.book_id = %2$s
-    $$, token_tbl, new_book_id);
+        UPDATE token_%1$s t
+           SET part_of = tn.part_of
+          FROM token_nesting tn
+         WHERE t.crange = tn.crange
+    $$, new_book_id);
 
     -- Update book metadata tables
     INSERT INTO book_metadata (book_id, rclass_id, rvalue, content)
