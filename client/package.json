@@ -11,7 +11,7 @@
     "jquery": "^3.5.0",
     "nouislider": "^10.1.0",
     "nunjucks": "^3.2.4",
-    "unidecode": "^0.1.8"
+    "unidecode": "^1.1.0"
   },
   "maintainers": [
     {
