@@ -6,7 +6,6 @@ var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
 var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
-var object_entries = require('object.entries-ponyfill');
 
 // Plural-ise a few known phrases
 function plural(amount, unit) {
@@ -348,7 +347,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         // Turn dict of book => rows into array of [book, rows]
         // NB: Shallow copy as otherwise cached_get's copy gets modified
         raw_data = shallow_copy(raw_data);
-        raw_data.data = object_entries(groupedData);
+        raw_data.data = Object.entries(groupedData);
 
         r = page_state.clone({args: { 'table-type': 'basic', corpora: [] }}).to_url();
         for (i = 0; i < raw_data.data.length; i++) {
