@@ -1,5 +1,4 @@
 GIT = git
-YARN = yarn
 NODE = node
 NODE != which node || which nodejs
 NODE_CMD = NODE_PATH="$(CURDIR)" $(NODE)
@@ -62,12 +61,9 @@ clean-unused:
 watch:
 	while inotifywait -r lib; do make compile; done
 
-node_modules/: package.json yarn.lock
-	$(YARN)
+node_modules/: package.json package-lock.json
+	npm ci
 	touch node_modules/
-
-yarn.lock:
-	touch $@
 
 # Move minified output to a version with sha1 hash in it's name, symlink to proper output
 sha1_symlink = \

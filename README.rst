@@ -12,20 +12,7 @@ For more information, cf. `CLiC Dickens - University of Birmingham <http://www.b
 Prerequisites
 -------------
 
-The installation instructions below expect an apt based OS, e.g. Debian Stretch, Ubuntu Bionic or later.
-
-First, configure your system to include the Yarn repository::
-
-
-    # See https://yarnpkg.com/lang/en/docs/install/ but the gist is...
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-
-...then the nodejs repository::
-
-    curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-    echo "deb https://deb.nodesource.com/node_6.x xenial main" > /etc/apt/sources.list.d/nodesource.list
-    apt-get update
+The installation instructions below expect an apt based OS, e.g. Debian Bookworm, Ubuntu Bionic or later.
 
 Then install the following from your system repositories::
 
@@ -37,7 +24,7 @@ Then install the following from your system repositories::
     # NB: ICU needs to at least be version 56, postgresql at least version 9.5
 
     # Client prerequisites
-    sudo apt install make nodejs yarn nginx
+    sudo apt install make nodejs npm nginx
 
     # If you require web traffic to be encrypted (read: production)
     sudo apt install dehydrated ssl-cert
