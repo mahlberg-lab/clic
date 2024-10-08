@@ -1,10 +1,8 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var jQuery = require('jquery/dist/jquery.slim.js');
 if (window && window.document) {
-    var dataTablesNet = require('datatables.net');
-    dataTablesNet(window, jQuery);
+    var DataTable = require('datatables.net');
 }
 var api = require('./api.js');
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
@@ -26,7 +24,7 @@ function PageTable(content_el) {
 PageTable.prototype.init = function init() {
     this.table_opts.deferRender = true;
     this.table_opts.filter = true;
-    this.table_opts.sort = true;
+    this.table_opts.order = true;
     this.table_opts.paginate = true;
     this.table_opts.displayLength = 50;
     this.table_opts.dom = 'ri<"data-version">tp';
@@ -48,6 +46,13 @@ PageTable.prototype.reload = function reload(page_state) {
 
         if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
             old_page = self.table.page();
+
+            // Update any visible properties from table_opts
+            self.table_opts.columns.forEach(function (c, i) {
+                if (c.hasOwnProperty("visible")) {
+                    self.table.columns(i).visible(c.visible);
+                }
+            });
 
             self.table.search(page_state.arg('table-filter'));
             self.table.ajax.reload(function () {
@@ -77,7 +82,7 @@ PageTable.prototype.reload = function reload(page_state) {
             self.init_cols = null; // If this load fails, we should do a full redraw afterwards
 
             table_opts = shallow_clone(self.table_opts);
-            table_opts.fnInitComplete = function (table, data) {
+            table_opts.initComplete = function (table, data) {
                 self.init_cols = columns_string(self.table_opts.columns);
                 self.init_querystring = window.location.search;
                 resolve(data);
@@ -107,7 +112,8 @@ PageTable.prototype.reload = function reload(page_state) {
                 return o[0] < table_opts.columns.length;
             });
             table_opts.infoCallback = self.info_callback.bind(self);
-            self.table = jQuery(self.table_el).DataTable(table_opts);
+            self.table = new DataTable(self.table_el, table_opts);
+            window.dt = self.table;  // Stuff to one side so controlbar.js can get it
 
             if (add_events) {
                 self.add_events();

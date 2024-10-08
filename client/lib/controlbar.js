@@ -148,7 +148,9 @@ function ControlBar(control_bar) {
             if (clickedOn(e, 'A', 'clear')) {
                 window.dispatchEvent(new window.CustomEvent('state_new', { detail: { args: {}, state: {}, }}));
             } else if (clickedOn(e, 'A', 'save')) {
-                filesystem.save(filesystem.format_dt(jQuery('#content table.dataTable').DataTable()));
+                if (window.dt) {
+                    filesystem.save(filesystem.format_dt(window.dt));
+                }
             } else if (clickedOn(e, 'A', 'load')) {
                 self.file_loader.trigger('load');
             } else if (clickedOn(e, 'A', 'merge')) {

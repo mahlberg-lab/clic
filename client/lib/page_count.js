@@ -1,14 +1,14 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
-var jQuery = require('jquery/dist/jquery.slim.js');
+var DataTable = require('datatables.net');
 var api = require('./api.js');
 var State = require('./state.js');
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
 
-var renderNumeric = jQuery.fn.dataTable.render.number(',', '.');
+var renderNumeric = DataTable.render.number;
 
 // PageChapter inherits PageTable
 function PageChapter() {

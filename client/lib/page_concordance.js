@@ -176,13 +176,14 @@ PageConcordance.prototype.reload = function reload(page_state) {
         this.table_opts.non_tag_columns = [
             { data: "kwic", visible: false, sortable: false, searchable: false },
             { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-            { title: "Left", data: "0", render: concordance_utils.renderTokenArray, class: "context left" }, // Left
-            { title: "Node", data: "1", render: concordance_utils.renderTokenArray, class: "context node" }, // Node
-            { title: "Right", data: "2", render: concordance_utils.renderTokenArray, class: "context right" }, // Right
+            { title: "Left", data: "0", render: concordance_utils.renderTokenArray, className: "context left" }, // Left
+            { title: "Node", data: "1", render: concordance_utils.renderTokenArray, className: "context node" }, // Node
+            { title: "Right", data: "2", render: concordance_utils.renderTokenArray, className: "context right" }, // Right
             { title: "Book", data: "3.0", render: concordance_utils.renderBook.bind(this, 'abbr'), searchable: false }, // Book
-            { title: "Ch.", data: "4.0", class: "metadataColumn", searchable: false }, // Chapter
-            { title: "Par.", data: "4.1", class: "metadataColumn", searchable: false }, // Paragraph-in-chapter
-            { title: "Sent.", data: "4.2", class: "metadataColumn", searchable: false }, // Sentence-in-chapter
+            // NB: Relies on page_table re-applying visible on existing tables
+            { title: "Ch.", data: "4.0", visible: (page_state.arg('table-type') === 'full'), searchable: false }, // Chapter
+            { title: "Par.", data: "4.1", visible: (page_state.arg('table-type') === 'full'), searchable: false }, // Paragraph-in-chapter
+            { title: "Sent.", data: "4.2", visible: (page_state.arg('table-type') === 'full'), searchable: false }, // Sentence-in-chapter
             { title: "In&nbsp;bk.", data: "3", width: "52px", render: renderPosition, searchable: false, orderData: [5, 9] }, // Book graph
         ];
         this.table_opts.order = [[9, 'asc']];
@@ -190,7 +191,7 @@ PageConcordance.prototype.reload = function reload(page_state) {
 
     // Generate column list based on tag_columns
     this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_column_order.map(function (t) {
-        return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, class: "tagColumn" };
+        return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, className: "tagColumn" };
     }));
     this.table_el.classList.toggle('hasTagColumns', tag_column_order.length > 0);
 

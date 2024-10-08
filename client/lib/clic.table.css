@@ -7,7 +7,7 @@
     color: #666;
 }
 
-#content .dataTables_info {
+#content .dt-info {
     padding: 5px 1em;
 }
 #content table.dataTable {
@@ -95,19 +95,13 @@ table.dataTable thead > tr > th:active,
 table.dataTable thead > tr > td:active {
   outline: none;
 }
-table.dataTable thead .sorting,
-table.dataTable thead .sorting_asc,
-table.dataTable thead .sorting_desc,
-table.dataTable thead .sorting_asc_disabled,
-table.dataTable thead .sorting_desc_disabled {
+table.dataTable thead .dt-orderable-asc,
+table.dataTable thead .dt-orderable-desc {
   cursor: pointer;
   position: relative;
 }
-table.dataTable thead .sorting:after,
-table.dataTable thead .sorting_asc:after,
-table.dataTable thead .sorting_desc:after,
-table.dataTable thead .sorting_asc_disabled:after,
-table.dataTable thead .sorting_desc_disabled:after {
+table.dataTable thead .dt-orderable-asc:after,
+table.dataTable thead .dt-orderable-desc:after {
   position: absolute;
   top: 3px;
   right: 3px;
@@ -115,36 +109,28 @@ table.dataTable thead .sorting_desc_disabled:after {
   opacity: 0.8;
   font-size: 1.5rem;
 }
-#content table.dataTable thead .sorting:hover,
-#content table.dataTable thead .sorting_asc:hover,
-#content table.dataTable thead .sorting_desc:hover,
-#content table.dataTable thead .sorting_asc_disabled:hover,
-#content table.dataTable thead .sorting_desc_disabled:hover {
+#content table.dataTable thead .dt-orderable-asc:hover,
+#content table.dataTable thead .dt-orderable-desc:hover {
     background: #ccc;
 }
-table.dataTable thead .sorting:after {
+table.dataTable thead .dt-orderable-asc:after,
+table.dataTable thead .dt-orderable-desc:after {
   opacity: 0.4;
   content: "\21c5"; /* ⇅ */
   font-weight: normal
   /* sort */
 }
-table.dataTable thead .sorting_asc:after {
+table.dataTable thead .dt-ordering-asc:after {
+  opacity: 0.8;
   content: "\21ca"; /* ⇊ */
   font-weight: bold;
   /* sort-by-attributes */
 }
-table.dataTable thead .sorting_desc:after {
+table.dataTable thead .dt-ordering-desc:after {
+  opacity: 0.8;
   content: "\21c8"; /* ⇈ */
   font-weight: bold;
   /* sort-by-attributes-alt */
-}
-table.dataTable thead .sorting_asc_disabled:after,
-table.dataTable thead .sorting_desc_disabled:after {
-  color: #eee;
-}
-
-#content table.dataTable.metadata-hidden .metadataColumn {
-    display: none;
 }
 
 #content table.dataTable td.numeric {
@@ -246,33 +232,62 @@ table.dataTable thead .sorting_desc_disabled:after {
 #content table.dataTable a.bookLink:hover line {
     stroke: #ffa033;
 }
-#content .dataTables_paginate {
+
+#content .dt-paging button {
+    /* CSS reset */
+    background-color: transparent;
+    border-width: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    padding: 0;
+}
+#content .dt-paging>nav {
     display: flex;
-    text-align: center;
+    /* Fallback if :not(:has()) doesn't work */
+    justify-content: center;
     border-top: 1px solid #666;
 }
-#content .dataTables_paginate>span {
-    display: flex;
-    flex: 1 0 auto;
-}
-#content .dataTables_paginate>span>.ellipsis {
-    flex: 1 0 auto;
-}
-#content .dataTables_paginate>span>.ellipsis,
-#content .dataTables_paginate a {
+#content .dt-paging>nav>* {
     padding: 1em;
     border-right: 1px solid #666;
-    background: #eee;
-    cursor: pointer;
+    text-align: center;
 }
-#content .dataTables_paginate a.current {
+#content .dt-paging>nav button {
+    background: #eee;
+    color: #2078d0;
+}
+#content .dt-paging>nav .disabled {
+    color: #666;
+}
+#content .dt-paging>nav .current {
     color: #ffa033;
     font-weight: bold;
 }
-#content .dataTables_paginate>a:last-child {
-    border-left: 1px solid #666;
+#content .dt-paging>nav .ellipsis {
+    display: block;
+    background: inherit;
+    flex-grow: 1;
+}
+#content .dt-paging>nav>*:last-child {
     border-right: none;
 }
+/* Without an ellipsis to add padding, add our own */
+#content .dt-paging>nav:not(:has(> .ellipsis)) {
+    .previous {
+        margin-right: auto;
+    }
+    .previous + * {
+        border-left: 1px solid #666;
+    }
+    .next {
+        margin-left: auto;
+        border-left: 1px solid #666;
+    }
+}
+
 
 #content table.dataTable tr.child > td > div {
     overflow: auto;
