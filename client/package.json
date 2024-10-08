@@ -27,12 +27,12 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^14.4.0",
-    "cssnano": "^3.10.0",
+    "cssnano": "^7.0.6",
     "exorcist": "^0.4.0",
     "istanbul": "^0.4.5",
     "jslint": "^0.11.0",
-    "postcss-cli": "^5.0.0",
-    "postcss-import": "^11.1.0",
+    "postcss-cli": "^11.0.0",
+    "postcss-import": "^16.1.0",
     "proxyquire": "^1.8.0",
     "tape": "^4.8.0",
     "uglify-js": "^3.3.16"

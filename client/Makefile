@@ -113,7 +113,7 @@ www/js/%.min.js: lib/%.js lib/*.js package.json
 www/css/%.min.css: lib/%.css lib/*.css package.json
 	mkdir -p $(dir $@)
 	(cd www/css && ln -sf ../../lib .)
-	$(NODE_CMD) node_modules/postcss-cli/bin/postcss \
+	$(NODE_CMD) node_modules/.bin/postcss \
 	    --config postcss.config.js \
 	    -o $@ \
 	    $<
