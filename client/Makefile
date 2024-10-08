@@ -26,7 +26,7 @@ LIBRARIES_JS = \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
-    node_modules/nouislider/distribute/nouislider.min.css \
+    node_modules/nouislider/dist/nouislider.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
 compile: node_modules/ clean-unused $(OUT_FILES)

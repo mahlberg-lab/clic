@@ -9,7 +9,7 @@
     "datatables.net": "^2.1.8",
     "file-saver": "^2.0.5",
     "jquery": "^3.5.0",
-    "nouislider": "^10.1.0",
+    "nouislider": "^15.8.1",
     "nunjucks": "^3.2.4",
     "unidecode": "^1.1.0"
   },

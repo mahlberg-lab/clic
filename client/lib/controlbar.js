@@ -20,7 +20,7 @@ var noUiSlider_opts = {
         pips: {
             mode: 'steps',
             density: 10,
-            filter: function (v, t) { return v === 0 ? 1 : 2; },
+            filter: function (v, t) { return v === 0 ? 0 : 2; },
             format: { to: function (v) { return (v > 0 ? 'R' : v < 0 ? 'L' : '') + Math.abs(v); } },
         },
         connect: true
