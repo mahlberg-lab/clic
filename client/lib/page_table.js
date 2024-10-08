@@ -2,8 +2,8 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
-var dataTablesNet = require('datatables.net');
 if (window && window.document) {
+    var dataTablesNet = require('datatables.net');
     dataTablesNet(window, jQuery);
 }
 var api = require('./api.js');
