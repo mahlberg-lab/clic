@@ -11,13 +11,6 @@ Note that the directory name CLiC is cloned into is used for the systemd service
 This allows multiple installations to live side-by-side, e.g. ``/srv/clic16`` and ``/srv/clic17`` will have systemd units ``clic16`` and ``clic17`` respectively.
 The below assumes you used ``clic``, if something else is used you will have to substitute.
 
-Database performance tweaking
------------------------------
-
-Default settings for Postgres will result in a working CLiC, but it's suggested to tweak the following:
-
-* ``work_mem``: The amount of memory which can be used for sorts. ``60MB`` handles the worst likely queries but will use potentially an extra 1G of server memory.
-
 Cache warming
 -------------
 

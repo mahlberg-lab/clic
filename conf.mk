@@ -66,6 +66,12 @@ DB_USER ?= $(API_USER)
 # The credentials that the app will use
 DB_PASS ?=
 
+# The location of a postgres config we can use
+DB_CONF_FILE ?= $(shell ls -d1 /etc/postgresql/*/main/conf.d/ | sort | tail -1)${DB_NAME}.conf
+# The amount of memory which can be used for sorts.
+# 64MB handles the worst likely queries but will use potentially an extra 1G of server memory.
+DB_CONF_WORK_MEM = 64MB
+
 ###################
 
 # Anything depending on conf.mk should be rebuilt on commits / local-conf.mk changes
