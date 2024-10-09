@@ -126,6 +126,8 @@ individually select and deselect.
 .. _figure-corpora-highlight-subsets:
 .. figure:: images/figure-corpora-highlight-subsets.png
 
+    Example of highlighting subsets
+
 The rationale behind the division of the subsets can be found in the open access article by
 [Mahlberg_et_al_2016]_. The procedure described in that article refers to the
 earliest CLiC corpora, DNov and 19C. The tagging procedure for the most recently added

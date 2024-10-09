@@ -313,13 +313,13 @@ position. On the other hand, as we can see from
 Dickens's novels contain only instance of *fire* co-occurring with
 *back* and *her* (with *her back to the fire*).
 
-.. _figure-analysis-concordance-kwicgrouper-firebackhis.png:
+.. _figure-analysis-concordance-kwicgrouper-firebackhis:
 .. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackhis.png
 
    The 27 lines with two matches (here, back and his) are
    highlighted in a darker green
 
-.. _figure-analysis-concordance-kwicgrouper-firebackher
+.. _figure-analysis-concordance-kwicgrouper-firebackher:
 .. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackher.png
 
    Only one line contains both back and her; it is
