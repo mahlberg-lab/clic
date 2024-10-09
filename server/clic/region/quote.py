@@ -336,7 +336,7 @@ def tagger_quote_quote(book):
     for containing_r in book['chapter.paragraph']:
         last_b = containing_r[0]
 
-        if open_quote and not(book['content'][containing_r[0]:containing_r[0] + 1] in QUOTES or book['content'][containing_r[0] - 3:containing_r[0]] == '   '):
+        if open_quote and not (book['content'][containing_r[0]:containing_r[0] + 1] in QUOTES or book['content'][containing_r[0] - 3:containing_r[0]] == '   '):
             # Continuing an open_quote from a previous paragarph, but paragraph didn't start with a quote marker or indent, ditch.
             open_quote = None
 

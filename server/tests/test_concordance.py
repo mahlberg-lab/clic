@@ -112,16 +112,16 @@ def simplify(conc_results):
     out = []
     for r in conc_results:
         if len(r) == 3:
-            out.append(
-                [r[1][0], r[1][1]] +
-                [r[0][i] for i in r[0][-1]]
-            )
+            out.append([
+                *[r[1][0], r[1][1]],
+                *[r[0][i] for i in r[0][-1]],
+            ])
         else:  # Have context and node
-            out.append(
-                [r[3][0], r[3][1]] +
-                [r[0][i] for i in r[0][-1]] + ['**'] +
-                [r[1][i] for i in r[1][-1]] + ['**'] +
-                [r[2][i] for i in r[2][-1]]
-            )
+            out.append([
+                *[r[3][0], r[3][1]],
+                *[r[0][i] for i in r[0][-1]], *['**'],
+                *[r[1][i] for i in r[1][-1]], *['**'],
+                *[r[2][i] for i in r[2][-1]],
+            ])
     out.sort()
     return out

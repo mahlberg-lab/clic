@@ -218,17 +218,17 @@ from .utils import region_append_without_whitespace
 
 
 PART_BREAK_REGEX = re.compile(
-    '^' +
-    '(PART|BOOK)' +
-    ' ([0-9IVXLC]+)\.' +
-    '.*', re.MULTILINE)
+    r'^' +
+    r'(PART|BOOK)' +
+    r' ([0-9IVXLC]+)\.' +
+    r'.*', re.MULTILINE)
 
 CHAPTER_BREAK_REGEX = re.compile(
-    '^' +
-    '(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|EPILOGUE|MORAL)' +
-    '\s?' +
-    '([0-9IVXLC]*)\.' +
-    '.*', re.MULTILINE)
+    r'^' +
+    r'(APPENDIX|INTRODUCTION|PREFACE|CHAPTER|CONCLUSION|PROLOGUE|PRELUDE|EPILOGUE|MORAL)' +
+    r'\s?' +
+    r'([0-9IVXLC]*)\.' +
+    r'.*', re.MULTILINE)
 
 PARAGRAPH_BREAK_REGEX = re.compile(r'\n\n')
 

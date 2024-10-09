@@ -406,7 +406,7 @@ def find_anchor_offset(*types):
     def type_score(t):
         return (0 if t in STOPWORDS else 100) + len(t) - t.count('%') - t.count('_')
 
-    return max(enumerate(types), key=lambda l: type_score(l[1]))[0]
+    return max(enumerate(types), key=lambda x: type_score(x[1]))[0]
 
 
 def to_conc(full_text, full_tokens, node_tokens, contextsize):
@@ -422,9 +422,9 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     concs = [[]]
     toks = [[]]
 
-    def append_if_nonempty(l, s):
+    def append_if_nonempty(x, s):
         if s:
-            l.append(s)
+            x.append(s)
 
     if len(node_tokens) == 0:
         raise NotImplementedError("We don't support empty nodes")

@@ -83,7 +83,7 @@ def get_script_cursor(for_write=False):
     dsn = os.environ.get('DB_DSN', appconfig.DB_DSN)
     conn = psycopg2.connect(dsn, connection_factory=LoggingConnection)
     conn.initialize(logger)
-    conn.set_session(readonly=not(for_write))
+    conn.set_session(readonly=not for_write)
     try:
         yield conn.cursor()
         conn.commit()

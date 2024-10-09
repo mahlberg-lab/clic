@@ -123,7 +123,7 @@ def to_view_func(fn, output_mode):
 
         # Consume nonsense item, so we know generator is ready to output a header, and any
         # initial errors cause a 500 response
-        assert(next(out) is None)
+        assert (next(out) is None)
         return Response(out, content_type='application/json')
     if output_mode == 'stream':
         view_func = stream_view_func

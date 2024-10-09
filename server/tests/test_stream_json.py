@@ -8,7 +8,7 @@ from clic.errors import UserError
 class Test_stream_json(unittest.TestCase):
     def sj(self, gen, header={}):
         sj_gen = stream_json(gen, header)
-        assert(next(sj_gen) is None)
+        assert (next(sj_gen) is None)
         out = "\r".join(sj_gen)
         json.loads(out)  # Parse to validate
         return out
