@@ -18,7 +18,7 @@ Then install the following from your system repositories::
 
     # Server prerequisites
     sudo apt install \
-        postgresql postgresql-contrib \
+        postgresql postgresql-contrib libpq-dev \
         python3 python3-venv python3-dev \
         libicu-dev pkg-config \
     # NB: ICU needs to at least be version 56, postgresql at least version 9.5
