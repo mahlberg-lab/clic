@@ -34,7 +34,7 @@ Installation
 
 Clone this repository onto your computer, for example::
 
-    git clone git://github.com/birmingham-ccr/clic /srv/clic
+    git clone git@github.com:birmingham-ccr/clic /srv/clic
 
 Note that the directory name CLiC is cloned into is used for the systemd service name and NGINX configuration.
 This allows multiple installations to live side-by-side, e.g. ``/srv/clic16`` and ``/srv/clic17`` will have systemd units ``clic16`` and ``clic17`` respectively.
@@ -81,7 +81,7 @@ Populating the database
 At this point CLiC can run, but there will be no content in the database.
 CLiC content is stored in the corpora repository, to add this content do the following::
 
-    git clone git://github.com/birmingham-ccr/corpora corpora
+    git clone git@github.com:birmingham-ccr/corpora corpora
     ./server/bin/import_corpora_repo corpora/*/*.txt
 
 As of 2018, this process takes just under 3 hours.
