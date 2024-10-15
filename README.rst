@@ -83,23 +83,17 @@ At this point CLiC should be ready for use. For more detail on various topics, s
 SSL Certificates
 ----------------
 
-For production installations using dehydrated, at this point CLiC will be using an invalid cert.
-However, dehydrated will have been configured as part of the install. Run::
+At this point CLiC will be using an invalid cert. Run::
+
+    sudo /usr/bin/dehydrated --register --accept-terms
+
+...to register an account for CLiC, and::
 
     sudo /usr/bin/dehydrated -c
 
-...to update the certs, then re-run ``sudo ./install.sh`` to reconfigure CLiC with the new certs.
+...to fetch a valid certificate.
 
-You will also want to ensure dehydrated is run weekly, with a cron-job such as::
-
-    cat <<EOF > /etc/cron.weekly/dehydrated
-    #!/bin/sh -e
-
-    date >> /var/log/dehydrated.log
-    /usr/bin/dehydrated -c >> /var/log/dehydrated.log 2>> /var/log/dehydrated.log
-    systemctl reload nginx
-    EOF
-    chmod a+x /etc/cron.weekly/dehydrated
+In production mode, a cron-job will be created in ``/etc/cron.weekly/dehydrated`` to ensure this is kept up-to-date.
 
 Acknowledgements
 ----------------
