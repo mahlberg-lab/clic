@@ -2,14 +2,6 @@ Managing a production instance of CLiC
 ======================================
 
 Installation instructions are all in :github:`README.rst`.
-For a production system, you are likely to want to install a particular release, e.g.::
-
-    git clone https://github.com/birmingham-ccr/clic /srv/clic
-    git checkout v1.7.0
-
-Note that the directory name CLiC is cloned into is used for the systemd service name and NGINX configuration.
-This allows multiple installations to live side-by-side, e.g. ``/srv/clic16`` and ``/srv/clic17`` will have systemd units ``clic16`` and ``clic17`` respectively.
-The below assumes you used ``clic``, if something else is used you will have to substitute.
 
 Cache warming
 -------------
