@@ -9,26 +9,6 @@ Documentation for CLiC is stored in ``docs/``.
 
 For more information, cf. `CLiC Dickens - University of Birmingham <http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx/>`_.
 
-Prerequisites
--------------
-
-The installation instructions below expect an apt based OS, e.g. Debian Bookworm, Ubuntu Bionic or later.
-
-Then install the following from your system repositories::
-
-    # Server prerequisites
-    sudo apt install \
-        postgresql postgresql-contrib libpq-dev \
-        python3 python3-venv python3-dev \
-        libicu-dev pkg-config \
-    # NB: ICU needs to at least be version 56, postgresql at least version 9.5
-
-    # Client prerequisites
-    sudo apt install make nodejs npm nginx
-
-    # If you require web traffic to be encrypted (read: production)
-    sudo apt install dehydrated ssl-cert
-
 Installation
 ------------
 
@@ -39,6 +19,18 @@ Clone this repository onto your computer, for example::
 Note that the directory name CLiC is cloned into is used for the systemd service name and NGINX configuration.
 This allows multiple installations to live side-by-side, e.g. ``/srv/clic16`` and ``/srv/clic17`` will have systemd units ``clic16`` and ``clic17`` respectively.
 All instructions assume you used ``clic``, if something else is used you will have to substitute.
+
+Prerequisites
+-------------
+
+CLiC currently supports:
+
+* Debian GNU/Linux 12 (bookworm) or later
+* Ubuntu 24.04.1 LTS or later
+
+Run the script to install the prerequisites from your system repositories as root::
+
+    sudo ./prerequisites.sh
 
 Configuration & compilation
 ---------------------------
