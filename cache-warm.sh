@@ -21,12 +21,12 @@ do
     for i in 1 2 3
     do
         echo -n " [${i}]"
-        curl -s -I -X GET "${HOST}${ENDPOINT}" >/dev/null
+        curl -k -s -I -X GET "${HOST}${ENDPOINT}" >/dev/null
     done
     echo
 
     # Final attempt should be cached, if not stop
-    curl -s -I -X GET "${HOST}${ENDPOINT}" | tee /dev/stderr | grep -q 'X-Uwsgi-Cached: HIT' || {
+    curl -k -s -I -X GET "${HOST}${ENDPOINT}" | tee /dev/stderr | grep -q 'X-Uwsgi-Cached: HIT' || {
         echo "*** Caching failed!" 1>&2
         exit 1
     }
