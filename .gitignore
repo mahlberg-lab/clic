@@ -42,11 +42,8 @@
 
 # Old files that shouldn't exist
 /.local-conf
-/cheshire3.db_dickens.tar.bz2
-/cheshire3.db_dickens*.tar.bz2
 /clic.bundle
 /clic_revision
-/server/cheshire3-server
 /server/clic-chapter-cache.pickle
 /server/booklist.json
 
