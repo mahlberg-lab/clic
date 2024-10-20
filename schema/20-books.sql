@@ -15,13 +15,16 @@ CREATE TABLE IF NOT EXISTS book (
     name TEXT NOT NULL,
     UNIQUE (name),
 
-    content TEXT
+    content TEXT,
+    hash BYTEA
 );
 COMMENT ON TABLE  book IS 'Book name & contents';
 COMMENT ON COLUMN book.name IS 'Short name of book, e.g. TTC';
 COMMENT ON COLUMN book.content IS 'Full text contents of book';
 CREATE UNIQUE INDEX IF NOT EXISTS book_name_book_id ON book(name, book_id);
 COMMENT ON INDEX book_name_book_id IS 'Allow name -> book_id lookup to work without scanning book content';
+
+ALTER TABLE book ADD COLUMN IF NOT EXISTS hash BYTEA;
 
 
 CREATE TABLE IF NOT EXISTS token (
@@ -82,7 +85,7 @@ COMMENT ON COLUMN book_word_count.word_count IS 'Number of words in region (popu
 COMMENT ON TABLE book_word_count IS 'Count words within a selection of regions';
 
 
-CREATE OR REPLACE FUNCTION book_import_init(new_name TEXT, new_content TEXT) RETURNS TABLE(
+CREATE OR REPLACE FUNCTION book_import_init(new_name TEXT, new_content TEXT, new_hash BYTEA) RETURNS TABLE(
     book_id INT,
     token_tbl TEXT,
     region_tbl TEXT
@@ -93,9 +96,9 @@ DECLARE
     region_tbl TEXT;
     ret RECORD;
 BEGIN
-    INSERT INTO book (name, content)
-         VALUES (new_name, new_content)
-    ON CONFLICT (name) DO UPDATE SET content=EXCLUDED.content
+    INSERT INTO book (name, content, hash)
+         VALUES (new_name, new_content, new_hash)
+    ON CONFLICT (name) DO UPDATE SET content=EXCLUDED.content, hash=EXCLUDED.hash
     RETURNING book.book_id INTO new_book_id;
 
     -- Destroy / recreate token table for this book
@@ -132,7 +135,7 @@ BEGIN
     RETURN QUERY SELECT new_book_id, token_tbl, region_tbl;
 END;
 $BODY$ LANGUAGE 'plpgsql' SECURITY DEFINER;
-COMMENT ON FUNCTION book_import_init(new_name TEXT, new_content TEXT) IS $$Start importing a new/replacement book. Returns:
+COMMENT ON FUNCTION book_import_init(new_name TEXT, new_content TEXT, new_hash BYTEA) IS $$Start importing a new/replacement book. Returns:
 - book_id: The assigned ID for the new book
 - token_tbl: Name of the token table which should now be populated
 - region_tb: Name of the region table which should now be populated$$;

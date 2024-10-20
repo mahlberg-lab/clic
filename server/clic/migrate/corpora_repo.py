@@ -101,7 +101,7 @@ def import_book(book_path):
 
 def script_import_corpora_repo():
     """Import corpora book file(s) into DB"""
-    import sys
+    import argparse
     import timeit
     from ..db.book import put_book
     from ..db.corpus import put_corpus
@@ -109,8 +109,11 @@ def script_import_corpora_repo():
     from ..db.version import update_version
     from ..region.tag import tagger
 
-    # Every argument is a book path, so e.g. "*/*.txt" works
-    book_paths = sys.argv[1:]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", help="Force re-insertion of books in database", action="store_true")
+    parser.add_argument('book', help="Path to a book .txt file (e.g. corpora/*/*.txt)", nargs='+')
+    args = parser.parse_args()
+    book_paths = args.book
 
     with get_script_cursor(for_write=True) as cur:
         for p in book_paths:
@@ -118,7 +121,7 @@ def script_import_corpora_repo():
             start_time = timeit.default_timer()
             book = import_book(p)  # Read book and/or regions file
             tagger(book)  # Fill in any remaining regions
-            put_book(cur, book)  # Write to DB
+            put_book(cur, book, force=args.force)  # Write to DB
             print("%.2f secs" % (timeit.default_timer() - start_time))
             cur.connection.commit()
 

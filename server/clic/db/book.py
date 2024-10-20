@@ -2,6 +2,8 @@
 clic.db.book: Fetch/store book dicts to DB
 ******************************************
 '''
+import hashlib
+
 import psycopg2
 import psycopg2.extras
 
@@ -9,7 +11,26 @@ from clic.db.lookup import rclass_id_lookup
 from clic.tokenizer import types_from_string
 
 
-def put_book(cur, book):
+def book_hash(book):
+    """
+    Return shasum of book object, as bytes
+    """
+    m = hashlib.sha256()
+    for k in sorted(book.keys()):
+        if type(book[k]) is str:
+            m.update(book[k].encode('utf8'))
+        elif type(book[k]) is list:
+            for t in book[k]:
+                m.update(t[0].to_bytes(4, 'little'))
+                m.update(t[1].to_bytes(4, 'little'))
+                if len(t) > 2:
+                    m.update(t[2].to_bytes(4, 'little'))
+        else:
+            raise ValueError("Unknown book content")
+    return m.digest()
+
+
+def put_book(cur, book, force=False):
     """
     Import a book object:
 
@@ -25,12 +46,27 @@ def put_book(cur, book):
     """
     rclass = rclass_id_lookup(cur)
 
+    # Compare old book hash, if any
+    new_hash = book_hash(book)
+    if not force:
+        cur.execute("""
+            SELECT hash FROM book WHERE name = %(name)s
+        """, dict(
+            name=book['name'],
+        ))
+        r = cur.fetchone()
+        # NB: r == None, no book found, r[0] == None, hash column not populated from previous DB
+        if r is not None and r[0] is not None and new_hash == bytes(r[0]):
+            # Book hasn't changed, nothing to do
+            return
+
     # Insert book / update content, get ID for other updates
     cur.execute("""
-        SELECT book_id, token_tbl, region_tbl FROM book_import_init(%(name)s, %(content)s)
+        SELECT book_id, token_tbl, region_tbl FROM book_import_init(%(name)s, %(content)s, %(hash)s)
     """, dict(
         name=book['name'],
         content=book['content'],
+        hash=new_hash,
     ))
     (book_id, token_tbl, region_tbl) = cur.fetchone()
 
