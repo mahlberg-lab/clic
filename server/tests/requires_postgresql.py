@@ -7,14 +7,17 @@ import testing.postgresql
 
 
 def runSqlScript(postgresql, script):
-    return subprocess.run((
+    out = subprocess.run((
         'psql', '-b',
         '-f', script,
         '-h', 'localhost',
         '-p', str(postgresql.settings['port']),
         '-U', 'postgres', '-w',
         'test',
-    ), check=True, stdout=subprocess.PIPE).stdout
+    ), check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if b'ERROR' in out.stderr:
+        raise ValueError("Running " + script + " failed:\n" + out.stderr.decode('utf8'))
+    return out.stdout + out.stderr
 
 
 def initDatabase(postgresql):
