@@ -71,10 +71,10 @@ Populating the database
 -----------------------
 
 At this point CLiC can run, but there will be no content in the database.
-CLiC content is stored in the corpora repository, to add this content do the following::
+CLiC content is stored in the [corpora repository](https://github.com/mahlberg-lab/corpora),
+to add or update this content run the import script::
 
-    git clone git@github.com:birmingham-ccr/corpora corpora
-    ./server/bin/import_corpora_repo corpora/*/*.txt
+    ./import.sh
 
 As of 2018, this process takes just under 3 hours.
 

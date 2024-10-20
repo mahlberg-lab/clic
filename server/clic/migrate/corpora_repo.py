@@ -102,6 +102,9 @@ def import_book(book_path):
 def script_import_corpora_repo():
     """Import corpora book file(s) into DB"""
     import argparse
+    import glob
+    import os.path
+    import sys
     import timeit
     from ..db.book import put_book
     from ..db.corpus import put_corpus
@@ -111,9 +114,15 @@ def script_import_corpora_repo():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", help="Force re-insertion of books in database", action="store_true")
-    parser.add_argument('book', help="Path to a book .txt file (e.g. corpora/*/*.txt)", nargs='+')
+    parser.add_argument('book', help="Path to a book .txt files (e.g. corpora/*/*.txt) or directory (e.g. corpora/DNov)", nargs='+')
     args = parser.parse_args()
+
     book_paths = args.book
+    if len(book_paths) == 1 and not book_paths[0].endswith(".txt"):
+        book_paths = glob.glob(os.path.join(book_paths[0], "*.txt"))
+    if len(book_paths) == 0:
+        print("No books to insert.")
+        sys.exit(0)
 
     with get_script_cursor(for_write=True) as cur:
         for p in book_paths:
