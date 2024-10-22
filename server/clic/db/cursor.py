@@ -9,6 +9,8 @@ import time
 import threading
 
 import psycopg2
+import psycopg2.extras
+import psycopg2.extensions
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import MinTimeLoggingConnection as BaseLoggingConnection
 
@@ -80,6 +82,9 @@ def put_pool_cursor(cur):
 @contextlib.contextmanager
 def get_script_cursor(for_write=False):
     """Return a single cursor for a short-lived script"""
+    # Scripts should be interruptible
+    psycopg2.extensions.set_wait_callback(psycopg2.extras.wait_select)
+
     dsn = os.environ.get('DB_DSN', appconfig.DB_DSN)
     conn = psycopg2.connect(dsn, connection_factory=LoggingConnection)
     conn.initialize(logger)
