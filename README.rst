@@ -76,7 +76,7 @@ to add or update this content run the import script::
 
     ./import.sh
 
-As of 2018, this process takes just under 3 hours.
+As of 2024, this process takes approximately 20 minutes.
 
 At this point CLiC should be ready for use. For more detail on various topics, see the `docs directory <docs/>`__.
 
