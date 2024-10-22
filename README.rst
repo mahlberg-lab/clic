@@ -71,7 +71,7 @@ Populating the database
 -----------------------
 
 At this point CLiC can run, but there will be no content in the database.
-CLiC content is stored in the [corpora repository](https://github.com/mahlberg-lab/corpora),
+CLiC content is stored in the `corpora repository <https://github.com/mahlberg-lab/corpora>`__,
 to add or update this content run the import script::
 
     ./import.sh
