@@ -11,7 +11,16 @@ fi
 
 if [ "$ID" = "ubuntu" ]; then
     BARE_VER="$(echo "${VERSION_ID}" | sed -e 's/.[0-9][0-9]//')"
-    if [ "$BARE_VER" -lt "24" ]; then
+    if [ "$BARE_VER" -eq "22" ]; then
+        # nodejs from ubuntu is too old, make sure one has been installed from nodesource
+        if [ -z "$(which nodejs)" ]; then
+            echo "For ubuntu 22.04, nodejs 18 is required, install by fetching a setup script from https://deb.nodesource.com/setup_18.x"
+            exit 1
+        elif nodejs -v | grep -qvE '^v18\.'; then
+            echo "For ubuntu 22.04, nodejs 18 is required, install by fetching a setup script from https://deb.nodesource.com/setup_18.x"
+            exit 1
+        fi
+    elif [ "$BARE_VER" -lt "24" ]; then
         echo "Unsupported ubuntu version ${PRETTY_NAME}, add support to prerequisites.sh"
         exit 1
     fi
