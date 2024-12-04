@@ -62,8 +62,10 @@ DB_HOST ?= /var/run/postgresql/
 DB_NAME ?= $(shell echo -n $(PROJECT_NAME) | sed 's/\W/_/g')_db
 # The credentials that the app will use
 DB_USER ?= $(API_USER)
-# The credentials that the app will use
 DB_PASS ?=
+# An alternative user, generally the installing user used for running import script
+DB_ALT_USER ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
+DB_ALT_PASS ?=
 
 # The location of a postgres config we can use
 DB_CONF_FILE ?= $(shell ls -d1 /etc/postgresql/*/main/conf.d/ | sort | tail -1)${DB_NAME}.conf
