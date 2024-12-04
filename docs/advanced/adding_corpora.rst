@@ -3,7 +3,7 @@ Uploading new texts
 
 The raw texts for CLiC to process are assumed to be in the corpora repository:
 
-    https://github.com/birmingham-ccr/corpora
+    https://github.com/mahlberg-lab/corpora
 
 If you haven't done so already, add the texts to this repository, following the instructions there.
 

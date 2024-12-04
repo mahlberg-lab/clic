@@ -23,7 +23,7 @@ setup(
     description='CLiC web API',
     author='Jamie Lentin',
     author_email='jamie.lentin@shuttlethread.com',
-    url='https://github.com/birmingham-ccr/clic',
+    url='https://github.com/mahlberg-lab/clic',
     license="MIT",
     packages=find_packages(),
     install_requires=requires,

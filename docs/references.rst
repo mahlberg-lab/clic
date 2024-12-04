@@ -5,10 +5,10 @@
 
 .. [CLiC_KWICGrouper_video] Wiegand, V. & Guglielmi, A. (2017, June 22). Introduction to KWICGrouper video. https://blog.bham.ac.uk/clic-dickens/2017/06/22/video-introducing-the-clic-kwicgrouper-function-to-group-concordance-lines/
 .. [CLiC_project_page] http://birmingham.ac.uk/clic
-.. [GitHub_CLiC] https://github.com/birmingham-ccr/clic
-.. [GitHub_corpora] https://github.com/birmingham-ccr/corpora
-.. [GitHub_corpora_initial_ArTs] https://github.com/birmingham-ccr/corpora/tree/026a8436bf9ea3282d283a05725c0153e023d74c/Other
-.. [GitHub_corpora_initial_ChiLit] https://github.com/birmingham-ccr/corpora/tree/a020b2a7153baf8849056be833861ecb3d77e7a1/ChiLit
+.. [GitHub_CLiC] https://github.com/mahlberg-lab/clic
+.. [GitHub_corpora] https://github.com/mahlberg-lab/corpora
+.. [GitHub_corpora_initial_ArTs] https://github.com/mahlberg-lab/corpora/tree/026a8436bf9ea3282d283a05725c0153e023d74c/Other
+.. [GitHub_corpora_initial_ChiLit] https://github.com/mahlberg-lab/corpora/tree/a020b2a7153baf8849056be833861ecb3d77e7a1/ChiLit
 .. [GLARE_project_page] http://birmingham.ac.uk/GLARE
 .. [ICU] http://userguide.icu-project.org/boundaryanalysis
 .. [ICU_RSV] http://userguide.icu-project.org/boundaryanalysis#TOC-Rule-Status-Values

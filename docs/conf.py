@@ -51,7 +51,7 @@ extensions = [
 ]
 
 extlinks = {'github':
-('https://github.com/birmingham-ccr/clic/blob/HEAD/%s', None)}
+('https://github.com/mahlberg-lab/clic/blob/HEAD/%s', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']

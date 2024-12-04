@@ -143,6 +143,6 @@
 
 ## 1.6.0 (2017-11-02)
 
-* Rework entire CLiC codebase & repository, removing old code and large commits. Old code is available at https://github.com/birmingham-ccr/clic-legacy
+* Rework entire CLiC codebase & repository, removing old code and large commits. Old code is available at https://github.com/mahlberg-lab/clic-legacy
 * Split CLiC into distinct REST API and clientside SPA parts
 * Rework CLiC UI 
