@@ -56,7 +56,7 @@ var state_defaults = {
     'chap-highlight': [],
 };
 
-var page, cb, ga, current_page = null;
+var page, cb, analytics, current_page = null;
 
 function select_components(page_state) {
     var PageConstructor;
@@ -71,12 +71,12 @@ function select_components(page_state) {
         cb = new ControlBar(document.getElementById('control-bar'));
     }
 
-    if (!ga) {
-        ga = new Analytics();
+    if (!analytics) {
+        analytics = new Analytics();
     }
 
     window.document.title = page.page_title(page_state);
-    return [page, cb, ga];
+    return [page, cb, analytics];
 }
 
 var pp = new PagePromise(select_components, state_defaults);

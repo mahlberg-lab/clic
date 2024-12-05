@@ -83,11 +83,7 @@
       </div>
     </div>
 
-    <script id="google-analytics-init">
-    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-    ga('create', '{{env.GA_KEY}}', 'auto');
-    </script>
-    <script async src='https://www.google-analytics.com/analytics.js'></script>
+    <script>window.ga_key = '{{env.GA_KEY}}';</script>
     <script type="text/javascript" src="/js/{{env.sha_polyfill_min_js}}"></script>
     <script type="text/javascript" src="/js/{{env.sha_libraries_min_js}}"></script>
     <script type="text/javascript" src="/js/{{env['sha_' + tmpl.base + '_min_js']}}"></script>

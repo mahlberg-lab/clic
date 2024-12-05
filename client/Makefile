@@ -21,12 +21,14 @@ LIBRARIES_JS = \
     chosen-js \
     datatables.net \
     jquery/dist/jquery.slim.js \
+    cookieconsent \
     nouislider \
     unidecode \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
     node_modules/nouislider/dist/nouislider.min.css \
+    node_modules/cookieconsent/build/cookieconsent.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
 compile: node_modules/ clean-unused $(OUT_FILES)
