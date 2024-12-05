@@ -25,6 +25,12 @@ mkdir -p "${API_UWSGI_CACHE_PATH}"
 rm -r -- "${API_UWSGI_CACHE_PATH:?}"/* || true
 chown www-data:www-data "${API_UWSGI_CACHE_PATH}"
 
+# Make sure www-data can read index.html (there and ~world readable)
+sudo -uwww-data cat "${PROJECT_PATH}/client/www/index.html" || {
+    echo "**** www-data cannot read ${PROJECT_PATH}/client/www/index.html, rerun make and check permissions of ${PROJECT_PATH} ****"
+    exit 1
+}
+
 # Make sure server-name is in domains.txt
 mkdir -p "/etc/dehydrated"
 grep -qE "^${WWW_SERVER_NAME}" "/etc/dehydrated/domains.txt" || {
