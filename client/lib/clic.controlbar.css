@@ -18,11 +18,15 @@
     color: #0B2947;
 }
 
-#control-bar .header {
+#control-bar .links {
     padding: 20px;
     border-bottom: 1px solid #AAA;
     font-size: inherit;
     line-height: 0;
+}
+#control-bar .links.end {
+    flex-grow: 1;
+    align-content: flex-end;
 }
 
 #control-bar + .handle {
@@ -53,7 +57,7 @@
 #control-bar > *.panel.in {
     top: 0px;
 }
-#control-bar > *.panel >*:not(.header) {
+#control-bar > *.panel >*:not(.links) {
     padding: 5px;
 }
 
