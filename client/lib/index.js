@@ -4,9 +4,6 @@
 var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
-var showCookieMessage = require('./cookies');
-
-showCookieMessage();
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
