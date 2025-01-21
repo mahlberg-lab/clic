@@ -13,7 +13,10 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-all: compile
+all: clean compile
+
+clean:
+	rm -r -- _build module/*.rst || true
 
 include ../conf.mk
 
