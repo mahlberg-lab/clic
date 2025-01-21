@@ -31,9 +31,13 @@ copyright = '%d, Michaela Mahlberg, Viola Wiegand, Jamie Lentin & Anthony Hennes
 author = 'Michaela Mahlberg, Viola Wiegand, Jamie Lentin & Anthony Hennessey'
 
 # The short X.Y version
-version = os.environ.get("READTHEDOCS_VERSION", subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip())
+version = os.environ.get("READTHEDOCS_VERSION", None)
+if not version:
+    version = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip()
 # The full version, including alpha/beta/rc tags
-release = os.environ.get("READTHEDOCS_VERSION_NAME", subprocess.check_output("git describe --abbrev=0".split()).decode('utf8').strip())
+release = os.environ.get("READTHEDOCS_VERSION_NAME", None)
+if not release:
+    release = subprocess.check_output("git describe --abbrev=0".split()).decode('utf8').strip()
 
 
 # -- General configuration ---------------------------------------------------
