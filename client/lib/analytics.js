@@ -18,17 +18,22 @@ function ga() {
 function statusEvent() {
     var el;
 
-    if (!this.hasConsented()) {
-        return;
-    }
+    if (this.hasConsented()) {
+        if (!document.getElementById("script-google-analytics")) {
+            el = document.createElement("script");
+            el.setAttribute("id", "script-google-analytics");
+            el.setAttribute("async", "");
+            el.setAttribute("src", "https://www.google-analytics.com/analytics.js");
 
-    if (!document.getElementById("script-google-analytics")) {
-        el = document.createElement("script");
-        el.setAttribute("id", "script-google-analytics");
-        el.setAttribute("async", "");
-        el.setAttribute("src", "https://www.google-analytics.com/analytics.js");
+            document.body.appendChild(el);
+        }
+    } else {
+        window.ga = null;
 
-        document.body.appendChild(el);
+        el = document.getElementById("script-google-analytics");
+        if (el) {
+            el.remove();
+        }
     }
 }
 
