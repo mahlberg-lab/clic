@@ -50,6 +50,7 @@ extensions = [
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.extlinks',
 ]
+suppress_warnings = ['autosectionlabel.*']  # Tries to generate duplicate labels
 
 extlinks = {'github':
 ('https://github.com/mahlberg-lab/clic/blob/HEAD/%s', None)}
@@ -229,6 +230,7 @@ psycopg2
 icu
 unidecode
 flask flask_cors
+pylatexenc
 """.split()
 
 # ----------------------------------------------------------------------------
