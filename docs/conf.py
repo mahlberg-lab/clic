@@ -12,6 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import os.path
 import subprocess
@@ -24,15 +25,15 @@ sys.path.insert(0, server_dir)
 # -- Project information -----------------------------------------------------
 
 project = 'CLiC User Guide'
-copyright = '%s, Michaela Mahlberg, Viola Wiegand, Jamie Lentin & Anthony Hennessey' % (
-    subprocess.check_output("git log -1 --format=%ai".split()).decode('utf8').split('-', 1)[0],
+copyright = '%d, Michaela Mahlberg, Viola Wiegand, Jamie Lentin & Anthony Hennessey' % (
+    datetime.datetime.now().year,
 )
 author = 'Michaela Mahlberg, Viola Wiegand, Jamie Lentin & Anthony Hennessey'
 
 # The short X.Y version
-version = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip()
+version = os.environ.get("READTHEDOCS_VERSION", subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf8').strip())
 # The full version, including alpha/beta/rc tags
-release = subprocess.check_output("git describe --abbrev=0".split()).decode('utf8').strip()
+release = os.environ.get("READTHEDOCS_VERSION_NAME", subprocess.check_output("git describe --abbrev=0".split()).decode('utf8').strip())
 
 
 # -- General configuration ---------------------------------------------------
