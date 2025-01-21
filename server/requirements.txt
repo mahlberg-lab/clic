@@ -7,7 +7,7 @@ Flask==3.0.3
 Flask-Cors==5.0.0
 iniconfig==2.0.0
 itsdangerous==2.2.0
-Jinja2==3.1.4
+Jinja2==3.1.5
 latexcodec==3.0.0
 MarkupSafe==2.1.5
 mccabe==0.7.0
