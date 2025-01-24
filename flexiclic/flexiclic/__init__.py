@@ -1,0 +1,1 @@
+from .flexiclic import FlexiClic
