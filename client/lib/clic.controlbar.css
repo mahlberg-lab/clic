@@ -61,23 +61,24 @@
     padding: 5px;
 }
 
-#control-bar fieldset {
+#control-bar section {
     flex: 0 0 5rem;
     transition: flex-grow 0.3s;
 }
 
-#control-bar fieldset.current {
+#control-bar section.current {
     border-bottom: 1px solid #AAA;
     flex: 1 0 auto;
 }
 
-#control-bar fieldset legend {
+#control-bar section header {
     margin: 0;
+    font-size: 1.5rem;
 }
-#control-bar fieldset legend > a,
-#control-bar fieldset legend > a:active,
-#control-bar fieldset legend > a:visited,
-#control-bar fieldset legend > a:hover {
+#control-bar section header > a,
+#control-bar section header > a:active,
+#control-bar section header > a:visited,
+#control-bar section header > a:hover {
     display: block;
     height: 5rem;
     line-height: 5rem;
@@ -89,16 +90,16 @@
     text-decoration: none;
 }
 
-#control-bar fieldset.current > legend > a {
+#control-bar section.current > header > a {
     background: #CCC;
 }
 
-#control-bar fieldset > legend + * {
+#control-bar section > header + * {
     display: none;
     margin-top: .5rem;
     padding: 5px;
 }
-#control-bar fieldset.current > legend + * {
+#control-bar section.current > header + * {
     display: block;
 }
 

@@ -19,15 +19,15 @@
   font-size: 1.7rem;
 }
 
-nav fieldset[data-name="text"] label span {
+nav section[data-name="text"] label span {
   padding: 0 0.3rem;
   line-height: 1.4em;
 }
 
-nav fieldset[data-name="text"] label.chapter-sentence input + span {
+nav section[data-name="text"] label.chapter-sentence input + span {
   margin-left: -2px;
 }
-nav fieldset[data-name="text"] label.chapter-sentence input:checked + span {
+nav section[data-name="text"] label.chapter-sentence input:checked + span {
   border: 1px solid #999;
   border-radius: 2px;
   background: #eee;
@@ -41,22 +41,22 @@ nav fieldset[data-name="text"] label.chapter-sentence input:checked + span {
   border-right: 1px solid #999;
 }
 
-nav fieldset[data-name="text"] label.quote-quote input:checked + span,
+nav section[data-name="text"] label.quote-quote input:checked + span,
 .book-content.h-quote-quote span.quote-quote {
   background: hsl(187, 100%, 74%);
 }
 
-nav fieldset[data-name="text"] label.quote-suspension-short input:checked + span,
+nav section[data-name="text"] label.quote-suspension-short input:checked + span,
 .book-content.h-quote-suspension-short span.quote-suspension-short {
   background: hsl(70, 100%, 74%);
 }
 
-nav fieldset[data-name="text"] label.quote-suspension-long input:checked + span,
+nav section[data-name="text"] label.quote-suspension-long input:checked + span,
 .book-content.h-quote-suspension-long span.quote-suspension-long {
   background: hsl(29, 100%, 74%);
 }
 
-nav fieldset[data-name="text"] label.quote-embedded input:checked + span,
+nav section[data-name="text"] label.quote-embedded input:checked + span,
 .book-content.h-quote-embedded span.quote-embedded {
   background: hsl(123, 100%, 74%);
 }

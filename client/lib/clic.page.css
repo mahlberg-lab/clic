@@ -42,41 +42,41 @@ body.loading #scrollable-body:after {
     }
 }
 
-header {
+#scrollable-body header {
     padding: 15px 25px 10px 15px;
     border-bottom: 5px solid #1e345e;
     overflow: hidden;
 }
-header h1 {
+#scrollable-body header h1 {
     float: left;
     margin: 0;
     line-height: 1.3rem;
     font-size: 41px;
     font-weight: normal;
 }
-header, header h1 a, header, header h1 a:link, header h1 a:visited {
+#scrollable-body header, #scrollable-body header h1 a, #scrollable-body header, #scrollable-body header h1 a:link, #scrollable-body header h1 a:visited {
     color: #1e345e;
 }
-header h1 a:hover, header h1 a:active {
+#scrollable-body header h1 a:hover, #scrollable-body header h1 a:active {
     color: #ffa033;
     text-shadow: 0 0 3px #ffce98;
     text-decoration: none;
 }
-header h1 small {
+#scrollable-body header h1 small {
     display: block;
     line-height: 1.4rem;
     font-size: .8rem;
     text-align: right;
     color: #444;
 }
-header .sponsors {
+#scrollable-body header .sponsors {
     float: right;
 }
-header .sponsors a img {
+#scrollable-body header .sponsors a img {
     height: 35px;
     margin-right: 2rem;
 }
-header .sponsors a:hover {
+#scrollable-body header .sponsors a:hover {
     text-decoration: none;
 }
 #sponsors-uob {
