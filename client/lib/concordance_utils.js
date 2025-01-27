@@ -38,7 +38,7 @@ module.exports.renderTokenArray = function renderTokenArray(data, type, full, me
 
     if (type === 'display') {
         out = '<div class="' + (data.kwicSpan.reverse ? 'r' : 'l');
-        for (i = 0; i < data.matches.length; i++) {
+        for (i = 0; i < (data.matches || []).length; i++) {
             out += ' m' + data.matches[i];
         }
         out += '">';

@@ -9,6 +9,7 @@ var page_classes = {
     '/concordance': require('./page_concordance.js'),
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
+    '/flexiconc': require('./page_flexiconc.js'),
     '/keywords': require('./page_keyword.js'),
     '/text': require('./page_text.js'),
     '/count': require('./page_count.js'),
