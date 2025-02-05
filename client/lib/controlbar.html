@@ -67,15 +67,16 @@
       <div class="">
       <div class="flexiconc-path-chooser">
         <button style="margin-right: 5px"><img src="/icons/tree.svg" width="17" height="23" alt="See full analysis tree" /></button>
-        <button>◄</button>
         <button class="selected">1</button>
         <button>2</button>
         <button>3</button>
         <span>&nbsp;&nbsp;...&nbsp;&nbsp;</span>
-        <button style="float: right; line-height: 2rem; margin-right: none;">►</button>
+        <button style="padding: 0"><img src="/icons/copy.svg" width="24" height="24" alt="Clone view" /></button>
       </div>
 
-      <fieldset class="algorithm selected">
+      <h4><span>Query</span></h4>
+
+      <fieldset class="algorithm">
         <legend>Search in CLiC</legend>
         <label for="ctlb-flexiconc-corpora">Search the corpora:</label>
         <select name="corpora" id="ctlb-flexiconc-corpora" title="corpora" data-placeholder="" class="chosen-select" multiple>
@@ -98,18 +99,49 @@
             Any word <input name="conc-type" type="radio" value="any">
           </label>
         </div>
-        <button class="fork"><img src="/icons/fork.svg" width="17" height="23" alt="Fork from this point" /></button>
       </fieldset>
-
       <fieldset class="algorithm">
-        <legend>Select: By partition</legend>
+        <button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <legend>Annotate with SpaCy Embeddings</legend>
         <label>Partition: <select class="chosen-select"><option selected>KWB</option></select></label>
-        <button class="fork"><img src="/icons/fork.svg" width="17" height="23" alt="Fork from this point" /></button>
       </fieldset>
-
-      <div class="" style="width: 66%; margin: 2rem auto">
-        <select class="chosen-select"><option selected>Add new algorithm...</option></select>
+      <div class="algorithm-add">
+        <select class="chosen-select"><option selected>Add annotation...</option></select>
       </div>
+
+      <h4><span>Selection</span></h4>
+      <fieldset class="algorithm">
+        <button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="control"><img src="/icons/eye.svg" width="15" height="15" alt="hide" /></button>
+        <legend>Random Sample</legend>
+        <label>Partition: <select class="chosen-select"><option selected>KWB</option></select></label>
+      </fieldset>
+      <div class="algorithm-add">
+        <select class="chosen-select"><option selected>Add selection...</option></select>
+      </div>
+
+      <h4><span>Grouping</span></h4>
+      <fieldset class="algorithm">
+        <button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="control"><img src="/icons/eye.svg" width="15" height="15" alt="hide" /></button>
+        <legend>Partition by Vectors</legend>
+        <label>Partition: <select class="chosen-select"><option selected>KWB</option></select></label>
+      </fieldset>
+      <div class="algorithm-add">
+        <select class="chosen-select"><option selected>Add grouping...</option></select>
+      </div>
+
+      <h4><span>Ordering</span></h4>
+      <fieldset class="algorithm">
+        <button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="control"><img src="/icons/eye.svg" width="15" height="15" alt="hide" /></button>
+        <legend>Sort by Corpus Position</legend>
+        <label>Partition: <select class="chosen-select"><option selected>KWB</option></select></label>
+      </fieldset>
+      <div class="algorithm-add">
+        <select class="chosen-select"><option selected>Add ordering...</option></select>
+      </div>
+
     </form>
   </section>
 
