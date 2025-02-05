@@ -41,7 +41,7 @@ window.flexiclic = new Proxy({}, { get: function (target, propName) {
       target._worker.postMessage({
         tx: transactionId,
         method: propName.toString(),
-        kwargs: kwargs,
+        kwargs: kwargs || {},
       });
     });
   };

@@ -38,6 +38,8 @@ function PageFlexiConc() {
 PageFlexiConc.prototype = Object.create(PageTable.prototype);
 
 PageFlexiConc.prototype.init = function () {
+    var elControlBarForm = document.querySelector("#control-bar section[data-name='flexiconc'] > form");
+
     PageTable.prototype.init.apply(this, arguments);
 
     this.book_titles = {};
@@ -45,6 +47,49 @@ PageFlexiConc.prototype.init = function () {
     this.table_opts.autoWidth = false;
     this.table_count_column = 1;
     this.table_opts.orderFixed = { pre: [['0', 'desc']] };
+
+    // Wire up custom control bar events for flexiconc
+    elControlBarForm.onclick = function (event) {
+        var elAlgo = event.target.closest('fieldset.algorithm');
+
+        if (event.target.closest("button[aria-label='Close']") && elAlgo) {
+            // Close buttons should remove algorithm
+            elAlgo.parentNode.removeChild(elAlgo);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    };
+    return flexiclic.algorithms_by_type().then(function (algorithms_by_type) {
+        Object.keys(algorithms_by_type).forEach(function (k) {
+            var el = document.querySelector(".algorithm-add select[data-algorithm-type='" + k + "']");
+            if (!el) {
+                return;
+            }
+
+            // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
+            el.innerHTML = '<option></option>' + algorithms_by_type[k].map(function (a) {
+                return (new Option(a.label, a.name)).outerHTML;
+            }).join("\n");
+            window.jQuery(el).trigger("chosen:updated");
+
+            el.onchange = function (event) {
+                flexiclic.algorithm_render_html({algo_name: el.options[el.selectedIndex].value}).then(function (algoHtml) {
+                    var elNew = document.createElement("fieldset");
+                    elNew.className = "algorithm";
+                    elNew.innerHTML = [
+                        '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+                        algoHtml,
+                    ].join("\n");
+                    el.parentElement.insertAdjacentElement("beforebegin", elNew);
+                });
+
+                el.selectedIndex = 0;
+                window.jQuery(el).trigger("chosen:updated");
+                event.stopPropagation();
+                event.preventDefault();
+            };
+        });
+    });
 };
 
 PageFlexiConc.prototype.page_title = function (page_state) {
@@ -115,7 +160,9 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
     }
 
     return flexiclic.set_source_data(api_opts).then(function (clic_meta) {
-        return flexiclic.data_at({ path: 0, index: 0 }).then(function (data) {
+        var loc = { path: 0, index: 0 };
+
+        return flexiclic.data_at(loc).then(function (data) {
             var i;
 
             for (i = 0; i < data.length; i++) {

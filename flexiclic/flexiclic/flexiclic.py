@@ -1,3 +1,4 @@
+import collections
 import requests
 import pandas as pd
 import re
@@ -45,10 +46,21 @@ class FlexiClic():
             # TODO: Do we need to rebuild the flexiconc tree?
         return self._clic_meta
 
-    def next_algorithms_at(self, path, index):
+    def algorithms_by_type(self):
         concordance = self._flexiconc_concordance()
 
-        return list(concordance.root.available_algorithms().keys())
+        out = collections.defaultdict(list)
+        for algo_name, algo_metadata in concordance.available_algorithms.items():
+            out[algo_metadata["algorithm_type"]].append(dict(
+                name=algo_name,
+                label=algo_name,
+            ))
+        return out
+
+    def algorithm_render_html(self, algo_name):
+        return '\n'.join([
+            "<legend>%s</legend>" % algo_name,
+        ])
 
     def data_at(self, path, index):
         """

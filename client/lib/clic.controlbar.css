@@ -156,9 +156,11 @@
   bottom: calc(0 - 20px - 1px); /* i.e. height minus border */
   height: 20px;
 }
-#control-bar fieldset + .algorithm-add {
+#control-bar .algorithm-add {
   width: 66%;
   margin: 0 auto;
+}
+#control-bar fieldset + .algorithm-add {
   position: relative;
   top: -11px; /* i.e the same as the legend */
 }
