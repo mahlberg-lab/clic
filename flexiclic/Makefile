@@ -47,7 +47,7 @@ OUT_FILES = \
 all: $(OUT_FILES)
 
 clean:
-	rm -r www/*
+	rm -r www/* || true
 
 bin/pip:
 	python3 -m venv .
