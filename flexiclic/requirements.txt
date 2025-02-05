@@ -1,3 +1,27 @@
+anytree==2.12.1
+attrs==25.1.0
 build==1.2.2
+certifi==2025.1.31
+charset-normalizer==3.4.1
+# Editable Git install (FlexiConc==0.1.1.dev10) with either a deleted local remote or invalid URI:
+# 'git@github.com:/fau-klue/flexiconc'
+-e /srv/clic/flexiclic/flexiconc
+idna==3.10
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
+networkx==3.4.2
+numpy==2.2.2
 packaging==24.2
+pandas==2.2.3
+platformdirs==4.3.6
+PyICU==2.14
 pyproject_hooks==1.2.0
+python-dateutil==2.9.0.post0
+pytz==2025.1
+referencing==0.36.2
+requests==2.32.3
+rpds-py==0.22.3
+six==1.17.0
+typing_extensions==4.12.2
+tzdata==2025.1
+urllib3==2.3.0
