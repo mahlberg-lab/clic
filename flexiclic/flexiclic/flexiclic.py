@@ -1,3 +1,7 @@
+import requests
+import pandas as pd
+import re
+
 import flexiconc
 # TODO: Does this even need to be a thing? Should we just merge into flexiconc package?
 
@@ -29,10 +33,15 @@ class FlexiClic():
 
         if self._source_opts != opts:
             self._source_opts = opts
-            self._retrieve_from_clic(
-                **opts,
-                api_base_url="%s/api/concordance" % (self._api_root),
-            )
+
+            # Fetch query from CLiC server
+            response = requests.get("%s/api/concordance" % (self._api_root), params=opts)
+            response.raise_for_status()
+            data = response.json()
+            self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
+
+            self._flexiconc = flexiconc.Concordance()
+            self._flexiconc.load(**self._convert_to_flexiconc(data.get('data', [])))
             # TODO: Do we need to rebuild the flexiconc tree?
         return self._clic_meta
 
@@ -57,8 +66,21 @@ class FlexiClic():
             return line_ids
 
         def to_clic_context(tokens):
-            out = tokens['word'].tolist()
-            out.append(list(range(0,len(tokens))))  # TODO: Assume everything is a word for now
+            before = tokens['before_token'].tolist()
+            word = tokens['word'].tolist()
+            after = tokens['after_token'].tolist()
+
+            out = []
+            type_idx = []
+            for i, _ in enumerate(word):
+                if before[i]:  # i.e. ignore 0-length strings
+                    out.append(before[i])
+                if word[i]:
+                    type_idx.append(len(out))
+                    out.append(word[i])
+                if after[i]:
+                    out.append(after[i])
+            out.append(type_idx)
             return out
 
         concordance = self._flexiconc_concordance()
@@ -109,54 +131,60 @@ class FlexiClic():
                     line_id,
                 )
 
-    def _retrieve_from_clic(
-        self,
-        query,
-        corpora,
-        subset = "all",
-        contextsize = 20,
-        api_base_url = "https://clic.bham.ac.uk/api/concordance",
-        metadata_attrs = None,
-        tokens_attrs = None
-    ):
+    def _convert_to_flexiconc(self, data):
         """
-        Modified version of flexiconc.utils.retrieve.retrieve_from_clic():
+        Convert CLiC concordance lines into FlexiConc DataFrames
 
-        * import AnalysisTreeNode
-        * Modify self._flexiconc_concordance() instead of self
-        * Request all query parameters in one go
-        * Request required CLiC metadata, stash for returning to client
-        * Store cpos_start / cpos_end in concordance.metadata
+        - data: Concordance lines from CLiC's /api/concordance endpoint
+
+        Returns a dict of:
+
+        - metadata: DataFrame of concordance line metadata
+        - tokens: DataFrame of concordance line tokens
+        - matches: DataFrame of concordance line matches
         """
-        import requests
-        from flexiconc.utils.logging import add_to_tree
-        import pandas as pd
-        import re
+        def process_context(context_data, context_type):
+            def inside_flextoken(i):
+                if i < 0 or i >= len(context_data) - 1:
+                    # Hit an end of context array
+                    return False
+                if i in context_data[-1]:
+                    # Hit another type, stop
+                    return False
+                if re.fullmatch(r"\s*", context_data[i]):
+                    # Whitespace token, this marks the end
+                    return False
+                return True
 
-        from flexiconc.concordance import AnalysisTreeNode
+            type_pos = context_data[-1]
+            tokens = context_data[:-1]
+            out = []
+            division_idx = -1
+            for type_offset, type_idx in enumerate(type_pos):
+                # Find the token after the type_idx that marks a division in flexconc tokens
+                next_division_idx = type_idx
+                while inside_flextoken(next_division_idx + 1):
+                    next_division_idx += 1
 
-        if metadata_attrs is None:
-            metadata_attrs = ['text_id', 'chapter', 'paragraph', 'sentence']
-        if tokens_attrs is None:
-            tokens_attrs = ['word']
+                if context_type == 'left':
+                    offset = 0 - len(type_pos) + type_offset
+                elif context_type == 'node':
+                    offset = 0
+                elif context_type == 'right':
+                    offset = type_offset + 1
+                else:
+                    raise ValueError("Invalid context_type.")
 
-        params = {
-            'q': query,
-            'corpora': corpora,
-            'subset': subset,
-            'contextsize': contextsize,
-            'metadata': ['chapter_start', 'word_count_all'],
-        }
-        response = requests.get(api_base_url, params=params)
-        response.raise_for_status()
-        data = response.json()
-
-        # Stash required CLiC metadata to return to client later
-        self._clic_meta = {k:data[k] for k in params['metadata'] + ['version']}
-        data = data.get('data', [])
-
-        if not data:
-            raise ValueError(f"No data returned from CLiC API for the provided set of queries.")
+                out.append(dict(
+                    offset=offset,
+                    before_token=''.join(tokens[division_idx + 1:type_idx]),
+                    word=tokens[type_idx],
+                    # NB: This needs to be developed in lock-step with client/lib/concordance_utils.js / server/clic/tokenizer.py
+                    norm=''.join(tokens[type_idx]).lower(),
+                    after_token=''.join(tokens[type_idx + 1:next_division_idx + 1]),
+                ))
+                division_idx = next_division_idx
+            return out
 
         # Initialize lists to store metadata and tokens
         metadata_list = []
@@ -164,101 +192,40 @@ class FlexiClic():
         matches_list = []
 
         global_token_id = 0
-        token_pattern = re.compile(r'(\w+|[^\w\s])')
-
         for line_id, line_data in enumerate(data):
-            left_context = line_data[0]
-            node = line_data[1]
-            right_context = line_data[2]
             corpus_info = line_data[3]
             structural_info = line_data[4]
-
-            corpus_name = corpus_info[0]
-            cpos_start = corpus_info[1]
-            cpos_end = corpus_info[2]
-
-            chapter = structural_info[0] if len(structural_info) > 0 else None
-            paragraph = structural_info[1] if len(structural_info) > 1 else None
-            sentence = structural_info[2] if len(structural_info) > 2 else None
-
-            metadata_entry = {
+            metadata_list.append({
                 'line_id': line_id,
-                'text_id': corpus_name,
-                'chapter': chapter,
-                'paragraph': paragraph,
-                'sentence': sentence,
-                'cpos_start': cpos_start,
-                'cpos_end': cpos_end,
-            }
-            metadata_list.append(metadata_entry)
+                'text_id': corpus_info[0],
+                'chapter': structural_info[0] if len(structural_info) > 0 else None,
+                'paragraph': structural_info[1] if len(structural_info) > 1 else None,
+                'sentence': structural_info[2] if len(structural_info) > 2 else None,
+                'cpos_start': corpus_info[1],
+                'cpos_end': corpus_info[2],
+            })
 
-            id_in_line = 0
+            left_tokens = process_context(line_data[0], 'left')
+            node_tokens = process_context(line_data[1], 'node')
+            right_tokens = process_context(line_data[2], 'right')
+            for id_in_line, t in enumerate(left_tokens + node_tokens + right_tokens):
+                t['line_id'] = line_id
+                t['id_in_line'] = id_in_line
+                t['id'] = global_token_id
+                global_token_id += 1
+            token_entries.extend(left_tokens + node_tokens + right_tokens)
 
-            def process_context(context_data, context_type):
-                nonlocal id_in_line, global_token_id
-                context_items = context_data[:-1]
-                offsets_info = context_data[-1]
-                context_str = ''.join(context_items)
-
-                split_tokens = token_pattern.findall(context_str)
-                tokens_list = [t for t in split_tokens if t.strip() != '' and not re.match(r'\s', t)]
-
-                num_tokens = len(tokens_list)
-
-                if context_type == 'left':
-                    offsets_list = list(range(-num_tokens, 0))
-                elif context_type == 'node':
-                    offsets_list = [0] * num_tokens
-                elif context_type == 'right':
-                    offsets_list = list(range(1, num_tokens + 1))
-                else:
-                    raise ValueError("Invalid context_type.")
-
-                tokens_result = []
-                for tok, off in zip(tokens_list, offsets_list):
-                    token_entry = {
-                        'id': global_token_id,
-                        'id_in_line': id_in_line,
-                        'line_id': line_id,
-                        'offset': off,
-                        'word': tok
-                    }
-                    tokens_result.append(token_entry)
-                    id_in_line += 1
-                    global_token_id += 1
-                return tokens_result
-
-            left_tokens = process_context(left_context, 'left')
-            node_tokens = process_context(node, 'node')
-            right_tokens = process_context(right_context, 'right')
-
-            line_tokens = left_tokens + node_tokens + right_tokens
-            token_entries.extend(line_tokens)
-
-            if node_tokens:
-                match_start_id = node_tokens[0]['id']
-                match_end_id = node_tokens[-1]['id']
-            else:
-                match_start_id = None
-                match_end_id = None
-
-            matches_entry = {
+            matches_list.append({
                 'line_id': line_id,
-                'match_start': match_start_id,
-                'match_end': match_end_id,
+                'match_start': node_tokens[0]['id'],
+                'match_end': node_tokens[-1]['id'],
                 'slot': 0
-            }
-            matches_list.append(matches_entry)
+            })
 
         tokens_df = pd.DataFrame(token_entries)
         tokens_df.set_index('id', inplace=True)
-
-        metadata_df = pd.DataFrame(metadata_list)
-        matches_df = pd.DataFrame(matches_list)
-
-        concordance = self._flexiconc_concordance()
-        concordance.metadata = metadata_df
-        concordance.tokens = tokens_df
-        concordance.matches = matches_df
-        concordance.info["query"] = query
-        concordance.root = AnalysisTreeNode(id=0, node_type="subset", parent=None, concordance=concordance, line_count=len(concordance.metadata))
+        return dict(
+            metadata=pd.DataFrame(metadata_list),
+            tokens=tokens_df,
+            matches=pd.DataFrame(matches_list),
+        )

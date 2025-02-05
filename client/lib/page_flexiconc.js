@@ -95,20 +95,21 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
     api_opts.subset = page_state.arg('conc-subset');
-    api_opts.query = page_state.arg('conc-q');
+    api_opts.q = page_state.arg('conc-q');
     api_opts.contextsize = 10;
+    api_opts.metadata = ['chapter_start', 'word_count_all'];
 
     if (api_opts.corpora.length === 0) {
         throw new DisplayError("Please select the corpora to search in", "warn");
     }
-    if (!api_opts.query) {
+    if (!api_opts.q) {
         throw new DisplayError("Please provide some terms to search for", "warn");
     }
     if (!api_opts.subset) {
         throw new DisplayError("Please select a subset", "warn");
     }
     if (page_state.arg('conc-type') === 'any') {
-        api_opts.query = api_opts.query.split(/(\s+)/).filter(function (t) {
+        api_opts.q = api_opts.q.split(/(\s+)/).filter(function (t) {
             return (/\w/).test(t);
         });
     }
