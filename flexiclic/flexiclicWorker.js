@@ -5,8 +5,6 @@ importScripts(PYODIDE_URL);
 
 // Fetch pyIodide / flexiclic & instantiate
 async function setupFlexiClic(apiRoot) {
-  if (self._flexiclic) return self._flexiclic;
-
   const pyodide = await loadPyodide({
     env: {ICU_DATA: "/icudata"},
     packages: PRELOAD_WHEELS,
@@ -21,8 +19,10 @@ async function setupFlexiClic(apiRoot) {
 
   self._pyodide = pyodide;
   const flexiclic = pyodide.pyimport("flexiclic");
-  return self._flexiclic = flexiclic.FlexiClic(api_root=apiRoot);
+  return flexiclic.FlexiClic(api_root=apiRoot);
 }
+// Create promise to working FlexiClic object, callees either wait for setup or get previously instantiated object
+self.flexiclic_ready = setupFlexiClic(location.origin);
 
 // Wrap postMessage, sanitising PyProxy objects to plain JS
 function post(tx, rv, done) {
@@ -40,7 +40,7 @@ function post(tx, rv, done) {
 }
 
 onmessage = function (event) {
-  return setupFlexiClic(location.origin).then((flexiclic) => {
+  return self.flexiclic_ready.then((flexiclic) => {
     // Proxy message through to flexiclic
     // TODO: https://pyodide.org/en/stable/usage/keyboard-interrupts.html
     if (!flexiclic[event.data.method]) throw new Error(`Unknown flexiclic method ${event.data.method}`);
