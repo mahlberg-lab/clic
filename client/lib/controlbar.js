@@ -124,7 +124,7 @@ function ControlBar(control_bar) {
     });
 
     control_bar.addEventListener('click', function (e) {
-        if (clickedOn(e, 'LEGEND', null)) {
+        if (clickedOn(e, 'HEADER', null)) {
             e.preventDefault();
             e.stopPropagation();
 
