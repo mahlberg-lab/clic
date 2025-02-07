@@ -328,7 +328,7 @@ ControlBar.prototype.reload = function reload(page_state) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
                 var new_val = page_state.arg(el.name);
 
-                if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
+                if (el.tagName === 'FIELDSET') {
                     Math.floor(0);
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
                     el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
