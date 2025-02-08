@@ -189,6 +189,11 @@ function ControlBar(control_bar) {
         this.change_timeout = window.setTimeout(function () {
             var new_search = {},
                 form = control_bar.querySelector('section.current form');
+            if (!form) {
+                // Don't try and commit changes until there's a current section (i.e. the form has finished loading)
+                // NB: This is triggered by updating noUiSlider on load
+                return;
+            }
 
             // Unchecked checkboxes should be emptied if not mentioned
             Array.prototype.forEach.call(control_bar.querySelectorAll('section.current input[type=checkbox]:not(:checked)'), function (el, i) {
@@ -210,7 +215,8 @@ function ControlBar(control_bar) {
                 new_search[el.name] = jQuery(el).val();
             });
 
-            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {args: new_search}}));
+            // NB: We use flush to get rid of now-non-existant form fields, such as deleted flexiconc algorithms
+            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {args: new_search, flush: true}}));
         }, 300);
     });
 
