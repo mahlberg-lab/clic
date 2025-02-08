@@ -162,6 +162,7 @@ State.prototype.to_url = function () {
   *   - args: New querystring arguments
   *   - state: New state arguments
   *   - url: Shortcut, replaces doc/args with parsed URL before proceeding
+  *   - flush: Synonym for flush argument
   * - flush: Replaces args/state rather than merging with existing
   * returns true iff the changes result in a different state
   */
@@ -180,6 +181,11 @@ State.prototype.update = function (changes, flush) {
             return false;
         }
         return true;
+    }
+
+    // Allow flush to be overriden in changes
+    if (changes.flush) {
+        flush = changes.flush;
     }
 
     if (changes.url) {

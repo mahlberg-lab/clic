@@ -185,6 +185,11 @@ test('update', function (t) {
         [{ beef: 9 }, '', '/bark?pigs=george'],
         "Flush removes any other state arguments");
 
+    s.update({ args: { "animals[cows]": ["daisy", "freda"] }, flush: true });
+    t.deepEqual(s.to_args(),
+         [ { beef: 9 }, '', '/bark?animals[cows]=daisy&animals[cows]=freda' ],
+        "Flush can also be named in changes object");
+
     t.end();
 });
 
