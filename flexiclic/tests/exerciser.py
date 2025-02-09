@@ -16,4 +16,7 @@ fc.set_source_data(
 for x in fc.data_at(1, 0):
     print(x)
 
-print(fc.algorithms_by_type())
+for algo_type, algos in fc.algorithms_by_type().items():
+    for a in algos:
+        print("\n\n==== %s:%s" % (algo_type, a['label']))
+        print("\n".join(fc.algorithm_render_html(algo_name=a['name'], index=0)))

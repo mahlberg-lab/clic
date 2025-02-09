@@ -6,6 +6,8 @@ import re
 import flexiconc
 # TODO: Does this even need to be a thing? Should we just merge into flexiconc package?
 
+from . import algo_html
+
 class FlexiClic():
     def __init__(self, api_root=""):
         """
@@ -57,10 +59,10 @@ class FlexiClic():
             ))
         return out
 
-    def algorithm_render_html(self, algo_name):
-        return '\n'.join([
-            "<legend>%s</legend>" % algo_name,
-        ])
+    def algorithm_render_html(self, algo_name, index):
+        concordance = self._flexiconc_concordance()
+
+        return algo_html.from_schema(concordance.available_algorithms[algo_name], index)
 
     def data_at(self, path, index):
         """

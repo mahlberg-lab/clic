@@ -49,6 +49,9 @@ var state_defaults = {
     'table-filter': '',
     'selected_rows': [],
 
+    'algo': {},
+    'algo_name': {},
+
     'book': '',
     'chapter_num': 0,
     'chapter_id': -1,

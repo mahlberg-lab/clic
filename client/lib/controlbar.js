@@ -271,13 +271,117 @@ function ControlBar(control_bar) {
     });
 }
 
+ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
+    /** Promise to return DOM element for an (algo_name) at (newIdx) */
+    function newAlgoHtml(algo_name, newIdx) {
+        return window.flexiclic.algorithm_render_html({algo_name: algo_name, index: newIdx}).then(function (algoHtml) {
+            var elNew = document.createElement("fieldset");
+            elNew.className = "algorithm";
+            elNew.innerHTML = [
+                '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+            ].join("\n") + algoHtml.join("\n");
+
+            // Wire up event to close button
+            elNew.querySelector("button[aria-label='Close']").onclick = function (event) {
+                var el, elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
+
+                function renumberElements(els) {
+                    Array.from(els).forEach(function (elField) {
+                        elField.name = elField.name.replace(/^algo\[(\w+)\]\[(\d+)\]/, function (m, g1, g2) {
+                            return "algo[" + g1 + "][" + (parseInt(g2, 10) - 1) + "]";
+                        });
+                    });
+                }
+
+                // Renumber subsequent algorithms to hide gap
+                el = elAlgo;
+                while (el) {
+                    // NB: add-algorithm isn't a fieldset, so has no elements
+                    renumberElements(el.elements || []);
+                    el = el.nextElementSibling;
+                }
+
+                elAlgo.parentNode.removeChild(elAlgo);
+                event.stopPropagation();
+                event.preventDefault();
+
+                elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+            };
+
+            return elNew;
+        });
+    }
+
+    var arg_algo_names = page_state.arg("algo_name") || {};
+
+    return window.flexiclic.algorithms_by_type().then(function (algorithms_by_type) {
+        return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
+            var elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
+                algo_type = elAlgoGroup.getAttribute('data-algorithm-type'),
+                elsExisting = Array.from(elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)")),
+                cur_algo_names = arg_algo_names[algo_type] || [];
+
+            // Fill add select with available algorithms
+            // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
+            elAddSelect.innerHTML = '<option></option>' + algorithms_by_type[algo_type].map(function (a) {
+                return (new Option(a.label, a.name)).outerHTML;
+            });
+
+            // Wire up change event to populate new algorithm
+            elAddSelect.onchange = function (event) {
+                // Count existing algorithms, new one will be one higher
+                var newIdx = elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length,
+                    el = event.target;
+
+                newAlgoHtml(el.options[el.selectedIndex].value, newIdx).then(function (elNew) {
+                    // Insert algorithm before the "algorithm-add" select
+                    el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
+                    window.jQuery(elNew).find('.chosen-select').chosen();  // Init any chosen dialogs
+                });
+            };
+
+            // Remove excess entries, both from DOM & elExisting array
+            while (elsExisting.length > cur_algo_names.length) {
+                elsExisting.pop().remove();
+            }
+
+            // Add dummy entries for entries that need to be created
+            while (elsExisting.length < cur_algo_names.length) {
+                elsExisting.push(document.createElement("fieldset"));
+                elAlgoGroup.lastElementChild.insertAdjacentElement("beforebegin", elsExisting[elsExisting.length - 1]);
+            }
+
+            // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
+            return Promise.all(cur_algo_names.map(function (algo_name, i) {
+                if (algo_name === (elsExisting[i].elements["algo_name[" + algo_type + "][]"] || {}).value) {
+                    // algo_name matches, leave HTML as-is.
+                    return Promise.resolve();
+                }
+                return newAlgoHtml(algo_name, i).then(function (el) {
+                    // Replace old elements with new algo
+                    elsExisting[i].replaceWith(el);
+                    window.jQuery(el).find('.chosen-select').chosen({ width: '100%', search_contains: true }).change(function (e) {
+                        // Chosen's change event isn't bubbling to the form, do it ourselves.
+                        e.target.form.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+                    });
+                });
+            }));
+        }));
+    });
+};
+
 // Refresh controls based on page_state
 ControlBar.prototype.reload = function reload(page_state) {
-    var self = this;
+    var self = this, p = Promise.resolve();
 
     self.page_state = page_state; // Store this for events
 
-    return Promise.resolve().then(function () {
+    if (page_state.doc() === "/flexiconc") {
+        // Do extra flexiconc reloading work
+        p = self.flexiconc_reload(page_state);
+    }
+
+    return p.then(function () {
         return self.corpora || api.get('corpora');
     }).then(function (corpora) {
         var tag_toggles_el, elements;
@@ -367,6 +471,11 @@ ControlBar.prototype.reload = function reload(page_state) {
                         }).join("");
                     }
                     jQuery(el).val(new_val);
+                } else if (Array.isArray(new_val) && new_val.length > 1) {
+                    // Multiple values, assume that there's multiple fields with the same name
+                    el.form.querySelectorAll("*[name='" + el.name + "']").forEach(function (otherEl, i) {
+                        otherEl.value = new_val[i];
+                    });
                 } else {
                     el.value = new_val;
                 }
