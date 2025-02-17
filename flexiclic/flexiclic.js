@@ -2,6 +2,16 @@
 
 // Create flexiclic, which proxies any method calls through to python
 window.flexiclic = new Proxy({}, { get: function (target, propName) {
+  if (propName === "shutdown") {
+      return function () {
+          if (target._worker) {
+              target._worker.terminate();
+              target._worker = undefined;
+          }
+          return Promise.resolve();
+      };
+  }
+
   // Assume any get is fetching a method, construct closure in response
   return function (kwargs) {
     return new Promise((resolve) => {

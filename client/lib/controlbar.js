@@ -314,6 +314,11 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
     var arg_algo_names = page_state.arg("algo_name") || {};
 
+    // Not a flexiconc page, shutdown if needed & carry on
+    if (page_state.doc() !== "/flexiconc") {
+        return window.flexiclic ? window.flexiclic.shutdown() : null;
+    }
+
     return window.flexiclic.algorithms_by_type().then(function (algorithms_by_type) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
             var elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
@@ -372,16 +377,11 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
 // Refresh controls based on page_state
 ControlBar.prototype.reload = function reload(page_state) {
-    var self = this, p = Promise.resolve();
+    var self = this;
 
     self.page_state = page_state; // Store this for events
 
-    if (page_state.doc() === "/flexiconc") {
-        // Do extra flexiconc reloading work
-        p = self.flexiconc_reload(page_state);
-    }
-
-    return p.then(function () {
+    return self.flexiconc_reload(page_state).then(function () {
         return self.corpora || api.get('corpora');
     }).then(function (corpora) {
         var tag_toggles_el, elements;
