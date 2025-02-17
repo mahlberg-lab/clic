@@ -3,7 +3,7 @@ attrs==25.1.0
 build==1.2.2
 certifi==2025.1.31
 charset-normalizer==3.4.1
-# Editable Git install (FlexiConc==0.1.1.dev11) with either a deleted local remote or invalid URI:
+# Editable Git install (FlexiConc==0.1.1.dev12) with either a deleted local remote or invalid URI:
 # 'git@github.com:/fau-klue/flexiconc'
 -e /srv/clic/flexiclic/flexiconc
 idna==3.10

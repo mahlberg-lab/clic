@@ -31,8 +31,9 @@ def html_prop(input_name, prop_desc):
     - input_name: The name for the HTML input
     - prop_desc: The FlexiConc property schema
     """
-    if 'type' not in prop_desc:
-        raise ValueError('Type is missing: %s</pre>' % prop_desc)
+    # Assume any prop_desc with missing type are objects
+    if prop_desc.get('type', 'object') == 'object':
+        return '<pre style="border: 1px solid red">Object type is too loose: %s</pre>' % prop_desc
 
     if 'enum' in prop_desc:
         if prop_desc['type'] != 'string':
@@ -48,7 +49,7 @@ def html_prop(input_name, prop_desc):
             ) for x in prop_desc['enum']],
         )
 
-    if prop_desc['type'] == 'string' or prop_desc['type'] == ['string', 'null']:
+    if prop_desc['type'] == 'string' or prop_desc['type'] == ['string']:
         return html_prop_inputbox(
             input_type="text",
             name=input_name,
@@ -64,20 +65,17 @@ def html_prop(input_name, prop_desc):
             value=prop_desc.get("default") or False,
         )
 
-    if prop_desc['type'] == 'integer' or prop_desc['type'] == ['integer', 'null'] or prop_desc['type'] == ['integer', 'number'] or prop_desc['type'] == ['number', 'integer']:
+    if prop_desc['type'] == 'integer' or prop_desc['type'] == ['integer'] or prop_desc['type'] == ['integer', 'number'] or prop_desc['type'] == ['number', 'integer']:
         return html_prop_inputbox(
             input_type="number",
             name=input_name,
             label=prop_desc["description"],
             value=prop_desc.get("default") or None,
-            step=1,
+            step=1,  # TODO: Need to apply step when type is number, but to what?
         )
 
-    if prop_desc['type'] == 'array' or prop_desc['type'] == ['array', 'null']:
+    if prop_desc['type'] == 'array' or prop_desc['type'] == ['array']:
         return '<pre style="border: 1px solid red">type: array not supported: %s</pre>' % prop_desc
-
-    if prop_desc['type'] == 'object':
-        return '<pre style="border: 1px solid red">Object type is too loose: %s</pre>' % prop_desc
 
     raise ValueError('Unknown type: %s</pre>' % prop_desc)
 
