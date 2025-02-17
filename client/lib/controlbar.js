@@ -236,6 +236,7 @@ function ControlBar(control_bar) {
         el.slider_div.noUiSlider.on('update', function (values) {
             var val_string = values.map(Math.round).join(':');
 
+            // NB: The form element has to have the default value set in HTML, or this will trigger an erronous change event
             if (el.value !== val_string) {
                 el.value = val_string;
                 el.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
