@@ -50,7 +50,6 @@ var state_defaults = {
     'selected_rows': [],
 
     'algo': {},
-    'algo_name': {},
 
     'book': '',
     'chapter_num': 0,

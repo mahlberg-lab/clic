@@ -15,7 +15,7 @@ def from_schema(algo, index=0):
 
     yield "<legend>%s</legend>" % html.escape(algo['full_name'])
     yield html_prop_hidden(
-        name="algo_name[%s][]" % (algo["algorithm_type"]),
+        name="algo[%s][%d][algorithm_name]" % (algo["algorithm_type"], index),
         value=algo['full_name'],
     )
 
@@ -37,7 +37,7 @@ def html_prop(input_name, prop_desc):
 
     if 'enum' in prop_desc:
         if prop_desc['type'] != 'string':
-            import pdb ; pdb.set_trace()
+            return '<pre style="border: 1px solid red">Non-string enum: %s</pre>' % prop_desc
         return html_prop_select(
             input_type="text",
             name=input_name,

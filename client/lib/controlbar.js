@@ -312,7 +312,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
         });
     }
 
-    var arg_algo_names = page_state.arg("algo_name") || {};
+    var arg_algo = page_state.arg("algo");
 
     // Not a flexiconc page, shutdown if needed & carry on
     if (page_state.doc() !== "/flexiconc") {
@@ -324,7 +324,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
             var elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
                 algo_type = elAlgoGroup.getAttribute('data-algorithm-type'),
                 elsExisting = Array.from(elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)")),
-                cur_algo_names = arg_algo_names[algo_type] || [];
+                cur_algo_names = (arg_algo[algo_type] || []).map(function (x) { return x.algorithm_name; });
 
             // Fill add select with available algorithms
             // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
@@ -358,7 +358,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
             // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
             return Promise.all(cur_algo_names.map(function (algo_name, i) {
-                if (algo_name === (elsExisting[i].elements["algo_name[" + algo_type + "][]"] || {}).value) {
+                if (algo_name === (elsExisting[i].elements["algo[" + algo_type + "][" + i + "][algorithm_name]"] || {}).value) {
                     // algo_name matches, leave HTML as-is.
                     return Promise.resolve();
                 }
