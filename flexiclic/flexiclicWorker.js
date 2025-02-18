@@ -57,7 +57,18 @@ onmessage = function (event) {
         post(event.data.tx, rv, true);
     }
   }).catch((error) => {
-    console.error(error);
-    self.postMessage({ tx: event.data, error: error.message });
+    var message = error.message, level = "error";
+    console.warn(error);
+    if (error.name === "PythonError" && error.message && error.type) {
+        // Bin the traceback, just return the summary
+        // NB: error.type won't be fully-qualified, so guess preamble
+        if (error.type === "UserError") {
+            message = error.message.replace(new RegExp(".*\\n(?:[a-z0-9A-Z\\.]*)" + error.type + ": ", "s"), "");
+            level = "warn";
+        } else {
+            message = error.message.replace(new RegExp(".*\\n(?:[a-z0-9A-Z\\.]*)" + error.type + ": ", "s"), error.type + ": ");
+        }
+    }
+    self.postMessage({ tx: event.data.tx, error: message, level: level });
   });
 };
