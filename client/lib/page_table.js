@@ -89,10 +89,10 @@ PageTable.prototype.reload = function reload(page_state) {
             };
             table_opts.search = { search: page_state.arg('table-filter'), smart: false };
             table_opts.ajax = function (params, callback, settings) {
-                new Promise(function (resolve) {
+                new Promise(function (r2) {
                     // NB: This has to be self.page_state, otherwise we make a closure
                     // around the initial page_state
-                    resolve(self.reload_data(self.page_state));
+                    r2(self.reload_data(self.page_state));
                 }).then(function (data) {
                     self.last_fetched_data = data;
                     document.querySelector('div.data-version').innerText = data.version.corpora;
