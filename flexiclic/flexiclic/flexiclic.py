@@ -127,22 +127,28 @@ class FlexiClic():
             path = path.to_py()
 
         clic_meta, node = self._follow_path(opts, path)
+        view = node.view()
 
+        # Pull concordance DataFrames back out of FlexiConc
         concordance = self._flexiconc_concordance()
-        subset = concordance.subset_at_node(node)
-        tokens = subset.tokens
-        metadata = subset.metadata
+        tokens = concordance.tokens
+        metadata = concordance.metadata
 
-        # Collapse line groupings / sortings
-        if hasattr(node, 'grouping_result') and 'partitions' in node.grouping_result:
+        if "grouping" in view:
             partition_line_ids = {
-                partition_info.get('label', f'Partition {partition_id}'): sorted_line_ids(partition_info.get('line_ids', []))
-                for partition_id, partition_info in enumerate(node.grouping_result['partitions'])
+                p["label"]: p["line_ids"]
+                for p in view["grouping"]
             }
         else:
             partition_line_ids = {
-                "": sorted_line_ids(metadata['line_id'].unique().tolist()),
+                "": view["ordering"],
             }
+
+        if "global_info" in view:
+            clic_meta["global_info"] = view["global_info"]
+
+        if "token_spans" in view:
+            raise NotImplementedError
 
         yield clic_meta  # Return clic metadata to client first
 
@@ -174,6 +180,7 @@ class FlexiClic():
                     ],
                     partition_label,
                     line_id,
+                    view.get("line_info", {}).get(line_id, {}),
                 )
 
     def _convert_to_flexiconc(self, data):
