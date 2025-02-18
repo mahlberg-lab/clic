@@ -7,6 +7,7 @@ import flexiconc
 # TODO: Does this even need to be a thing? Should we just merge into flexiconc package?
 
 from . import algo_html
+from . import path_util
 
 class FlexiClic():
     def __init__(self, api_root=""):
@@ -19,23 +20,27 @@ class FlexiClic():
         self._source_opts = {}
         self._clic_meta = {}
 
-    def _flexiconc_concordance(self):
-        if not hasattr(self, "_flexiconc"):
+    def _flexiconc_concordance(self, data=None):
+        if data is not None:
+            self._flexiconc = flexiconc.Concordance()
+            self._flexiconc.load(**self._convert_to_flexiconc(data))
+        elif not hasattr(self, "_flexiconc"):
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
-    def set_source_data(self, **opts):
+    def _follow_path(self, opts, path):
         """
-        (re)fetch the root node for the flexiconc analysis tree
+        Follow path of algorithms, return Node at end
 
-        - opts: kwargs passed to `flexiconc.concordance.retrieve_from_clic`.
-
-        return the CLiC version dict from the server response
+        - opts: dict of arguments to /api/concordance
+        - path: List of unsorted algorithms to apply
         """
         concordance = self._flexiconc_concordance()
+        path, annotations = path_util.normalize(path, concordance.available_algorithms)
 
-        if self._source_opts != opts:
+        if self._source_opts != opts or self._source_annotations != annotations:
             self._source_opts = opts
+            self._source_annotations = annotations
 
             # Fetch query from CLiC server
             response = requests.get("%s/api/concordance" % (self._api_root), params=opts)
@@ -43,10 +48,28 @@ class FlexiClic():
             data = response.json()
             self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
 
-            self._flexiconc = flexiconc.Concordance()
-            self._flexiconc.load(**self._convert_to_flexiconc(data.get('data', [])))
-            # TODO: Do we need to rebuild the flexiconc tree?
-        return self._clic_meta
+            # Re-create concordance object, add any required annotations
+            concordance = self._flexiconc_concordance(data=data.get('data', []))
+            for a in annotations:  # NB: Assume first entry is annotations
+                concordance.add_annotation(
+                    a["algorithm_name"],
+                    a,
+                    a["column_name"],
+                )
+
+        node = concordance.root
+        for node_spec in path:
+            if node_spec["algorithm_type"] == "subset" or node_spec["algorithm_type"] == "selection":
+                node = node.add_subset_node(node_spec["algorithm_name"], node_spec["args"])
+            elif node_spec["algorithm_type"] == "arrangement":
+                node = node.add_arrangement_node(
+                    ordering=node_spec["ordering"],
+                    grouping=node_spec["grouping"],
+                )
+            else:
+                raise ValueError("Unknown node spec: %s" % node_spec)
+
+        return self._clic_meta, node
 
     def algorithms_by_type(self):
         concordance = self._flexiconc_concordance()
@@ -64,12 +87,12 @@ class FlexiClic():
 
         return algo_html.from_schema(concordance.available_algorithms[algo_name], index)
 
-    def data_at(self, path, index):
+    def compute_path(self, opts, path):
         """
-        Return concordance line data
+        Return concordance line data for a path of algorithms
 
-        - path: The (flexiclic) path integer to query
-        - index: The (flexiclic) index of the node along that path, 0 is the analysis tree root
+        - opts: CLiC concordance API options
+        - path: Array of algorithms to apply to query results
         """
         def sorted_line_ids(line_ids):
             if hasattr(node, 'ordering_result') and 'sort_keys' in node.ordering_result:
@@ -97,10 +120,16 @@ class FlexiClic():
             out.append(type_idx)
             return out
 
-        concordance = self._flexiconc_concordance()
-        node = concordance.root
-        subset = concordance.subset_at_node(node)
+        # Deep arguments, so will be proxy objects from Javascript
+        if hasattr(opts, "to_py"):
+            opts = opts.to_py()
+        if hasattr(path, "to_py"):
+            path = path.to_py()
 
+        clic_meta, node = self._follow_path(opts, path)
+
+        concordance = self._flexiconc_concordance()
+        subset = concordance.subset_at_node(node)
         tokens = subset.tokens
         metadata = subset.metadata
 
@@ -114,6 +143,8 @@ class FlexiClic():
             partition_line_ids = {
                 "": sorted_line_ids(metadata['line_id'].unique().tolist()),
             }
+
+        yield clic_meta  # Return clic metadata to client first
 
         for partition_label, line_ids in partition_line_ids.items():
             # TODO: Header row for partition

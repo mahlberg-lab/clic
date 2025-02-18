@@ -90,7 +90,7 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 };
 
 PageFlexiConc.prototype.reload_data = function reload(page_state) {
-    var api_opts = {};
+    var api_opts = {}, path;
 
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
@@ -114,25 +114,25 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
         });
     }
 
-    return flexiclic.set_source_data(api_opts).then(function (clic_meta) {
-        var loc = { path: 0, index: 0 };
+    path = [].concat.apply([], Object.values(page_state.arg("algo")));
 
-        return flexiclic.data_at(loc).then(function (data) {
-            var i;
+    return flexiclic.compute_path({opts: api_opts, path: path}).then(function (data) {
+        var i, out;
 
-            for (i = 0; i < data.length; i++) {
-                // Annotate with kwicSpan, so renderTokenArray() can set the direction
-                data[i][0].kwicSpan = { reverse: true };
-                data[i][1].kwicSpan = { reverse: false };
-                data[i][2].kwicSpan = { reverse: false };
-                // Need to annotate each row for renderPosition()
-                data[i].chapter_start = clic_meta.chapter_start[data[i][3][0]];
-            }
+        // Assume first item in data array is CLiC metadata
+        out = data.shift();
+        out.data = data;
 
-            // Add data response from FlexiConc to CLiC metadata, use this to generate view
-            clic_meta.data = data;
-            return clic_meta;
-        });
+        for (i = 0; i < data.length; i++) {
+            // Annotate with kwicSpan, so renderTokenArray() can set the direction
+            data[i][0].kwicSpan = { reverse: true };
+            data[i][1].kwicSpan = { reverse: false };
+            data[i][2].kwicSpan = { reverse: false };
+            // Need to annotate each row for renderPosition()
+            data[i].chapter_start = out.chapter_start[data[i][3][0]];
+        }
+
+        return out;
     });
 };
 
