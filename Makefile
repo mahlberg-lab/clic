@@ -1,21 +1,39 @@
 SUBDIRS = $(shell ls -d */)
 
 compile:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 test:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 lint:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 coverage:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 start:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 install:
-	for dir in schema client server docs; do make -C $$dir $@; done
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
 
 .PHONY: compile test lint coverage start install
