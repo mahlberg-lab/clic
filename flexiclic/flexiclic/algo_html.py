@@ -39,7 +39,6 @@ def html_prop(input_name, prop_desc):
         if prop_desc['type'] != 'string':
             return '<pre style="border: 1px solid red">Non-string enum: %s</pre>' % prop_desc
         return html_prop_select(
-            input_type="text",
             name=input_name,
             label=prop_desc["description"],
             options=[dict(
@@ -75,7 +74,13 @@ def html_prop(input_name, prop_desc):
         )
 
     if prop_desc['type'] == 'array' or prop_desc['type'] == ['array']:
-        return '<pre style="border: 1px solid red">type: array not supported: %s</pre>' % prop_desc
+        return html_prop_select(
+            name=input_name,
+            label=prop_desc["description"],
+            options=[],
+            classes=["allow-add-items"],
+            multiple="multiple",
+        )
 
     raise ValueError('Unknown type: %s</pre>' % prop_desc)
 
@@ -126,7 +131,7 @@ def html_prop_checkbox(input_type, name, label, value, **props):
     )
 
 
-def html_prop_select(input_type, name, label, options, **props):
+def html_prop_select(name, label, options, classes = [], **props):
     """
     Generate an HTML-select based control
     """
@@ -139,11 +144,11 @@ def html_prop_select(input_type, name, label, options, **props):
 
     return string.Template("""
 <label for="ctlb-flexiconc-${name}">${label}</label>
-<select name="${name}" id="ctlb-flexiconc-${name}" class="chosen-select" ${props}>${options}</select>
+<select name="${name}" id="ctlb-flexiconc-${name}" class="chosen-select ${klass}" ${props}>${options}</select>
     """.strip()).substitute(
         name=name,
-        type=input_type,
         label=html.escape(label),
         options=" ".join(html_option(**o) for o in options),
+        klass=" ".join(classes),
         props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None)
     )
