@@ -59,7 +59,9 @@ def normalize(path, available_algorithms):
             if arg_k in arg_required and val is None:
                 raise UserError("Argument %s for %s is required" % (arg_k, algo_metadata["full_name"]), "warn")
             val = convert_value(val, arg_spec["type"], items=arg_spec.get('items', {}))
-            algo["args"][arg_k] = val
+            # Any values of None should be missing from the schema, so we don't trigger validation problems
+            if val is not None:
+                algo["args"][arg_k] = val
 
         # File appropriately, annotations are separate, sort/group get combined into an arrangement pseudo-algorithm
         if algo["algorithm_type"] == "annotation":

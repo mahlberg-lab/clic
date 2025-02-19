@@ -29,8 +29,12 @@ class TestTypesFromString(unittest.TestCase):
             self.assertEqual(annotations, [])
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0]["algorithm_name"], "testing_algo")
+            if len(out[0]["args"]) == 0:
+                return None
             self.assertEqual(list(out[0]["args"].keys()), ["test_param"])
-            return out[0]["args"]["test_param"]
+            out = out[0]["args"]["test_param"]
+            self.assertTrue(out is not None)
+            return out
 
         # None not allowed if required=True
         with self.assertRaises(errors.UserError):
