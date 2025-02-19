@@ -112,6 +112,50 @@ function swaps_to_url(page_state, arg_swaps) {
     return page_state.clone(detail).to_url();
 }
 
+function chosen_init(el) {
+    window.jQuery(el).find('.chosen-select').chosen({ width: '100%', search_contains: true }).change(function (e) {
+        // Chosen's change event isn't bubbling to the form, do it ourselves.
+        e.target.form.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+    });
+
+    window.jQuery(el).find('.chosen-select.allow-add-items').on('chosen:no_results', function (event, data) {
+        var elChosen = event.target,
+            elNoResults = elChosen.nextElementSibling.querySelector(":scope .no-results");
+
+        elNoResults.innerText = "Add '" + data.chosen.get_search_text() + "'";
+        elNoResults.setAttribute("data-value", data.chosen.get_search_text());
+        elNoResults.style.fontWeight = "bold";
+        elNoResults.style.color = "black";
+        elNoResults.style.textAlign = "center";
+        elNoResults.onclick = function (e) {
+            elChosen.appendChild(new Option(
+                elNoResults.getAttribute("data-value"),
+                elNoResults.getAttribute("data-value"),
+                false,
+                true
+            ));
+            window.jQuery(elChosen).trigger('chosen:updated');
+            window.setTimeout(function () {
+                elChosen.nextElementSibling.querySelector(":scope .chosen-search-input").focus();
+            }, 100);
+        };
+    }).next(".chosen-container").keydown(function (e) {
+        var stroke = e.which !== null ? e.which : e.keyCode,
+            elNoResults;
+
+        if (stroke === 9 || stroke === 13) {
+            // Find the no-results element, if it's there click it.
+            elNoResults = e.target.closest(".chosen-container").querySelector(":scope .no-results");
+
+            if (elNoResults) {
+                elNoResults.click();
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }
+    });
+}
+
 function ControlBar(control_bar) {
     var self = this;
 
@@ -224,12 +268,7 @@ function ControlBar(control_bar) {
         this.control_bar.classList.add('in');
     }
 
-    Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
-        jQuery(el).chosen({ width: '100%', search_contains: true }).change(function (e) {
-            // Chosen's change event isn't bubbling to the form, do it ourselves.
-            self.control_bar.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-        });
-    });
+    chosen_init(this.control_bar);
 
     // Turn "nouislider"-type inputs into an actual nouislider
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('input[type=nouislider]'), function (el, i) {
@@ -341,7 +380,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
                 newAlgoHtml(el.options[el.selectedIndex].value, newIdx).then(function (elNew) {
                     // Insert algorithm before the "algorithm-add" select
                     el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
-                    window.jQuery(elNew).find('.chosen-select').chosen();  // Init any chosen dialogs
+                    chosen_init(elNew);
                 });
             };
 
@@ -365,10 +404,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
                 return newAlgoHtml(algo_name, i).then(function (el) {
                     // Replace old elements with new algo
                     elsExisting[i].replaceWith(el);
-                    window.jQuery(el).find('.chosen-select').chosen({ width: '100%', search_contains: true }).change(function (e) {
-                        // Chosen's change event isn't bubbling to the form, do it ourselves.
-                        e.target.form.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-                    });
+                    chosen_init(el);
                 });
             }));
         }));
@@ -436,7 +472,7 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Set values from page options, or defaults
         Array.prototype.forEach.call(elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
-                var new_val = page_state.arg(el.name);
+                var new_val = page_state.arg(el.name), existingOptions;
 
                 if (el.tagName === 'FIELDSET') {
                     Math.floor(0);
@@ -469,6 +505,17 @@ ControlBar.prototype.reload = function reload(page_state) {
                                 return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                             }), c.title);
                         }).join("");
+                    } else if (el.classList.contains("allow-add-items")) {
+                        // We should add any missing items before continuing
+                        existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
+
+                        el.append.apply(el, new_val.filter(function (x) {
+                            // Only want to add items not already in the list
+                            return !existingOptions.has(x);
+                        }).map(function (x) {
+                            // Turn them into an already-selected Option
+                            return new Option(x, x, true, true);
+                        }));
                     }
                     jQuery(el).val(new_val);
                 } else if (Array.isArray(new_val) && new_val.length > 1) {
