@@ -1,0 +1,63 @@
+# https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html
+# https://github.com/actions/checkout
+
+on:
+  push:
+    branches:
+      - '[0-9]+\.[0-9]+'
+  pull_request:
+    branches:
+      - '[0-9]+\.[0-9]+'
+
+name: int-test
+
+jobs:
+  int-test:
+    runs-on: ${{ matrix.config.os }}
+    name: CLiC Integration Test ${{ matrix.config.os }}
+
+    strategy:
+      matrix:
+        config:
+          - { os: ubuntu-24.04 }
+
+    steps:
+      - name: Chmod runner home directory
+        run: |
+          sudo chmod a+rX $(dirname $(dirname "${{ github.workspace }}"))
+          ls -dl $(dirname $(dirname "${{ github.workspace }}"))
+          sudo chmod a+rX $(dirname $(dirname $(dirname "${{ github.workspace }}")))
+          ls -dl $(dirname $(dirname $(dirname "${{ github.workspace }}")))
+      - name: Check out CLiC
+        # NB: Checks out into GITHUB_WORKSPACE, e.g. /home/runner/work/clic/clic
+        uses: actions/checkout@v4
+        with:
+          # Get enough history so git describe works
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install prerequisites
+        run: sudo ./prerequisites.sh
+      - name: Create config file
+        # NB: Full hostname is too long for a self-signed cert
+        run: |
+          echo 'PROJECT_MODE = production' > local-conf.mk
+          echo "WWW_SERVER_NAME = $(hostname -s)" >> local-conf.mk
+          echo "WWW_DHPARAM_FILE = /etc/ssl/private/dhparam.pem" >> local-conf.mk
+          cat local-conf.mk
+      - name: Make
+        run: make
+      - name: Pre-generated dhparam.pem
+        run: sudo cp .github/dhparam.pem /etc/ssl/private/dhparam.pem
+      - name: Start postgres/nginx
+        # NB: Services are installed but stopped by default
+        run: sudo systemctl start postgresql.service nginx.service
+      - name: Install
+        run: sudo ./install.sh
+      - name: systemd unit running?
+        run: systemctl status clic.service
+      - name: Fetch index page
+        run: curl --fail-with-body --insecure "https://$(hostname -s)/"
+      - name: Fetch from API
+        run: curl --fail-with-body --insecure "https://$(hostname -s)/api/corpora"
+      - name: Run unit tests
+        run: make test
