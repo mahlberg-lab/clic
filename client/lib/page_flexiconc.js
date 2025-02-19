@@ -43,8 +43,9 @@ PageFlexiConc.prototype.init = function () {
     this.book_titles = {};
     this.table_opts.deferRender = true;
     this.table_opts.autoWidth = false;
-    this.table_count_column = 1;
-    this.table_opts.orderFixed = { pre: [['0', 'desc']] };
+    // NB: FlexiConc should be ordering
+    this.table_opts.order = [];
+    this.table_opts.ordering = false;
 };
 
 PageFlexiConc.prototype.page_title = function (page_state) {
@@ -52,15 +53,10 @@ PageFlexiConc.prototype.page_title = function (page_state) {
 };
 
 PageFlexiConc.prototype.reload = function reload(page_state) {
-    var tag_column_order = page_state.state('tag_column_order');
-
-    function renderBoolean(data, type, full, meta) {
-        return data ? "✓" : " ";
-    }
-
     this.table_opts.non_tag_columns = [
         { visible: false, sortable: false, searchable: false },
-        { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
+        // NB: This is line-id, not a table_count_column as in other views
+        { title: "", data: "6", width: "3rem", sortable: false, searchable: false },
         { title: "Left", data: "0", render: concordance_utils.renderTokenArray, className: "context left", sortable: false }, // Left
         { title: "Node", data: "1", render: concordance_utils.renderTokenArray, className: "context node", sortable: false }, // Node
         { title: "Right", data: "2", render: concordance_utils.renderTokenArray, className: "context right", sortable: false }, // Right
@@ -71,13 +67,9 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         { title: "Sent.", data: "4.2", visible: (page_state.arg('table-type') === 'full'), searchable: false, sortable: false }, // Sentence-in-chapter
         { title: "In&nbsp;bk.", data: "3", width: "52px", render: renderPosition, searchable: false, sortable: false, orderData: [5, 9] }, // Book graph
     ];
-    this.table_opts.order = [[0, 'asc']];
 
     // Generate column list based on tag_columns
-    this.table_opts.columns = this.table_opts.non_tag_columns.concat(tag_column_order.map(function (t) {
-        return { title: "<div>" + t + "</div>", data: t, width: "2rem", render: renderBoolean, className: "tagColumn" };
-    }));
-    this.table_el.classList.toggle('hasTagColumns', tag_column_order.length > 0);
+    this.table_opts.columns = this.table_opts.non_tag_columns;
 
     // For single-word nodes, we want to keep the node column narrow to balance the table nicely
     this.table_el.classList.toggle('narrow-node',
