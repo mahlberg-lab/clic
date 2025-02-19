@@ -53,6 +53,10 @@ jobs:
         run: sudo systemctl start postgresql.service nginx.service
       - name: Install
         run: sudo ./install.sh
+      - name: Import minimal corpora
+        run: |
+          cp -vr .github/minimal-corpora ./corpora
+          ./import.sh
       - name: systemd unit running?
         run: systemctl status clic.service
       - name: Fetch index page
