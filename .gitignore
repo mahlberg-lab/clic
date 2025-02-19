@@ -35,6 +35,7 @@
 /server/lib64
 /server/pyvenv.cfg
 /server/appconfig.py
+/server/clic/appconfig.py
 /server/.coverage
 /server/htmlcov/
 

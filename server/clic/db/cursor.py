@@ -14,7 +14,7 @@ import psycopg2.extensions
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import MinTimeLoggingConnection as BaseLoggingConnection
 
-import appconfig
+from .. import appconfig
 
 _pool = None
 _pool_lock = threading.Lock()

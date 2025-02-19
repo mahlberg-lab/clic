@@ -5,7 +5,7 @@ clic.db.version: Get/set corpora version in DB
 import os
 import subprocess
 
-import appconfig
+from .. import appconfig
 
 
 def clic_version(cur):

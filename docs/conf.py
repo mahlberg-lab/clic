@@ -219,7 +219,7 @@ def run_apidoc(_):
         "--maxdepth", "10",
         "-o", "module",
         server_dir,
-        os.path.join(server_dir, 'appconfig.py'),
+        os.path.join(server_dir, 'clic', 'appconfig.py'),
         os.path.join(server_dir, 'clic', 'uwsgi.py'),
         os.path.join(server_dir, 'conftest.py'),
         os.path.join(server_dir, 'tests', '*.py'),
