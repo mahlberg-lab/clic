@@ -33,6 +33,7 @@ sudo -uwww-data cat "${PROJECT_PATH}/client/www/index.html" || {
 
 # Make sure server-name is in domains.txt
 mkdir -p "/etc/dehydrated"
+[ -e "/etc/dehydrated/domains.txt" ] || echo "" > "/etc/dehydrated/domains.txt"
 grep -qE "^${WWW_SERVER_NAME}" "/etc/dehydrated/domains.txt" || {
     echo "${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES}" >> "/etc/dehydrated/domains.txt"
 }
