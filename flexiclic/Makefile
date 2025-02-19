@@ -1,3 +1,4 @@
+EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
 FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
 
@@ -44,7 +45,7 @@ OUT_FILES = \
     $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
     $(patsubst %, www/%, $(LOCAL_WHEELS)) \
 
-all: $(OUT_FILES)
+all: test $(OUT_FILES)
 
 clean:
 	rm -r www/* || true
@@ -63,6 +64,9 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip flexiconc
 	# Freeze the output at current state
 	./bin/pip freeze | grep -v egg=$(EGG_NAME) | grep -vE '^pkg-resources=|^setuptools=|^wheel=' > requirements.txt
 	touch lib/.requirements
+
+test: lib/.requirements
+	./bin/pytest $(EGG_NAME) tests
 
 www/manifest.js:
 	@echo 'const PYODIDE_URL = `pyodide-$(PYODIDE_VERSION)/pyodide.js`' > www/manifest.js
@@ -116,4 +120,4 @@ www/pyodide-$(PYODIDE_VERSION)/pyodide.js:
 	curl -L https://github.com/pyodide/pyodide/releases/download/$(PYODIDE_VERSION)/pyodide-$(PYODIDE_VERSION).tar.bz2 | tar -jxv --strip-components=1 -C www/pyodide-$(PYODIDE_VERSION)
 	touch $@
 
-.PHONY: all clean www/manifest.js
+.PHONY: all clean test www/manifest.js

@@ -3,5 +3,12 @@
 name = "flexiclic"
 version = "0.0.0dev0"
 
+[project.optional-dependencies]
+testing = [
+    'pytest',
+    'pytest-cov',
+    'testing.postgresql',
+]
+
 [tool.setuptools.packages.find]
 include = ["flexiclic"]
