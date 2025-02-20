@@ -134,7 +134,7 @@ function chosen_init(el) {
                 false,
                 true
             ));
-            window.jQuery(elChosen).trigger('chosen:updated');
+            elChosen.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             window.setTimeout(function () {
                 elChosen.nextElementSibling.querySelector(":scope .chosen-search-input").focus();
             }, 100);
