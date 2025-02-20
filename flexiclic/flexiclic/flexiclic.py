@@ -59,15 +59,16 @@ class FlexiClic():
 
         node = concordance.root
         for node_spec in path:
-            if node_spec["algorithm_type"] == "subset" or node_spec["algorithm_type"] == "selection":
+            if node_spec["algorithm_type"] == "selection":
                 node = node.add_subset_node(node_spec["algorithm_name"], node_spec["args"])
-            elif node_spec["algorithm_type"] == "arrangement":
+            if node_spec["algorithm_type"] == "arrangement":
                 node = node.add_arrangement_node(
                     ordering=node_spec["ordering"],
                     grouping=node_spec["grouping"],
                 )
             else:
-                raise ValueError("Unknown node spec: %s" % node_spec)
+                # NB: At this point other algorithm_types are filed elsewhere
+                raise ValueError("Invalid algorithm_type: %s" % node_spec)
 
         return self._clic_meta, node
 

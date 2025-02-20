@@ -67,23 +67,25 @@ def normalize(path, available_algorithms):
         if algo["algorithm_type"] == "annotation":
             algo["column_name"] = algo["algorithm_name"]
             annotations.append(algo)
-        elif algo["algorithm_type"] in set(("sorting", "grouping")):
-            if len(out) == 0 or out[-1]["algorithm_type"] != "arrangement":
+        elif algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
+            if (len(out) == 0 or
+                    # Final node isn't an arrangement
+                    out[-1]["algorithm_type"] != "arrangement" or
+                    # Final node is an arrangement, but already has a partitioning/clustering node
+                    (algo["algorithm_type"] in ("partitioning", "clustering") and out[-1]["grouping"] is not None)):
                 # Start new arrangement node
                 out.append(dict(
                     algorithm_type="arrangement",
                     ordering=[],
                     grouping=None
                 ))
-            if algo["algorithm_type"] == "sorting":
+            if algo["algorithm_type"] in ("sorting", "ranking"):
                 out[-1]["ordering"].append(algo)
             else:  # i.e. grouping
-                if out[-1]["grouping"] is not None:
-                    raise ValueError("Cannot have multiple grouping nodes in a row")
-                out[-1]["grouping"].append(algo)
+                out[-1]["grouping"] = algo
         elif algo["algorithm_type"] == "selection":
             out.append(algo)
         else:
-            raise ValueError("Unknown algorithm_type: %s" % algo["algorithm_type"])
+            raise ValueError("Unknown algorithm_type: %s" % algo)
 
     return out, annotations
