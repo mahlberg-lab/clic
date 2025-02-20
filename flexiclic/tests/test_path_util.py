@@ -61,5 +61,8 @@ class TestTypesFromString(unittest.TestCase):
         # Arrays of type
         self.assertEqual(conv(["1", "2", "3"], dict(type=["array"])), ["1", "2", "3"])
         self.assertEqual(conv(["1", "2", "3"], dict(type=["array"], items=dict(type="integer"))), [1, 2, 3])
-        with self.assertRaisesRegex(errors.UserError, "Cannot convert.*gelda.*array"):
-            self.assertEqual(conv("gelda", dict(type=["array"])), ["1", "2", "3"])
+        self.assertEqual(conv(4, dict(type=["array"], items=dict(type="integer"))), [4])
+        with self.assertRaisesRegex(errors.UserError, "Cannot convert.*gelda.*integer"):
+            conv("gelda", dict(type=["array"], items=dict(type="integer")))
+        with self.assertRaisesRegex(errors.UserError, "Cannot convert.*gelda.*integer"):
+            conv("gelda", dict(type=["array"], items=dict(type="integer")))

@@ -19,7 +19,7 @@ def convert_value(val, target_types, items):
                 if val is None:
                     val = []
                 elif not isinstance(val, list):
-                    raise ValueError()
+                    val = [convert_value(v, items.get("type"), {}) for v in [val]]
                 else:
                     val = [convert_value(v, items.get("type"), {}) for v in val]
             elif t == "boolean":
