@@ -119,10 +119,10 @@ test('nested_args', function (t) {
     t.deepEqual(s.arg("animals[ducks]"), []);
     t.deepEqual(s.arg("animals[ducks][]"), []);
 
-    t.deepEqual(s.arg("animals"), {
+    t.deepEqual(s.nested_args(), { animals: {
         cows: [ 'daisy', 'freda' ],
         pig: { a: 'frank' },
-    });
+    }});
 
     // Nested args are preserved in URL
     t.deepEqual(s.to_url(), "/moo/doc?animals[cows][]=daisy&animals[cows][]=freda&animals[pig][a]=frank");

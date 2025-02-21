@@ -114,10 +114,6 @@ State.prototype.arg = function (name) {
     if (Array.isArray(this.defaults[name])) {
         return this._args[name] || this.defaults[name];
     }
-    if (typeof this.defaults[name] === "object") {
-        // Non-array object, assume it's a nested arg
-        return this.nested_args()[name] || this.defaults[name];
-    }
     return this._args.hasOwnProperty(name) ? (this._args[name] || []).join("") : this.defaults[name];
 };
 
