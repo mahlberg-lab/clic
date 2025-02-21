@@ -61,7 +61,7 @@ class FlexiClic():
         for node_spec in path:
             if node_spec["algorithm_type"] == "selection":
                 node = node.add_subset_node(node_spec["algorithm_name"], node_spec["args"])
-            if node_spec["algorithm_type"] == "arrangement":
+            elif node_spec["algorithm_type"] == "arrangement":
                 node = node.add_arrangement_node(
                     ordering=node_spec["ordering"],
                     grouping=node_spec["grouping"],
