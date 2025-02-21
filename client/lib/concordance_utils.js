@@ -142,3 +142,17 @@ module.exports.renderBook = function (render_mode, data, type) {
 
     return render_mode === 'full' ? this.book_titles[data][0] : data;
 };
+
+// Plural-ise a few known phrases
+module.exports.plural = function (amount, unit) {
+    if (amount === 1) {
+        return amount + " " + unit;
+    }
+
+    switch (unit) {
+    case "KWIC match":
+        return amount + " " + unit + "es";
+    default:
+        return amount + " " + unit + "s";
+    }
+};
