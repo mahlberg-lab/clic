@@ -156,8 +156,14 @@ class FlexiClic():
         if "global_info" in view:
             clic_meta["global_info"] = view["global_info"]
 
-        if "token_spans" in view:
-            raise NotImplementedError
+        # Re-organise token_spans by line_id
+        token_spans = {}
+        for t in view.get("token_spans", []):
+            if t["line_id"] not in token_spans:
+                token_spans[t["line_id"]] = [t]
+            else:
+                token_spans[t["line_id"]].append(t)
+        line_info = view.get("line_info", {})
 
         yield clic_meta  # Return clic metadata to client first
 
@@ -183,6 +189,22 @@ class FlexiClic():
                 line_tokens = line_tokens.sort_values(by=['offset', 'id_in_line'])
                 line_meta = metadata[metadata['line_id'] == line_id].to_dict('records')[0]
 
+                # If we have a token_span, convert it into an array of matches offsets using line IDs (see renderTokenArray)
+                if line_id in token_spans:
+                    match_range = []
+                    for t in token_spans[line_id]:
+                        match_range.extend(line_tokens[line_tokens['id_in_line'].between(
+                            t["start_id_in_line"],
+                            t["end_id_in_line"],
+                        )]['offset'].values)
+                    matches = [
+                        [int(abs(x)) for x in match_range if x < 0],
+                        [1] if 0 in match_range else [],
+                        [int(x) for x in match_range if x > 0],
+                    ]
+                else:
+                    matches = None
+
                 # Create array entry to be digested in page_flexiconc.js:table_opts.non_tag_columns
                 yield (
                     to_clic_context(line_tokens[line_tokens['offset'] < 0]),
@@ -200,7 +222,7 @@ class FlexiClic():
                     ],
                     partition_id,
                     line_id,
-                    view.get("line_info", {}).get(line_id, {}),
+                    line_info.get(line_id, {}) | dict(matches=matches),
                 )
 
     def _convert_to_flexiconc(self, data):

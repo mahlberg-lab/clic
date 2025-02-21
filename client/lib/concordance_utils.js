@@ -32,7 +32,12 @@ function tokenToType(tok) {
     return unidecode(tok.toLowerCase());
 }
 
-// Column is an array of tokens, mark these up as words, only sort on word content
+/**
+  * Column is an array of tokens, mark these up as words, only sort on word content
+  * * data: Array of tokens/type index -  ["these", " ", "words", [0, 2]]
+  * * data.kwicSpan.reverse: true iff this is a left context, and we should right-align
+  * * data.matches: Array of match indicies, 1-indexed outwards from context
+  */
 module.exports.renderTokenArray = function renderTokenArray(data, type, full, meta) {
     var i, t, out = "", word_indices = data[data.length - 1];
 

@@ -174,10 +174,13 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
         out.data = data;
 
         for (i = 0; i < data.length; i++) {
-            // Annotate with kwicSpan, so renderTokenArray() can set the direction
+            // Annotate context with kwicSpan/matches for renderTokenArray()
             data[i][0].kwicSpan = { reverse: true };
             data[i][1].kwicSpan = { reverse: false };
             data[i][2].kwicSpan = { reverse: false };
+            data[i][0].matches = (data[i][7].matches || [])[0];
+            data[i][1].matches = (data[i][7].matches || [])[1];
+            data[i][2].matches = (data[i][7].matches || [])[2];
             // Need to annotate each row for renderPosition()
             data[i].chapter_start = out.chapter_start[data[i][3][0]];
 
