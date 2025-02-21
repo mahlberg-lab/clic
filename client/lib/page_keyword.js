@@ -78,7 +78,6 @@ PageKeyword.prototype.post_process = function (page_state, raw_data) {
         corpora: page_state.arg('corpora'),
         'conc-subset': page_state.arg('subset'),
     }}, true).to_url();
-    console.log("Parp" + url_prefix);
 
     for (i = 0; i < data.length; i++) {
         // Add cluster URL prefix for use in the render function
