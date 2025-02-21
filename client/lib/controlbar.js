@@ -514,7 +514,8 @@ ControlBar.prototype.reload = function reload(page_state) {
 
                         el.append.apply(el, new_val.filter(function (x) {
                             // Only want to add items not already in the list
-                            return !existingOptions.has(x);
+                            // TODO: When creating new algorithms via. JS, the value is [null]?
+                            return x && !existingOptions.has(x);
                         }).map(function (x) {
                             // Turn them into an already-selected Option
                             return new Option(x, x, true, true);
