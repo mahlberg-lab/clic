@@ -193,6 +193,28 @@ test('update', function (t) {
     t.end();
 });
 
+test('update-set', function (t) {
+    var s;
+
+    s = new State(fake_window('/moo/doc', '?cows=daisy', {}), { frogs: new global.Set() });
+    t.deepEqual(s.state("frogs"), new global.Set());
+
+    // Add an item, we get noticed
+    t.ok(s.update({ state: { frogs: s.state("frogs").add("kermit") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit"]));
+
+    // Adding an already-existing item isn't a modification
+    t.ok(!s.update({ state: { frogs: new global.Set(s.state("frogs")).add("kermit") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit"]));
+
+    // A new frog is
+    // NB: We have to clone the set before modifying it, since otherwise we're modifying by-reference
+    t.ok(s.update({ state: { frogs: new global.Set(s.state("frogs")).add("detective") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit", "detective"]));
+
+    t.end();
+});
+
 test('clone', function (t) {
     var s, s2;
 

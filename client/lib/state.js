@@ -1,5 +1,5 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true */
+/*jslint todo: true, regexp: true, unparam: true, nomen: true */
 
 var flatten = require('./flatten.js');
 
@@ -172,12 +172,20 @@ State.prototype.update = function (changes, flush) {
         modified = false;
 
     function compare(existing, change) {
+        function replacer(item_key, value) {
+            if (value instanceof global.Set) {
+                // Sets don't stringify by default: https://stackoverflow.com/a/46491780
+                return Array.from(value);
+            }
+            return value;
+        }
+
         if (existing === undefined) {
             // An empty array is a missing item in URL speak
             existing = [];
         }
 
-        if (JSON.stringify(change) !== JSON.stringify(existing)) {
+        if (JSON.stringify(change, replacer) !== JSON.stringify(existing, replacer)) {
             return false;
         }
         return true;
