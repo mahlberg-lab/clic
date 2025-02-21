@@ -36,26 +36,6 @@ function obj_to_search(obj) {
     }).filter(function (s) { return !!s; }).join('&');
 }
 
-/** convert [{key: [value, value, ..]}] arg structure into nested object */
-function nested_args(args) {
-    var out = {};
-
-    flatten.set_values(out, Object.keys(args).map(function (k) {
-        if (k.endsWith("[]") || args[k].length > 1) {
-            // Explicitly an array, or multiple values, keep array-ness
-            return {key: k, value: args[k]};
-        }
-        if (args[k].length === 1) {
-            // Return single value
-            return {key: k, value: args[k][0]};
-        }
-        // Empty list
-        return {key: k, value: null};
-    }));
-
-    return out;
-}
-
 /**
   * Create a new state object based on the current page
   * - win: Global window object / previous state
@@ -92,6 +72,26 @@ State.prototype.doc = function () {
     return this._doc;
 };
 
+/** convert arg structure into nested object */
+State.prototype.nested_args = function () {
+    var out = {};
+
+    flatten.set_values(out, Object.keys(this._args).map(function (k) {
+        if (k.endsWith("[]") || this._args[k].length > 1) {
+            // Explicitly an array, or multiple values, keep array-ness
+            return {key: k, value: this._args[k]};
+        }
+        if (this._args[k].length === 1) {
+            // Return single value
+            return {key: k, value: this._args[k][0]};
+        }
+        // Empty list
+        return {key: k, value: null};
+    }.bind(this)));
+
+    return out;
+};
+
 /** Fetch named a named argument (i.e. querystring), or all positional args */
 State.prototype.arg = function (name) {
     var x;
@@ -102,7 +102,7 @@ State.prototype.arg = function (name) {
 
     if (name.match(/^\w+\[/)) {
         // Deep reference to arg, use get_values to find it
-        x = flatten.get_values(nested_args(this._args), [name]);
+        x = flatten.get_values(this.nested_args(), [name]);
         // If no value, return [], otherwise ensure value is array
         return x.length === 0 ? [] : Array.isArray(x[0].value) ? x[0].value : [x[0].value];
     }
@@ -116,7 +116,7 @@ State.prototype.arg = function (name) {
     }
     if (typeof this.defaults[name] === "object") {
         // Non-array object, assume it's a nested arg
-        return nested_args(this._args)[name] || this.defaults[name];
+        return this.nested_args()[name] || this.defaults[name];
     }
     return this._args.hasOwnProperty(name) ? (this._args[name] || []).join("") : this.defaults[name];
 };

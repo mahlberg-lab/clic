@@ -136,7 +136,7 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 };
 
 PageFlexiConc.prototype.reload_data = function reload(page_state) {
-    var self = this, api_opts = {}, path;
+    var self = this, api_opts = {}, path, nested_args = page_state.nested_args();
 
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
@@ -160,7 +160,8 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
         });
     }
 
-    path = [].concat.apply([], Object.values(page_state.arg("algo")));
+    // Path is combination of all algorithm classes
+    path = [].concat(nested_args.annotation || [], nested_args.algo || []);
 
     // Reset fcPartitions, so we only show the first partition if results are partitioned
     self.fcPartitions = new Set([0]);

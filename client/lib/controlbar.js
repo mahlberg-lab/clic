@@ -326,8 +326,8 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
                 function renumberElements(els) {
                     Array.from(els).forEach(function (elField) {
-                        elField.name = elField.name.replace(/^algo\[(\w+)\]\[(\d+)\]/, function (m, g1, g2) {
-                            return "algo[" + g1 + "][" + (parseInt(g2, 10) - 1) + "]";
+                        elField.name = elField.name.replace(/^(\w+)\[(\d+)\]/, function (m, g1, g2) {
+                            return g1 + "[" + (parseInt(g2, 10) - 1) + "]";
                         });
                     });
                 }
@@ -351,30 +351,31 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
         });
     }
 
-    var arg_algo = page_state.arg("algo");
+    var nested_args = page_state.nested_args();
 
     // Not a flexiconc page, shutdown if needed & carry on
     if (page_state.doc() !== "/flexiconc") {
         return window.flexiclic ? window.flexiclic.shutdown() : null;
     }
 
-    return window.flexiclic.algorithms_by_type().then(function (algorithms_by_type) {
+    return window.flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
-            var elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
-                algo_type = elAlgoGroup.getAttribute('data-algorithm-type'),
+            var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
+                arg_algo = nested_args[algo_class] || [],
+                elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
                 elsExisting = Array.from(elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)")),
-                cur_algo_names = (arg_algo[algo_type] || []).map(function (x) { return x.algorithm_name; });
+                cur_algo_names = arg_algo.map(function (x) { return x.algorithm_name; });
 
             // Fill add select with available algorithms
             // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
-            elAddSelect.innerHTML = '<option></option>' + algorithms_by_type[algo_type].map(function (a) {
+            elAddSelect.innerHTML = '<option></option>' + algorithms_by_class[algo_class].map(function (a) {
                 return (new Option(a.label, a.name)).outerHTML;
             });
 
             // Wire up change event to populate new algorithm
             elAddSelect.onchange = function (event) {
                 // Count existing algorithms, new one will be one higher
-                var newPrefix = "algo[" + algo_type + "][" + elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length + "]",
+                var newPrefix = algo_class + "[" + elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length + "]",
                     el = event.target;
 
                 newAlgoHtml(el.options[el.selectedIndex].value, newPrefix).then(function (elNew) {
@@ -397,7 +398,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
             // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
             return Promise.all(cur_algo_names.map(function (algo_name, i) {
-                var prefix = "algo[" + algo_type + "][" + i + "]";
+                var prefix = algo_class + "[" + i + "]";
 
                 if (algo_name === (elsExisting[i].elements[prefix + "[algorithm_name]"] || {}).value) {
                     // algo_name matches, leave HTML as-is.

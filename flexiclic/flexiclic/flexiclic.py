@@ -72,12 +72,18 @@ class FlexiClic():
 
         return self._clic_meta, node
 
-    def algorithms_by_type(self):
+    def algorithms_by_class(self):
+        """
+        Group algorithms by class
+
+        class is a flexiclic invention, and either "annotation" or "algo"
+        """
         concordance = self._flexiconc_concordance()
 
         out = collections.defaultdict(list)
         for algo_name, algo_metadata in concordance.available_algorithms.items():
-            out[algo_metadata["algorithm_type"]].append(dict(
+            algo_class = "annotation" if algo_metadata["algorithm_type"] == "annotation" else "algo"
+            out[algo_class].append(dict(
                 name=algo_name,
                 label=algo_name,
             ))
