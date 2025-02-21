@@ -2,12 +2,12 @@ import html
 import string
 
 
-def from_schema(algo, index=0):
+def from_schema(algo, prefix="algo"):
     """
     Convert an algorithm schema into a HTML form snippet
 
     - algo: The algorithm schema
-    - index: The index of this algorithm in it's overall list 
+    - prefix: The prefix for all form field names
     """
     args_schema = algo['args_schema']
     if args_schema['type'] != "object":
@@ -15,13 +15,15 @@ def from_schema(algo, index=0):
 
     yield "<legend>%s</legend>" % html.escape(algo['full_name'])
     yield html_prop_hidden(
-        name="algo[%s][%d][algorithm_name]" % (algo["algorithm_type"], index),
+        name="%s[%s]" % (prefix, "algorithm_name"),
         value=algo['full_name'],
     )
 
     for prop_name, prop_desc in args_schema["properties"].items():
-        input_name = "algo[%s][%d][%s]" % (algo["algorithm_type"], index, prop_name)
-        yield html_prop(input_name, prop_desc)
+        yield html_prop(
+            "%s[%s]" % (prefix, prop_name),
+            prop_desc,
+        )
 
 
 def html_prop(input_name, prop_desc):

@@ -83,10 +83,10 @@ class FlexiClic():
             ))
         return out
 
-    def algorithm_render_html(self, algo_name, index):
+    def algorithm_render_html(self, algo_name, prefix):
         concordance = self._flexiconc_concordance()
 
-        return algo_html.from_schema(concordance.available_algorithms[algo_name], index)
+        return algo_html.from_schema(concordance.available_algorithms[algo_name], prefix)
 
     def compute_path(self, opts, path):
         """

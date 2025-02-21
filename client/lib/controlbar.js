@@ -311,9 +311,9 @@ function ControlBar(control_bar) {
 }
 
 ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
-    /** Promise to return DOM element for an (algo_name) at (newIdx) */
-    function newAlgoHtml(algo_name, newIdx) {
-        return window.flexiclic.algorithm_render_html({algo_name: algo_name, index: newIdx}).then(function (algoHtml) {
+    /** Promise to return DOM element for an (algo_name) with element names prefixed by (newPrefix) */
+    function newAlgoHtml(algo_name, newPrefix) {
+        return window.flexiclic.algorithm_render_html({algo_name: algo_name, prefix: newPrefix}).then(function (algoHtml) {
             var elNew = document.createElement("fieldset");
             elNew.className = "algorithm";
             elNew.innerHTML = [
@@ -374,10 +374,10 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
             // Wire up change event to populate new algorithm
             elAddSelect.onchange = function (event) {
                 // Count existing algorithms, new one will be one higher
-                var newIdx = elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length,
+                var newPrefix = "algo[" + algo_type + "][" + elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length + "]",
                     el = event.target;
 
-                newAlgoHtml(el.options[el.selectedIndex].value, newIdx).then(function (elNew) {
+                newAlgoHtml(el.options[el.selectedIndex].value, newPrefix).then(function (elNew) {
                     // Insert algorithm before the "algorithm-add" select
                     el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
                     chosen_init(elNew);
@@ -397,11 +397,13 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
 
             // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
             return Promise.all(cur_algo_names.map(function (algo_name, i) {
-                if (algo_name === (elsExisting[i].elements["algo[" + algo_type + "][" + i + "][algorithm_name]"] || {}).value) {
+                var prefix = "algo[" + algo_type + "][" + i + "]";
+
+                if (algo_name === (elsExisting[i].elements[prefix + "[algorithm_name]"] || {}).value) {
                     // algo_name matches, leave HTML as-is.
                     return Promise.resolve();
                 }
-                return newAlgoHtml(algo_name, i).then(function (el) {
+                return newAlgoHtml(algo_name, prefix).then(function (el) {
                     // Replace old elements with new algo
                     elsExisting[i].replaceWith(el);
                     chosen_init(el);
