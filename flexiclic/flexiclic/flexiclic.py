@@ -140,6 +140,8 @@ class FlexiClic():
                 p["label"]: p["line_ids"]
                 for p in view["grouping"]
             }
+            # We'll be using the query as the node for headers, precalcuate it
+            query_as_context = ["|".join([opts["q"]] if isinstance(opts["q"], str) else opts["q"]), []]
         else:
             partition_line_ids = {
                 "": view["ordering"],
@@ -153,8 +155,19 @@ class FlexiClic():
 
         yield clic_meta  # Return clic metadata to client first
 
-        for partition_label, line_ids in partition_line_ids.items():
-            # TODO: Header row for partition
+        for partition_id, (partition_label, line_ids) in enumerate(partition_line_ids.items()):
+            if partition_label != "":
+                # Output header row for partition
+                yield (
+                    ["Partition", []],
+                    query_as_context,
+                    [partition_label, []],
+                    [ "", "", "" ],  # Book/start/end
+                    [ "", "", "" ],  # Chap/Par/Sent
+                    partition_id,
+                    "",  # line_id
+                    { "rowcount": len(line_ids) },
+                )
             for line_id in line_ids:
                 # Borrowed from html_visualizer:_generate_lines_html
                 # Get tokens for this line
@@ -179,7 +192,7 @@ class FlexiClic():
                         line_meta['paragraph'],  # Paragraph
                         line_meta['sentence'],  # Sentence
                     ],
-                    partition_label,
+                    partition_id,
                     line_id,
                     view.get("line_info", {}).get(line_id, {}),
                 )

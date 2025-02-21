@@ -1,0 +1,19 @@
+#content table.dataTable tr.fc-partition-summary {
+    font-weight: bold;
+    background: #eee;
+}
+
+#content table.dataTable tr.fc-partition-summary:not(:first-child) td {
+    border-top: 1px solid #666;
+}
+
+#content table.dataTable tr.fc-partition-summary .partition-toggle {
+    text-align: left;  /* override numeric-ness of column */
+}
+#content table.dataTable tr.fc-partition-summary .partition-toggle::after {
+    content: '►';
+}
+
+#content table.dataTable tr.fc-partition-summary.open .partition-toggle::after {
+    content: '▼';
+}
