@@ -147,6 +147,13 @@
 #control-bar fieldset > .control img {
     vertical-align: text-top;
 }
+#control-bar fieldset > .control.fork {
+  position: absolute;
+  top: auto;
+  right: 5px;
+  bottom: -12px;
+  padding: 0 3px;
+}
 #control-bar fieldset::after { /* Line joining to next box */
   content: "";
   width: 0;
@@ -186,12 +193,6 @@
 #control-bar fieldset.selected > legend {
   background: #ccc;
   border-color: #000;
-}
-#control-bar fieldset .fork {
-  position: absolute;
-  right: 5px;
-  bottom: -16px;
-  padding: 0 3px;
 }
 #control-bar .flexiconc-path-chooser {
   display: flex;

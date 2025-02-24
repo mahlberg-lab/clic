@@ -316,12 +316,10 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
         return window.flexiclic.algorithm_render_html({algo_name: algo_name, prefix: newPrefix}).then(function (algoHtml) {
             var elNew = document.createElement("fieldset");
             elNew.className = "algorithm";
-            elNew.innerHTML = [
-                '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-            ].join("\n") + algoHtml.join("\n");
+            elNew.innerHTML = algoHtml.join("\n");
 
             // Wire up event to close button
-            elNew.querySelector("button[aria-label='Close']").onclick = function (event) {
+            elNew.querySelectorAll("button[aria-label='Close']").forEach(function (elButton) { elButton.onclick = function (event) {
                 var el, elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
 
                 function renumberElements(els) {
@@ -345,7 +343,7 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
                 event.preventDefault();
 
                 elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-            };
+            }; });
 
             return elNew;
         });

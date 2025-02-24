@@ -9,9 +9,15 @@ def from_schema(algo, prefix="algo"):
     - algo: The algorithm schema
     - prefix: The prefix for all form field names
     """
+    algo_class = "annotation" if algo["algorithm_type"] == "annotation" else "algo"
     args_schema = algo['args_schema']
     if args_schema['type'] != "object":
         raise ValueError("Unknown args schema type %s" %  args_schema['type'])
+
+    if algo_class == "annotation":
+        yield '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+    else:
+        yield '<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>'
 
     yield "<legend>%s</legend>" % html.escape(algo['full_name'])
     yield html_prop_hidden(
