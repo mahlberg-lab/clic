@@ -58,3 +58,6 @@
 /docs/lib64
 /docs/pyvenv.cfg
 /docs/share/
+
+/goaccess_www/
+GeoLite2-*

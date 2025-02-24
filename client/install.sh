@@ -9,6 +9,8 @@ WWW_CERT_CHAIN="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/chain.pem"
 WWW_CERT_KEY="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey.pem"
 WWW_DHPARAM_FILE="/etc/ssl/dhparam.pem"
 
+GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
+
 # Configure measurement protocol endpoint
 GA_API_URL="http://google-analytics.com/collect?v=1&t=pageview&tid=${GA_KEY-}"
 GA_API_URL="${GA_API_URL}&uip=\$remote_addr"  # IP address
@@ -174,6 +176,11 @@ Disallow: /api/
 
     location /docs {
         rewrite /docs(/.*) ${WWW_RTD_BASE_URL}\$1  redirect;
+    }
+
+    location /analytics {
+        alias "${GOACCESS_OUTPUT_DIR}";
+        autoindex on;
     }
 
     # Versioned resources can be cached forever
