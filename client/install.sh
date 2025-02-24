@@ -167,6 +167,8 @@ Disallow: /api/
         add_header X-Uwsgi-Cached "\$upstream_cache_status";
         add_header X-Uwsgi-Generated "\$upstream_http_x_generated";
 
+        access_log /var/log/nginx/clic_api.access.log;
+
         ${GA_API_ACTION}
     }
 

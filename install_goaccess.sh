@@ -20,10 +20,6 @@ tar -C /etc/goaccess --strip-components=1 -zxf ${GOACCESS_MAXMIND_DB_TAR} $(base
 cat <<EOF > /etc/goaccess/${PROJECT_NAME}.conf
 log-format COMBINED
 
-daemonize false
-
-log-file /var/log/nginx/access.log
-
 agent-list true
 with-output-resolver false
 http-method no
@@ -60,9 +56,6 @@ static-file .svg
 static-file .whl
 
 geoip-database /etc/goaccess/GeoLite2-Country.mmdb
-
-persist true
-restore true
 EOF
 
 cat <<EOF > "/etc/systemd/system/${GOACCESS_UNIT_NAME}.service"
@@ -75,7 +68,8 @@ Type=oneshot
 ExecStart=/bin/sh -c 'mkdir -p "/var/lib/%N/\$(date +%%Y)" && ln -frs "/var/lib/%N/\$(date +%%Y)" "/var/lib/%N/cur"'
 ExecStart=/usr/bin/goaccess \
     --config-file="/etc/goaccess/${PROJECT_NAME}.conf" \
-    --db-path "/var/lib/%N/cur" \
+    --db-path "/var/lib/%N/cur" --persist --restore \
+    /var/log/nginx/clic_api.access.log \
     -o "${GOACCESS_OUTPUT_DIR}/report.html"
 # Copy report output to per-year report
 ExecStart=/bin/sh -c 'cp ${GOACCESS_OUTPUT_DIR}/report.html ${GOACCESS_OUTPUT_DIR}/report-\$(date +%%Y).html'
