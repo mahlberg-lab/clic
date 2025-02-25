@@ -179,6 +179,11 @@ Disallow: /api/
         ${GA_API_ACTION}
     }
 
+    location /flexiclic/ {
+        alias "${PROJECT_PATH}/flexiclic/www/";
+        autoindex on;
+    }
+
     location /local-docs {
         alias "${PROJECT_PATH}/docs/_build";
     }
