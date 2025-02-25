@@ -35,7 +35,7 @@ coverage: compile
 	ln -frs htmlcov ../client/www/coverage/server
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/server/index.html
 
-start: lib/.requirements # test
+start: lib/.requirements clic/appconfig.py # test
 	./bin/uwsgi \
 	    --master \
 	    --processes=1 --threads=1 \
