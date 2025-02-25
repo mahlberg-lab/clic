@@ -92,6 +92,16 @@ State.prototype.nested_args = function () {
     return out;
 };
 
+/** Fetch all available args, optionally filtered by a regex */
+State.prototype.all_args = function (regex) {
+    return Object.keys(this._args).reduce(function (r, k) {
+        if (!regex || regex.test(k)) {
+            r[k] = this._args[k];
+        }
+        return r;
+    }.bind(this), {});
+};
+
 /** Fetch named a named argument (i.e. querystring), or all positional args */
 State.prototype.arg = function (name) {
     var x;

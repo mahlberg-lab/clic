@@ -130,6 +130,26 @@ test('nested_args', function (t) {
     t.end();
 });
 
+test('all_args', function (t) {
+    var s;
+
+    s = new State(fake_window('/moo/doc', '?animals[cows][]=daisy_pi&animals[cows][]=freda&animals[pig][a]=frank', {}), {animals: {}});
+    t.deepEqual(s.all_args(), {
+        'animals[cows][]': [ 'daisy_pi', 'freda' ],
+        'animals[pig][a]': [ 'frank' ],
+    });
+    t.deepEqual(s.all_args(/cows/), {
+        'animals[cows][]': [ 'daisy_pi', 'freda' ],
+    });
+    t.deepEqual(s.all_args(/pi/), {
+        // NB: Doesn't fetch daisy_pi, regex on keys not values
+        'animals[pig][a]': [ 'frank' ],
+    });
+    t.deepEqual(s.all_args(/zzz/), {});
+
+    t.end();
+});
+
 test('update', function (t) {
     var s;
 
