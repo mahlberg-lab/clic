@@ -49,6 +49,9 @@ var state_defaults = {
     'table-filter': '',
     'selected_rows': [],
 
+    'fc-path': "1",
+    'fc-all-paths': {},
+
     'book': '',
     'chapter_num': 0,
     'chapter_id': -1,

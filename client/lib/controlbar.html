@@ -64,19 +64,7 @@
     <header><a href="/flexiconc">FlexiConc</a></header>
     <form>
 
-      <div class="">
-      <div class="flexiconc-path-chooser">
-        <button style="margin-right: 5px"><img src="/icons/tree.svg" width="17" height="23" alt="See full analysis tree" /></button>
-        <button class="selected">1</button>
-        <button>2</button>
-        <button>3</button>
-        <span>&nbsp;&nbsp;...&nbsp;&nbsp;</span>
-        <button style="padding: 0"><img src="/icons/copy.svg" width="24" height="24" alt="Clone view" /></button>
-      </div>
-
       <div class="algorithm-group" data-algorithm-class="annotation">
-        <h4><span>Query</span></h4>
-
         <fieldset class="algorithm fixed">
           <legend>Search in CLiC</legend>
           <label for="ctlb-flexiconc-corpora">Search the corpora:</label>
@@ -106,8 +94,15 @@
         </div>
       </div>
 
+      <hr/>
+
+      <div class="flexiconc-path-chooser">
+        <button id="ctlb-flexiconc-fc-tree"><img src="/icons/tree.svg" width="17" height="23" alt="See full analysis tree" /></button>
+        <div class="options"></div>
+        <button><img src="/icons/copy.svg" width="24" height="24" alt="Clone view" /></button>
+      </div>
+
       <div class="algorithm-group" data-algorithm-class="algo">
-        <h4></h4>
         <div class="algorithm-add">
           <select class="chosen-select" id="ctlb-flexiconc-add-selection" data-placeholder="Add algorithm..."></select>
         </div>

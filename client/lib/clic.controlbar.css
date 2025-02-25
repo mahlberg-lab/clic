@@ -198,18 +198,29 @@
   display: flex;
   flex-direction: row;
   text-align: center;
-  gap: 3px;
+  gap: 5px;
   margin: 0 5px;
   line-height: 2rem;
 }
-#control-bar .flexiconc-path-chooser > button {
-  line-height: 2rem;
-}
-#control-bar .flexiconc-path-chooser > button.selected {
-  background: #ccc;
-}
-#control-bar .flexiconc-path-chooser > :not(button) {
+#control-bar .flexiconc-path-chooser > .options {
   flex-grow: 1;
+
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+}
+#control-bar .flexiconc-path-chooser > .options > input {
+  display: none;
+}
+#control-bar .flexiconc-path-chooser > .options > input+label {
+  border: 2px solid #666;
+  line-height: 2rem;
+  padding: 5px;
+  cursor: pointer;
+}
+#control-bar .flexiconc-path-chooser > .options > input:checked+label {
+  border: 2px solid #333;
+  background: #ccc;
 }
 
 #control-bar h4 {

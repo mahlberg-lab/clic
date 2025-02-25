@@ -345,6 +345,27 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
                 elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             }; });
 
+            elNew.querySelectorAll("button[aria-label='Fork']").forEach(function (elButton) { elButton.onclick = function (event) {
+                var el, elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
+
+                // Update fc-path to next free path
+                document.querySelector(".flexiconc-path-chooser .options .next-path").checked = true;
+
+                // Remove subsequent algorithms
+                el = elAlgo.nextElementSibling;
+                while (el) {
+                    if (el.classList.contains("algorithm")) {  // NB: skip over algorithm-add
+                        elAlgo.parentNode.removeChild(el);
+                    }
+                    el = el.nextElementSibling;
+                }
+
+                event.stopPropagation();
+                event.preventDefault();
+
+                elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+            }; });
+
             return elNew;
         });
     }
@@ -409,6 +430,52 @@ ControlBar.prototype.flexiconc_reload = function flexiconc_reload(page_state) {
                 });
             }));
         }));
+    }).then(function () {
+        // Update path-chooser
+        var fcAllPaths = Object.assign({}, page_state.state("fc-all-paths")),
+            // NB: No stored paths --> force current path to be numbered "1"
+            fcPath = Object.keys(fcAllPaths).length > 0 ? page_state.arg("fc-path") : "1",
+            nextPathId = 1;
+
+        // Sync allPaths with current path (NB: Storing flattened form)
+        fcAllPaths[fcPath] = page_state.all_args(/^algo\[/);
+        window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
+            args: { "fc-path": fcPath },
+            state: { "fc-all-paths": fcAllPaths },
+        }}));
+
+        // Create all available path options & hidden next option
+        document.querySelector(".flexiconc-path-chooser .options").innerHTML = Array.from(Object.keys(fcAllPaths)).map(function (k) {
+            while (nextPathId <= parseInt(k, 10)) {
+                // nextPathId should be a bigger integer than any existing key
+                nextPathId++;
+            }
+            return [
+                '<input type="radio" name="fc-path"',
+                'value="' + k + '"',
+                'id="ctlb-flexiconc-fc-path-' + k + '"',
+                (k === fcPath ? 'checked' : ''),
+                '/><label for="ctlb-flexiconc-fc-path-' + k + '">' + k + '</label>',
+            ].join(" ");
+        }).join("\n") + '<input type="radio" name="fc-path" value = "' + nextPathId + '" class="next-path" />';
+
+        document.querySelector(".flexiconc-path-chooser .options").onchange = function (event) {
+            // Instead of letting form update, set state to match fc-all-paths for selected value
+            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+                args: Object.assign(
+                    {},
+                    // Everything non-algo from the current state
+                    page_state.all_args(/^(?!algo\[)/),
+                    // All stored algo[ args from fc-all-paths
+                    page_state.state("fc-all-paths")[event.target.value],
+                    // New fc-path pointer
+                    { "fc-path": [event.target.value] }
+                ),
+                flush: true,
+            }}));
+            event.stopPropagation();
+            event.preventDefault();
+        };
     });
 };
 
