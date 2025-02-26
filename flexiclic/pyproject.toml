@@ -7,7 +7,7 @@ version = "0.0.0dev0"
 testing = [
     'pytest',
     'pytest-cov',
-    'testing.postgresql',
+    'responses',
 ]
 
 [tool.setuptools.packages.find]

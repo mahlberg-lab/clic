@@ -55,7 +55,7 @@ bin/pip:
 requirements.txt:
 	touch requirements.txt
 
-lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip flexiconc/setup.py
+lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip flexiconc/setup.py setup.py pyproject.toml
 	# Install frozen requirements
 	./bin/pip install -r requirements.txt
 	# Make sure any new requirements are available
