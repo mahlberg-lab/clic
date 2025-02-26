@@ -144,6 +144,18 @@
     padding: 0 3px;
     line-height: 17px;
 }
+#control-bar fieldset > button.control {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: linear-gradient(#fff 0%, #eee 10%);
+}
+#control-bar fieldset > button.control:focus {
+    outline: 1px solid black;
+    outline-offset: 1px;
+}
+#control-bar fieldset > button.control:active {
+    background: #ccc;
+}
 #control-bar fieldset > .control img {
     vertical-align: text-top;
 }
