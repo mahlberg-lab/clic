@@ -49,7 +49,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 var el, elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
 
                 // Update fc-path to next free path
-                document.querySelector(".flexiconc-path-chooser .options .next-path").checked = true;
+                document.getElementById("ctlb-flexiconc-fc-path-next").checked = true;
 
                 // Remove subsequent algorithms
                 el = elAlgo.nextElementSibling;
@@ -132,9 +132,9 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         }));
     }).then(function () {
         // Update path-chooser
-        var fcAllPaths = Object.assign({}, page_state.state("fc-all-paths")),
+        var fcAllPaths = Object.assign({"0": []}, page_state.state("fc-all-paths")),
             // NB: No stored paths --> force current path to be numbered "1"
-            fcPath = Object.keys(fcAllPaths).length > 0 ? page_state.arg("fc-path") : "1",
+            fcPath = Object.keys(fcAllPaths).length > 1 ? page_state.arg("fc-path") : "1",
             nextPathId = 1;
 
         // Sync allPaths with current path (NB: Storing flattened form)
@@ -145,10 +145,17 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         }}));
 
         // Create all available path options & hidden next option
-        document.querySelector(".flexiconc-path-chooser .options").innerHTML = Array.from(Object.keys(fcAllPaths)).map(function (k) {
+        document.querySelector(".flexiconc-path-chooser").innerHTML = Array.from(Object.keys(fcAllPaths)).map(function (k) {
             while (nextPathId <= parseInt(k, 10)) {
                 // nextPathId should be a bigger integer than any existing key
                 nextPathId++;
+            }
+            if (k === "0") {
+                // 0 is the special tree path
+                return [
+                    '<input type="radio" name="fc-path" value="0" id="ctlb-flexiconc-fc-path-0" />',
+                    '<label for="ctlb-flexiconc-fc-path-0"><img src="/icons/tree.svg" width="17" height="23" style="position: relative;top:-1px" alt="See full analysis tree"></label>',
+                ].join(" ");
             }
             return [
                 '<input type="radio" name="fc-path"',
@@ -157,9 +164,26 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 (k === fcPath ? 'checked' : ''),
                 '/><label for="ctlb-flexiconc-fc-path-' + k + '">' + k + '</label>',
             ].join(" ");
-        }).join("\n") + '<input type="radio" name="fc-path" value = "' + nextPathId + '" class="next-path" />';
+        }).join("\n") + [
+            '<input type="radio" name="fc-path" value = "' + nextPathId + '" id="ctlb-flexiconc-fc-path-next" />',
+            '<label for="ctlb-flexiconc-fc-path-next" title="Add empty path" aria-label="add"><span style="position: relative; top: 3px; line-height: 0; font-size: 20px" aria-hidden="true">+</span></label>',
+        ].join("\n");
 
-        document.querySelector(".flexiconc-path-chooser .options").onchange = function (event) {
+        // Scroll selected path into view
+        document.getElementById("ctlb-flexiconc-fc-path-" + fcPath).scrollIntoView({inline: "nearest"});
+
+        // If viewing tree, hide algo group (thus add algorithm button)
+        document.querySelector(".algorithm-group[data-algorithm-class=algo]").style.display = fcPath === "0" ? "none" : "";
+
+        document.querySelector(".flexiconc-path-chooser").onchange = function (event) {
+            // Click on "+", start with an empty set of algorithms
+            // NB: This isn't triggered by fork buttons, as they change the form, not the radio controls
+            if (event.target.id === "ctlb-flexiconc-fc-path-next") {
+                document.querySelectorAll(".algorithm-group[data-algorithm-class=algo] .algorithm").forEach(function (el) {
+                    el.parentNode.removeChild(el);
+                });
+            }
+
             // Instead of letting form update, set state to match fc-all-paths for selected value
             window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
                 args: Object.assign(
@@ -167,7 +191,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                     // Everything non-algo from the current state
                     page_state.all_args(/^(?!algo\[)/),
                     // All stored algo[ args from fc-all-paths
-                    page_state.state("fc-all-paths")[event.target.value],
+                    fcAllPaths[event.target.value] || [],
                     // New fc-path pointer
                     { "fc-path": [event.target.value] }
                 ),

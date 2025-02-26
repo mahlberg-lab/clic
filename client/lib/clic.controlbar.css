@@ -197,30 +197,36 @@
 #control-bar .flexiconc-path-chooser {
   display: flex;
   flex-direction: row;
-  text-align: center;
-  gap: 5px;
-  margin: 0 5px;
-  line-height: 2rem;
-}
-#control-bar .flexiconc-path-chooser > .options {
-  flex-grow: 1;
+  justify-content: safe center;
+  overflow-x: auto;
+  overflow-y: hidden;
 
-  display: flex;
-  flex-direction: row;
-  gap: 0;
+  text-align: center;
+  margin: 5px;
 }
-#control-bar .flexiconc-path-chooser > .options > input {
+#control-bar .flexiconc-path-chooser > input {
   display: none;
 }
-#control-bar .flexiconc-path-chooser > .options > input+label {
-  border: 2px solid #666;
+#control-bar .flexiconc-path-chooser > input+label {
+  background: linear-gradient(#fff 0%, #eee 10%);
+  border: 1px solid #aaa;
   line-height: 2rem;
   padding: 5px;
+  margin: 0;
+  min-width: 2.1rem;
   cursor: pointer;
 }
-#control-bar .flexiconc-path-chooser > .options > input:checked+label {
-  border: 2px solid #333;
-  background: #ccc;
+#control-bar .flexiconc-path-chooser > input+label+input+label {
+  border-left: none;
+}
+#control-bar .flexiconc-path-chooser > label:first-of-type {
+  border-radius: 7px 0 0 7px;
+}
+#control-bar .flexiconc-path-chooser > label:last-of-type {
+  border-radius: 0 7px 7px 0;
+}
+#control-bar .flexiconc-path-chooser > input:checked+label {
+  background: linear-gradient(#eee 1%,#fff 15%);
 }
 
 #control-bar h4 {
