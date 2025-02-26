@@ -4,7 +4,6 @@ import pandas as pd
 import re
 
 import flexiconc
-# TODO: Does this even need to be a thing? Should we just merge into flexiconc package?
 
 from . import algo_html
 from . import path_util

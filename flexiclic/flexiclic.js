@@ -1,5 +1,3 @@
-// TODO: https://github.com/GoogleChromeLabs/comlink ?
-
 /* Error class to use for throwing styled errors */
 var DisplayError = function (message, level) {
     this.message = message;
