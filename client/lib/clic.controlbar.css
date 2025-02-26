@@ -237,6 +237,9 @@
 #control-bar .flexiconc-path-chooser > label:last-of-type {
   border-radius: 0 7px 7px 0;
 }
+#control-bar .flexiconc-path-chooser > label:active {
+    background: #ccc;
+}
 #control-bar .flexiconc-path-chooser > input:checked+label {
   background: linear-gradient(#eee 1%,#fff 15%);
 }
