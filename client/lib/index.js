@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true */
 /*global Promise */
-var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
 
@@ -22,6 +21,11 @@ var page_classes = {
             throw new Error("Unknown page: " + page_state.doc());
         };
     },
+};
+
+var controlbar_classes = {
+    '/flexiconc': require('./controlbar_flexiconc.js'),
+    '': require('./controlbar.js'),
 };
 
 var state_defaults = {
@@ -63,22 +67,23 @@ var state_defaults = {
 var page, cb, analytics, current_page = null;
 
 function select_components(page_state) {
-    var PageConstructor;
+    var PageConstructor, ControlBarConstructor;
 
     if (!page || page_state.doc() !== current_page) {
         PageConstructor = page_classes[page_state.doc()] || page_classes[''];
         page = new PageConstructor(document.getElementById('content'));
-        current_page = page_state.doc();
     }
 
-    if (!cb) {
-        cb = new ControlBar(document.getElementById('control-bar'));
+    if (!cb || page_state.doc() !== current_page) {
+        ControlBarConstructor = controlbar_classes[page_state.doc()] || controlbar_classes[''];
+        cb = new ControlBarConstructor(document.getElementById('control-bar'));
     }
 
     if (!analytics) {
         analytics = new Analytics();
     }
 
+    current_page = page_state.doc();
     window.document.title = page.page_title(page_state);
     return [page, cb, analytics];
 }
