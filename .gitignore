@@ -64,3 +64,4 @@ GeoLite2-*
 /flexiclic/www
 /flexiclic/flexiconc
 /flexiclic/spacy-pyodide/
+/flexiclic/tests/*.baseline.new

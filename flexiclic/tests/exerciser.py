@@ -13,8 +13,3 @@ for x in fc.compute_path(dict(
     #metadata=["book_titles", "chapter_start"],
 ), []):
     print(x)
-
-for algo_class, algos in fc.algorithms_by_class().items():
-    for a in algos:
-        print("\n\n==== %s:%s" % (algo_class, a['label']))
-        print("\n".join(fc.algorithm_render_html(algo_name=a['name'], prefix="algo")))
