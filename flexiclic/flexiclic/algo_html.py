@@ -14,10 +14,7 @@ def from_schema(algo, prefix="algo"):
     if args_schema['type'] != "object":
         raise ValueError("Unknown args schema type %s" %  args_schema['type'])
 
-    if algo_class == "annotation":
-        yield '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-    else:
-        yield '<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>'
+    yield '<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
 
     yield "<legend>%s</legend>" % html.escape(algo['full_name'])
     yield html_prop_hidden(
@@ -30,6 +27,9 @@ def from_schema(algo, prefix="algo"):
             "%s[%s]" % (prefix, prop_name),
             prop_desc,
         )
+
+    if algo_class == "algo":
+        yield '<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>'
 
 
 def html_prop(input_name, prop_desc):

@@ -131,7 +131,7 @@
 #control-bar fieldset {
   border: 1px solid #c7c7c7;
   border-radius: 3px;
-  margin: 20px 5px 20px 5px;
+  margin: 25px 5px 20px 5px;
   padding: 16px 5px;
   background: #e9e9e9; /* To obscure ::after lines */
   position: relative;
@@ -159,6 +159,10 @@
 #control-bar fieldset > .control img {
     vertical-align: text-top;
 }
+#control-bar .algorithm-group[data-algorithm-class=algo] fieldset:not(:last-of-type) > .control[aria-label=Close] {
+    /* For algos, only the last algorithm should have a close button */
+    display: none;
+}
 #control-bar fieldset > .control.fork {
   position: absolute;
   top: auto;
@@ -172,8 +176,8 @@
   border-right: 1px solid #c7c7c7;
   position: absolute;
   left: 50%;
-  bottom: calc(0 - 20px - 1px); /* i.e. height minus border */
-  height: 20px;
+  bottom: calc(0 - 30px - 1px); /* i.e. height minus border */
+  height: 30px;
 }
 #control-bar .algorithm-add {
   width: 66%;
