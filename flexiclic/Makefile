@@ -39,7 +39,6 @@ LOCAL_WHEELS = \
 
 OUT_FILES = \
     www/manifest.js \
-    www/flexiclic.js \
     www/flexiclicWorker.js \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
     $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
@@ -71,9 +70,6 @@ test: lib/.requirements
 www/manifest.js:
 	@echo 'const PYODIDE_URL = `pyodide-$(PYODIDE_VERSION)/pyodide.js`' > www/manifest.js
 	@echo 'const PRELOAD_WHEELS = `$(patsubst www/%, %, $(filter %.whl,$(OUT_FILES))) $(PYODIDE_WHEELS)`.trim().split(/\s+/)' >> www/manifest.js
-
-www/flexiclic.js: flexiclic.js
-	cp $^ $@
 
 www/flexiclicWorker.js: flexiclicWorker.js
 	cp $^ $@

@@ -1,11 +1,12 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true, nomen: true */
-/*global Promise, Set, flexiclic */
+/*global Promise, Set */
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
 var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
+var flexiclic = require('./flexiclic.js').flexiclic;
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {

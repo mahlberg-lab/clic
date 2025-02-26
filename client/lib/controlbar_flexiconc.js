@@ -3,6 +3,7 @@
 /*global Promise */
 var ControlBar = require('./controlbar.js');
 var chosen_init = require('./chosen_init.js').chosen_init;
+var flexiclic = require('./flexiclic.js').flexiclic;
 
 // ControlBarFlexiConc inherits ControlBar
 function ControlBarFlexiConc() {
@@ -13,7 +14,7 @@ ControlBarFlexiConc.prototype = Object.create(ControlBar.prototype);
 ControlBarFlexiConc.prototype.reload = function reload(page_state) {
     /** Promise to return DOM element for an (algo_name) with element names prefixed by (newPrefix) */
     function newAlgoHtml(algo_name, newPrefix) {
-        return window.flexiclic.algorithm_render_html({algo_name: algo_name, prefix: newPrefix}).then(function (algoHtml) {
+        return flexiclic.algorithm_render_html({algo_name: algo_name, prefix: newPrefix}).then(function (algoHtml) {
             var elNew = document.createElement("fieldset");
             elNew.className = "algorithm";
             elNew.innerHTML = algoHtml.join("\n");
@@ -74,10 +75,10 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
 
     // Not a flexiconc page, shutdown if needed & carry on
     if (page_state.doc() !== "/flexiconc") {
-        return window.flexiclic ? window.flexiclic.shutdown() : null;
+        return flexiclic ? flexiclic.shutdown() : null;
     }
 
-    return window.flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
+    return flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
             var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
                 arg_algo = nested_args[algo_class] || [],
