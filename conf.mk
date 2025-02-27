@@ -31,6 +31,15 @@ WWW_UWSGI_TIMEOUT ?= 5m
 WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev=0 | grep -oE '[0-9]+\.[0-9]+')
 
 ###################
+# Configuration options for installing goaccess
+
+# Space-separated IP addresses / subnets to allow access to reports, if empty goaccess is disabled
+# See https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
+GOACCESS_ALLOW ?= 
+# Location of maxmind GeoLite2-Country download, requires signup.
+GOACCESS_MAXMIND_DB_TAR ?= "$(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.gz)"
+
+###################
 # Configuration options for running API server
 
 API_SERVICE_FILE ?= /etc/systemd/system/$(PROJECT_NAME).service

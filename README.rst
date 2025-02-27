@@ -46,7 +46,7 @@ For production, the following is a minimal example::
     PROJECT_MODE = production
     WWW_SERVER_NAME = clic.bham.ac.uk
     WWW_SERVER_ALIASES = another.dns.name yet.another.dns.name
-    GA_KEY = UA-XXXXX-Y
+    GOACCESS_ALLOW = 192.168.1.0/24 1.2.3.4
     EOF
 
 ``WWW_SERVER_NAME`` controls the DNS entry the web server responds to.

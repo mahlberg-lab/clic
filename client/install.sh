@@ -9,6 +9,7 @@ WWW_CERT_CHAIN="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/chain.pem"
 WWW_CERT_KEY="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey.pem"
 WWW_DHPARAM_FILE="/etc/ssl/dhparam.pem"
 
+GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
 
 # Configure measurement protocol endpoint
@@ -56,6 +57,12 @@ fi
 # Generate dhparam.pem if we don't have one
 WWW_DHPARAM_FILE="/etc/ssl/private/dhparam.pem"
 [ -f "${WWW_DHPARAM_FILE}" ] || openssl dhparam -out "${WWW_DHPARAM_FILE}" 4096
+
+# Prepend allow to each GOACCESS_ALLOW
+GOACCESS_ACCESS_CONFIG=""
+for ip in ${GOACCESS_ALLOW}; do
+    GOACCESS_ACCESS_CONFIG="${GOACCESS_ACCESS_CONFIG} allow ${ip};"
+done
 
 # Add global settings to nginx conf
 cat <<EOF > "/etc/nginx/sites-available/${PROJECT_NAME}"
@@ -183,6 +190,8 @@ Disallow: /api/
     location /analytics {
         alias "${GOACCESS_OUTPUT_DIR}";
         autoindex on;
+        ${GOACCESS_ACCESS_CONFIG}
+        deny all;
     }
 
     # Versioned resources can be cached forever
@@ -230,3 +239,5 @@ systemctl reload nginx
 EOF
     chmod a+x /etc/cron.weekly/dehydrated
 fi
+
+./install_goaccess.sh

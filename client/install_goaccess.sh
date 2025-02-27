@@ -1,11 +1,11 @@
 #!/bin/sh
 set -eu
-PROJECT_PATH="${PROJECT_PATH-$(dirname "$(readlink -f "$0")")}"  # The full project path, e.g. /srv/x
-PROJECT_NAME="${PROJECT_NAME-$(basename ${PROJECT_PATH})}"  # The project directory name, e.g. x
-
+GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_UNIT_NAME="${PROJECT_NAME}-goaccess"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
-GOACCESS_MAXMIND_DB_TAR="$(ls -1 /srv/clic/GeoLite2-Country*.tar.gz)"
+GOACCESS_MAXMIND_DB_TAR="$(ls -1 ${PROJECT_PATH}/GeoLite2-Country*.tar.gz)"
+
+[ -z "${GOACCESS_ALLOW}" ] && exit 0
 
 apt -y --no-install-recommends install goaccess
 
