@@ -36,8 +36,8 @@ WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev
 # Space-separated IP addresses / subnets to allow access to reports, if empty goaccess is disabled
 # See https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
 GOACCESS_ALLOW ?= 
-# Location of maxmind GeoLite2-Country download, requires signup.
-GOACCESS_MAXMIND_DB_TAR ?= "$(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.gz)"
+# Location of maxmind GeoLite2-Country mmdb download, requires signup.
+GOACCESS_MAXMIND_DB_TAR ?= $(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.gz 2>/dev/null)
 
 ###################
 # Configuration options for running API server

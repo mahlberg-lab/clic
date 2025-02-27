@@ -3,21 +3,25 @@ set -eu
 GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_UNIT_NAME="${PROJECT_NAME}-goaccess"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
-GOACCESS_MAXMIND_DB_TAR="$(ls -1 ${PROJECT_PATH}/GeoLite2-Country*.tar.gz)"
 
 [ -z "${GOACCESS_ALLOW}" ] && exit 0
 
 apt -y --no-install-recommends install goaccess
 
-mkdir -p ${GOACCESS_OUTPUT_DIR}
+mkdir -p "${GOACCESS_OUTPUT_DIR}"
 # Project user should own it, "adm" (i.e. the DynamicUser) can write to it
-chown "$(stat -c '%U' ${PROJECT_PATH}/.git):adm" ${GOACCESS_OUTPUT_DIR}
-chmod g+w ${GOACCESS_OUTPUT_DIR}
+chown "$(stat -c '%U' "${PROJECT_PATH}/.git"):adm" "${GOACCESS_OUTPUT_DIR}"
+chmod g+w "${GOACCESS_OUTPUT_DIR}"
 
 ls -l /etc/goaccess/browsers.list  # Ensure it exists in package
 mkdir -p /etc/goaccess
-tar -C /etc/goaccess --strip-components=1 -zxf ${GOACCESS_MAXMIND_DB_TAR} $(basename "${GOACCESS_MAXMIND_DB_TAR}" .tar.gz)/GeoLite2-Country.mmdb
-cat <<EOF > /etc/goaccess/${PROJECT_NAME}.conf
+[ -e "${GOACCESS_MAXMIND_DB_TAR}" ] || {
+    echo "*** You need to download GeoLite2-Country*.tar.gz from maxmind.com and place it in ${PROJECT_PATH}"
+    echo "*** To do this, you first need to register with maxmind"
+    exit 1
+}
+tar -C /etc/goaccess --strip-components=1 -zxf "${GOACCESS_MAXMIND_DB_TAR}" "$(basename "${GOACCESS_MAXMIND_DB_TAR}" .tar.gz)/GeoLite2-Country.mmdb"
+cat <<EOF > "/etc/goaccess/${PROJECT_NAME}.conf"
 log-format COMBINED
 
 agent-list true
