@@ -81,6 +81,15 @@ class FlexiClic():
 
         out = collections.defaultdict(list)
         for algo_name, algo_metadata in concordance.available_algorithms.items():
+            invalid_algo = False
+            for prop_name, prop_desc in algo_metadata['args_schema']["properties"].items():
+                # Algorithms that expect object aren't supported by CLiC
+                if prop_desc.get('type', 'object') == 'object':
+                    invalid_algo = True
+                    break
+            if invalid_algo:
+                continue
+
             algo_class = "annotation" if algo_metadata["algorithm_type"] == "annotation" else "algo"
             out[algo_class].append(dict(
                 name=algo_name,
