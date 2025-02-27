@@ -11,6 +11,7 @@ def from_schema(algo, prefix="algo"):
     """
     algo_class = "annotation" if algo["algorithm_type"] == "annotation" else "algo"
     args_schema = algo['args_schema']
+    args_required = set(args_schema.get("required", ()))
     if args_schema['type'] != "object":
         raise ValueError("Unknown args schema type %s" %  args_schema['type'])
 
@@ -26,18 +27,20 @@ def from_schema(algo, prefix="algo"):
         yield html_prop(
             "%s[%s]" % (prefix, prop_name),
             prop_desc,
+            required=prop_name in args_required,
         )
 
     if algo_class == "algo":
         yield '<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>'
 
 
-def html_prop(input_name, prop_desc):
+def html_prop(input_name, prop_desc, required=False):
     """
     Generate HTML for an individual property
 
     - input_name: The name for the HTML input
     - prop_desc: The FlexiConc property schema
+    - required: Property is required?
     """
     # Assume any prop_desc with missing type are objects
     if prop_desc.get('type', 'object') == 'object':
@@ -54,6 +57,7 @@ def html_prop(input_name, prop_desc):
                 label=x,
                 selected=(x == prop_desc.get("default", "")),
             ) for x in prop_desc['enum']],
+            required=required,
         )
 
     if prop_desc['type'] == 'string' or prop_desc['type'] == ['string']:
@@ -62,6 +66,7 @@ def html_prop(input_name, prop_desc):
             name=input_name,
             label=prop_desc["description"],
             value=prop_desc.get("default") or None,
+            required=required,
         )
 
     if prop_desc['type'] == 'boolean':
@@ -79,6 +84,7 @@ def html_prop(input_name, prop_desc):
             label=prop_desc["description"],
             value=prop_desc.get("default") or None,
             step=1,  # TODO: Need to apply step when type is number, but to what?
+            required=required,
         )
 
     if prop_desc['type'] == 'array' or prop_desc['type'] == ['array']:
@@ -88,23 +94,25 @@ def html_prop(input_name, prop_desc):
             options=[],
             classes=["allow-add-items"],
             multiple="multiple",
+            required=required,
         )
 
     raise ValueError('Unknown type: %s</pre>' % prop_desc)
 
 
-def html_prop_inputbox(input_type, name, label, **props):
+def html_prop_inputbox(input_type, name, label, required=False, **props):
     """
     Generate an HTML-input based control
     """
     return string.Template("""
-<label for="ctlb-flexiconc-${name}">${label}</label>
+<label for="ctlb-flexiconc-${name}">${required_html}${label}</label>
 <input type="${input_type}" name="${name}" id="ctlb-flexiconc-${name}" class="form-control" ${props}>
     """.strip()).substitute(
         name=name,
         input_type=input_type,
         label=html.escape(label),
-        props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None)
+        props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None),
+        required_html='<span style="color: red" title="This property is required">*</span> ' if required else '',
     )
 
 
@@ -139,7 +147,7 @@ def html_prop_checkbox(input_type, name, label, value, **props):
     )
 
 
-def html_prop_select(name, label, options, classes = [], **props):
+def html_prop_select(name, label, options, classes = [], required=False, **props):
     """
     Generate an HTML-select based control
     """
@@ -151,12 +159,13 @@ def html_prop_select(name, label, options, classes = [], **props):
         )
 
     return string.Template("""
-<label for="ctlb-flexiconc-${name}">${label}</label>
+<label for="ctlb-flexiconc-${name}">${required_html}${label}</label>
 <select name="${name}" id="ctlb-flexiconc-${name}" class="chosen-select ${klass}" ${props}>${options}</select>
     """.strip()).substitute(
         name=name,
         label=html.escape(label),
         options=" ".join(html_option(**o) for o in options),
         klass=" ".join(classes),
-        props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None)
+        props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None),
+        required_html='<span style="color: red" title="This property is required">*</span> ' if required else '',
     )
