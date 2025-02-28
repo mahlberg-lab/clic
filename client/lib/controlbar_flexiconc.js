@@ -11,6 +11,11 @@ function ControlBarFlexiConc() {
 }
 ControlBarFlexiConc.prototype = Object.create(ControlBar.prototype);
 
+ControlBarFlexiConc.prototype.shutdown = function shutdown(page_state) {
+    // Not a flexiconc page, shutdown if needed & carry on
+    return flexiclic ? flexiclic.shutdown() : Promise.resolve({});
+};
+
 ControlBarFlexiConc.prototype.reload = function reload(page_state) {
     /** Promise to return DOM element for an (algo_name) with element names prefixed by (newPrefix) */
     function newAlgoHtml(algo_name, newPrefix) {
@@ -72,11 +77,6 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
     }
 
     var nested_args = page_state.nested_args();
-
-    // Not a flexiconc page, shutdown if needed & carry on
-    if (page_state.doc() !== "/flexiconc") {
-        return flexiclic ? flexiclic.shutdown() : null;
-    }
 
     return flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
