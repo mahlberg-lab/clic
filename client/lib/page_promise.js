@@ -57,7 +57,10 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
     return p.then(function (page_state) {
         var page_components = self.select_components(page_state);
 
-        self.alerts.clear();
+        if (comp_fn !== 'tweak') {
+            // Don't clear alerts on tweak (NB: controlbar_flexiconc will always tweak to sync state/args)
+            self.alerts.clear();
+        }
         document.body.classList.add('loading');
 
         return Promise.all(page_components.map(function (x) {
