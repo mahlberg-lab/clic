@@ -227,6 +227,10 @@ function ControlBar(control_bar) {
 
     // Turn "nouislider"-type inputs into an actual nouislider
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('input[type=nouislider]'), function (el, i) {
+        if (el.slider_div) {
+            // Already init'ed.
+            return;
+        }
         el.slider_div = document.createElement('DIV');
         el.style.display = 'none';
         el.parentNode.insertBefore(el.slider_div, el.nextSibling);
