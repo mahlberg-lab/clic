@@ -4,6 +4,7 @@
 var ControlBar = require('./controlbar.js');
 var chosen_init = require('./chosen_init.js').chosen_init;
 var flexiclic = require('./flexiclic.js').flexiclic;
+var util_flexiconc = require('./util_flexiconc.js');
 
 // ControlBarFlexiConc inherits ControlBar
 function ControlBarFlexiConc() {
@@ -76,7 +77,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         });
     }
 
-    var nested_args = page_state.nested_args();
+    var nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
 
     return flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {

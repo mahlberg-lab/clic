@@ -72,26 +72,6 @@ State.prototype.doc = function () {
     return this._doc;
 };
 
-/** convert arg structure into nested object */
-State.prototype.nested_args = function () {
-    var out = {};
-
-    flatten.set_values(out, Object.keys(this._args).map(function (k) {
-        if (k.endsWith("[]") || this._args[k].length > 1) {
-            // Explicitly an array, or multiple values, keep array-ness
-            return {key: k, value: this._args[k]};
-        }
-        if (this._args[k].length === 1) {
-            // Return single value
-            return {key: k, value: this._args[k][0]};
-        }
-        // Empty list
-        return {key: k, value: null};
-    }.bind(this)));
-
-    return out;
-};
-
 /** Fetch all available args, optionally filtered by a regex */
 State.prototype.all_args = function (regex) {
     return Object.keys(this._args).reduce(function (r, k) {
@@ -104,17 +84,13 @@ State.prototype.all_args = function (regex) {
 
 /** Fetch named a named argument (i.e. querystring), or all positional args */
 State.prototype.arg = function (name) {
-    var x;
-
     if (!name) {
         return this.arg('#');
     }
 
     if (name.match(/^\w+\[/)) {
-        // Deep reference to arg, use get_values to find it
-        x = flatten.get_values(this.nested_args(), [name]);
-        // If no value, return [], otherwise ensure value is array
-        return x.length === 0 ? [] : Array.isArray(x[0].value) ? x[0].value : [x[0].value];
+        // Deep reference to arg, assume array-default
+        return this._args[name] || [];
     }
 
     if (!this.defaults.hasOwnProperty(name)) {

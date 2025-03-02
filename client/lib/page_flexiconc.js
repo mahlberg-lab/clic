@@ -7,6 +7,7 @@ var concordance_utils = require('./concordance_utils.js');
 var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var flexiclic = require('./flexiclic.js').flexiclic;
+var util_flexiconc = require('./util_flexiconc.js');
 
 /* Column represents a fractional position in book */
 function renderPosition(data, type, full, meta) {
@@ -137,7 +138,8 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 };
 
 PageFlexiConc.prototype.reload_data = function reload(page_state) {
-    var self = this, api_opts = {}, path, nested_args = page_state.nested_args();
+    var self = this, path,
+        nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
 
     // Mangle page_state into the API's required parameters
     api_opts.corpora = page_state.arg('corpora');
