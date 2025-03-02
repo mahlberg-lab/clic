@@ -39,7 +39,7 @@ class TestFlexiClic(unittest.TestCase):
                 }),
             )
             fc = FlexiClic(api_root="https://unittest.example.com")
-            for out_i, out_l in enumerate(fc.compute_path(query_opts, path)):
+            for out_i, out_l in enumerate(fc.compute_path(opts=query_opts, annotations=[], path=path)):
                 if out_i == 0:
                     # CLiC metadata passes through untouched
                     for k in meta.keys():

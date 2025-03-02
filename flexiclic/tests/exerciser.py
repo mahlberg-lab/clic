@@ -11,5 +11,5 @@ for x in fc.compute_path(dict(
     q="hoarding",
     contextsize=10,
     #metadata=["book_titles", "chapter_start"],
-), []):
+), [], []):
     print(x)

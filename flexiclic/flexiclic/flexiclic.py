@@ -28,15 +28,21 @@ class FlexiClic():
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
-    def _follow_path(self, opts, path):
+    def _follow_path(self, opts=None, annotations=None, path=[]):
         """
         Follow path of algorithms, return Node at end
 
-        - opts: dict of arguments to /api/concordance
+        - opts: dict of arguments to /api/concordance (if not supplied, assume unchanged)
+        - annotations: List of annotation algorithms to apply (if not supplied, assume unchanged)
         - path: List of unsorted algorithms to apply
         """
         concordance = self._flexiconc_concordance()
-        path, annotations = path_util.normalize(path, concordance.available_algorithms)
+        if opts is None:
+            opts = self._source_opts
+        if annotations is None:
+            annotations = self._source_annotations
+        annotations = path_util.normalize(annotations, concordance.available_algorithms)
+        path = path_util.normalize(path, concordance.available_algorithms)
 
         if self._source_opts != opts or self._source_annotations != annotations:
             self._source_opts = opts
@@ -103,25 +109,31 @@ class FlexiClic():
 
         return algo_html.from_schema(concordance.available_algorithms[algo_name], prefix)
 
-    def render_tree_html(self, opts, paths):
+    def render_tree_html(self, opts, annotations, paths):
         # Deep arguments, so will be proxy objects from Javascript
         if hasattr(opts, "to_py"):
             opts = opts.to_py()
+        if hasattr(annotations, "to_py"):
+            annotations = annotations.to_py()
         if hasattr(paths, "to_py"):
             paths = paths.to_py()
 
+        if len(paths) == 0:
+            return '<div class="node"><h4>Empty tree</h4></div>'
+
         # Follow all paths to ensure nodes are populated
         for path_name, path in paths.items():
-            _, node = self._follow_path(opts, path)
+            _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
 
         return tree_html.from_node(node.root)
 
-    def compute_path(self, opts, path):
+    def compute_path(self, opts, annotations, path):
         """
         Return concordance line data for a path of algorithms
 
         - opts: CLiC concordance API options
-        - path: Array of algorithms to apply to query results
+        - annotations: List of annotation algorithms to apply
+        - path: List of other algorithms to apply
         """
         def sorted_line_ids(line_ids):
             if hasattr(node, 'ordering_result') and 'sort_keys' in node.ordering_result:
@@ -155,7 +167,7 @@ class FlexiClic():
         if hasattr(path, "to_py"):
             path = path.to_py()
 
-        clic_meta, node = self._follow_path(opts, path)
+        clic_meta, node = self._follow_path(opts=opts, annotations=annotations, path=path)
         view = node.view()
 
         # Pull concordance DataFrames back out of FlexiConc

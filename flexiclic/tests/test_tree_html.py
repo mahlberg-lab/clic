@@ -40,7 +40,7 @@ class TestTreeHtml(unittest.TestCase):
                         "word_count_all": meta["word_count_all"]
                     }),
                 )
-            return "\n".join(self._fc.render_tree_html(query_opts, paths))
+            return "\n".join(self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
 
     def test_from_node(self):
         data = [

@@ -176,6 +176,7 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 
         return flexiclic.render_tree_html({
             opts: api_opts(page_state),
+            annotations: util_flexiconc.renest_args(page_state.all_args(/^(?:annotation)\[/)).annotation || [],
             paths: unflatten_all(page_state.state("fc-all-paths")),
         }).then(function (tree_html) {
             this.tree_el.innerHTML = tree_html.join("\n");
@@ -218,16 +219,17 @@ PageFlexiConc.prototype.tweak = function tweak(page_state) {
 };
 
 PageFlexiConc.prototype.reload_data = function reload(page_state) {
-    var self = this, path,
+    var self = this,
         nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
-
-    // Path is combination of all algorithm classes
-    path = [].concat(nested_args.annotation || [], nested_args.algo || []);
 
     // Reset fcPartitions, so we only show the first partition if results are partitioned
     self.fcPartitions = new Set([0]);
 
-    return flexiclic.compute_path({opts: api_opts(page_state), path: path}).then(function (data) {
+    return flexiclic.compute_path({
+        opts: api_opts(page_state),
+        annotations: nested_args.annotation || [],
+        path: nested_args.algo,
+    }).then(function (data) {
         var i, out;
 
         // Assume first item in data array is CLiC metadata

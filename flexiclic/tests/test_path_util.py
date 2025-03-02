@@ -12,7 +12,7 @@ class TestTypesFromString(unittest.TestCase):
             """
             convert (val) into something matching (type_spec) by building dummy algorithm and validating
             """
-            out, annotations = path_util.normalize([
+            out = path_util.normalize([
                 dict(
                     algorithm_name="testing_algo",
                     test_param=val,
@@ -26,7 +26,6 @@ class TestTypesFromString(unittest.TestCase):
                     
                 ),
             )))
-            self.assertEqual(annotations, [])
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0]["algorithm_name"], "testing_algo")
             if len(out[0]["args"]) == 0:
