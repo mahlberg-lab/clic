@@ -17,3 +17,92 @@
 #content table.dataTable tr.fc-partition-summary.open .partition-toggle::after {
     content: '▼';
 }
+
+.analysis-tree {
+    overflow-y: auto;
+}
+.analysis-tree ul.tree {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: safe center;
+    position: relative;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.analysis-tree ul.tree ul.tree::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 10px;
+    width: 1px;
+    background: #aaa;
+}
+.analysis-tree li.tree {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+.analysis-tree li.tree::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    height: 10px;
+    border: 1px solid #aaa;
+    left: 50%;
+    width: calc(50% + 10px);
+    border-width: 1px 0 0 1px;
+}
+.analysis-tree li.tree::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    height: 10px;
+    border: 1px solid #aaa;
+    left: -10px;
+    width: calc(50% + 10px + 1px);
+    border-width: 1px 1px 0 0;
+}
+.analysis-tree li.tree:first-of-type::after { display: none; }
+.analysis-tree li.tree:last-of-type::before { display: none; }
+
+/* 20px above a node, unless it has no siblings */
+.analysis-tree .node { margin: 20px auto 0 auto; }
+.analysis-tree li.tree:only-of-type > .node { margin-top: 10px; }
+
+.analysis-tree .node.root {
+    width: 8px;
+    height: 8px;
+    background: black;
+}
+
+.analysis-tree .node {
+    width: 20rem;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: #eee;
+}
+
+.analysis-tree .node > header {
+    padding: 0 5px;
+    text-align: center;
+}
+
+.analysis-tree .node > ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.analysis-tree .node > ul > li {
+    border-top: 1px solid #aaa;
+    padding: 0 5px;
+}
+
+.analysis-tree .node > ul > li.subset { background-color: hsl(225deg 33.33% 78.96%);; }
+.analysis-tree .node > ul > li.sorting { background-color: hsl(122.33deg 33.33% 78.96%); }
+.analysis-tree .node > ul > li.ranking { background-color: hsl(177.66deg 33.33% 78.96%); }
+.analysis-tree .node > ul > li.partitioning { background-color: hsl(111deg 33.33% 78.96%); }
+.analysis-tree .node > ul > li.clustering { background-color: hsl(64.21deg 33.33% 78.96%); }

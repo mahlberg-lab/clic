@@ -7,6 +7,7 @@ import flexiconc
 
 from . import algo_html
 from . import path_util
+from . import tree_html
 
 class FlexiClic():
     def __init__(self, api_root=""):
@@ -101,6 +102,19 @@ class FlexiClic():
         concordance = self._flexiconc_concordance()
 
         return algo_html.from_schema(concordance.available_algorithms[algo_name], prefix)
+
+    def render_tree_html(self, opts, paths):
+        # Deep arguments, so will be proxy objects from Javascript
+        if hasattr(opts, "to_py"):
+            opts = opts.to_py()
+        if hasattr(paths, "to_py"):
+            paths = paths.to_py()
+
+        # Follow all paths to ensure nodes are populated
+        for path_name, path in paths.items():
+            _, node = self._follow_path(opts, path)
+
+        return tree_html.from_node(node.root)
 
     def compute_path(self, opts, path):
         """

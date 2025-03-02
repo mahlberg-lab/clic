@@ -126,6 +126,22 @@ PageFlexiConc.prototype.page_title = function (page_state) {
 PageFlexiConc.prototype.reload = function reload(page_state) {
     var self = this;
 
+    function unflatten_all(paths) {
+        var out = {};
+
+        Object.keys(paths).forEach(function (path_k) {
+            if (path_k === "0") {
+                // Ignore analysis-tree "path"
+                return;
+            }
+
+            out[path_k] = util_flexiconc.renest_args(paths[path_k]);
+            // Path is combination of all algorithm classes (as for compute_path below)
+            out[path_k] = [].concat(out[path_k].annotation || [], out[path_k].algo || []);
+        });
+        return out;
+    }
+
     this.table_opts.non_tag_columns = [
         { visible: false, sortable: false, searchable: false },
         // NB: This is line-id, not a table_count_column as in other views
@@ -143,6 +159,34 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 
     // Generate column list based on tag_columns
     this.table_opts.columns = this.table_opts.non_tag_columns;
+
+    if (page_state.arg("fc-path") === "0") {
+        // Switch to tree-mode, remove table & replace with tree
+        if (this.table) {
+            this.table.destroy();
+            this.table_el.innerHTML = "";
+            this.table = undefined;
+        }
+        if (!this.tree_el) {
+            this.tree_el = document.createElement("DIV");
+            this.tree_el.className = "analysis-tree";
+            this.table_el.insertAdjacentElement("afterend", this.tree_el);
+        }
+        this.tree_el.style.display = "";
+
+        return flexiclic.render_tree_html({
+            opts: api_opts(page_state),
+            paths: unflatten_all(page_state.state("fc-all-paths")),
+        }).then(function (tree_html) {
+            this.tree_el.innerHTML = tree_html.join("\n");
+            this.tree_el.querySelectorAll(":scope > ul > li > .node").forEach(function (el) {
+                el.scrollIntoView({block: "start", inline: "center"});
+            });
+        }.bind(this));
+    }
+    if (this.tree_el) {
+        this.tree_el.style.display = "none";
+    }
 
     // For single-word nodes, we want to keep the node column narrow to balance the table nicely
     this.table_el.classList.toggle('narrow-node',
@@ -163,6 +207,13 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         }).draw();
 
         return data;
+    });
+};
+
+/* Override PageTable, don't bother trying to update toggles (which aren't there in tree mode) */
+PageFlexiConc.prototype.tweak = function tweak(page_state) {
+    return new Promise(function (resolve) {
+        resolve({});
     });
 };
 
