@@ -45,6 +45,35 @@ function renderFlexiConcLineId(data, type, full, meta) {
     return data;
 }
 
+/** Generate concordance API opts from page state */
+function api_opts(page_state) {
+    var out = {};
+
+    // Mangle page_state into the API's required parameters
+    out.corpora = page_state.arg('corpora');
+    out.subset = page_state.arg('conc-subset');
+    out.q = page_state.arg('conc-q');
+    out.contextsize = 10;
+    out.metadata = ['chapter_start', 'word_count_all'];
+
+    if (out.corpora.length === 0) {
+        throw new DisplayError("Please select the corpora to search in", "warn");
+    }
+    if (!out.q) {
+        throw new DisplayError("Please provide some terms to search for", "warn");
+    }
+    if (!out.subset) {
+        throw new DisplayError("Please select a subset", "warn");
+    }
+    if (page_state.arg('conc-type') === 'any') {
+        out.q = out.q.split(/(\s+)/).filter(function (t) {
+            return (/\w/).test(t);
+        });
+    }
+
+    return out;
+}
+
 // PageFlexiConc inherits PageTable
 function PageFlexiConc() {
     return PageTable.apply(this, arguments);
@@ -141,35 +170,13 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
     var self = this, path,
         nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
 
-    // Mangle page_state into the API's required parameters
-    api_opts.corpora = page_state.arg('corpora');
-    api_opts.subset = page_state.arg('conc-subset');
-    api_opts.q = page_state.arg('conc-q');
-    api_opts.contextsize = 10;
-    api_opts.metadata = ['chapter_start', 'word_count_all'];
-
-    if (api_opts.corpora.length === 0) {
-        throw new DisplayError("Please select the corpora to search in", "warn");
-    }
-    if (!api_opts.q) {
-        throw new DisplayError("Please provide some terms to search for", "warn");
-    }
-    if (!api_opts.subset) {
-        throw new DisplayError("Please select a subset", "warn");
-    }
-    if (page_state.arg('conc-type') === 'any') {
-        api_opts.q = api_opts.q.split(/(\s+)/).filter(function (t) {
-            return (/\w/).test(t);
-        });
-    }
-
     // Path is combination of all algorithm classes
     path = [].concat(nested_args.annotation || [], nested_args.algo || []);
 
     // Reset fcPartitions, so we only show the first partition if results are partitioned
     self.fcPartitions = new Set([0]);
 
-    return flexiclic.compute_path({opts: api_opts, path: path}).then(function (data) {
+    return flexiclic.compute_path({opts: api_opts(page_state), path: path}).then(function (data) {
         var i, out;
 
         // Assume first item in data array is CLiC metadata
