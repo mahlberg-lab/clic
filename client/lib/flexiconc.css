@@ -106,3 +106,43 @@
 .analysis-tree .node > ul > li.ranking { background-color: hsl(177.66deg 33.33% 78.96%); }
 .analysis-tree .node > ul > li.partitioning { background-color: hsl(111deg 33.33% 78.96%); }
 .analysis-tree .node > ul > li.clustering { background-color: hsl(64.21deg 33.33% 78.96%); }
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: safe center;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  text-align: center;
+  margin: 5px;
+}
+.button-group > * {
+  background: linear-gradient(#fff 0%, #eee 10%);
+  border: 1px solid #aaa;
+  border-left-width: none;
+  line-height: 2rem;
+  padding: 5px;
+  margin: 0;
+  min-width: 2.1rem;
+  cursor: pointer;
+}
+.button-group > input[type=radio] {
+  display: none;
+}
+.button-group > :first-child,
+.button-group > input:first-child+label {
+  border-left-width: 1px;
+  border-radius: 7px 0 0 7px;
+}
+.button-group > :last-child {
+  border-radius: 0 7px 7px 0;
+}
+.button-group > button:active,
+.button-group > label:active {
+    background: #ccc;
+}
+.button-group > *.checked,
+.button-group > input:checked+label {
+  background: linear-gradient(#eee 1%,#fff 15%);
+}
