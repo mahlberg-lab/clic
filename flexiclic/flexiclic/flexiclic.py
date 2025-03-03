@@ -109,6 +109,11 @@ class FlexiClic():
 
         return algo_html.from_schema(concordance.available_algorithms[algo_name], prefix)
 
+    def tree_ids(self, node=None):
+        if node is None:
+            node = self._flexiconc_concordance().root
+        return [node.id] + [self.tree_ids(node=c) for c in node.children]
+
     def render_tree_html(self, opts, annotations, paths):
         # Deep arguments, so will be proxy objects from Javascript
         if hasattr(opts, "to_py"):
@@ -126,6 +131,31 @@ class FlexiClic():
             _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
 
         return tree_html.from_node(node.root)
+
+    def tidy_paths(self, opts=None, annotations=None, paths={}):
+        """
+        Remove any extraneous paths from FlexiConc instance
+        """
+        def tidy_nodes(node, wanted_ids):
+            node.children = tuple(tidy_nodes(c, wanted_ids) for c in node.children if c.id in wanted_ids)
+            return node
+
+        # Deep arguments, so will be proxy objects from Javascript
+        if hasattr(paths, "to_py"):
+            paths = paths.to_py()
+
+        # Add all wanted nodes to set
+        wanted_ids = set()
+        for path_name, path in paths.items():
+            _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+            while node is not None:
+                wanted_ids.add(node.id)
+                node = node.parent
+
+        # Search tree, making sure it only contains what's in that set
+        concordance = self._flexiconc_concordance()
+        tidy_nodes(concordance.root, wanted_ids)
+        return True
 
     def compute_path(self, opts, annotations, path):
         """

@@ -22,3 +22,18 @@ module.exports.renest_args = function (args) {
 
     return out;
 };
+
+module.exports.renest_all = function (paths) {
+    var out = {};
+
+    Object.keys(paths).forEach(function (path_k) {
+        if (path_k === "0") {
+            // Ignore analysis-tree "path"
+            return;
+        }
+
+        out[path_k] = module.exports.renest_args(paths[path_k]);
+        out[path_k] = out[path_k].algo;
+    });
+    return out;
+};

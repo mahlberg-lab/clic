@@ -186,19 +186,23 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 });
             }
 
-            // Instead of letting form update, set state to match fc-all-paths for selected value
-            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
-                args: Object.assign(
-                    {},
-                    // Everything non-algo from the current state
-                    page_state.all_args(/^(?!algo\[)/),
-                    // All stored algo[ args from fc-all-paths
-                    fcAllPaths[event.target.value] || [],
-                    // New fc-path pointer
-                    { "fc-path": [event.target.value] }
-                ),
-                flush: true,
-            }}));
+            flexiclic.tidy_paths({
+                paths: util_flexiconc.renest_all(page_state.state("fc-all-paths")),
+            }).then(function () {
+                // Instead of letting form update, set state to match fc-all-paths for selected value
+                window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+                    args: Object.assign(
+                        {},
+                        // Everything non-algo from the current state
+                        page_state.all_args(/^(?!algo\[)/),
+                        // All stored algo[ args from fc-all-paths
+                        fcAllPaths[event.target.value] || [],
+                        // New fc-path pointer
+                        { "fc-path": [event.target.value] }
+                    ),
+                    flush: true,
+                }}));
+            });
             event.stopPropagation();
             event.preventDefault();
         };

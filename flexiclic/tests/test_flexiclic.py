@@ -36,20 +36,22 @@ class TestFlexiClic(unittest.TestCase):
             # The Flexiconc loop removes whitespace on left context, strip
             d[0].pop(len(d[0]) - 2)
         with responses.RequestsMock() as rsps:
-            rsps.add(
-                responses.GET,
-                "https://unittest.example.com/api/concordance",
-                status=200,
-                content_type="application/json",
-                body=json.dumps({
-                    "version": meta['version'],
-                    "data": data,
-                    "chapter_start": meta['chapter_start'],
-                    "word_count_all": meta["word_count_all"]
-                }),
-            )
-            fc = FlexiClic(api_root="https://unittest.example.com")
-            for out_i, out_l in enumerate(fc.compute_path(opts=query_opts, annotations=[], path=path)):
+            if not hasattr(self, "_fc"):
+                self._fc = FlexiClic(api_root="https://unittest.example.com")
+                # Only fetching when creating a new object
+                rsps.add(
+                    responses.GET,
+                    "https://unittest.example.com/api/concordance",
+                    status=200,
+                    content_type="application/json",
+                    body=json.dumps({
+                        "version": meta['version'],
+                        "data": data,
+                        "chapter_start": meta['chapter_start'],
+                        "word_count_all": meta["word_count_all"]
+                    }),
+                )
+            for out_i, out_l in enumerate(self._fc.compute_path(opts=query_opts, annotations=[], path=path)):
                 if out_i == 0:
                     # CLiC metadata passes through untouched
                     for k in meta.keys():
@@ -134,3 +136,46 @@ class TestFlexiClic(unittest.TestCase):
             (5, 0, 5, {'matches': None, 'rank_keys': {'algo_0': 0}}),
             (6, 0, 6, {'matches': None, 'rank_keys': {'algo_0': 0}}),
         ])
+
+    def test_tidy_paths(self):
+        out = list(self._compute_path(data=self.conc_data, path=[
+            {"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"},
+        ]))
+        self.assertEqual(
+            self._fc.tree_ids(),
+            [0, [1]],
+        )
+        self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
+            "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(
+            self._fc.tree_ids(),
+            [0, [1], [2]],
+        )
+        self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
+            "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(
+            self._fc.tree_ids(),
+            [0, [1], [2], [3]],
+        )
+        self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(
+            self._fc.tree_ids(),
+            [0, [1], [3]],
+        )
+        self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+            "3": [{"algorithm_name":"KWIC Patterns","positions":["1","6"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(
+            self._fc.tree_ids(),
+            [0, [1], [3], [4]],
+        )

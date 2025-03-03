@@ -126,22 +126,6 @@ PageFlexiConc.prototype.page_title = function (page_state) {
 PageFlexiConc.prototype.reload = function reload(page_state) {
     var self = this;
 
-    function unflatten_all(paths) {
-        var out = {};
-
-        Object.keys(paths).forEach(function (path_k) {
-            if (path_k === "0") {
-                // Ignore analysis-tree "path"
-                return;
-            }
-
-            out[path_k] = util_flexiconc.renest_args(paths[path_k]);
-            // Path is combination of all algorithm classes (as for compute_path below)
-            out[path_k] = [].concat(out[path_k].annotation || [], out[path_k].algo || []);
-        });
-        return out;
-    }
-
     this.table_opts.non_tag_columns = [
         { visible: false, sortable: false, searchable: false },
         // NB: This is line-id, not a table_count_column as in other views
@@ -177,7 +161,7 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         return flexiclic.render_tree_html({
             opts: api_opts(page_state),
             annotations: util_flexiconc.renest_args(page_state.all_args(/^(?:annotation)\[/)).annotation || [],
-            paths: unflatten_all(page_state.state("fc-all-paths")),
+            paths: util_flexiconc.renest_all(page_state.state("fc-all-paths")),
         }).then(function (tree_html) {
             this.tree_el.innerHTML = tree_html.join("\n");
             this.tree_el.querySelectorAll(":scope > ul > li > .node").forEach(function (el) {
