@@ -123,18 +123,24 @@ class FlexiClic():
         if hasattr(paths, "to_py"):
             paths = paths.to_py()
 
-        if len(paths) == 0:
-            return '<div class="node"><h4>Empty tree</h4></div>'
+        # Tidy paths, ensuring all paths are present, collect terminal nodes by node_id
+        additional_children = collections.defaultdict(list)
+        for path_name, node_id in self.tidy_paths(opts=opts, annotations=annotations, paths=paths).items():
+            additional_children[node_id].append(path_name)
 
-        # Follow all paths to ensure nodes are populated
-        for path_name, path in paths.items():
-            _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+        # Generate HTML for each terminal node
+        additional_children = {node_id: [
+            '<div class="button-group"><div class="checked">%s</div><button data-path-name="%s" aria-label="Delete">🗑</button></div>' % (n, n)
+            for n in path_names
+        ] for node_id, path_names in additional_children.items()}
 
-        return tree_html.from_node(node.root)
+        concordance = self._flexiconc_concordance()
+        return tree_html.from_node(concordance.root, additional_children=additional_children)
 
     def tidy_paths(self, opts=None, annotations=None, paths={}):
         """
         Remove any extraneous paths from FlexiConc instance
+        Return (path_name):(terminal node id) dict
         """
         def tidy_nodes(node, wanted_ids):
             node.children = tuple(tidy_nodes(c, wanted_ids) for c in node.children if c.id in wanted_ids)
@@ -146,8 +152,10 @@ class FlexiClic():
 
         # Add all wanted nodes to set
         wanted_ids = set()
+        terminal_node_ids = {}
         for path_name, path in paths.items():
             _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+            terminal_node_ids[path_name] = node.id
             while node is not None:
                 wanted_ids.add(node.id)
                 node = node.parent
@@ -155,7 +163,7 @@ class FlexiClic():
         # Search tree, making sure it only contains what's in that set
         concordance = self._flexiconc_concordance()
         tidy_nodes(concordance.root, wanted_ids)
-        return True
+        return terminal_node_ids
 
     def compute_path(self, opts, annotations, path):
         """

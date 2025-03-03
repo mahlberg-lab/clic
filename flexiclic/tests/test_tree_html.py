@@ -54,9 +54,9 @@ class TestTreeHtml(unittest.TestCase):
         ]
 
         # Compute 2 paths, get the combined tree
-        out = self._render_tree(data=data, paths={"0": [
+        out = self._render_tree(data=data, paths={"1": [
             {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
-        ], "1" : [
+        ], "2" : [
             {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
             {"algorithm_name":"Random Sort","seed":"3"},
         ]})
@@ -65,8 +65,9 @@ class TestTreeHtml(unittest.TestCase):
 <li class="tree"><div class="node subset">
   <header>subset</header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
-</div>
-</li>
+</div><ul class="tree">
+<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+</ul></li>
 <li class="tree"><div class="node subset">
   <header>subset</header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 4, &#x27;seed&#x27;: 3}</li></ul>
@@ -74,8 +75,49 @@ class TestTreeHtml(unittest.TestCase):
 <li class="tree"><div class="node arrangement">
   <header>arrangement</header>
   <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
-</div>
-</li>
+</div><ul class="tree">
+<li class="tree"><div class="button-group"><div class="checked">2</div><button data-path-name="2" aria-label="Delete">🗑</button></div></li>
+</ul></li>
+</ul></li>
+</ul></li></ul>
+        """.strip())
+
+        # Compute 0 paths, get an epty tree
+        out = self._render_tree(data=data, paths={})
+        self.assertEqual(out, """
+<ul class="tree"><li class="tree"><div class="node root"></div>
+</li></ul>
+        """.strip())
+
+        # Compute 3 paths, with overlapping terminal nodes
+        out = self._render_tree(data=data, paths={"1": [
+            {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
+        ], "2" : [
+            {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
+            {"algorithm_name":"Random Sort","seed":"3"},
+        ], "3" : [
+            {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
+            {"algorithm_name":"Random Sort","seed":"3"},
+        ]})
+        self.assertEqual(out, """
+<ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
+<li class="tree"><div class="node subset">
+  <header>subset</header>
+  <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+</ul></li>
+<li class="tree"><div class="node subset">
+  <header>subset</header>
+  <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 4, &#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="node arrangement">
+  <header>arrangement</header>
+  <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="button-group"><div class="checked">2</div><button data-path-name="2" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group"><div class="checked">3</div><button data-path-name="3" aria-label="Delete">🗑</button></div></li>
+</ul></li>
 </ul></li>
 </ul></li></ul>
         """.strip())

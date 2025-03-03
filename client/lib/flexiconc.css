@@ -70,8 +70,8 @@
 .analysis-tree li.tree:last-of-type::before { display: none; }
 
 /* 20px above a node, unless it has no siblings */
-.analysis-tree .node { margin: 20px auto 0 auto; }
-.analysis-tree li.tree:only-of-type > .node { margin-top: 10px; }
+.analysis-tree li.tree > div { margin: 20px auto 0 auto; }
+.analysis-tree li.tree:only-of-type > div { margin-top: 10px; }
 
 .analysis-tree .node.root {
     width: 8px;

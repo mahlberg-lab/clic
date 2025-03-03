@@ -158,6 +158,27 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         }
         this.tree_el.style.display = "";
 
+        // NB: Re-attaching event on each page update so page_state is up-to-date
+        this.tree_el.onclick = function (event) {
+            var button_el = event.target.closest("button");
+
+            if (!button_el) {
+                return;
+            }
+            event.stopPropagation();
+            event.preventDefault();
+
+            if (button_el.getAttribute("aria-label") === "Delete") {
+                // Remove data-path-name from fc-all-paths and update
+                window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+                    state: { "fc-all-paths": util_flexiconc.remove_path(
+                        page_state.state("fc-all-paths"),
+                        button_el.getAttribute("data-path-name")
+                    ) },
+                }}));
+            }
+        };
+
         return flexiclic.render_tree_html({
             opts: api_opts(page_state),
             annotations: util_flexiconc.renest_args(page_state.all_args(/^(?:annotation)\[/)).annotation || [],

@@ -40,21 +40,24 @@ def _node_to_html(node):
     )
 
 
-def from_node(node, root=True):
+def from_node(node, additional_children={}, root=True):
     """
     Given a FlexiConc (node), return an HTML list structure representing the FlexiConc tree below
 
     - node: The FlexiConc root node
     - root: Should remain True
     """
+    has_children = bool(node.children or len(additional_children.get(node.id, [])) > 0)
     yield '%s<li class="tree">%s%s' % (
         '<ul class="tree">' if root else '',
         _node_to_html(node),
-        '<ul class="tree">' if node.children else '',
+        '<ul class="tree">' if has_children else '',
     )
     for subnode in node.children:
-        yield from from_node(subnode, root=False)
+        yield from from_node(subnode, additional_children=additional_children, root=False)
+    for subhtml in additional_children.get(node.id, []):
+        yield '<li class="tree">%s</li>' % subhtml
     yield '%s</li>%s' % (
-        '</ul>' if node.children else '',
+        '</ul>' if has_children else '',
         '</ul>' if root else '',
     )
