@@ -6,10 +6,10 @@ import responses
 from flexiclic import FlexiClic
 
 
-class TestTreeHtml(unittest.TestCase):
+class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
     maxDiff = None
 
-    def _render_tree(self, data=[], paths=[]):
+    async def _render_tree(self, data=[], paths=[]):
         query_opts = {
             "corpora": ["BH"],
             "subset": "all",
@@ -41,12 +41,12 @@ class TestTreeHtml(unittest.TestCase):
                         "word_count_all": meta["word_count_all"]
                     }),
                 )
-            out = "\n".join(self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
+            out = "\n".join(await self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
             # Filter button-group down to path-name, we don't need to check the specifics
             out = re.sub(r'<div class="button-group" data-path-name="(\d+)".*?</div>', '<div class="button-group" data-path-name="\\1"></div>', out)
             return out
 
-    def test_from_node(self):
+    async def test_from_node(self):
         data = [
             [["by"," ","Temple"," ","Bar",", ","in"," ","Lincoln's"," ","Inn"," ","Hall",", ","at"," ","the"," ","very"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",[0]],[" ","of"," ","the"," ","fog",", ","sits"," ","the"," ","Lord"," ","High"," ","Chancellor"," ","in"," ","his",[1,3,5,7,9,11,13,15,17,19]],["BH",2547,2552],[1,4,18]],
             [["patience",", ","courage",", ","hope",", ","so"," ","overthrows"," ","the"," ","brain"," ","and"," ","breaks"," ","the"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",",",[0]],[" ","that"," ","there"," ","is"," ","not"," ","an"," ","honourable"," ","man"," ","among"," ","its"," ","practitioners",[1,3,5,7,9,11,13,15,17,19]],["BH",5230,5235],[1,6,24]],
@@ -58,7 +58,7 @@ class TestTreeHtml(unittest.TestCase):
         ]
 
         # Compute 2 paths, get the combined tree
-        out = self._render_tree(data=data, paths={"1": [
+        out = await self._render_tree(data=data, paths={"1": [
             {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
         ], "2" : [
             {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
@@ -87,14 +87,14 @@ class TestTreeHtml(unittest.TestCase):
         """.strip())
 
         # Compute 0 paths, get an epty tree
-        out = self._render_tree(data=data, paths={})
+        out = await self._render_tree(data=data, paths={})
         self.assertEqual(out, """
 <ul class="tree"><li class="tree"><div class="node root"></div>
 </li></ul>
         """.strip())
 
         # Compute 3 paths, with overlapping terminal nodes
-        out = self._render_tree(data=data, paths={"1": [
+        out = await self._render_tree(data=data, paths={"1": [
             {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
         ], "2" : [
             {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
@@ -127,7 +127,7 @@ class TestTreeHtml(unittest.TestCase):
         """.strip())
 
         # Path with only root node
-        out = self._render_tree(data=data, paths={"1": []})
+        out = await self._render_tree(data=data, paths={"1": []})
         self.assertEqual(out, """
 <ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="1"></div></li>

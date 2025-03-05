@@ -44,7 +44,20 @@ onmessage = function (event) {
     // Proxy message through to flexiclic
     // TODO: https://pyodide.org/en/stable/usage/keyboard-interrupts.html
     if (!flexiclic[event.data.method]) throw new Error(`Unknown flexiclic method ${event.data.method}`);
-    let rv = flexiclic[event.data.method].callKwargs(event.data.kwargs);
+    return flexiclic[event.data.method].callKwargs(event.data.kwargs);
+  }).then(function (rv) {
+    if (rv instanceof self._pyodide.ffi.PyAsyncGenerator) {
+        // Async generator, promise-chain calls to next()
+        return rv.next().then(function handle (x) {
+            if (x.done === true) {
+                post(event.data.tx, undefined, true);
+                return;
+            }
+            post(event.data.tx, x.value, false);
+            return rv.next().then(handle);
+        });
+    }
+
     if (rv instanceof self._pyodide.ffi.PyGenerator) {
         // For generators, send values to main thread one by one
         while (true) {
@@ -53,9 +66,11 @@ onmessage = function (event) {
             post(event.data.tx, x.value, false);
         }
         post(event.data.tx, undefined, true);
-    } else {
-        post(event.data.tx, rv, true);
+        return;
     }
+
+    // Post single values
+    post(event.data.tx, rv, true);
   }).catch((error) => {
     var message = error.message, level = "error";
     console.warn(error);

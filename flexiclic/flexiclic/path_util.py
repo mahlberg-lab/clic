@@ -88,4 +88,4 @@ def normalize(path, available_algorithms):
         else:
             raise ValueError("Unknown algorithm_type: %s" % algo)
 
-    return annotations + out
+    return annotations + out, requires

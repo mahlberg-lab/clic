@@ -5,7 +5,7 @@ import responses
 from flexiclic import FlexiClic
 
 
-class TestFlexiClic(unittest.TestCase):
+class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
     maxDiff = None
 
     conc_data = [
@@ -18,7 +18,7 @@ class TestFlexiClic(unittest.TestCase):
         [["I"," ","had"," ","brought"," ","no"," ","joy"," ","at"," ","any"," ","time"," ","to"," ","anybody's"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",[0]],[" ","and"," ","that"," ","I"," ","was"," ","to"," ","no"," ","one"," ","upon"," ","earth"," ","what",[1,3,5,7,9,11,13,15,17,19]],["BH",38895,38900],[3,16,69]],
     ]
 
-    def _compute_path(self, data=[], path=[]):
+    async def _compute_path(self, data=[], path=[]):
         query_opts = {
             "corpora": ["BH"],
             "subset": "all",
@@ -51,7 +51,7 @@ class TestFlexiClic(unittest.TestCase):
                         "word_count_all": meta["word_count_all"]
                     }),
                 )
-            for out_i, out_l in enumerate(self._fc.compute_path(opts=query_opts, annotations=[], path=path)):
+            for out_i, out_l in enumerate([x async for x in self._fc.compute_path(opts=query_opts, annotations=[], path=path)]):
                 if out_i == 0:
                     # CLiC metadata passes through untouched
                     for k in meta.keys():
@@ -68,10 +68,10 @@ class TestFlexiClic(unittest.TestCase):
                     # No matching line, return full thing
                     yield out_l
 
-    def test_compute_path_nopartition(self):
+    async def test_compute_path_nopartition(self):
         # No path, just get lines back in same order
-        out = list(self._compute_path(data=self.conc_data, path=[
-        ]))
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
+        ])]
         self.assertEqual(out, [
             (0, 0, 0, {'matches': None}),
             (1, 0, 1, {'matches': None}),
@@ -83,19 +83,19 @@ class TestFlexiClic(unittest.TestCase):
         ])
 
         # Random sample, get given line
-        out = list(self._compute_path(data=self.conc_data, path=[
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
-        ]))
+        ])]
         self.assertEqual(out, [
             (1, 0, 1, {'matches': None}),
             (4, 0, 4, {'matches': None})
         ])
 
         # Random sample+sort
-        out = list(self._compute_path(data=self.conc_data, path=[
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
             {"algorithm_name":"Random Sort","seed":"3"},
-        ]))
+        ])]
         self.assertEqual(out, [
             (4, 0, 4, {'matches': None}),
             (6, 0, 6, {'matches': None}),
@@ -103,10 +103,10 @@ class TestFlexiClic(unittest.TestCase):
             (1, 0, 1, {'matches': None}),
         ])
 
-    def test_compute_path_partition(self):
-        out = list(self._compute_path(data=self.conc_data, path=[
+    async def test_compute_path_partition(self):
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"},
-        ]))
+        ])]
         self.assertEqual(out, [
             (['Partition', []], ['hello', []], ["('of', 'fog')", []], ['', '', ''], ['', '', ''], 0, '', {'rowcount': 2}),
             (0, 0, 0, {'matches': None}),
@@ -123,10 +123,10 @@ class TestFlexiClic(unittest.TestCase):
             (3, 5, 3, {'matches': None}),
         ])
 
-    def test_compute_path_term_highlight(self):
-        out = list(self._compute_path(data=self.conc_data, path=[
+    async def test_compute_path_term_highlight(self):
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
             { "algorithm_name": "KWIC Grouper Ranker", "count_types": "on", "search_term": "the", "tokens_attribute": "word", "window_end": "10", "window_start": "-10"},
-        ]))
+        ])]
         self.assertEqual(out, [
             (0, 0, 0, {'matches': [[2], [], []], 'rank_keys': {'algo_0': 1}}),
             (1, 0, 1, {'matches': [[5], [], []], 'rank_keys': {'algo_0': 1}}),
@@ -137,15 +137,15 @@ class TestFlexiClic(unittest.TestCase):
             (6, 0, 6, {'matches': None, 'rank_keys': {'algo_0': 0}}),
         ])
 
-    def test_tidy_paths(self):
-        out = list(self._compute_path(data=self.conc_data, path=[
+    async def test_tidy_paths(self):
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"},
-        ]))
+        ])]
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1]],
         )
-        self._fc.tidy_paths(paths={
+        await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
             "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
         })
@@ -153,7 +153,7 @@ class TestFlexiClic(unittest.TestCase):
             self._fc.tree_ids(),
             [0, [1], [2]],
         )
-        self._fc.tidy_paths(paths={
+        await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
             "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
             "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
@@ -162,7 +162,7 @@ class TestFlexiClic(unittest.TestCase):
             self._fc.tree_ids(),
             [0, [1], [2], [3]],
         )
-        self._fc.tidy_paths(paths={
+        await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
             "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
         })
@@ -170,7 +170,7 @@ class TestFlexiClic(unittest.TestCase):
             self._fc.tree_ids(),
             [0, [1], [3]],
         )
-        self._fc.tidy_paths(paths={
+        await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
             "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
             "3": [{"algorithm_name":"KWIC Patterns","positions":["1","6"],"tokens_attribute":"word"}],
@@ -179,7 +179,7 @@ class TestFlexiClic(unittest.TestCase):
             self._fc.tree_ids(),
             [0, [1], [3], [4]],
         )
-        self._fc.tidy_paths(paths={
+        await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
             "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
             # NB: This doesn't cause an error, but it is no longer included in the tree

@@ -28,7 +28,7 @@ class FlexiClic():
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
-    def _follow_path(self, opts=None, annotations=None, path=[]):
+    async def _follow_path(self, opts=None, annotations=None, path=[]):
         """
         Follow path of algorithms, return Node at end
 
@@ -114,7 +114,7 @@ class FlexiClic():
             node = self._flexiconc_concordance().root
         return [node.id] + [self.tree_ids(node=c) for c in node.children]
 
-    def render_tree_html(self, opts, annotations, paths):
+    async def render_tree_html(self, opts, annotations, paths):
         # Deep arguments, so will be proxy objects from Javascript
         if hasattr(opts, "to_py"):
             opts = opts.to_py()
@@ -125,7 +125,7 @@ class FlexiClic():
 
         # Tidy paths, ensuring all paths are present, collect terminal nodes by node_id
         additional_children = collections.defaultdict(list)
-        for path_name, node_id in self.tidy_paths(opts=opts, annotations=annotations, paths=paths).items():
+        for path_name, node_id in (await self.tidy_paths(opts=opts, annotations=annotations, paths=paths)).items():
             additional_children[node_id].append(path_name)
 
         # Generate HTML for each terminal node
@@ -137,7 +137,7 @@ class FlexiClic():
         concordance = self._flexiconc_concordance()
         return tree_html.from_node(concordance.root, additional_children=additional_children)
 
-    def tidy_paths(self, opts=None, annotations=None, paths={}):
+    async def tidy_paths(self, opts=None, annotations=None, paths={}):
         """
         Remove any extraneous paths from FlexiConc instance
         Return (path_name):(terminal node id) dict
@@ -159,7 +159,7 @@ class FlexiClic():
         terminal_node_ids = {}
         for path_name, path in paths.items():
             try:
-                _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+                _, node = await self._follow_path(opts=opts, annotations=annotations, path=path)
             except:
                 # This path is invalid for some reason, ignore it
                 continue
@@ -173,7 +173,7 @@ class FlexiClic():
         tidy_nodes(concordance.root, wanted_ids)
         return terminal_node_ids
 
-    def compute_path(self, opts, annotations, path):
+    async def compute_path(self, opts, annotations, path):
         """
         Return concordance line data for a path of algorithms
 
@@ -215,7 +215,7 @@ class FlexiClic():
         if hasattr(path, "to_py"):
             path = path.to_py()
 
-        clic_meta, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+        clic_meta, node = await self._follow_path(opts=opts, annotations=annotations, path=path)
         view = node.view()
 
         # Pull concordance DataFrames back out of FlexiConc
