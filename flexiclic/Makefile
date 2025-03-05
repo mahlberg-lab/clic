@@ -73,6 +73,7 @@ www/manifest.js:
 	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
 	@echo ' "_preload": `$(LOCAL_WHEELS) $(PREBUILT_WHEELS) $(PYODIDE_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "pyicu": `$(LIBICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@echo ' "spacy": `$(SPACY_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo '};' >> www/manifest.js
 
 www/flexiclicWorker.js: flexiclicWorker.js
