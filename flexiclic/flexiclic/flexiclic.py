@@ -154,7 +154,11 @@ class FlexiClic():
         wanted_ids = set()
         terminal_node_ids = {}
         for path_name, path in paths.items():
-            _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+            try:
+                _, node = self._follow_path(opts=opts, annotations=annotations, path=path)
+            except:
+                # This path is invalid for some reason, ignore it
+                continue
             terminal_node_ids[path_name] = node.id
             while node is not None:
                 wanted_ids.add(node.id)
