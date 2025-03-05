@@ -233,7 +233,7 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
     return flexiclic.compute_path({
         opts: api_opts(page_state),
         annotations: nested_args.annotation || [],
-        path: nested_args.algo,
+        path: nested_args.algo || [],
     }).then(function (data) {
         var i, out;
 
