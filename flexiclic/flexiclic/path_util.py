@@ -44,6 +44,7 @@ def convert_value(val, target_types, items):
 def normalize(path, available_algorithms):
     annotations = []
     out = []
+    requires = []
 
     for raw_spec in path:
         # Ensure algo is a dict of name/type/expected arguments
@@ -62,6 +63,9 @@ def normalize(path, available_algorithms):
             # Any values of None should be missing from the schema, so we don't trigger validation problems
             if val is not None:
                 algo["args"][arg_k] = val
+
+        # Include argument requirements in our list
+        requires.extend(algo_metadata.get("requires", []))
 
         # File appropriately, annotations are separate, sort/group get combined into an arrangement pseudo-algorithm
         if algo["algorithm_type"] == "annotation":

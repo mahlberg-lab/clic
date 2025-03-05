@@ -1,5 +1,5 @@
 importScripts("manifest.js");
-importScripts(PYODIDE_URL);
+importScripts(PYODIDE_REQUIREMENTS["_pyodide"]);
 // https://pyodide.org/en/stable/usage/type-conversions.html#explicit-conversion-of-proxies
 // https://pyodide.org/en/0.21.3/usage/api/js-api.html#PyProxy.callKwargs
 
@@ -7,7 +7,7 @@ importScripts(PYODIDE_URL);
 async function setupFlexiClic(apiRoot) {
   const pyodide = await loadPyodide({
     env: {ICU_DATA: "/icudata"},
-    packages: PRELOAD_WHEELS,
+    packages: PYODIDE_REQUIREMENTS["_preload"],
   });
   await pyodide.loadPackage("micropip");
   const micropip = pyodide.pyimport("micropip");
@@ -19,7 +19,18 @@ async function setupFlexiClic(apiRoot) {
 
   self._pyodide = pyodide;
   const flexiclic = pyodide.pyimport("flexiclic");
-  return flexiclic.FlexiClic(api_root=apiRoot);
+  return flexiclic.FlexiClic(api_root=apiRoot, install_package_fn=async function (pkg) {
+      if (!self._installed_packages) self._installed_packages = {};
+      if (self._installed_packages[pkg]) return;
+
+      // Install requirements from manifest (read: direct wheel locations) or package itself
+      await micropip.install((PYODIDE_REQUIREMENTS[pkg] || [pkg]).map(function (x) {
+          // micropip takes prebuilt/thing.whl to mean file://, not a relative URL
+          return x.endsWith(".whl") ? "https://" + self.location.host + "/flexiclic/" + x : x;
+      }));
+
+      self._installed_packages[pkg] = true;
+  });
 }
 // Create promise to working FlexiClic object, callees either wait for setup or get previously instantiated object
 self.flexiclic_ready = setupFlexiClic(location.origin);

@@ -12,7 +12,7 @@ class TestTypesFromString(unittest.TestCase):
             """
             convert (val) into something matching (type_spec) by building dummy algorithm and validating
             """
-            out = path_util.normalize([
+            out, requires = path_util.normalize([
                 dict(
                     algorithm_name="testing_algo",
                     test_param=val,
@@ -65,3 +65,32 @@ class TestTypesFromString(unittest.TestCase):
             conv("gelda", dict(type=["array"], items=dict(type="integer")))
         with self.assertRaisesRegex(errors.UserError, "Cannot convert.*gelda.*integer"):
             conv("gelda", dict(type=["array"], items=dict(type="integer")))
+
+    def test_requires(self):
+        """
+        Make sure we can fetch requirements from a schema
+        """
+        out, requires = path_util.normalize([
+            dict(
+                algorithm_name="testing_algo",
+                test_param="arg",
+            )
+        ], dict(testing_algo=dict(
+            full_name="Testing algorithm",
+            algorithm_type="selection",
+            requires=["pyicu"],
+            args_schema=dict(properties={},required=[]),
+        )))
+        self.assertEqual(requires, ["pyicu"])
+
+        out, requires = path_util.normalize([
+            dict(
+                algorithm_name="testing_algo",
+                test_param="arg",
+            )
+        ], dict(testing_algo=dict(
+            full_name="Testing algorithm",
+            algorithm_type="selection",
+            args_schema=dict(properties={},required=[]),
+        )))
+        self.assertEqual(requires, [])

@@ -1,4 +1,5 @@
 import collections
+import itertools
 import requests
 import pandas as pd
 import re
@@ -10,7 +11,7 @@ from . import path_util
 from . import tree_html
 
 class FlexiClic():
-    def __init__(self, api_root=""):
+    def __init__(self, api_root="", install_package_fn=None):
         """
         Create a flexiconc<->CLiC adapter
 
@@ -19,6 +20,7 @@ class FlexiClic():
         self._api_root = api_root
         self._source_opts = {}
         self._clic_meta = {}
+        self._install_package_fn = install_package_fn or (lambda x: True)
 
     def _flexiconc_concordance(self, data=None):
         if data is not None:
@@ -41,8 +43,13 @@ class FlexiClic():
             opts = self._source_opts
         if annotations is None:
             annotations = self._source_annotations
-        annotations = path_util.normalize(annotations, concordance.available_algorithms)
-        path = path_util.normalize(path, concordance.available_algorithms)
+        annotations, annotations_requires = path_util.normalize(annotations, concordance.available_algorithms)
+        path, path_requires = path_util.normalize(path, concordance.available_algorithms)
+
+        # Try installing all required packages
+        for pkg in itertools.chain(annotations_requires, path_requires):
+            pkg = re.sub(r'[<=>].*$', '', pkg).strip()
+            await self._install_package_fn(pkg)
 
         if self._source_opts != opts or self._source_annotations != annotations:
             self._source_opts = opts

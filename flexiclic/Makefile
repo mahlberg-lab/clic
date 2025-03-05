@@ -68,8 +68,10 @@ test: lib/.requirements
 	./bin/pytest $(EGG_NAME) tests
 
 www/manifest.js:
-	@echo 'const PYODIDE_URL = `pyodide-$(PYODIDE_VERSION)/pyodide.js`' > www/manifest.js
-	@echo 'const PRELOAD_WHEELS = `$(patsubst www/%, %, $(filter %.whl,$(OUT_FILES))) $(PYODIDE_WHEELS)`.trim().split(/\s+/)' >> www/manifest.js
+	@echo 'const PYODIDE_REQUIREMENTS = {' > www/manifest.js
+	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
+	@echo ' "_preload": `$(LOCAL_WHEELS) $(PREBUILT_WHEELS) $(PYODIDE_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@echo '};' >> www/manifest.js
 
 www/flexiclicWorker.js: flexiclicWorker.js
 	cp $^ $@
