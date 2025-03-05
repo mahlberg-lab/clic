@@ -206,6 +206,16 @@ Disallow: /api/
         add_header Vary Accept-Encoding;
     }
 
+    # All pages are actually index.html
+    location = / { try_files \$uri \$uri.html /index.html; }
+    location = /concordance { try_files \$uri \$uri.html /index.html; }
+    location = /flexiconc { try_files \$uri \$uri.html /index.html; }
+    location = /subsets { try_files \$uri \$uri.html /index.html; }
+    location = /clusters { try_files \$uri \$uri.html /index.html; }
+    location = /keywords { try_files \$uri \$uri.html /index.html; }
+    location = /count { try_files \$uri \$uri.html /index.html; }
+    location = /text { try_files \$uri \$uri.html /index.html; }
+
     location / {
         # Downloads links
         rewrite ^/downloads/clic-1.4.zip https://github.com/mahlberg-lab/clic-legacy/archive/4370f90a753763c9c3cff50549fa3446ef650954.zip permanent;
@@ -224,9 +234,6 @@ Disallow: /api/
 
         # Allow copies of index.html to be cached for a short amount of time
         expires 1m;
-
-        # We're a single-page-app, all URLs lead to index.html
-        try_files \$uri \$uri.html /index.html;
     }
 }
 EOF
