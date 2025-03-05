@@ -104,7 +104,7 @@
 .analysis-tree .node > ul > li.subset { background-color: hsl(225deg 33.33% 78.96%);; }
 .analysis-tree .node > ul > li.sorting { background-color: hsl(122.33deg 33.33% 78.96%); }
 .analysis-tree .node > ul > li.ranking { background-color: hsl(177.66deg 33.33% 78.96%); }
-.analysis-tree .node > ul > li.partitioning { background-color: hsl(111deg 33.33% 78.96%); }
+.analysis-tree .node > ul > li.partitioning { background-color: hsl(164deg 33.33% 78.96%); }
 .analysis-tree .node > ul > li.clustering { background-color: hsl(64.21deg 33.33% 78.96%); }
 
 .button-group {
