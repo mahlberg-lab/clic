@@ -37,3 +37,59 @@ test('nested_args', function (t) {
 
     t.end();
 });
+
+test('renest_all', function (t) {
+    // renest_all will include empty paths (so we show them attached to the root), but ignore the 0'th path
+    t.deepEqual(util_flexiconc.renest_all({
+        "0": {},
+        "1": {},
+    }), {
+        "1": [],
+    });
+
+    // Full example
+    t.deepEqual(util_flexiconc.renest_all({
+        "0": {},
+        "1": {
+            "algo[0][case_sensitive]": [],
+            "algo[0][algorithm_name]": ["KWIC Patterns"],
+            "algo[0][positions]": ["-1"],
+            "algo[0][tokens_attribute]": ["word"],
+            "algo[1][algorithm_name]": ["Sort by Corpus Position"]
+        },
+        "2": {
+            "algo[1][case_sensitive]": [],
+            "algo[0][algorithm_name]": ["Random Sample"],
+            "algo[0][sample_size]": ["10"],
+            "algo[0][seed]": ["10"],
+            "algo[1][algorithm_name]": ["KWIC Patterns"],
+            "algo[1][positions]": ["-1"],
+            "algo[1][tokens_attribute]": ["word"]
+        },
+        "3": {
+            "algo[0][case_sensitive]": [],
+            "algo[0][algorithm_name]": ["KWIC Patterns"],
+            "algo[0][positions]": ["-1"],
+            "algo[0][tokens_attribute]": ["word"],
+            "algo[1][algorithm_name]": ["Select Slot"],
+            "algo[1][slot_id]": ["5"]
+        },
+        "4": {},
+    }), {
+        "1": [
+            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+            { algorithm_name: 'Sort by Corpus Position' },
+        ],
+        "2": [
+            { algorithm_name: 'Random Sample', sample_size: '10', seed: '10' },
+            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+        ],
+        "3": [
+            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+            { algorithm_name: 'Select Slot', slot_id: '5' },
+        ],
+        "4": [],
+    });
+
+    t.end();
+});

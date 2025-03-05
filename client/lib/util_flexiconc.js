@@ -33,7 +33,7 @@ module.exports.renest_all = function (paths) {
         }
 
         out[path_k] = module.exports.renest_args(paths[path_k]);
-        out[path_k] = out[path_k].algo;
+        out[path_k] = out[path_k].algo || [];
     });
     return out;
 };

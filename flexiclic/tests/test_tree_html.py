@@ -121,3 +121,11 @@ class TestTreeHtml(unittest.TestCase):
 </ul></li>
 </ul></li></ul>
         """.strip())
+
+        # Path with only root node
+        out = self._render_tree(data=data, paths={"1": []})
+        self.assertEqual(out, """
+<ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
+<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+</ul></li></ul>
+        """.strip())
