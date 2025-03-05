@@ -147,6 +147,10 @@ class FlexiClic():
             return node
 
         # Deep arguments, so will be proxy objects from Javascript
+        if hasattr(opts, "to_py"):
+            opts = opts.to_py()
+        if hasattr(annotations, "to_py"):
+            annotations = annotations.to_py()
         if hasattr(paths, "to_py"):
             paths = paths.to_py()
 
@@ -206,6 +210,8 @@ class FlexiClic():
         # Deep arguments, so will be proxy objects from Javascript
         if hasattr(opts, "to_py"):
             opts = opts.to_py()
+        if hasattr(annotations, "to_py"):
+            annotations = annotations.to_py()
         if hasattr(path, "to_py"):
             path = path.to_py()
 
