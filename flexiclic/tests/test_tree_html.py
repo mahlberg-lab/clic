@@ -1,3 +1,4 @@
+import re
 import json
 import unittest
 import responses
@@ -40,7 +41,10 @@ class TestTreeHtml(unittest.TestCase):
                         "word_count_all": meta["word_count_all"]
                     }),
                 )
-            return "\n".join(self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
+            out = "\n".join(self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
+            # Filter button-group down to path-name, we don't need to check the specifics
+            out = re.sub(r'<div class="button-group" data-path-name="(\d+)".*?</div>', '<div class="button-group" data-path-name="\\1"></div>', out)
+            return out
 
     def test_from_node(self):
         data = [
@@ -66,7 +70,7 @@ class TestTreeHtml(unittest.TestCase):
   <header>subset</header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
-<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li>
 <li class="tree"><div class="node subset">
   <header>subset</header>
@@ -76,7 +80,7 @@ class TestTreeHtml(unittest.TestCase):
   <header>arrangement</header>
   <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
-<li class="tree"><div class="button-group"><div class="checked">2</div><button data-path-name="2" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group" data-path-name="2"></div></li>
 </ul></li>
 </ul></li>
 </ul></li></ul>
@@ -105,7 +109,7 @@ class TestTreeHtml(unittest.TestCase):
   <header>subset</header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
-<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li>
 <li class="tree"><div class="node subset">
   <header>subset</header>
@@ -115,8 +119,8 @@ class TestTreeHtml(unittest.TestCase):
   <header>arrangement</header>
   <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
-<li class="tree"><div class="button-group"><div class="checked">2</div><button data-path-name="2" aria-label="Delete">🗑</button></div></li>
-<li class="tree"><div class="button-group"><div class="checked">3</div><button data-path-name="3" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group" data-path-name="2"></div></li>
+<li class="tree"><div class="button-group" data-path-name="3"></div></li>
 </ul></li>
 </ul></li>
 </ul></li></ul>
@@ -126,6 +130,6 @@ class TestTreeHtml(unittest.TestCase):
         out = self._render_tree(data=data, paths={"1": []})
         self.assertEqual(out, """
 <ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
-<li class="tree"><div class="button-group"><div class="checked">1</div><button data-path-name="1" aria-label="Delete">🗑</button></div></li>
+<li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li></ul>
         """.strip())

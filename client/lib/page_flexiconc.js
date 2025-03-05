@@ -160,7 +160,8 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
 
         // NB: Re-attaching event on each page update so page_state is up-to-date
         this.tree_el.onclick = function (event) {
-            var button_el = event.target.closest("button");
+            var button_el = event.target.closest("button"),
+                path_name = button_el ? button_el.parentElement.getAttribute("data-path-name") : null;
 
             if (!button_el) {
                 return;
@@ -173,8 +174,22 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
                 window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
                     state: { "fc-all-paths": util_flexiconc.remove_path(
                         page_state.state("fc-all-paths"),
-                        button_el.getAttribute("data-path-name")
+                        path_name
                     ) },
+                }}));
+            } else {
+                // Switch to path
+                window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
+                    args: Object.assign(
+                        {},
+                        // Everything non-algo from the current state
+                        page_state.all_args(/^(?!algo\[)/),
+                        // All stored algo[ args from fc-all-paths
+                        page_state.state("fc-all-paths")[path_name] || [],
+                        // New fc-path pointer
+                        { "fc-path": [path_name] }
+                    ),
+                    flush: true,
                 }}));
             }
         };

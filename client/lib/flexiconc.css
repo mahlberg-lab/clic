@@ -142,7 +142,6 @@
 .button-group > label:active {
     background: #ccc;
 }
-.button-group > *.checked,
 .button-group > input:checked+label {
   background: linear-gradient(#eee 1%,#fff 15%);
 }
