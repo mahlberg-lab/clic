@@ -35,7 +35,7 @@ SPACY_WHEELS = \
 
 LOCAL_WHEELS = \
     flexiclic-0.0.0.dev0-py3-none-any.whl \
-    FlexiConc-0.1.1.dev12-py3-none-any.whl \
+    flexiconc-0.1.1.dev12-py3-none-any.whl \
 
 OUT_FILES = \
     www/manifest.js \
@@ -86,7 +86,8 @@ flexiconc/setup.py:
 	# ./bin/pip install -r flexiconc/optional_requirements.txt
 	touch $@
 
-www/FlexiConc-%.whl: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
+www/flexiconc-%.whl: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
+	rm -r flexiconc/dist/ || true
 	cd flexiconc && ../bin/python3 -m build
 	rm www/FlexiConc-*.whl || true  # Remove old wheels to avoid version confusion
 	cp flexiconc/dist/$(notdir $@) $@
