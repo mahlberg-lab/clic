@@ -42,6 +42,7 @@ OUT_FILES = \
     www/flexiclicWorker.js \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
     $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
+    $(patsubst %, www/%, $(LIBICU_WHEELS)) \
     $(patsubst %, www/%, $(LOCAL_WHEELS)) \
 
 all: test $(OUT_FILES)
@@ -71,6 +72,7 @@ www/manifest.js:
 	@echo 'const PYODIDE_REQUIREMENTS = {' > www/manifest.js
 	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
 	@echo ' "_preload": `$(LOCAL_WHEELS) $(PREBUILT_WHEELS) $(PYODIDE_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@echo ' "pyicu": `$(LIBICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo '};' >> www/manifest.js
 
 www/flexiclicWorker.js: flexiclicWorker.js

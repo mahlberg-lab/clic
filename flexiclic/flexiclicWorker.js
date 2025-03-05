@@ -6,7 +6,7 @@ importScripts(PYODIDE_REQUIREMENTS["_pyodide"]);
 // Fetch pyIodide / flexiclic & instantiate
 async function setupFlexiClic(apiRoot) {
   const pyodide = await loadPyodide({
-    env: {ICU_DATA: "/icudata"},
+    env: { ICU_DATA: "/lib/python3.12/site-packages/icudata" },
     packages: PYODIDE_REQUIREMENTS["_preload"],
   });
   await pyodide.loadPackage("micropip");
