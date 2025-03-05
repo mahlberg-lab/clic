@@ -134,7 +134,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         }));
     }).then(function () {
         // Update path-chooser
-        var fcAllPaths = Object.assign({"0": []}, page_state.state("fc-all-paths")),
+        var fcAllPaths = Object.assign({"0": {}}, page_state.state("fc-all-paths")),
             // NB: No stored paths --> force current path to be numbered "1"
             fcPath = Object.keys(fcAllPaths).length > 1 ? page_state.arg("fc-path") : "1",
             nextPathId = 1;
