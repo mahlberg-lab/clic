@@ -201,7 +201,7 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         }).then(function (tree_html) {
             this.tree_el.innerHTML = tree_html.join("\n");
             this.tree_el.querySelectorAll(":scope > ul > li > .node").forEach(function (el) {
-                el.scrollIntoView({block: "start", inline: "center"});
+                el.scrollIntoView({block: "center", inline: "start"});
             });
         }.bind(this));
     }
