@@ -80,9 +80,8 @@
 .analysis-tree li.tree:only-of-type > div { margin-left: 10px; }
 
 .analysis-tree .node.root {
-    width: 8px;
-    height: 8px;
-    background: black;
+    width: auto;
+    padding: 2px 5px;
 }
 
 .analysis-tree .node {
@@ -94,7 +93,6 @@
 
 .analysis-tree .node > header {
     padding: 0 5px;
-    text-align: center;
 }
 
 .analysis-tree .node > ul {

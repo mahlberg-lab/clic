@@ -65,19 +65,19 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
             {"algorithm_name":"Random Sort","seed":"3"},
         ]})
         self.assertEqual(out, """
-<ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
+<ul class="tree"><li class="tree"><div class="node root">7 lines</div><ul class="tree">
 <li class="tree"><div class="node subset">
-  <header>subset</header>
+  <header>subset <span style="float: right">2 lines</span></header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li>
 <li class="tree"><div class="node subset">
-  <header>subset</header>
+  <header>subset <span style="float: right">4 lines</span></header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 4, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="node arrangement">
-  <header>arrangement</header>
+  <header>arrangement <span style="float: right">4 lines</span></header>
   <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="2"></div></li>
@@ -89,7 +89,7 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
         # Compute 0 paths, get an epty tree
         out = await self._render_tree(data=data, paths={})
         self.assertEqual(out, """
-<ul class="tree"><li class="tree"><div class="node root"></div>
+<ul class="tree"><li class="tree"><div class="node root">7 lines</div>
 </li></ul>
         """.strip())
 
@@ -104,19 +104,19 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
             {"algorithm_name":"Random Sort","seed":"3"},
         ]})
         self.assertEqual(out, """
-<ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
+<ul class="tree"><li class="tree"><div class="node root">7 lines</div><ul class="tree">
 <li class="tree"><div class="node subset">
-  <header>subset</header>
+  <header>subset <span style="float: right">2 lines</span></header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li>
 <li class="tree"><div class="node subset">
-  <header>subset</header>
+  <header>subset <span style="float: right">4 lines</span></header>
   <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 4, &#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="node arrangement">
-  <header>arrangement</header>
+  <header>arrangement <span style="float: right">4 lines</span></header>
   <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="2"></div></li>
@@ -129,7 +129,7 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
         # Path with only root node
         out = await self._render_tree(data=data, paths={"1": []})
         self.assertEqual(out, """
-<ul class="tree"><li class="tree"><div class="node root"></div><ul class="tree">
+<ul class="tree"><li class="tree"><div class="node root">7 lines</div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="1"></div></li>
 </ul></li></ul>
         """.strip())

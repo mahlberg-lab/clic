@@ -26,15 +26,15 @@ def _node_to_html(node):
             "\n".join(_algo_to_html(a, algo_type) for a in algos),
         )
 
-    if node.parent is None:
-        return '<div class="node root"></div>'
-    return string.Template("""
+    return string.Template('<div class="node root">${line_count} ${line_unit}</div>' if node.parent is None else """
 <div class="node ${type}">
-  <header>${type}</header>
+  <header>${type} <span style="float: right">${line_count} ${line_unit}</span></header>
   ${algos_html}
 </div>
     """.strip()).substitute(
         type=html.escape(node.node_type),
+        line_count=node.line_count,
+        line_unit="line" if node.line_count == 1 else "lines",
         algos_html=algos_html,
         #algos_html=html_list(list(_algo_to_html(a) for a in getattr(node, "algorithms", []))),
     )
