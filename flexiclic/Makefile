@@ -17,19 +17,20 @@ LIBICU_WHEELS = \
 # NB: Need 3.8 for Numpy 2.0, thinc 9.0.0 is too new for 3.8.4
 SPACY_WHEELS = \
     spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
-    spacy-pyodide/blis-0.7.11-cp312-cp312-pyodide_2024_0_wasm32.whl \
-    spacy-pyodide/cymem-2.0.9a2-cp312-cp312-pyodide_2024_0_wasm32.whl \
-    spacy-pyodide/murmurhash-1.0.10-cp312-cp312-pyodide_2024_0_wasm32.whl \
-    spacy-pyodide/preshed-3.0.8-cp312-cp312-pyodide_2024_0_wasm32.whl \
-    spacy-pyodide/thinc-8.2.3-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/spacy-3.8.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
-    prebuilt/srsly-2.4.8-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/srsly-2.5.1-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/thinc-8.3.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/blis-1.2.0-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/cymem-2.0.11-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/murmurhash-1.0.12-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/preshed-3.0.9-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/marisa_trie-1.2.1-cp312-cp312-pyodide_2024_0_wasm32.whl \
     pypi/catalogue-2.0.10-py3-none-any.whl \
     pypi/confection-0.1.5-py3-none-any.whl \
     pypi/wasabi-1.1.3-py3-none-any.whl \
     pypi/langcodes-3.5.0-py3-none-any.whl \
     pypi/tqdm-4.67.1-py3-none-any.whl \
-    pypi/typer-0.15.1-py3-none-any.whl \
+    pypi/typer-0.15.2-py3-none-any.whl \
     pypi/click-8.1.8-py3-none-any.whl \
     pypi/weasel-0.4.1-py3-none-any.whl \
 
@@ -43,6 +44,7 @@ OUT_FILES = \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
     $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
     $(patsubst %, www/%, $(LIBICU_WHEELS)) \
+    $(patsubst %, www/%, $(SPACY_WHEELS)) \
     $(patsubst %, www/%, $(LOCAL_WHEELS)) \
 
 all: test $(OUT_FILES)

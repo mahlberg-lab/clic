@@ -1,5 +1,6 @@
 #!/bin/bash
 set -eu
+# apt install autoconf automake libtool
 
 mkdir -p "$(dirname $0)/build-workdir" && cd "$(dirname $0)/build-workdir"
 
@@ -16,6 +17,71 @@ PYODIDE_EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version)
 ./emsdk/emsdk activate ${PYODIDE_EMSCRIPTEN_VERSION}
 PYODIDE_EMSCRIPTEN_SYSROOT="$(readlink -f emsdk/upstream/emscripten/cache/sysroot/)"
 source emsdk/emsdk_env.sh
+
+# ==== Build thinc ============================================================
+[ -d thinc ] && rm -rf -- thinc
+git clone https://github.com/explosion/thinc --depth 1 --branch release-v8.3.4
+pushd thinc
+pyodide build
+popd
+
+# ==== Build marisa-trie ==========================================================
+[ -d marisa-trie-lib ] && rm -rf -- marisa-trie-lib
+git clone https://github.com/s-yata/marisa-trie.git --depth 1 --branch v0.2.6 marisa-trie-lib
+pushd marisa-trie-lib
+autoreconf -i
+emconfigure ./configure --prefix=${PYODIDE_EMSCRIPTEN_SYSROOT}
+emmake make
+emmake make install
+popd
+
+[ -d marisa-trie ] && rm -rf -- marisa-trie
+git clone https://github.com/pytries/marisa-trie.git --depth 1 --branch 1.2.1 marisa-trie
+pushd marisa-trie
+pyodide build
+popd
+
+# ==== Build cymem =============================================================
+[ -d cymem ] && rm -rf -- cymem
+git clone https://github.com/explosion/cymem --depth 1 --branch release-v2.0.11 cymem
+pushd cymem
+pyodide build
+popd
+
+# ==== Build murmurhash =======================================================
+[ -d murmurhash ] && rm -rf -- murmurhash
+git clone https://github.com/explosion/murmurhash --depth 1 --branch release-v1.0.12 murmurhash
+pushd murmurhash
+pyodide build
+popd
+
+# ==== Build preshed ==========================================================
+[ -d preshed ] && rm -rf -- preshed
+git clone https://github.com/explosion/preshed --depth 1 --branch v3.0.9 preshed
+pushd preshed
+pyodide build
+popd
+
+# ==== Build blis =============================================================
+[ -d blis ] && rm -rf -- blis
+git clone https://github.com/explosion/cython-blis --depth 1 --branch release-v1.2.0 blis
+pushd blis
+BLIS_ARCH=generic pyodide build
+popd
+
+# ==== Build Spacy ============================================================
+[ -d spaCy ] && rm -rf -- spaCy
+git clone https://github.com/explosion/spaCy --depth 1 --branch release-v3.8.4
+pushd spaCy
+pyodide build
+popd
+
+# ==== Build Srsly ============================================================
+[ -d srsly ] && rm -rf -- srsly
+git clone https://github.com/explosion/srsly --depth 1 --branch release-v2.5.1
+pushd srsly
+pyodide build
+popd
 
 # ==== Build libICU ===========================================================
 # NB: Emscripten offers USE_ICU, but usage is vague, and there's no ICU data available anyway:
