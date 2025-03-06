@@ -128,9 +128,9 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             { "algorithm_name": "KWIC Grouper Ranker", "count_types": "on", "search_term": "the", "tokens_attribute": "word", "window_end": "10", "window_start": "-10"},
         ])]
         self.assertEqual(out, [
-            (0, 0, 0, {'matches': [[2], [], []], 'rank_keys': {'algo_0': 1}}),
-            (1, 0, 1, {'matches': [[5], [], []], 'rank_keys': {'algo_0': 1}}),
-            (2, 0, 2, {'matches': [[8], [], []], 'rank_keys': {'algo_0': 1}}),
+            (0, 0, 0, {'matches': [[2], [], [2, 5]], 'rank_keys': {'algo_0': 1}}),
+            (1, 0, 1, {'matches': [[5, 1], [], []], 'rank_keys': {'algo_0': 1}}),
+            (2, 0, 2, {'matches': [[8, 5, 1], [], [2, 5]], 'rank_keys': {'algo_0': 1}}),
             (4, 0, 4, {'matches': [[], [], [9]], 'rank_keys': {'algo_0': 1}}),
             (3, 0, 3, {'matches': None, 'rank_keys': {'algo_0': 0}}),
             (5, 0, 5, {'matches': None, 'rank_keys': {'algo_0': 0}}),

@@ -26,8 +26,8 @@ class TestAlgoHtml(unittest.TestCase):
         expected.read("tests/test_algo_html.baseline")
 
         self.assertEqual(
-            actual['DEFAULT'].keys(),
-            expected['DEFAULT'].keys(),
+            list(actual['DEFAULT'].keys()),
+            list(expected['DEFAULT'].keys()),
         )
         for k in actual['DEFAULT'].keys():
             for l in actual['DEFAULT'][k].split("\n"):
