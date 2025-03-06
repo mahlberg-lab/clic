@@ -9,7 +9,8 @@ mkdir -p "$(dirname $0)/build-workdir" && cd "$(dirname $0)/build-workdir"
 python3.12 -m venv .
 source ./bin/activate
 pip install pyodide-build
-git clone https://github.com/emscripten-core/emsdk.git
+[ -d emsdk ] || git clone https://github.com/emscripten-core/emsdk.git
+rm -r -- .pyodide-xbuildenv-* || true
 PYODIDE_EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version)
 ./emsdk/emsdk install ${PYODIDE_EMSCRIPTEN_VERSION}
 ./emsdk/emsdk activate ${PYODIDE_EMSCRIPTEN_VERSION}
@@ -21,7 +22,7 @@ source emsdk/emsdk_env.sh
 # https://github.com/emscripten-core/emscripten/issues/14754
 # https://unicode-org.atlassian.net/browse/ICU-21437
 
-wget https://github.com/unicode-org/icu/archive/refs/tags/release-76-1.tar.gz
+wget -c https://github.com/unicode-org/icu/archive/refs/tags/release-76-1.tar.gz
 tar -zxf release-76-1.tar.gz
 pushd "icu-release-76-1/icu4c/source"
 # Create native build so ICU tools are available
@@ -80,9 +81,10 @@ python3.12 -m build
 popd
 
 # ==== Build PyICU ============================================================
+[ -d pyicu ] && rm -rf -- pyicu
 git clone https://gitlab.pyicu.org/main/pyicu
 pushd pyicu
-cat <<EOF | patch -p1
+cat <<EOF | git apply -
 diff --git a/setup.py b/setup.py
 index 3f03c5e..d38e75e 100644
 --- a/setup.py
@@ -115,7 +117,4 @@ index 3f03c5e..d38e75e 100644
 EOF
 rm -r ./build || true
 ICU_VERSION=76.1 pyodide build
-pyodide auditwheel show dist/PyICU-*.whl
-# Compress ICU data for later fetching by pyiodide
-zip -j dist/icudat-76.1.zip ../icu-release-76-1/icu4c/source/data/out/icudt76l.dat
 popd
