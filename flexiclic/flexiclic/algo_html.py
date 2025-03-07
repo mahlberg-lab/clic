@@ -160,7 +160,7 @@ def html_prop_select(name, label, options, classes = [], required=False, **props
 
     return string.Template("""
 <label for="ctlb-flexiconc-${name}">${required_html}${label}</label>
-<select name="${name}" id="ctlb-flexiconc-${name}" class="chosen-select ${klass}" ${props}>${options}</select>
+<select name="${name}" id="ctlb-flexiconc-${name}" class="tomselect ${klass}" ${props}>${options}</select>
     """.strip()).substitute(
         name=name,
         label=html.escape(label),

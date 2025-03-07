@@ -22,7 +22,7 @@ annotate with spacy embeddings =
 	<label for="ctlb-flexiconc-algprefix[exclude_values_attribute]">The attribute to filter out specific values.</label>
 	<input type="text" name="algprefix[exclude_values_attribute]" id="ctlb-flexiconc-algprefix[exclude_values_attribute]" class="form-control" >
 	<label for="ctlb-flexiconc-algprefix[exclude_values_list]">The list of values to exclude.</label>
-	<select name="algprefix[exclude_values_list]" id="ctlb-flexiconc-algprefix[exclude_values_list]" class="chosen-select allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[exclude_values_list]" id="ctlb-flexiconc-algprefix[exclude_values_list]" class="tomselect allow-add-items" multiple="multiple"></select>
 	<label for="ctlb-flexiconc-algprefix[window_start]">The lower bound of the token window (inclusive).</label>
 	<input type="number" name="algprefix[window_start]" id="ctlb-flexiconc-algprefix[window_start]" class="form-control" value="-5" step="1">
 	<label for="ctlb-flexiconc-algprefix[window_end]">The upper bound of the token window (inclusive).</label>
@@ -40,7 +40,7 @@ annotate with spacy pos tags =
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The token attribute to use for POS tagging.</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<label for="ctlb-flexiconc-algprefix[spacy_attributes]"><span style="color: red" title="This property is required">*</span> A list of spaCy token attributes to retrieve for annotation.</label>
-	<select name="algprefix[spacy_attributes]" id="ctlb-flexiconc-algprefix[spacy_attributes]" class="chosen-select allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[spacy_attributes]" id="ctlb-flexiconc-algprefix[spacy_attributes]" class="tomselect allow-add-items" multiple="multiple"></select>
 annotate with tf-idf = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Annotate with TF-IDF</legend>
@@ -50,7 +50,7 @@ annotate with tf-idf =
 	<label for="ctlb-flexiconc-algprefix[exclude_values_attribute]">The attribute to filter out specific values.</label>
 	<input type="text" name="algprefix[exclude_values_attribute]" id="ctlb-flexiconc-algprefix[exclude_values_attribute]" class="form-control" >
 	<label for="ctlb-flexiconc-algprefix[exclude_values_list]">The list of values to exclude.</label>
-	<select name="algprefix[exclude_values_list]" id="ctlb-flexiconc-algprefix[exclude_values_list]" class="chosen-select allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[exclude_values_list]" id="ctlb-flexiconc-algprefix[exclude_values_list]" class="tomselect allow-add-items" multiple="multiple"></select>
 	<label for="ctlb-flexiconc-algprefix[window_start]">The lower bound of the token window (inclusive).</label>
 	<input type="number" name="algprefix[window_start]" id="ctlb-flexiconc-algprefix[window_start]" class="form-control" value="-5" step="1">
 	<label for="ctlb-flexiconc-algprefix[window_end]">The upper bound of the token window (inclusive).</label>
@@ -72,7 +72,7 @@ flat clustering by embeddings =
 	<label for="ctlb-flexiconc-algprefix[linkage]">The linkage criterion for Agglomerative Clustering (used only when method is &#x27;agglomerative&#x27;).</label>
 	<input type="text" name="algprefix[linkage]" id="ctlb-flexiconc-algprefix[linkage]" class="form-control" value="average">
 	<label for="ctlb-flexiconc-algprefix[method]">The clustering method to use (&#x27;agglomerative&#x27; or &#x27;kmeans&#x27;). Default is &#x27;agglomerative&#x27;.</label>
-	<select name="algprefix[method]" id="ctlb-flexiconc-algprefix[method]" class="chosen-select " ><option value="agglomerative" >agglomerative</option> <option value="kmeans"  selected>kmeans</option></select>
+	<select name="algprefix[method]" id="ctlb-flexiconc-algprefix[method]" class="tomselect " ><option value="agglomerative" >agglomerative</option> <option value="kmeans"  selected>kmeans</option></select>
 	<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>
 partition by metadata attribute = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -85,14 +85,14 @@ partition by metadata attribute =
 	    <span>If True, partitions will be sorted by size in descending order.</span>
 	 </label></div>
 	<label for="ctlb-flexiconc-algprefix[sorted_values]">If provided, partitions will be sorted by these specific values.</label>
-	<select name="algprefix[sorted_values]" id="ctlb-flexiconc-algprefix[sorted_values]" class="chosen-select allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[sorted_values]" id="ctlb-flexiconc-algprefix[sorted_values]" class="tomselect allow-add-items" multiple="multiple"></select>
 	<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>
 kwic patterns = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>KWIC Patterns</legend>
 	<input type="hidden" name="algprefix[algorithm_name]" value="KWIC Patterns">
 	<label for="ctlb-flexiconc-algprefix[positions]"><span style="color: red" title="This property is required">*</span> The list of positions (offsets) to extract for the ngram pattern.</label>
-	<select name="algprefix[positions]" id="ctlb-flexiconc-algprefix[positions]" class="chosen-select allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[positions]" id="ctlb-flexiconc-algprefix[positions]" class="tomselect allow-add-items" multiple="multiple"></select>
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The positional attribute to search within (e.g., &#x27;word&#x27;).</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<div class="checkbox"><label>
@@ -206,7 +206,7 @@ sort by token-level attribute =
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]"><span style="color: red" title="This property is required">*</span> The token attribute to sort by.</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<label for="ctlb-flexiconc-algprefix[sorting_scope]"><span style="color: red" title="This property is required">*</span> Specifies which context to use for sorting: &#x27;token&#x27; for a single token at the given offset, &#x27;left&#x27; for the entire left context (joined from right to left), or &#x27;right&#x27; for the entire right context.</label>
-	<select name="algprefix[sorting_scope]" id="ctlb-flexiconc-algprefix[sorting_scope]" class="chosen-select " ><option value="token"  selected>token</option> <option value="left" >left</option> <option value="right" >right</option></select>
+	<select name="algprefix[sorting_scope]" id="ctlb-flexiconc-algprefix[sorting_scope]" class="tomselect " ><option value="token"  selected>token</option> <option value="left" >left</option> <option value="right" >right</option></select>
 	<label for="ctlb-flexiconc-algprefix[offset]">The offset value to filter tokens by when sorting_scope is &#x27;token&#x27;.</label>
 	<input type="number" name="algprefix[offset]" id="ctlb-flexiconc-algprefix[offset]" class="form-control" step="1">
 	<div class="checkbox"><label>

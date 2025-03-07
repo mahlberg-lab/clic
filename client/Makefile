@@ -27,6 +27,7 @@ LIBRARIES_JS = \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
+    node_modules/tom-select/dist/css/tom-select.default.css \
     node_modules/nouislider/dist/nouislider.min.css \
     node_modules/cookieconsent/build/cookieconsent.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css

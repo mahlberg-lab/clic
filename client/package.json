@@ -12,6 +12,7 @@
     "jquery": "^3.5.0",
     "nouislider": "^15.8.1",
     "nunjucks": "^3.2.4",
+    "tom-select": "^2.4.3",
     "unidecode": "^1.1.0"
   },
   "maintainers": [

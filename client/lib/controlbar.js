@@ -8,7 +8,7 @@ var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
 var filesystem = require('./filesystem.js');
 var concordance_utils = require('./concordance_utils.js');
-var chosen_init = require('./chosen_init.js').chosen_init;
+var chosen_init = require('./chosen_init.js');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -223,7 +223,7 @@ function ControlBar(control_bar) {
         this.control_bar.classList.add('in');
     }
 
-    chosen_init(this.control_bar);
+    chosen_init.init(this.control_bar);
 
     // Turn "nouislider"-type inputs into an actual nouislider
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('input[type=nouislider]'), function (el, i) {
@@ -389,8 +389,8 @@ ControlBar.prototype.reload = function reload(page_state) {
         });
 
         // Tell all the chosen's that values are altered
-        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
-            jQuery(el).trigger("chosen:updated");
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select,.tomselect'), function (el, i) {
+            chosen_init.refresh(el);
             // Add accessibility attributes to each element
             jQuery(el).attr('title', 'chosen-select');
         });
@@ -440,7 +440,7 @@ ControlBar.prototype.new_data = function new_data(data) {
 
             el.innerHTML = to_options_html(Object.keys(data.allWords || {}).sort());
             jQuery(el).val(prevVal);
-            jQuery(el).trigger("chosen:updated");
+            chosen_init.refresh(el);
         }
     }
 
@@ -452,7 +452,7 @@ ControlBar.prototype.new_data = function new_data(data) {
                 el.innerHTML = to_options_html(data.chapter_nums);
             }
             jQuery(el).val(data.chapter_num_selected || data.chapter_nums[0]);
-            jQuery(el).trigger("chosen:updated");
+            chosen_init.refresh(el);
         }
     }
 };

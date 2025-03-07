@@ -291,3 +291,15 @@
     outline: none;
     background: yellow;
 }
+
+/* Grey-ify tomselect */
+#control-bar .ts-wrapper.multi .ts-control [data-value] {
+    color: inherit;
+    border-color: #666;
+    background: #eee;
+    text-shadow: none;
+}
+#control-bar .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+    border-color: #666;
+    color: inherit;
+}

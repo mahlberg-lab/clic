@@ -2,7 +2,7 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 var ControlBar = require('./controlbar.js');
-var chosen_init = require('./chosen_init.js').chosen_init;
+var chosen_init = require('./chosen_init.js');
 var flexiclic = require('./flexiclic.js').flexiclic;
 var util_flexiconc = require('./util_flexiconc.js');
 
@@ -102,7 +102,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 newAlgoHtml(el.options[el.selectedIndex].value, newPrefix).then(function (elNew) {
                     // Insert algorithm before the "algorithm-add" select
                     el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
-                    chosen_init(elNew);
+                    chosen_init.init(elNew);
                 });
             };
 
@@ -128,7 +128,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 return newAlgoHtml(algo_name, prefix).then(function (el) {
                     // Replace old elements with new algo
                     elsExisting[i].replaceWith(el);
-                    chosen_init(el);
+                    chosen_init.init(el);
                 });
             }));
         }));
