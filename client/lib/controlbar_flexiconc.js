@@ -53,19 +53,33 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             }; });
 
             elNew.querySelectorAll("button[aria-label='Fork']").forEach(function (elButton) { elButton.onclick = function (event) {
-                var el, elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
+                var elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
+
+                // Get all subsequent algos
+                function subsequentAlgos(elAlgo) {
+                    var el = elAlgo, out = [];
+
+                    el = elAlgo.nextElementSibling;
+                    while (el) {
+                        if (el.classList.contains("algorithm")) {  // NB: skip over algorithm-add
+                            out.push(el);
+                        }
+                        el = el.nextElementSibling;
+                    }
+                    return out;
+                }
 
                 // Update fc-path to next free path
                 document.getElementById("ctlb-flexiconc-fc-path-next").checked = true;
 
-                // Remove subsequent algorithms
-                el = elAlgo.nextElementSibling;
-                while (el) {
-                    if (el.classList.contains("algorithm")) {  // NB: skip over algorithm-add
-                        elAlgo.parentNode.removeChild(el);
-                    }
-                    el = el.nextElementSibling;
-                }
+                // Remove subsequent algorithms (NB: Collect removals first, otherwise they have no sibling)
+                subsequentAlgos(elAlgo).forEach(function (el) {
+                    elAlgo.parentNode.removeChild(el);
+                });
+
+                elAlgo.querySelectorAll(":scope + .algorithm").forEach(function (el) {
+                    elAlgo.parentNode.removeChild(el);
+                });
 
                 event.stopPropagation();
                 event.preventDefault();
