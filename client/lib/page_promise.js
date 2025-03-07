@@ -38,6 +38,7 @@ function PagePromise(select_components, state_defaults) {
     this.select_components = select_components;
     this.state_defaults = state_defaults;
     this.current_promise = Promise.resolve();
+    this.active_loads = 0;
 }
 
 /** Attach our events to the main window */
@@ -51,6 +52,12 @@ PagePromise.prototype.wire_events = function () {
     window.addEventListener('state_new', state_event.bind(this, 'new'));
 };
 
+/** Increment/decrement active load count, if we drop to zero then hide loading spinner */
+PagePromise.prototype.loading_banner = function (increment) {
+    this.active_loads = Math.max(this.active_loads + increment, 0);
+    document.body.classList.toggle('loading', this.active_loads > 0);
+};
+
 PagePromise.prototype.page_load = function (p, comp_fn) {
     var self = this;
 
@@ -61,7 +68,7 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
             // Don't clear alerts on tweak (NB: controlbar_flexiconc will always tweak to sync state/args)
             self.alerts.clear();
         }
-        document.body.classList.add('loading');
+        self.loading_banner(1);
 
         return Promise.all(page_components.map(function (x) {
             var fn = x[comp_fn] || function () { return Promise.resolve({}); };
@@ -90,11 +97,11 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
             if (rv && rv.error) { self.alerts.show(rv.error, 'error'); }
         });
 
-        document.body.classList.remove('loading');
+        self.loading_banner(-1);
     }).catch(function (err) {
         self.alerts.error(err);
         console.error(err);
-        document.body.classList.remove('loading');
+        self.loading_banner(-1);
     });
 };
 
