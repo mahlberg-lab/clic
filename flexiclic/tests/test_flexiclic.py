@@ -18,7 +18,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         [["I"," ","had"," ","brought"," ","no"," ","joy"," ","at"," ","any"," ","time"," ","to"," ","anybody's"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",[0]],[" ","and"," ","that"," ","I"," ","was"," ","to"," ","no"," ","one"," ","upon"," ","earth"," ","what",[1,3,5,7,9,11,13,15,17,19]],["BH",38895,38900],[3,16,69]],
     ]
 
-    async def _compute_path(self, data=[], path=[]):
+    async def _compute_path(self, data=[], annotations=[], path=[], should_fetch=None):
         query_opts = {
             "corpora": ["BH"],
             "subset": "all",
@@ -35,9 +35,10 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         for d in data:
             # The Flexiconc loop removes whitespace on left context, strip
             d[0].pop(len(d[0]) - 2)
+        if should_fetch is None:
+            should_fetch = not hasattr(self, "_fc")
         with responses.RequestsMock() as rsps:
-            if not hasattr(self, "_fc"):
-                self._fc = FlexiClic(api_root="https://unittest.example.com")
+            if should_fetch:
                 # Only fetching when creating a new object
                 rsps.add(
                     responses.GET,
@@ -51,7 +52,9 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                         "word_count_all": meta["word_count_all"]
                     }),
                 )
-            for out_i, out_l in enumerate([x async for x in self._fc.compute_path(opts=query_opts, annotations=[], path=path)]):
+            if not hasattr(self, "_fc"):
+                self._fc = FlexiClic(api_root="https://unittest.example.com")
+            for out_i, out_l in enumerate([x async for x in self._fc.compute_path(opts=query_opts, annotations=annotations, path=path, speculative=speculative)]):
                 if out_i == 0:
                     # CLiC metadata passes through untouched
                     for k in meta.keys():
@@ -67,6 +70,60 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 else:
                     # No matching line, return full thing
                     yield out_l
+
+    async def test_compute_path_annotations(self):
+        """
+        Re-fetch happens when annotatios change
+        """
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+        ], should_fetch=True)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+        ], should_fetch=False)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name": "Annotate with TF-IDF",
+                "exclude_values_attribute": "",
+                "include_node": "on",
+                "tokens_attribute": "word",
+                "window_end": "5",
+                "window_start": "-5"
+            }
+        ], should_fetch=True)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name": "Annotate with TF-IDF",
+                "exclude_values_attribute": "",
+                "include_node": "on",
+                "tokens_attribute": "word",
+                "window_end": "5",
+                "window_start": "-5"
+            }
+        ], should_fetch=False)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name": "Annotate with TF-IDF",
+                "exclude_values_attribute": "",
+                "include_node": "on",
+                "tokens_attribute": "word",
+                "window_end": "1",  # NB: Changed parameter
+                "window_start": "-5"
+            }
+        ], should_fetch=True)]
+
+        # Fetch unknown algorithm an error
+        with self.assertRaisesRegex(KeyError, "unknown"):
+            out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+                {
+                    "algorithm_name": "unknown",
+                }
+            ], should_fetch=False)]
+        # Try again, it's still an error
+        with self.assertRaisesRegex(KeyError, "unknown"):
+            out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+                {
+                    "algorithm_name": "unknown",
+                }
+            ], should_fetch=False)]
 
     async def test_compute_path_nopartition(self):
         # No path, just get lines back in same order

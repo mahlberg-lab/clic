@@ -1,4 +1,6 @@
 build==1.2.2
+# NB: Needed to run tests using TF-IDF
+scikit-learn
 -e .
 -e .[testing]
 -e flexiconc

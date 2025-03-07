@@ -1,3 +1,4 @@
+import copy
 import collections
 import itertools
 import requests
@@ -19,14 +20,15 @@ class FlexiClic():
         """
         self._api_root = api_root
         self._source_opts = {}
+        self._source_annotations = {}
         self._clic_meta = {}
-        self._install_package_fn = install_package_fn or (lambda x: True)
+        self._install_package_fn = install_package_fn or None
 
     def _flexiconc_concordance(self, data=None):
         if data is not None:
             self._flexiconc = flexiconc.Concordance()
             self._flexiconc.load(**self._convert_to_flexiconc(data))
-        elif not hasattr(self, "_flexiconc"):
+        elif getattr(self, "_flexiconc", None) is None:
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
@@ -39,36 +41,46 @@ class FlexiClic():
         - path: List of unsorted algorithms to apply
         """
         concordance = self._flexiconc_concordance()
-        if opts is None:
-            opts = self._source_opts
-        if annotations is None:
-            annotations = self._source_annotations
-        annotations, annotations_requires = path_util.normalize(annotations, concordance.available_algorithms)
-        path, path_requires = path_util.normalize(path, concordance.available_algorithms)
+
+        if opts is not None and annotations is not None and (self._source_opts != opts or self._source_annotations != annotations):
+            self._source_opts = copy.deepcopy(opts)
+            self._source_annotations = copy.deepcopy(annotations)
+            try:
+                annotations, annotations_requires = path_util.normalize(annotations, concordance.available_algorithms)
+
+                # Try installing all required packages
+                for pkg in annotations_requires:
+                    pkg = re.sub(r'[<=>].*$', '', pkg).strip()
+                    if self._install_package_fn:
+                        await self._install_package_fn(pkg)
+
+                # Fetch query from CLiC server
+                response = requests.get("%s/api/concordance" % (self._api_root), params=opts)
+                response.raise_for_status()
+                data = response.json()
+                self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
+
+                # Re-create concordance object, add any required annotations
+                concordance = self._flexiconc_concordance(data=data.get('data', []))
+                for a in annotations:  # NB: Assume first entry is annotations
+                    concordance.add_annotation(
+                        a["algorithm_name"],
+                        a["args"],
+                        a["column_name"],
+                    )
+            except Exception as e:
+                # Clear previous attempts so we try again next time
+                self._flexiconc = None
+                self._source_opts = {}
+                self._source_annotations = {}
+                raise e
 
         # Try installing all required packages
-        for pkg in itertools.chain(annotations_requires, path_requires):
+        path, path_requires = path_util.normalize(path, concordance.available_algorithms)
+        for pkg in path_requires:
             pkg = re.sub(r'[<=>].*$', '', pkg).strip()
-            await self._install_package_fn(pkg)
-
-        if self._source_opts != opts or self._source_annotations != annotations:
-            self._source_opts = opts
-            self._source_annotations = annotations
-
-            # Fetch query from CLiC server
-            response = requests.get("%s/api/concordance" % (self._api_root), params=opts)
-            response.raise_for_status()
-            data = response.json()
-            self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
-
-            # Re-create concordance object, add any required annotations
-            concordance = self._flexiconc_concordance(data=data.get('data', []))
-            for a in annotations:  # NB: Assume first entry is annotations
-                concordance.add_annotation(
-                    a["algorithm_name"],
-                    a,
-                    a["column_name"],
-                )
+            if self._install_package_fn:
+                await self._install_package_fn(pkg)
 
         node = concordance.root
         for node_spec in path:
