@@ -40,7 +40,7 @@ PageTable.prototype.reload = function reload(page_state) {
     self.page_state = page_state;
 
     return new Promise(function (resolve, reject) {
-        var table_opts, add_events = true, old_page;
+        var table_opts, old_page;
 
         self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-type') === 'basic');
 
@@ -76,8 +76,9 @@ PageTable.prototype.reload = function reload(page_state) {
             if (self.table) {
                 // Re-create table so we can add extra columns
                 self.table.destroy();
-                self.table_el.innerHTML = "";
-                add_events = false; // Events are attached to the table element, which remains
+                // reset table DOM node, throwing away any attached events
+                self.table_el.outerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
+                this.table_el = document.querySelector("#content > table");
             }
             self.init_cols = null; // If this load fails, we should do a full redraw afterwards
 
@@ -115,9 +116,7 @@ PageTable.prototype.reload = function reload(page_state) {
             self.table = new DataTable(self.table_el, table_opts);
             window.dt = self.table;  // Stuff to one side so controlbar.js can get it
 
-            if (add_events) {
-                self.add_events();
-            }
+            self.add_events();
         }
     }).then(function (data) {
         var i, n,

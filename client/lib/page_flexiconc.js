@@ -148,8 +148,10 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         // Switch to tree-mode, remove table & replace with tree
         if (this.table) {
             this.table.destroy();
-            this.table_el.innerHTML = "";
             this.table = undefined;
+            // reset table DOM node, throwing away any attached events
+            this.table_el.outerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
+            this.table_el = document.querySelector("#content > table");
         }
         if (!this.tree_el) {
             this.tree_el = document.createElement("DIV");
