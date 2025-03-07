@@ -3,6 +3,7 @@ import unittest
 import responses
 
 from flexiclic import FlexiClic
+from flexiclic import errors
 
 
 class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
@@ -18,7 +19,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         [["I"," ","had"," ","brought"," ","no"," ","joy"," ","at"," ","any"," ","time"," ","to"," ","anybody's"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",[0]],[" ","and"," ","that"," ","I"," ","was"," ","to"," ","no"," ","one"," ","upon"," ","earth"," ","what",[1,3,5,7,9,11,13,15,17,19]],["BH",38895,38900],[3,16,69]],
     ]
 
-    async def _compute_path(self, data=[], annotations=[], path=[], should_fetch=None):
+    async def _compute_path(self, data=[], annotations=[], path=[], speculative=False, should_fetch=None):
         query_opts = {
             "corpora": ["BH"],
             "subset": "all",
@@ -124,6 +125,20 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                     "algorithm_name": "unknown",
                 }
             ], should_fetch=False)]
+
+
+    async def test_compute_path_speculate(self):
+        """
+        Don't recompute source concordance in speculate
+        """
+        with self.assertRaises(errors.UserConfirmError):
+            out = [x async for x in self._compute_path(data=self.conc_data, path=[
+            ], speculative=True, should_fetch=False)]
+        # After running the query, can speculate
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
+        ], should_fetch=True)]
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
+        ], speculative=True, should_fetch=False)]
 
     async def test_compute_path_nopartition(self):
         # No path, just get lines back in same order

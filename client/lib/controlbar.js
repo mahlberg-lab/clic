@@ -215,7 +215,7 @@ function ControlBar(control_bar) {
             });
 
             // NB: We use flush to get rid of now-non-existant form fields, such as deleted flexiconc algorithms
-            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {args: new_search, flush: true}}));
+            window.dispatchEvent(new window.CustomEvent('state_speculative_update', { detail: {args: new_search, flush: true}}));
         }, 300);
     });
 

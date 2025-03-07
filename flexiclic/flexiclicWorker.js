@@ -91,6 +91,9 @@ onmessage = function (event) {
         if (error.type === "UserError") {
             message = error.message.replace(new RegExp(".*\\n(?:[a-z0-9A-Z\\.]*)" + error.type + ": ", "s"), "");
             level = "warn";
+        } else if (error.type === "UserConfirmError") {
+            message = "Confirm to continue processing";
+            level = "confirm";
         } else {
             message = error.message.replace(new RegExp(".*\\n(?:[a-z0-9A-Z\\.]*)" + error.type + ": ", "s"), error.type + ": ");
         }

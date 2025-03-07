@@ -22,6 +22,10 @@ function state_event(mode, e) {
         } else if (mode === 'update') { // Update state, update page to match (but break if no changes)
             modified = page_state.update(e.detail);
             window.history.replaceState.apply(window.history, page_state.to_args());
+        } else if (mode === 'speculative_update') { // Update state, update page to match (but break if no changes), flag as speculative
+            modified = page_state.update(e.detail);
+            page_state.speculative = true;
+            window.history.replaceState.apply(window.history, page_state.to_args());
         } else if (mode === 'new') { // Push a new state (i.e. clicking a link)
             page_state.update(e.detail, true);
             modified = true;
@@ -49,7 +53,14 @@ PagePromise.prototype.wire_events = function () {
     window.addEventListener('popstate', state_event.bind(this, 'initial'));
     window.addEventListener('state_tweak', state_event.bind(this, 'tweak'));
     window.addEventListener('state_update', state_event.bind(this, 'update'));
+    window.addEventListener('state_speculative_update', state_event.bind(this, 'speculative_update'));
     window.addEventListener('state_new', state_event.bind(this, 'new'));
+
+    document.querySelector("#confirm-update").addEventListener('click', function () {
+        var state = new State(window, this.state_defaults);
+        state.speculative = false;
+        this.page_load(Promise.resolve(state), "reload");
+    }.bind(this));
 };
 
 /** Increment/decrement active load count, if we drop to zero then hide loading spinner */
@@ -67,6 +78,7 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
         if (comp_fn !== 'tweak') {
             // Don't clear alerts on tweak (NB: controlbar_flexiconc will always tweak to sync state/args)
             self.alerts.clear();
+            document.querySelector("#confirm-update").classList.remove('visible');
         }
         self.loading_banner(1);
 
@@ -95,6 +107,10 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
             if (rv && rv.info) { self.alerts.show(rv.info, 'info'); }
             if (rv && rv.warn) { self.alerts.show(rv.warn, 'warn'); }
             if (rv && rv.error) { self.alerts.show(rv.error, 'error'); }
+            if (rv && rv.confirm) {
+                document.querySelector("#confirm-update").classList.add('visible');
+                document.querySelector("#confirm-update .text").innerText = rv.confirm.message;
+            }
         });
 
         self.loading_banner(-1);

@@ -8,6 +8,7 @@ import re
 import flexiconc
 
 from . import algo_html
+from . import errors
 from . import path_util
 from . import tree_html
 
@@ -32,13 +33,14 @@ class FlexiClic():
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
-    async def _follow_path(self, opts=None, annotations=None, path=[]):
+    async def _follow_path(self, opts=None, annotations=None, path=[], speculative=False):
         """
         Follow path of algorithms, return Node at end
 
         - opts: dict of arguments to /api/concordance (if not supplied, assume unchanged)
         - annotations: List of annotation algorithms to apply (if not supplied, assume unchanged)
         - path: List of unsorted algorithms to apply
+        - speculative: If True, will not continue if we need to regenerate the tree (i.e. query CLiC+annotate)
         """
         concordance = self._flexiconc_concordance()
 
@@ -46,6 +48,9 @@ class FlexiClic():
             self._source_opts = copy.deepcopy(opts)
             self._source_annotations = copy.deepcopy(annotations)
             try:
+                if speculative:
+                    raise errors.UserConfirmError()
+
                 annotations, annotations_requires = path_util.normalize(annotations, concordance.available_algorithms)
 
                 # Try installing all required packages
@@ -192,7 +197,7 @@ class FlexiClic():
         tidy_nodes(concordance.root, wanted_ids)
         return terminal_node_ids
 
-    async def compute_path(self, opts, annotations, path):
+    async def compute_path(self, opts, annotations, path, speculative=False):
         """
         Return concordance line data for a path of algorithms
 
@@ -234,7 +239,7 @@ class FlexiClic():
         if hasattr(path, "to_py"):
             path = path.to_py()
 
-        clic_meta, node = await self._follow_path(opts=opts, annotations=annotations, path=path)
+        clic_meta, node = await self._follow_path(opts=opts, annotations=annotations, path=path, speculative=speculative)
         view = node.view()
 
         # Pull concordance DataFrames back out of FlexiConc
