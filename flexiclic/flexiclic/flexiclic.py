@@ -22,6 +22,7 @@ except ImportError:
         return response.json()
 import pandas as pd
 import re
+import warnings
 
 import flexiconc
 
@@ -89,12 +90,12 @@ class FlexiClic():
                         a["args"],
                         a["column_name"],
                     )
-            except Exception as e:
+            except:
                 # Clear previous attempts so we try again next time
                 self._flexiconc = None
                 self._source_opts = {}
                 self._source_annotations = {}
-                raise e
+                raise
 
         # Try installing all required packages
         path, path_requires = path_util.normalize(path, concordance.available_algorithms)
@@ -200,8 +201,9 @@ class FlexiClic():
         for path_name, path in paths.items():
             try:
                 _, node = await self._follow_path(opts=opts, annotations=annotations, path=path)
-            except:
+            except Exception as e:
                 # This path is invalid for some reason, ignore it
+                warnings.warn("Error whilst tidying paths: %s" % e)
                 continue
             terminal_node_ids[path_name] = node.id
             while node is not None:

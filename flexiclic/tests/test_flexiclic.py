@@ -251,12 +251,13 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             self._fc.tree_ids(),
             [0, [1], [3], [4]],
         )
-        await self._fc.tidy_paths(paths={
-            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
-            # NB: This doesn't cause an error, but it is no longer included in the tree
-            "3": [{"algorithm_name":"Nonexistant algo","positions":["1","6"],"tokens_attribute":"word"}],
-        })
+        with self.assertWarnsRegex(Warning, r'Nonexistant algo'):
+            await self._fc.tidy_paths(paths={
+                "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
+                "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+                # NB: This doesn't cause an error, but it is no longer included in the tree
+                "3": [{"algorithm_name":"Nonexistant algo","positions":["1","6"],"tokens_attribute":"word"}],
+            })
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1], [3]],
