@@ -91,7 +91,7 @@ function select_components(page_state) {
 
     current_page = page_state.doc();
     window.document.title = page.page_title(page_state);
-    return [page, cb, analytics].concat(deconstructors);
+    return [cb, page, analytics].concat(deconstructors);
 }
 
 var pp = new PagePromise(select_components, state_defaults);
