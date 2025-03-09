@@ -3,6 +3,8 @@ PYODIDE_VERSION=0.27.2
 FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
 
 PYODIDE_WHEELS = \
+    micropip \
+    pyodide-http \
     jsonschema \
     pandas \
 

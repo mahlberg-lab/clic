@@ -9,13 +9,7 @@ async function setupFlexiClic(apiRoot) {
     env: { ICU_DATA: "/lib/python3.12/site-packages/icudata" },
     packages: PYODIDE_REQUIREMENTS["_preload"],
   });
-  await pyodide.loadPackage("micropip");
   const micropip = pyodide.pyimport("micropip");
-
-  // Use pyodide-http to fake requests
-  await micropip.install('pyodide-http');
-  await pyodide.runPythonAsync("import pyodide_http ; pyodide_http.patch_all()")
-  await pyodide.loadPackage("requests");
 
   self._pyodide = pyodide;
   const flexiclic = pyodide.pyimport("flexiclic");

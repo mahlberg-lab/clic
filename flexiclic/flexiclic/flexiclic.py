@@ -1,7 +1,25 @@
 import copy
 import collections
 import itertools
-import requests
+try:
+    import pyodide.http
+    import urllib.parse
+    async def fetch_json(url, opts):
+        flat_args = []
+        for k, vs in opts.items():
+            flat_args.extend((k, v) for v in (vs if isinstance(vs, list) else [vs]))
+        response = await pyodide.http.pyfetch("%s?%s" % (
+            url,
+            urllib.parse.urlencode(flat_args),
+        ))
+        response.raise_for_status()
+        return await response.json()
+except ImportError:
+    import requests
+    async def fetch_json(url, opts):
+        response = requests.get(url, params=opts)
+        response.raise_for_status()
+        return response.json()
 import pandas as pd
 import re
 
@@ -60,9 +78,7 @@ class FlexiClic():
                         await self._install_package_fn(pkg)
 
                 # Fetch query from CLiC server
-                response = requests.get("%s/api/concordance" % (self._api_root), params=opts)
-                response.raise_for_status()
-                data = response.json()
+                data = await fetch_json("%s/api/concordance" % (self._api_root), opts)
                 self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
 
                 # Re-create concordance object, add any required annotations
