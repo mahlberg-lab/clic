@@ -78,7 +78,7 @@ PageTable.prototype.reload = function reload(page_state) {
                 self.table.destroy();
                 // reset table DOM node, throwing away any attached events
                 self.table_el.outerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
-                this.table_el = document.querySelector("#content > table");
+                self.table_el = document.querySelector("#content > table");
             }
             self.init_cols = null; // If this load fails, we should do a full redraw afterwards
 
