@@ -18,7 +18,7 @@ LIBICU_WHEELS = \
 
 # NB: Need 3.8 for Numpy 2.0, thinc 9.0.0 is too new for 3.8.4
 SPACY_WHEELS = \
-    spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
+    spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
     prebuilt/spacy-3.8.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/srsly-2.5.1-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/thinc-8.3.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
