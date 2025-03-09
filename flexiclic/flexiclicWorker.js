@@ -16,12 +16,25 @@ async function setupFlexiClic(apiRoot) {
   return flexiclic.FlexiClic(api_root=apiRoot, install_package_fn=async function (pkg) {
       if (!self._installed_packages) self._installed_packages = {};
       if (self._installed_packages[pkg]) return;
+      var tarballs = [];
 
       // Install requirements from manifest (read: direct wheel locations) or package itself
-      await micropip.install((PYODIDE_REQUIREMENTS[pkg] || [pkg]).map(function (x) {
+      await micropip.install((PYODIDE_REQUIREMENTS[pkg] || [pkg]).filter(function (x) {
+          if (x.endsWith(".tar.gz")) {
+              // Tarball, fetch directly
+              tarballs.push(x);
+              return false;
+          }
+          return true;
+      }).map(function (x) {
           // micropip takes prebuilt/thing.whl to mean file://, not a relative URL
           return x.endsWith(".whl") ? "https://" + self.location.host + "/flexiclic/" + x : x;
       }));
+
+      for (x of tarballs) {
+          const response = await fetch(x);
+          await pyodide.unpackArchive(await response.arrayBuffer(), "gztar");
+      }
 
       self._installed_packages[pkg] = true;
   });

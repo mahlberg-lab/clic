@@ -120,6 +120,10 @@ www/spacy-models/%.whl:
 	mkdir -p www/spacy-models/
 	(cd www/spacy-models/ && wget -c https://github.com/explosion/spacy-models/releases/download/$(subst -py3-none-any.whl,,$(notdir $@))/$(notdir $@))
 
+www/spacy-models/%.tar.gz:
+	mkdir -p www/spacy-models/
+	(cd www/spacy-models/ && wget -c https://github.com/explosion/spacy-models/releases/download/$(subst .tar.gz,,$(notdir $@))/$(notdir $@))
+
 # Fetch pyodide package
 www/pyodide-$(PYODIDE_VERSION)/pyodide.js:
 	mkdir -p www/pyodide-$(PYODIDE_VERSION)
