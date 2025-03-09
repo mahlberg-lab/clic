@@ -31,7 +31,8 @@ def from_schema(algo, prefix="algo"):
         )
 
     if algo_class == "algo":
-        yield '<button type="button" class="control fork" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></button>'
+        # Fake button so they still work if the fieldset is disabled: https://stackoverflow.com/a/55155649
+        yield '<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>'
 
 
 def html_prop(input_name, prop_desc, required=False):

@@ -144,16 +144,25 @@
     padding: 0 3px;
     line-height: 17px;
 }
-#control-bar fieldset > button.control {
+#control-bar fieldset > .control[aria-role="button"] {
+    /* Fake buttons should work as buttons */
+    -webkit-appearance: button;
+    appearance: button;
+    cursor: pointer;
+    font-style: normal;
+    -webkit-user-select: none;
+    user-select: none;
+}
+#control-bar fieldset > .control {
     border: 1px solid #aaa;
     border-radius: 3px;
     background: linear-gradient(#fff 0%, #eee 10%);
 }
-#control-bar fieldset > button.control:focus {
+#control-bar fieldset > .control:focus {
     outline: 1px solid black;
     outline-offset: 1px;
 }
-#control-bar fieldset > button.control:active {
+#control-bar fieldset > .control:active {
     background: #ccc;
 }
 #control-bar fieldset > .control img {

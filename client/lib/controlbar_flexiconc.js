@@ -52,7 +52,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             }; });
 
-            elNew.querySelectorAll("button[aria-label='Fork']").forEach(function (elButton) { elButton.onclick = function (event) {
+            elNew.querySelectorAll("*[aria-label='Fork']").forEach(function (elButton) { elButton.onclick = function (event) {
                 var elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
 
                 // Get all subsequent algos
