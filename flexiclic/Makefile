@@ -13,7 +13,7 @@ PREBUILT_WHEELS = \
     pypi/platformdirs-4.3.6-py3-none-any.whl \
 
 LIBICU_WHEELS = \
-    prebuilt/PyICU-2.14-cp312-cp312-pyodide_2024_0_wasm32.whl \
+    prebuilt/pyicu-2.14-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/icudata-76.1-py3-none-any.whl \
 
 # NB: Need 3.8 for Numpy 2.0, thinc 9.0.0 is too new for 3.8.4
