@@ -97,30 +97,19 @@ class TestTypesFromString(unittest.TestCase):
 
     def test_normalise_grouping(self):
         """
-        Normalisation of multiple grouping algorithms
+        Normalisation of multiple grouping algorithms isn't allowed
         """
-        out, requires = path_util.normalize([
-            dict(
-                algorithm_name="grouping_algo",
-            ),
-            dict(
-                algorithm_name="grouping_algo",
-            ),
-        ], dict(grouping_algo=dict(
-            full_name="Group",
-            algorithm_type="partitioning",
-            requires=[],
-            args_schema=dict(properties={},required=[]),
-        )))
-        self.assertEqual(out, [
-            {'algorithm_type': 'arrangement', 'grouping': {
-                'algorithm_name': 'grouping_algo',
-                'algorithm_type': 'partitioning',
-                'args': {},
-            }, 'ordering': []},
-            {'algorithm_type': 'arrangement', 'grouping': {
-                'algorithm_name': 'grouping_algo',
-                'algorithm_type': 'partitioning',
-                'args': {},
-            }, 'ordering': []},
-        ])
+        with self.assertRaisesRegex(errors.UserError, "arrangement node"):
+            out, requires = path_util.normalize([
+                dict(
+                    algorithm_name="grouping_algo",
+                ),
+                dict(
+                    algorithm_name="grouping_algo",
+                ),
+            ], dict(grouping_algo=dict(
+                full_name="Group",
+                algorithm_type="partitioning",
+                requires=[],
+                args_schema=dict(properties={},required=[]),
+            )))

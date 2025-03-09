@@ -72,17 +72,15 @@ def normalize(path, available_algorithms):
             algo["column_name"] = algo["algorithm_name"]
             annotations.append(algo)
         elif algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
-            if (len(out) == 0 or
-                    # Final node isn't an arrangement
-                    out[-1]["algorithm_type"] != "arrangement" or
-                    # Final node is an arrangement, but already has a partitioning/clustering node
-                    (algo["algorithm_type"] in ("partitioning", "clustering") and out[-1]["grouping"] is not None)):
+            if len(out) == 0 or out[-1]["algorithm_type"] != "arrangement":
                 # Start new arrangement node
                 out.append(dict(
                     algorithm_type="arrangement",
                     ordering=[],
                     grouping=None
                 ))
+            if algo["algorithm_type"] in ("partitioning", "clustering") and out[-1]["grouping"] is not None:
+                raise UserError("Cannot have more than one partitioning/clustering algorithm in an arrangement node, remove the last algorithm", "error")
             if algo["algorithm_type"] in ("sorting", "ranking"):
                 out[-1]["ordering"].append(algo)
             else:  # i.e. grouping
