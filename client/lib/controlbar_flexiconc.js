@@ -53,38 +53,29 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             }; });
 
             elNew.querySelectorAll("*[aria-label='Fork']").forEach(function (elButton) { elButton.onclick = function (event) {
-                var elAlgo = event.target.closest(".algorithm"), elForm = elAlgo.form;
-
-                // Get all subsequent algos
-                function subsequentAlgos(elAlgo) {
-                    var el = elAlgo, out = [];
-
-                    el = elAlgo.nextElementSibling;
-                    while (el) {
-                        if (el.classList.contains("algorithm")) {  // NB: skip over algorithm-add
-                            out.push(el);
-                        }
-                        el = el.nextElementSibling;
-                    }
-                    return out;
-                }
-
-                // Update fc-path to next free path
-                document.getElementById("ctlb-flexiconc-fc-path-next").checked = true;
-
-                // Remove subsequent algorithms (NB: Collect removals first, otherwise they have no sibling)
-                subsequentAlgos(elAlgo).forEach(function (el) {
-                    elAlgo.parentNode.removeChild(el);
-                });
-
-                elAlgo.querySelectorAll(":scope + .algorithm").forEach(function (el) {
-                    elAlgo.parentNode.removeChild(el);
-                });
+                var elAlgo = event.target.closest(".algorithm"),
+                    elAllAlgos = Array.from(elAlgo.parentNode.children),
+                    elAlgoIdx = elAllAlgos.indexOf(elAlgo);
 
                 event.stopPropagation();
                 event.preventDefault();
 
-                elForm.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+                // Enable algorithms up to and including elAlgo
+                elAllAlgos.forEach(function (el, idx) {
+                    el.disabled = idx > elAlgoIdx;
+                    if (idx > elAlgoIdx && el.classList.contains("algorithm")) {
+                        // Remove subsequent algorithms
+                        el.parentNode.removeChild(el);
+                    } else {
+                        // Re-enable if current path is immutable
+                        el.disabled = false;
+                    }
+                });
+
+                // Update fc-path to next free path
+                document.getElementById("ctlb-flexiconc-fc-path-next").checked = true;
+
+                elAlgo.form.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
             }; });
 
             return elNew;
@@ -137,6 +128,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
 
                 if (algo_name === (elsExisting[i].elements[prefix + "[algorithm_name]"] || {}).value) {
                     // algo_name matches, leave HTML as-is.
+                    elsExisting[i].disabled = false;
                     return Promise.resolve();
                 }
                 return newAlgoHtml(algo_name, prefix).then(function (el) {
@@ -149,23 +141,16 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
     }).then(function () {
         // Update path-chooser
         var fcAllPaths = Object.assign({"0": {}}, page_state.state("fc-all-paths")),
-            // NB: No stored paths --> force current path to be numbered "1"
-            fcPath = Object.keys(fcAllPaths).length > 1 ? page_state.arg("fc-path") : "1",
+            fcPath = page_state.arg("fc-path"),
             nextPathId = 1;
 
-        // Sync allPaths with current path (NB: Storing flattened form)
-        fcAllPaths[fcPath] = page_state.all_args(/^algo\[/);
-        window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
-            args: { "fc-path": fcPath },
-            state: { "fc-all-paths": fcAllPaths },
-        }}));
+        // Get number of mutable path, or null if it isn't a mutable path
+        function getMutablePathNumber(k) {
+            return k !== "0" && k.match(/^\d+$/) ? parseInt(k, 10) : null;
+        }
 
-        // Create all available path options & hidden next option
-        document.querySelector(".flexiconc-path-chooser").innerHTML = Array.from(Object.keys(fcAllPaths)).map(function (k) {
-            while (nextPathId <= parseInt(k, 10)) {
-                // nextPathId should be a bigger integer than any existing key
-                nextPathId++;
-            }
+        // Generate HTML for path chooser items for a path named (k)
+        function newPathChooserItem(k) {
             if (k === "0") {
                 // 0 is the special tree path
                 return [
@@ -178,8 +163,29 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 'value="' + k + '"',
                 'id="ctlb-flexiconc-fc-path-' + k + '"',
                 (k === fcPath ? 'checked' : ''),
-                '/><label for="ctlb-flexiconc-fc-path-' + k + '">' + k + '</label>',
+                '/><label for="ctlb-flexiconc-fc-path-' + k + '"',
+                'class="',
+                (getMutablePathNumber(k) === null ? "immutable" : ""),
+                '" >',
+                // Pad single-character length keys, as min-length is used for flexbox-sizing
+                (k.length === 1 ? " " + k + " " : k),
+                '</label>',
             ].join(" ");
+        }
+
+        // Sync allPaths with current path (NB: Storing flattened form)
+        fcAllPaths[fcPath] = page_state.all_args(/^algo\[/);
+        window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
+            state: { "fc-all-paths": fcAllPaths },
+        }}));
+
+        // Create all available path options & hidden next option
+        document.querySelector(".flexiconc-path-chooser").innerHTML = Array.from(Object.keys(fcAllPaths)).map(function (k) {
+            while (nextPathId <= getMutablePathNumber(k)) {
+                // nextPathId should be a bigger integer than any existing key
+                nextPathId++;
+            }
+            return newPathChooserItem(k);
         }).join("\n") + [
             '<input type="radio" name="fc-path" value = "' + nextPathId + '" id="ctlb-flexiconc-fc-path-next" />',
             '<label for="ctlb-flexiconc-fc-path-next" title="Add empty path" aria-label="add"><span style="position: relative; top: 3px; line-height: 0; font-size: 20px" aria-hidden="true">+</span></label>',
@@ -188,8 +194,21 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         // Scroll selected path into view
         document.getElementById("ctlb-flexiconc-fc-path-" + fcPath).scrollIntoView({inline: "nearest"});
 
-        // If viewing tree, hide algo group (thus add algorithm button)
-        document.querySelector(".algorithm-group[data-algorithm-class=algo]").style.display = fcPath === "0" ? "none" : "";
+        // Clear save field, shouldn't be re-using old names
+        document.querySelector(".flexiconc-path-save input[name=save-name]").value = "";
+
+        // Disable algorithms / add / save iff path immutable
+        document.querySelectorAll(".algorithm-group[data-algorithm-class=algo]").forEach(function (el) {
+            el.classList.toggle("disabled", getMutablePathNumber(fcPath) === null);
+        });
+        document.querySelectorAll(".algorithm-group[data-algorithm-class=algo] > fieldset.algorithm").forEach(function (el) {
+            el.disabled = getMutablePathNumber(fcPath) === null;
+        });
+        document.querySelectorAll(".algorithm-group[data-algorithm-class=algo] > .algorithm-add select").forEach(function (el) {
+            el.disabled = getMutablePathNumber(fcPath) === null;
+        });
+        document.querySelector(".flexiconc-path-save").classList.toggle("disabled", getMutablePathNumber(fcPath) === null);
+        document.querySelector(".flexiconc-path-save").style.display = fcPath === "0" ? "none" : "";
 
         document.querySelector(".flexiconc-path-chooser").onchange = function (event) {
             // Click on "+", start with an empty set of algorithms
@@ -219,6 +238,47 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             });
             event.stopPropagation();
             event.preventDefault();
+        };
+
+        document.querySelector(".flexiconc-path-save").onkeypress = function (event) {
+            // Don't let the default submit->change event happen
+            event.stopPropagation();
+        };
+        document.querySelector(".flexiconc-path-save").onchange = function (event) {
+            // Don't let the default form change event happen
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        };
+        document.querySelector("#ctlb-flexiconc-save-form").onsubmit = function (event) {
+            var fcNewPath;
+            event.stopPropagation();
+            event.preventDefault();
+
+            fcNewPath = event.target.elements["save-name"].value;
+            if (fcNewPath === "") {
+                // Ignore attempts to save empty name
+                return;
+            }
+            if (getMutablePathNumber(fcNewPath) !== null || fcNewPath === "0") {
+                window.alert("Saved branch names cannot be numeric");
+                return;
+            }
+            fcAllPaths = Object.assign({"0": {}}, page_state.state("fc-all-paths"));
+            fcAllPaths[fcNewPath] = page_state.all_args(/^algo\[/);
+            window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
+                state: { "fc-all-paths": fcAllPaths },
+            }}));
+
+            document.querySelector("#ctlb-flexiconc-fc-path-next").insertAdjacentHTML("beforebegin", newPathChooserItem(fcNewPath));
+
+            // Scroll to path-chooser to make it obvious there's a new item
+            document.querySelector(".flexiconc-path-chooser").scrollIntoView({inline: "center", block: "center"});
+            document.querySelector("#ctlb-flexiconc-fc-path-" + fcNewPath).scrollIntoView({inline: "center", block: "nearest"});
+
+            event.target.elements["save-name"].value = "";
+
+            return false;
         };
     }).then(ControlBar.prototype.reload.bind(this, page_state));
 };

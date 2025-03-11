@@ -130,11 +130,14 @@
   line-height: 2rem;
   padding: 5px;
   margin: 0;
-  min-width: 2.1rem;
+  min-width: min-content; /* Let flex items force overflow  */
   cursor: pointer;
 }
 .button-group > input[type=radio] {
   display: none;
+}
+#control-bar .button-group > input[type=text] {
+  margin-bottom: 0; /* See #control-bar input[type=text] */
 }
 .button-group > :first-child,
 .button-group > input:first-child+label {
@@ -152,4 +155,19 @@
 }
 .button-group > input:checked+label {
   background: linear-gradient(#eee 1%,#fff 15%);
+}
+
+.button-group > .immutable {
+  background: linear-gradient(#fff,#c9c9c9 10%);
+}
+.button-group > input:checked+label.immutable {
+  background: linear-gradient(#c9c9c9 1%,#fff 15%);
+}
+
+/* Switch visible contents depending on whether control is enabled */
+#control-bar .flexiconc-path-save > *.when-disabled { display: none; }
+#control-bar .flexiconc-path-save.disabled > * { display: none; }
+#control-bar .flexiconc-path-save.disabled > *.when-disabled { display: block; }
+#control-bar .flexiconc-path-save .button-group > * {
+  line-height: 1.5rem;
 }

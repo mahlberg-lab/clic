@@ -170,8 +170,12 @@ class FlexiClic():
 
         # Generate HTML for each terminal node
         additional_children = {node_id: [
-            '<div class="button-group" data-path-name="%s"><button>%s</button><button aria-label="Delete">🗑</button></div>' % (n, n)
-            for n in path_names
+            '<div class="button-group" data-path-name="%s"><button class="%s">%s</button><button aria-label="Delete">🗑</button></div>' % (
+                n,
+                # NB: Should be in lock-step with getMutablePathNumber()
+                "" if re.match(r'^\d+$', n) else "immutable",
+                n,
+            ) for n in path_names
         ] for node_id, path_names in additional_children.items()}
 
         concordance = self._flexiconc_concordance()

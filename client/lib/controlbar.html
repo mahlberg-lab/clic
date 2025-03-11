@@ -105,7 +105,17 @@
         </div>
       </div>
 
+      <div class="flexiconc-path-save">
+        <div class="when-disabled">This path is immutable, to modify use the "fork" buttons to start a new path</div>
+        <label for="ctlb-flexiconc-save-name" style="margin-top: 1.2rem">Save as named path:</label>
+        <div class="button-group">
+          <input form="ctlb-flexiconc-save-form" type="text" name="save-name" id="ctlb-flexiconc-save-name" title="Short name to refer to the branch by" placeholder="e.g. 'sample'" class="form-control">
+          <button form="ctlb-flexiconc-save-form" type="submit">Save</button>
+        </div>
+      </div>
+
     </form>
+    <form id="ctlb-flexiconc-save-form"></form>
   </section>
 
   <section data-name="subsets">

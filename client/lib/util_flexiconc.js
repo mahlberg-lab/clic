@@ -42,8 +42,5 @@ module.exports.remove_path = function (fcAllPaths, pathToRemove) {
     return Object.fromEntries(Object.entries(fcAllPaths).filter(function (entry) {
         // Remove unrequired path
         return entry[0] !== pathToRemove;
-    }).map(function (entry, i) {
-        // Re-number remaining paths
-        return [i.toString(), entry[1]];
     }));
 };
