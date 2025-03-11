@@ -83,6 +83,23 @@ class TestTypesFromString(unittest.TestCase):
         )))
         self.assertEqual(requires, ["pyicu"])
 
+        # A spacy model is appended to requirements
+        out, requires = path_util.normalize([
+            dict(
+                algorithm_name="testing_algo",
+                test_param="arg",
+                spacy_model="en_core_web_lg",
+            )
+        ], dict(testing_algo=dict(
+            full_name="Testing algorithm",
+            algorithm_type="selection",
+            requires=["spacy>=99"],
+            args_schema=dict(properties={
+                "spacy_model": dict(type="string"),
+            },required=[]),
+        )))
+        self.assertEqual(requires, ["spacy>=99", "en_core_web_lg"])
+
         out, requires = path_util.normalize([
             dict(
                 algorithm_name="testing_algo",

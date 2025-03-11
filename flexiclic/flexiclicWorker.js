@@ -37,7 +37,7 @@ async function setupFlexiClic(apiRoot) {
       }
 
       self._installed_packages[pkg] = true;
-  });
+  }, available_spacy_models = SPACY_MODELS);
 }
 // Create promise to working FlexiClic object, callees either wait for setup or get previously instantiated object
 self.flexiclic_ready = setupFlexiClic(location.origin);

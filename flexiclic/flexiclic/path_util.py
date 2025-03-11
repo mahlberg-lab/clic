@@ -67,6 +67,10 @@ def normalize(path, available_algorithms):
         # Include argument requirements in our list
         requires.extend(algo_metadata.get("requires", []))
 
+        # If we have a spacy-models argument, depend on that too
+        if algo["args"].get("spacy_model", None) is not None:
+            requires.append(algo["args"].get("spacy_model", None))
+
         # File appropriately, annotations are separate, sort/group get combined into an arrangement pseudo-algorithm
         if algo["algorithm_type"] == "annotation":
             algo["column_name"] = algo["algorithm_name"]

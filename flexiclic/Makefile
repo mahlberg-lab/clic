@@ -16,9 +16,12 @@ LIBICU_WHEELS = \
     prebuilt/pyicu-2.14-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/icudata-76.1-py3-none-any.whl \
 
+SPACY_MODELS = \
+    spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
+    spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
+
 # NB: Need 3.8 for Numpy 2.0, thinc 9.0.0 is too new for 3.8.4
 SPACY_WHEELS = \
-    spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
     prebuilt/spacy-3.8.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/srsly-2.5.1-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/thinc-8.3.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
@@ -47,6 +50,7 @@ OUT_FILES = \
     $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
     $(patsubst %, www/%, $(LIBICU_WHEELS)) \
     $(patsubst %, www/%, $(SPACY_WHEELS)) \
+    $(patsubst %, www/%, $(SPACY_MODELS)) \
     $(patsubst %, www/%, $(LOCAL_WHEELS)) \
 
 all: test $(OUT_FILES)
@@ -78,7 +82,11 @@ www/manifest.js:
 	@echo ' "_preload": `$(LOCAL_WHEELS) $(PREBUILT_WHEELS) $(PYODIDE_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "pyicu": `$(LIBICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "spacy": `$(SPACY_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@for m in $(SPACY_MODELS); do echo ' "'$$(basename $$m -3.8.0-py3-none-any.whl)'": "'$$m'".trim().split(/\s+/),'; done >> www/manifest.js
 	@echo '};' >> www/manifest.js
+	@echo 'const SPACY_MODELS = [' >> www/manifest.js
+	@for m in $(SPACY_MODELS); do echo ' "'$$(basename $$m -3.8.0-py3-none-any.whl)'",'; done >> www/manifest.js
+	@echo '];' >> www/manifest.js
 
 www/flexiclicWorker.js: flexiclicWorker.js
 	cp $^ $@

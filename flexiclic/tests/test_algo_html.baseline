@@ -16,7 +16,7 @@ annotate with spacy embeddings =
 	<legend>Annotate with SpaCy Embeddings</legend>
 	<input type="hidden" name="algprefix[algorithm_name]" value="Annotate with SpaCy Embeddings">
 	<label for="ctlb-flexiconc-algprefix[spacy_model]"><span style="color: red" title="This property is required">*</span> The spaCy model to use.</label>
-	<input type="text" name="algprefix[spacy_model]" id="ctlb-flexiconc-algprefix[spacy_model]" class="form-control" value="en_core_web_md">
+	<select name="algprefix[spacy_model]" id="ctlb-flexiconc-algprefix[spacy_model]" class="tomselect " ><option value="en_core_web_sm"  selected>en_core_web_sm</option> <option value="en_core_web_md" >en_core_web_md</option> <option value="en_core_web_lg" >en_core_web_lg</option></select>
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The token attribute to use for creating line texts.</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<label for="ctlb-flexiconc-algprefix[exclude_values_attribute]">The attribute to filter out specific values.</label>
@@ -54,7 +54,7 @@ annotate with spacy pos tags =
 	<legend>Annotate with spaCy POS tags</legend>
 	<input type="hidden" name="algprefix[algorithm_name]" value="Annotate with spaCy POS tags">
 	<label for="ctlb-flexiconc-algprefix[spacy_model]"><span style="color: red" title="This property is required">*</span> The spaCy model to use for POS tagging.</label>
-	<input type="text" name="algprefix[spacy_model]" id="ctlb-flexiconc-algprefix[spacy_model]" class="form-control" value="en_core_web_sm">
+	<select name="algprefix[spacy_model]" id="ctlb-flexiconc-algprefix[spacy_model]" class="tomselect " ><option value="en_core_web_sm"  selected>en_core_web_sm</option> <option value="en_core_web_md" >en_core_web_md</option> <option value="en_core_web_lg" >en_core_web_lg</option></select>
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The token attribute to use for POS tagging.</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<label for="ctlb-flexiconc-algprefix[spacy_attributes]"><span style="color: red" title="This property is required">*</span> A list of spaCy token attributes to retrieve for annotation.</label>

@@ -32,7 +32,7 @@ from . import path_util
 from . import tree_html
 
 class FlexiClic():
-    def __init__(self, api_root="", install_package_fn=None):
+    def __init__(self, api_root="", install_package_fn=None, available_spacy_models=[]):
         """
         Create a flexiconc<->CLiC adapter
 
@@ -43,6 +43,7 @@ class FlexiClic():
         self._source_annotations = {}
         self._clic_meta = {}
         self._install_package_fn = install_package_fn or None
+        self._available_spacy_models = available_spacy_models
 
     def _flexiconc_concordance(self, data=None):
         if data is not None:
@@ -146,8 +147,15 @@ class FlexiClic():
 
     def algorithm_render_html(self, algo_name, prefix):
         concordance = self._flexiconc_concordance()
+        algo_schema = concordance.available_algorithms[algo_name]
 
-        return algo_html.from_schema(concordance.available_algorithms[algo_name], prefix)
+        # If schema involves a spacy model, rewrite it to include the models we have available
+        spacy_model = algo_schema.get("args_schema", {}).get("properties", {}).get("spacy_model", None)
+        if spacy_model and len(self._available_spacy_models) > 0:
+            spacy_model["enum"] = self._available_spacy_models
+            spacy_model["default"] = spacy_model["enum"][0]
+
+        return algo_html.from_schema(algo_schema, prefix)
 
     def tree_ids(self, node=None):
         if node is None:
