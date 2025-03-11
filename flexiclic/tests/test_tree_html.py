@@ -78,7 +78,7 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
 </div><ul class="tree">
 <li class="tree"><div class="node arrangement">
   <header>arrangement <span style="float: right">4 lines</span></header>
-  <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
+  <ul class="ordering"><li class="ordering"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="2"></div></li>
 </ul></li>
@@ -117,7 +117,7 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
 </div><ul class="tree">
 <li class="tree"><div class="node arrangement">
   <header>arrangement <span style="float: right">4 lines</span></header>
-  <ul class="ordering"><li class="sorting"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
+  <ul class="ordering"><li class="ordering"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
 </div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="2"></div></li>
 <li class="tree"><div class="button-group" data-path-name="3"></div></li>

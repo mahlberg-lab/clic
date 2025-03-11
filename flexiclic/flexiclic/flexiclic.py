@@ -86,8 +86,7 @@ class FlexiClic():
                 concordance = self._flexiconc_concordance(data=data.get('data', []))
                 for a in annotations:  # NB: Assume first entry is annotations
                     concordance.add_annotation(
-                        a["algorithm_name"],
-                        a["args"],
+                        (a["algorithm_name"], a["args"]),
                         a["column_name"],
                     )
             except:
@@ -107,11 +106,11 @@ class FlexiClic():
         node = concordance.root
         for node_spec in path:
             if node_spec["algorithm_type"] == "selection":
-                node = node.add_subset_node(node_spec["algorithm_name"], node_spec["args"])
+                node = node.add_subset_node((node_spec["algorithm_name"], node_spec["args"]))
             elif node_spec["algorithm_type"] == "arrangement":
                 node = node.add_arrangement_node(
-                    ordering=node_spec["ordering"],
-                    grouping=node_spec["grouping"],
+                    ordering=[(x["algorithm_name"], x["args"]) for x in node_spec["ordering"]],
+                    grouping=(node_spec["grouping"]["algorithm_name"], node_spec["grouping"]["args"]) if node_spec["grouping"] else None,
                 )
             else:
                 # NB: At this point other algorithm_types are filed elsewhere
