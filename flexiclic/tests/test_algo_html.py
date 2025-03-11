@@ -14,7 +14,7 @@ class TestAlgoHtml(unittest.TestCase):
         fc = FlexiClic(api_root="https://clic.bham.ac.uk")
         actual = configparser.ConfigParser()
         for algo_class, algos in fc.algorithms_by_class().items():
-            for a in algos:
+            for a in sorted(algos, key = lambda x: x['name']):
                 actual['DEFAULT'][a['name']] = "\n" + "\n".join(fc.algorithm_render_html(algo_name=a['name'], prefix="algprefix"))
         with open("tests/test_algo_html.baseline.new", "w", encoding="utf-8") as f:
             actual.write(f)
