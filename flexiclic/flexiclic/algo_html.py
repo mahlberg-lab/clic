@@ -89,11 +89,15 @@ def html_prop(input_name, prop_desc, required=False):
         )
 
     if prop_desc['type'] == 'array' or prop_desc['type'] == ['array']:
+        enum = [
+            dict(value=x, label=x, selected=False)
+            for x in prop_desc.get("items", {}).get("enum", [])
+        ]
         return html_prop_select(
             name=input_name,
             label=prop_desc["description"],
-            options=[],
-            classes=["allow-add-items"],
+            options=enum or [],
+            classes=["allow-add-items" if len(enum) == 0 else ""],
             multiple="multiple",
             required=required,
         )

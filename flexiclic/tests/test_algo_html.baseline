@@ -58,7 +58,7 @@ annotate with spacy pos tags =
 	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The token attribute to use for POS tagging.</label>
 	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
 	<label for="ctlb-flexiconc-algprefix[spacy_attributes]"><span style="color: red" title="This property is required">*</span> A list of spaCy token attributes to retrieve for annotation.</label>
-	<select name="algprefix[spacy_attributes]" id="ctlb-flexiconc-algprefix[spacy_attributes]" class="tomselect allow-add-items" multiple="multiple"></select>
+	<select name="algprefix[spacy_attributes]" id="ctlb-flexiconc-algprefix[spacy_attributes]" class="tomselect " multiple="multiple"><option value="pos_" >pos_</option> <option value="tag_" >tag_</option> <option value="morph" >morph</option> <option value="dep_" >dep_</option> <option value="ent_type_" >ent_type_</option></select>
 flat clustering by embeddings = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Flat Clustering by Embeddings</legend>
