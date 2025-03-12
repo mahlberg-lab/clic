@@ -1,3 +1,5 @@
+import json
+
 from .errors import UserError
 
 def convert_value(val, target_types, items):
@@ -18,6 +20,9 @@ def convert_value(val, target_types, items):
             if t == "array":
                 if val is None:
                     val = []
+                elif isinstance(val, str) and val.startswith("[") and val.endswith("]"):
+                    # Assume JSON, as used by the line_ids lineid-picker
+                    val = [convert_value(v, items.get("type"), {}) for v in json.loads(val)]
                 elif not isinstance(val, list):
                     val = [convert_value(v, items.get("type"), {}) for v in [val]]
                 else:
