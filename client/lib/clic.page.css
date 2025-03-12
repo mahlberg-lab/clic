@@ -148,3 +148,10 @@ body.loading #scrollable-body:after {
     line-height: 17rem;
     color: #777;
 }
+
+body.iframe #scrollable-body {
+    margin-right: 0 !important;
+}
+body.iframe #scrollable-body > header {
+    display: none
+}

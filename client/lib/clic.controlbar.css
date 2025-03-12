@@ -9,6 +9,12 @@
     background: #f5f5f5;
     border-left: 1px solid #AAA;
 }
+body.iframe #control-bar {
+    display: none;
+}
+body.iframe #control-bar + .handle {
+    display: none;
+}
 
 #control-bar a {
     color: #154D84;
