@@ -29,6 +29,8 @@ def from_schema(algo, prefix="algo"):
             prop_desc,
             required=prop_name in args_required,
         )
+        if 'x-eval-error' in prop_desc:
+            yield '<pre style="border: 1px solid red">%s</pre>' % html.escape(prop_desc['x-eval-error'])
 
     if algo_class == "algo":
         # Fake button so they still work if the fieldset is disabled: https://stackoverflow.com/a/55155649

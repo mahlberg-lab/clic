@@ -148,6 +148,9 @@ class FlexiClic():
     def algorithm_render_html(self, algo_name, prefix):
         concordance = self._flexiconc_concordance()
         algo_schema = concordance.available_algorithms[algo_name]
+        # If we have data loaded, get context-sensitive schema
+        if concordance.metadata is not None and concordance.tokens is not None:
+         algo_schema = algo_schema | concordance.root.schema_for(algo_name)
 
         # If schema involves a spacy model, rewrite it to include the models we have available
         spacy_model = algo_schema.get("args_schema", {}).get("properties", {}).get("spacy_model", None)
