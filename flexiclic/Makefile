@@ -41,7 +41,7 @@ SPACY_WHEELS = \
 
 LOCAL_WHEELS = \
     flexiclic-0.0.0.dev0-py3-none-any.whl \
-    flexiconc-0.1.1.dev13-py3-none-any.whl \
+    flexiconc-0.1.3-py3-none-any.whl \
 
 OUT_FILES = \
     www/manifest.js \
