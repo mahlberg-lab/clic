@@ -66,6 +66,12 @@ test('to_url', function (t) {
     s.update({ args: { cow: [], pig: ['george'] }});
     t.deepEqual(s.to_url(), '/moo/doc?pig=george');
 
+    // Can provide a regex
+    s = new State(fake_window('/moo/doc', '?camel=alfred&cow=daisy&pig=george', {}), {});
+    t.deepEqual(s.to_url(), '/moo/doc?camel=alfred&cow=daisy&pig=george');
+    t.deepEqual(s.to_url(/^c/), '/moo/doc?camel=alfred&cow=daisy');
+    t.deepEqual(s.to_url(/o/), '/moo/doc?cow=daisy');
+
     t.end();
 });
 

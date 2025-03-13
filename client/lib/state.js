@@ -74,8 +74,12 @@ State.prototype.doc = function () {
 
 /** Fetch all available args, optionally filtered by a regex */
 State.prototype.all_args = function (regex) {
+    if (!regex) {
+        return this._args;
+    }
+    regex = new RegExp(regex);
     return Object.keys(this._args).reduce(function (r, k) {
-        if (!regex || regex.test(k)) {
+        if (regex.test(k)) {
             r[k] = this._args[k];
         }
         return r;
@@ -126,9 +130,11 @@ State.prototype.to_args = function () {
 
 /**
   * Turn the state object back into a URL string
+  *
+  * - regex: Optional regex, if provided only matching arguments will be included
   */
-State.prototype.to_url = function () {
-    var querystring = obj_to_search(this._args);
+State.prototype.to_url = function (regex) {
+    var querystring = obj_to_search(this.all_args(regex));
 
     if (querystring) {
         querystring = '?' + querystring;
