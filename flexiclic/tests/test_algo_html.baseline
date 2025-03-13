@@ -116,6 +116,19 @@ kwic patterns =
 	    <span>If True, the search is case-sensitive.</span>
 	 </label></div>
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+manual line selection = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Manual Line Selection</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Manual Line Selection">
+	<label for="ctlb-flexiconc-algprefix[line_ids]">A list of specific line IDs to include in the subset.</label>
+	<div class="button-group">
+	<input type="text" name="algprefix[line_ids]" value="[]" class="lineid-picker" data-fc-select-type="line_id" readonly="readonly" >
+	</div>
+	<label for="ctlb-flexiconc-algprefix[groups]">A list of group identifiers (by label or number) to include lines from. For clusters, groups may be nested, and all matching groups in the hierarchy will be used.</label>
+	<div class="button-group">
+	<input type="text" name="algprefix[groups]" value="[]" class="lineid-picker" data-fc-select-type="partition_label" readonly="readonly" >
+	</div>
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 partition by metadata attribute = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Partition by Metadata Attribute</legend>

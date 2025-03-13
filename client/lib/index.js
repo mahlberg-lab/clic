@@ -53,6 +53,8 @@ var state_defaults = {
     'table-filter': '',
     'selected_rows': [],
 
+    'fc-select-type': "",
+    'fc-select': "[]",
     'fc-path': "1",
     'fc-all-paths': {},
 

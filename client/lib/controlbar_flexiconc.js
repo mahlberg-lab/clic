@@ -6,6 +6,49 @@ var chosen_init = require('./chosen_init.js');
 var flexiclic = require('./flexiclic.js').flexiclic;
 var util_flexiconc = require('./util_flexiconc.js');
 
+// lineid-picker: Create the iframe, pull values back
+function lineid_picker_init(el, page_state) {
+    el.querySelectorAll(":scope .lineid-picker").forEach(function (elPicker) {
+        var i, argRe;
+
+        // Build regex selecting non-algo or previous algo arguments
+        argRe = '^(?!algo)';
+        for (i = 0; i < parseInt(elPicker.name.match(/algo\[(\d+)\]/)[1], 10); i++) {
+            argRe += "|^algo\\[" + i + "\\]";
+        }
+
+        elPicker.onclick = function (event) {
+            var elOverlay;
+
+            event.stopPropagation();
+            event.preventDefault();
+
+            document.body.insertAdjacentHTML("afterbegin", [
+                '<div class="lineid-picker-overlay"><div>',
+                '<iframe></iframe>',
+                '<div class="button-group"><button class="ok immutable">OK</button></div>',
+                '<div class="button-group"><button class="cancel">Cancel</button></div>',
+                '</div></div>',
+            ].join("\n"));
+            elOverlay = document.querySelector("body > .lineid-picker-overlay");
+            elOverlay.querySelector(":scope iframe").src = [
+                page_state.to_url(argRe),
+                "fc-select-type=" + elPicker.getAttribute("data-fc-select-type"),
+                "fc-select=" + (elPicker.value || "[]"),
+            ].join("&");
+            elOverlay.querySelector(":scope button.ok").onclick = function (ev2) {
+                // Update hidden input with selected values
+                elPicker.value = JSON.stringify(elOverlay.querySelector(":scope iframe").contentWindow.fc_select_data());
+                elPicker.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
+                document.body.removeChild(elOverlay);
+            };
+            elOverlay.querySelector(":scope button.cancel").onclick = function (ev2) {
+                document.body.removeChild(elOverlay);
+            };
+        };
+    });
+}
+
 // ControlBarFlexiConc inherits ControlBar
 function ControlBarFlexiConc() {
     return ControlBar.apply(this, arguments);
@@ -108,6 +151,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                     // Insert algorithm before the "algorithm-add" select
                     el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
                     chosen_init.init(elNew);
+                    lineid_picker_init(elNew, page_state);
                 });
             };
 
@@ -135,6 +179,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                     // Replace old elements with new algo
                     elsExisting[i].replaceWith(el);
                     chosen_init.init(el);
+                    lineid_picker_init(el, page_state);
                 });
             }));
         }));

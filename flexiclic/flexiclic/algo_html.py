@@ -1,3 +1,4 @@
+import json
 import html
 import string
 
@@ -48,6 +49,24 @@ def html_prop(input_name, prop_desc, required=False):
     # Assume any prop_desc with missing type are objects
     if prop_desc.get('type', 'object') == 'object':
         return '<pre style="border: 1px solid red">Object type is too loose: %s</pre>' % prop_desc
+
+    if input_name.endswith('[line_ids]'):
+        return html_prop_lineid_picker(
+            name=input_name,
+            label=prop_desc["description"],
+            values=prop_desc.get("default", []),
+            fc_select_type="line_id",
+            required=required,
+        )
+
+    if input_name.endswith('[groups]'):
+        return html_prop_lineid_picker(
+            name=input_name,
+            label=prop_desc["description"],
+            values=prop_desc.get("default", []),
+            fc_select_type="partition_label",
+            required=required,
+        )
 
     if 'enum' in prop_desc:
         if prop_desc['type'] != 'string':
@@ -175,4 +194,23 @@ def html_prop_select(name, label, options, classes = [], required=False, **props
         klass=" ".join(classes),
         props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None),
         required_html='<span style="color: red" title="This property is required">*</span> ' if required else '',
+    )
+
+
+def html_prop_lineid_picker(name, label, values=[], fc_select_type="line_id", required=False, **props):
+    """
+    Generate HTML for a lineid picker
+    """
+    return string.Template("""
+<label for="ctlb-flexiconc-${name}">${required_html}${label}</label>
+<div class="button-group">
+<input type="text" name="${name}" value="${value_concat}" class="lineid-picker" data-fc-select-type="${fc_select_type}" readonly="readonly" ${props}>
+</div>
+    """.strip()).substitute(
+        name=name,
+        label=html.escape(label),
+        fc_select_type=fc_select_type,
+        required_html='<span style="color: red" title="This property is required">*</span> ' if required else '',
+        value_concat=json.dumps(values),
+        props=" ".join('%s="%s"' % (k, html.escape(str(v), quote=True)) for k, v in props.items() if v is not None),
     )

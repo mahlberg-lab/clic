@@ -94,9 +94,48 @@ PageFlexiConc.prototype.init = function () {
 PageFlexiConc.prototype.add_events = function () {
     var self = this;
 
-    self.table.on('click', 'tr', function () {
-        var partitionId;
+    self.table.on('click', 'tr', function (event, type, action) {
+        // https://datatables.net/reference/api/row().data()
+        var partitionId, elCheckbox, dtRow;
 
+        // lineid-picker integration: update table data with checkboxes, select all in summary row
+        if (event.target.closest("td").classList.contains("tagColumn")) {
+            dtRow = self.table.row(this);
+            partitionId = dtRow.data()[5];
+
+            // fc-select checkbox column
+            if (event.target.tagName === "INPUT") {
+                elCheckbox = event.target;
+            } else {
+                // Allow some leeway, clicks on the td also trigger a check
+                elCheckbox = event.target.querySelector(":scope input");
+                elCheckbox.checked = !elCheckbox.checked;
+            }
+
+            // Add checkbox state back to data
+            dtRow.data()["fc-select"] = elCheckbox.checked;
+
+            if (this.classList.contains("fc-partition-summary")) {
+                // Open regardless of previous state
+                self.fcPartitions.add(partitionId);
+                this.classList.add("open");
+
+                // Set check for every row in this partition
+                self.table.rows().every(function () {
+                    if (this.data()[5] === partitionId) {
+                        this.data()["fc-select"] = elCheckbox.checked;
+                        this.invalidate();
+                    }
+                });
+            }
+
+            // Redraw to apply any new checkbox checks
+            self.table.draw();
+
+            return;
+        }
+
+        // Open/close summary rows
         if (this.classList.contains("fc-partition-summary")) {
             partitionId = parseInt(this.querySelector(":scope *[data-partition-id]").getAttribute("data-partition-id"), 10);
 
@@ -140,6 +179,51 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         { title: "Sent.", data: "4.2", visible: (page_state.arg('table-type') === 'full'), searchable: false, sortable: false }, // Sentence-in-chapter
         { title: "In&nbsp;bk.", data: "3", width: "52px", render: renderPosition, searchable: false, sortable: false, orderData: [5, 9] }, // Book graph
     ];
+
+    // lineid-picker: Add select columns for use with line/partition selection
+    if (page_state.arg("fc-select-type") === "line_id") {
+        this.table_opts.non_tag_columns.splice(2, 0, {
+            className: "tagColumn",
+            sortable: false,
+            searchable: false,
+            data: 6,
+            render: function (data, type, full, meta) {
+                if (type !== "display") {
+                    return data;
+                }
+                return [
+                    '&nbsp;<input',
+                    'type="checkbox"',
+                    'name="fc-select"',
+                    'value="' + data + '"',
+                    (full["fc-select"] ? "checked" : ""),
+                    // Summary rows have grey checks to indicate they aren't part of the selection
+                    (full[6] !== "" ? '' : 'style="accent-color: #666"'),
+                    '/>',
+                ].join(" ");
+            }
+        });
+    } else if (page_state.arg("fc-select-type").startsWith("partition_")) {  // i.e. id or label
+        this.table_opts.non_tag_columns.splice(2, 0, {
+            className: "tagColumn",
+            sortable: false,
+            searchable: false,
+            data: 5,
+            render: function (data, type, full, meta) {
+                if (type !== "display") {
+                    return data;
+                }
+                return full[6] !== "" ? "" : [
+                    '&nbsp;<input',
+                    'type="checkbox"',
+                    'name="fc-select"',
+                    'value="' + data + '"',
+                    (full["fc-select"] ? "checked" : ""),
+                    '/>',
+                ].join(" ");
+            }
+        });
+    }
 
     // Generate column list based on tag_columns
     this.table_opts.columns = this.table_opts.non_tag_columns;
@@ -242,10 +326,37 @@ PageFlexiConc.prototype.tweak = function tweak(page_state) {
 
 PageFlexiConc.prototype.reload_data = function reload(page_state) {
     var self = this,
+        fcSelect = new Set(JSON.parse(page_state.arg("fc-select"))),
+        fcSelectFn = null,
+        fcPartitionLabels = {},
         nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
 
     // Reset fcPartitions, so we only show the first partition if results are partitioned
     self.fcPartitions = new Set([0]);
+
+    // lineid-picker integration: Generate function to select value from data row
+    if (page_state.arg("fc-select-type") === "line_id") {
+        fcSelectFn = function (d) { return d[6]; };
+    } else if (page_state.arg("fc-select-type") === "partition_id") {
+        fcSelectFn = function (d) { return d[5]; };
+    } else if (page_state.arg("fc-select-type") === "partition_label") {
+        fcSelectFn = function (d) { return fcPartitionLabels[d[5]]; };
+    }
+
+    // lineid-picker integration: Expose fc_select_data for outer frame to fetch results
+    window.fc_select_data = function () {
+        // https://datatables.net/reference/api/data%28%29
+        var out = new Set();
+
+        // Gather value of all rows that are selected
+        self.table.data().each(function (d) {
+            if (d["fc-select"] && fcSelectFn(d) !== "") {
+                out.add(fcSelectFn(d));
+            }
+        });
+
+        return Array.from(out);
+    };
 
     return flexiclic.compute_path({
         opts: api_opts(page_state),
@@ -253,7 +364,7 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
         path: nested_args.algo || [],
         speculative: page_state.speculative,
     }).then(function (data) {
-        var i, out;
+        var i, out, lastSummaryIdx;
 
         // Assume first item in data array is CLiC metadata
         out = data.shift();
@@ -272,6 +383,18 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
 
             if (data[i][6] === "") {
                 data[i].DT_RowClass = "fc-partition-summary" + (self.fcPartitions.has(data[i][5]) ? " open" : "");
+                // Save ID -> label map for returning fc-select by label
+                fcPartitionLabels[data[i][5]] = data[i][2][0];
+                lastSummaryIdx = i;
+            }
+            // lineid-picker integration: Add fc-select for any preselected items
+            if (fcSelectFn !== null && fcSelect.has(fcSelectFn(data[i]))) {
+                data[i]["fc-select"] = true;
+
+                // Non-summary rows should announce their state on the summary row
+                if (page_state.arg("fc-select-type") === "line_id" && i !== lastSummaryIdx) {
+                    data[lastSummaryIdx]["fc-select"] = true;
+                }
             }
         }
 
