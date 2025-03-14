@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="/css/{{env['sha_' + tmpl.base + '_min_css']}}" />
   </head>
 
-  <body>
+  <body><script>if (window.frameElement) document.body.classList.add("iframe")</script>
 
 {% include "lib/controlbar.html" %}
 
@@ -81,6 +81,7 @@
           </p>
         </div>
       </div>
+      <div id="confirm-update" class="button-group"><button><div class="icon">↺</div><div class="text"></div></button></div>
     </div>
 
     <script>window.ga_key = '{{env.GA_KEY}}';</script>

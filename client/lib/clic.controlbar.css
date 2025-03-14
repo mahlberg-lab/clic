@@ -9,6 +9,12 @@
     background: #f5f5f5;
     border-left: 1px solid #AAA;
 }
+body.iframe #control-bar {
+    display: none;
+}
+body.iframe #control-bar + .handle {
+    display: none;
+}
 
 #control-bar a {
     color: #154D84;
@@ -128,6 +134,117 @@
     }
 }
 
+#control-bar fieldset {
+  border: 1px solid #c7c7c7;
+  border-radius: 3px;
+  margin: 25px 5px 20px 5px;
+  padding: 16px 5px;
+  background: #e9e9e9; /* To obscure ::after lines */
+  position: relative;
+}
+#control-bar fieldset:disabled {
+  background: #f5f5f5;
+  color: #666;
+}
+#control-bar fieldset > .control {
+    float: right;
+    position: relative;
+    top: -27px;
+    margin-left: 5px;
+    padding: 0 3px;
+    line-height: 17px;
+}
+#control-bar fieldset > .control[aria-role="button"] {
+    /* Fake buttons should work as buttons */
+    -webkit-appearance: button;
+    appearance: button;
+    cursor: pointer;
+    font-style: normal;
+    -webkit-user-select: none;
+    user-select: none;
+}
+#control-bar fieldset > .control {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: linear-gradient(#fff 0%, #eee 10%);
+}
+#control-bar fieldset > .control:focus {
+    outline: 1px solid black;
+    outline-offset: 1px;
+}
+#control-bar fieldset > .control:active {
+    background: #ccc;
+}
+#control-bar fieldset > .control:disabled {
+    /* NB: Hides both disabled buttons and (real) buttons that are part of a disabled fieldset */
+    display: none;
+}
+#control-bar fieldset > .control img {
+    vertical-align: text-top;
+}
+#control-bar .algorithm-group[data-algorithm-class=algo] fieldset:not(:last-of-type) > .control[aria-label=Close] {
+    /* For algos, only the last algorithm should have a close button */
+    display: none;
+}
+#control-bar fieldset > .control.fork {
+  position: absolute;
+  top: auto;
+  right: 5px;
+  bottom: -12px;
+  padding: 0 3px;
+}
+#control-bar fieldset::after { /* Line joining to next box */
+  content: "";
+  width: 0;
+  border-right: 1px solid #c7c7c7;
+  position: absolute;
+  left: 50%;
+  bottom: calc(0 - 30px - 1px); /* i.e. height minus border */
+  height: 30px;
+}
+#control-bar .algorithm-group.disabled fieldset:last-of-type::after {
+  content: none; /* Disable tail as we're hiding algorithm-add */
+}
+#control-bar .algorithm-group.disabled .algorithm-add {
+  display: none;
+}
+#control-bar .algorithm-group.disabled .flexiconc-path-save {
+  display: none;
+}
+
+#control-bar .algorithm-add {
+  width: 66%;
+  margin: 0 auto;
+}
+#control-bar fieldset + .algorithm-add {
+  position: relative;
+  top: -11px; /* i.e the same as the legend */
+  background: #f5f5f5; /* A disabled chosen is translucent, don't let algorithm lines shine through */
+}
+#control-bar fieldset > legend {
+  position: absolute;
+  top: -0.7rem;
+  left: -0.06rem;
+  width: auto;
+  height: 0.8rem; /* NB: Only half of text height text will overflow into fieldset */
+  padding: 0 5px;
+  font-size: 100%;
+  background: inherit;
+  border: 1px solid #c7c7c7;
+  border-bottom: none;
+  border-radius: 3px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#control-bar fieldset.selected {
+  background: #ccc;
+  border: 2px solid #000;
+}
+#control-bar fieldset.selected > legend {
+  background: #ccc;
+  border-color: #000;
+}
+
 #control-bar h4 {
     height: 0.8rem;
     overflow: visible;
@@ -207,4 +324,16 @@
 #control-bar .tag-list > li.selected {
     outline: none;
     background: yellow;
+}
+
+/* Grey-ify tomselect */
+#control-bar .ts-wrapper.multi .ts-control [data-value] {
+    color: inherit;
+    border-color: #666;
+    background: #eee;
+    text-shadow: none;
+}
+#control-bar .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+    border-color: #666;
+    color: inherit;
 }

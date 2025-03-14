@@ -3,13 +3,12 @@
 /*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
-global.jQuery = jQuery;  // So chosen-js can find it
-var chosen = require('chosen-js');
 var api = require('./api.js');
 var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
 var filesystem = require('./filesystem.js');
 var concordance_utils = require('./concordance_utils.js');
+var chosen_init = require('./chosen_init.js');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -124,7 +123,7 @@ function ControlBar(control_bar) {
     });
 
     control_bar.addEventListener('click', function (e) {
-        if (clickedOn(e, 'LEGEND', null)) {
+        if (clickedOn(e, 'HEADER', null)) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -189,6 +188,11 @@ function ControlBar(control_bar) {
         this.change_timeout = window.setTimeout(function () {
             var new_search = {},
                 form = control_bar.querySelector('section.current form');
+            if (!form) {
+                // Don't try and commit changes until there's a current section (i.e. the form has finished loading)
+                // NB: This is triggered by updating noUiSlider on load
+                return;
+            }
 
             // Unchecked checkboxes should be emptied if not mentioned
             Array.prototype.forEach.call(control_bar.querySelectorAll('section.current input[type=checkbox]:not(:checked)'), function (el, i) {
@@ -210,7 +214,8 @@ function ControlBar(control_bar) {
                 new_search[el.name] = jQuery(el).val();
             });
 
-            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {args: new_search}}));
+            // NB: We use flush to get rid of now-non-existant form fields, such as deleted flexiconc algorithms
+            window.dispatchEvent(new window.CustomEvent('state_speculative_update', { detail: {args: new_search, flush: true}}));
         }, 300);
     });
 
@@ -218,15 +223,14 @@ function ControlBar(control_bar) {
         this.control_bar.classList.add('in');
     }
 
-    Array.prototype.forEach.call(this.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
-        jQuery(el).chosen({ width: '100%', search_contains: true }).change(function (e) {
-            // Chosen's change event isn't bubbling to the form, do it ourselves.
-            self.control_bar.dispatchEvent(new window.CustomEvent('change', {"bubbles": true}));
-        });
-    });
+    chosen_init.init(this.control_bar);
 
     // Turn "nouislider"-type inputs into an actual nouislider
     Array.prototype.forEach.call(this.control_bar.querySelectorAll('input[type=nouislider]'), function (el, i) {
+        if (el.slider_div) {
+            // Already init'ed.
+            return;
+        }
         el.slider_div = document.createElement('DIV');
         el.style.display = 'none';
         el.parentNode.insertBefore(el.slider_div, el.nextSibling);
@@ -326,9 +330,9 @@ ControlBar.prototype.reload = function reload(page_state) {
         // Set values from page options, or defaults
         Array.prototype.forEach.call(elements, function (el_or_array) {
             Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
-                var new_val = page_state.arg(el.name);
+                var new_val = page_state.arg(el.name), existingOptions;
 
-                if (el.tagName === 'FIELDSET' || !page_state.defaults.hasOwnProperty(el.name)) {
+                if (el.tagName === 'FIELDSET') {
                     Math.floor(0);
                 } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
                     el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
@@ -359,8 +363,25 @@ ControlBar.prototype.reload = function reload(page_state) {
                                 return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                             }), c.title);
                         }).join("");
+                    } else if (el.classList.contains("allow-add-items")) {
+                        // We should add any missing items before continuing
+                        existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
+
+                        el.append.apply(el, new_val.filter(function (x) {
+                            // Only want to add items not already in the list
+                            // TODO: When creating new algorithms via. JS, the value is [null]?
+                            return x && !existingOptions.has(x);
+                        }).map(function (x) {
+                            // Turn them into an already-selected Option
+                            return new Option(x, x, true, true);
+                        }));
                     }
                     jQuery(el).val(new_val);
+                } else if (Array.isArray(new_val) && new_val.length > 1) {
+                    // Multiple values, assume that there's multiple fields with the same name
+                    el.form.querySelectorAll("*[name='" + el.name + "']").forEach(function (otherEl, i) {
+                        otherEl.value = new_val[i];
+                    });
                 } else {
                     el.value = new_val;
                 }
@@ -368,8 +389,8 @@ ControlBar.prototype.reload = function reload(page_state) {
         });
 
         // Tell all the chosen's that values are altered
-        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select'), function (el, i) {
-            jQuery(el).trigger("chosen:updated");
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select,.tomselect'), function (el, i) {
+            chosen_init.refresh(el);
             // Add accessibility attributes to each element
             jQuery(el).attr('title', 'chosen-select');
         });
@@ -419,7 +440,7 @@ ControlBar.prototype.new_data = function new_data(data) {
 
             el.innerHTML = to_options_html(Object.keys(data.allWords || {}).sort());
             jQuery(el).val(prevVal);
-            jQuery(el).trigger("chosen:updated");
+            chosen_init.refresh(el);
         }
     }
 
@@ -431,7 +452,7 @@ ControlBar.prototype.new_data = function new_data(data) {
                 el.innerHTML = to_options_html(data.chapter_nums);
             }
             jQuery(el).val(data.chapter_num_selected || data.chapter_nums[0]);
-            jQuery(el).trigger("chosen:updated");
+            chosen_init.refresh(el);
         }
     }
 };

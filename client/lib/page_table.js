@@ -40,7 +40,7 @@ PageTable.prototype.reload = function reload(page_state) {
     self.page_state = page_state;
 
     return new Promise(function (resolve, reject) {
-        var table_opts, add_events = true, old_page;
+        var table_opts, old_page;
 
         self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-type') === 'basic');
 
@@ -76,8 +76,9 @@ PageTable.prototype.reload = function reload(page_state) {
             if (self.table) {
                 // Re-create table so we can add extra columns
                 self.table.destroy();
-                self.table_el.innerHTML = "";
-                add_events = false; // Events are attached to the table element, which remains
+                // reset table DOM node, throwing away any attached events
+                self.table_el.outerHTML = '<table class="table" cellspacing="0" width="100%"></table>';
+                self.table_el = document.querySelector("#content > table");
             }
             self.init_cols = null; // If this load fails, we should do a full redraw afterwards
 
@@ -89,10 +90,10 @@ PageTable.prototype.reload = function reload(page_state) {
             };
             table_opts.search = { search: page_state.arg('table-filter'), smart: false };
             table_opts.ajax = function (params, callback, settings) {
-                new Promise(function (resolve) {
+                new Promise(function (r2) {
                     // NB: This has to be self.page_state, otherwise we make a closure
                     // around the initial page_state
-                    resolve(self.reload_data(self.page_state));
+                    r2(self.reload_data(self.page_state));
                 }).then(function (data) {
                     self.last_fetched_data = data;
                     document.querySelector('div.data-version').innerText = data.version.corpora;
@@ -115,9 +116,7 @@ PageTable.prototype.reload = function reload(page_state) {
             self.table = new DataTable(self.table_el, table_opts);
             window.dt = self.table;  // Stuff to one side so controlbar.js can get it
 
-            if (add_events) {
-                self.add_events();
-            }
+            self.add_events();
         }
     }).then(function (data) {
         var i, n,

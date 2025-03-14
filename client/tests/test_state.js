@@ -66,6 +66,12 @@ test('to_url', function (t) {
     s.update({ args: { cow: [], pig: ['george'] }});
     t.deepEqual(s.to_url(), '/moo/doc?pig=george');
 
+    // Can provide a regex
+    s = new State(fake_window('/moo/doc', '?camel=alfred&cow=daisy&pig=george', {}), {});
+    t.deepEqual(s.to_url(), '/moo/doc?camel=alfred&cow=daisy&pig=george');
+    t.deepEqual(s.to_url(/^c/), '/moo/doc?camel=alfred&cow=daisy');
+    t.deepEqual(s.to_url(/o/), '/moo/doc?cow=daisy');
+
     t.end();
 });
 
@@ -104,6 +110,26 @@ test('arg:defaults', function (t) {
     s = new State(fake_window('/moo/doc', '?cows=daisy&cows=daisy', {}), {cows: []});
     t.deepEqual(s.arg('cows'), ['daisy', 'daisy']);
     t.deepEqual(s.to_args(), [{}, '', '/moo/doc?cows=daisy&cows=daisy']);
+
+    t.end();
+});
+
+test('all_args', function (t) {
+    var s;
+
+    s = new State(fake_window('/moo/doc', '?animals[cows][]=daisy_pi&animals[cows][]=freda&animals[pig][a]=frank', {}), {animals: {}});
+    t.deepEqual(s.all_args(), {
+        'animals[cows][]': [ 'daisy_pi', 'freda' ],
+        'animals[pig][a]': [ 'frank' ],
+    });
+    t.deepEqual(s.all_args(/cows/), {
+        'animals[cows][]': [ 'daisy_pi', 'freda' ],
+    });
+    t.deepEqual(s.all_args(/pi/), {
+        // NB: Doesn't fetch daisy_pi, regex on keys not values
+        'animals[pig][a]': [ 'frank' ],
+    });
+    t.deepEqual(s.all_args(/zzz/), {});
 
     t.end();
 });
@@ -162,6 +188,33 @@ test('update', function (t) {
     t.deepEqual(s.to_args(),
         [{ beef: 9 }, '', '/bark?pigs=george'],
         "Flush removes any other state arguments");
+
+    s.update({ args: { "animals[cows]": ["daisy", "freda"] }, flush: true });
+    t.deepEqual(s.to_args(),
+         [ { beef: 9 }, '', '/bark?animals[cows]=daisy&animals[cows]=freda' ],
+        "Flush can also be named in changes object");
+
+    t.end();
+});
+
+test('update-set', function (t) {
+    var s;
+
+    s = new State(fake_window('/moo/doc', '?cows=daisy', {}), { frogs: new global.Set() });
+    t.deepEqual(s.state("frogs"), new global.Set());
+
+    // Add an item, we get noticed
+    t.ok(s.update({ state: { frogs: s.state("frogs").add("kermit") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit"]));
+
+    // Adding an already-existing item isn't a modification
+    t.ok(!s.update({ state: { frogs: new global.Set(s.state("frogs")).add("kermit") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit"]));
+
+    // A new frog is
+    // NB: We have to clone the set before modifying it, since otherwise we're modifying by-reference
+    t.ok(s.update({ state: { frogs: new global.Set(s.state("frogs")).add("detective") } }));
+    t.deepEqual(s.state("frogs"), new global.Set(["kermit", "detective"]));
 
     t.end();
 });

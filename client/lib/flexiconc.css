@@ -1,0 +1,200 @@
+#content table.dataTable tr.fc-partition-summary {
+    font-weight: bold;
+    background: #eee;
+}
+
+#content table.dataTable tr.fc-partition-summary:not(:first-child) td {
+    border-top: 1px solid #666;
+}
+
+#content table.dataTable tr.fc-partition-summary .partition-toggle {
+    text-align: left;  /* override numeric-ness of column */
+}
+#content table.dataTable tr.fc-partition-summary .partition-toggle::after {
+    content: '►';
+}
+
+#content table.dataTable tr.fc-partition-summary.open .partition-toggle::after {
+    content: '▼';
+}
+
+.analysis-tree {
+    margin-top: 1rem;
+    display: flex;  /* i.e. to center-align root */
+    /* Page height - margin - header logo height - header padding - border*/
+    min-height: calc(100vh - 1rem - 49px - 15px - 10px - 5px);
+    overflow-y: auto;
+}
+.analysis-tree ul.tree {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: safe center;
+    position: relative;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.analysis-tree ul.tree ul.tree::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 10px;
+    height: 1px;
+    background: #aaa;
+}
+.analysis-tree li.tree {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+.analysis-tree li.tree::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    width: 10px;
+    border: 1px solid #aaa;
+    top: 50%;
+    height: calc(50% + 10px);
+    border-width: 1px 0 0 1px;
+}
+.analysis-tree li.tree::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    width: 10px;
+    border: 1px solid #aaa;
+    top: -10px;
+    height: calc(50% + 10px + 1px);
+    border-width: 0 0 1px 1px;
+}
+.analysis-tree li.tree:first-of-type::after { display: none; }
+.analysis-tree li.tree:last-of-type::before { display: none; }
+
+/* 20px left of a node, unless it has no siblings */
+.analysis-tree li.tree > div { margin: auto 0 auto 20px; }
+.analysis-tree li.tree:only-of-type > div { margin-left: 10px; }
+
+.analysis-tree .node.root {
+    width: auto;
+    padding: 2px 5px;
+    text-wrap: nowrap;
+}
+
+.analysis-tree .node {
+    width: 18rem;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: #eee;
+}
+
+.analysis-tree .node > header {
+    padding: 0 5px;
+}
+
+.analysis-tree .node > ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.analysis-tree .node > ul > li {
+    border-top: 1px solid #aaa;
+    padding: 0 5px;
+}
+
+.analysis-tree .node > ul > li.subset { background-color: hsl(225deg 33.33% 78.96%);; }
+.analysis-tree .node > ul > li.ordering { background-color: hsl(122.33deg 33.33% 78.96%); }
+.analysis-tree .node > ul > li.grouping { background-color: hsl(164deg 33.33% 78.96%); }
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: safe center;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  text-align: center;
+  margin: 5px;
+}
+.button-group > * {
+  background: linear-gradient(#fff 0%, #eee 10%);
+  border: 1px solid #aaa;
+  border-left-width: none;
+  line-height: 2rem;
+  padding: 5px;
+  margin: 0;
+  min-width: min-content; /* Let flex items force overflow  */
+  cursor: pointer;
+}
+.button-group > input[type=radio] {
+  display: none;
+}
+#control-bar .button-group > input[type=text] {
+  margin-bottom: 0; /* See #control-bar input[type=text] */
+}
+.button-group > :first-child,
+.button-group > input:first-child+label {
+  border-left-width: 1px;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+.button-group > :last-child {
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+.button-group > button:active,
+.button-group > label:active {
+    background: #ccc;
+}
+.button-group > input:checked+label {
+  background: linear-gradient(#eee 1%,#fff 15%);
+}
+
+.button-group > .immutable {
+  background: linear-gradient(#fff,#c9c9c9 10%);
+}
+.button-group > input:checked+label.immutable {
+  background: linear-gradient(#c9c9c9 1%,#fff 15%);
+}
+
+/* Switch visible contents depending on whether control is enabled */
+#control-bar .flexiconc-path-save > *.when-disabled { display: none; }
+#control-bar .flexiconc-path-save.disabled > * { display: none; }
+#control-bar .flexiconc-path-save.disabled > *.when-disabled { display: block; }
+#control-bar .flexiconc-path-save .button-group > * {
+  line-height: 1.5rem;
+}
+
+
+.lineid-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  backdrop-filter: blur(5px);
+}
+.lineid-picker-overlay > * {
+  flex-grow: 1;
+  margin: 2vw;
+  background: white;
+  border: 2px solid #1e345e;
+  border-radius: 3px;
+}
+.lineid-picker-overlay > * > iframe {
+  width: 100%;
+  height: calc(100% - 4rem);
+}
+.lineid-picker-overlay > * > .button-group {
+  display: inline-block;
+  margin: 0 0 0 2rem;
+}

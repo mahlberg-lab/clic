@@ -233,5 +233,5 @@ def types_from_string(s, offset=0, additional_word_parts=set()):
         yield get_token(word_start, last_b)
 
     # Convert token list to types
-    # NB: This needs to be developed in lock-step with client/lib/concordance_utils.js
+    # NB: This needs to be developed in lock-step with client/lib/concordance_utils.js / server/clic/tokenizer.py
     return (unidecode.unidecode(s.lower()) for s in out)

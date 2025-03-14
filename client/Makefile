@@ -27,6 +27,7 @@ LIBRARIES_JS = \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
+    node_modules/tom-select/dist/css/tom-select.default.css \
     node_modules/nouislider/dist/nouislider.min.css \
     node_modules/cookieconsent/build/cookieconsent.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
@@ -121,7 +122,7 @@ www/css/%.min.css: lib/%.css lib/*.css package.json
 	    $<
 	$(call sha1_symlink,css,$@,$@)
 
-www/%.html: lib/%.html $(filter-out %.html,$(OUT_FILES)) \
+www/%.html: lib/%.html lib/controlbar.html $(filter-out %.html,$(OUT_FILES)) \
     $(PROJECT_PATH)/conf.mk \
     build/html_compile.js \
     package.json

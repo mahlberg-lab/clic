@@ -42,41 +42,41 @@ body.loading #scrollable-body:after {
     }
 }
 
-#scrollable-body header {
+#scrollable-body > header {
     padding: 15px 25px 10px 15px;
     border-bottom: 5px solid #1e345e;
     overflow: hidden;
 }
-#scrollable-body header h1 {
+#scrollable-body > header h1 {
     float: left;
     margin: 0;
     line-height: 1.3rem;
     font-size: 41px;
     font-weight: normal;
 }
-#scrollable-body header, #scrollable-body header h1 a, #scrollable-body header, #scrollable-body header h1 a:link, #scrollable-body header h1 a:visited {
+#scrollable-body > header, #scrollable-body > header h1 a, #scrollable-body > header, #scrollable-body > header h1 a:link, #scrollable-body > header h1 a:visited {
     color: #1e345e;
 }
-#scrollable-body header h1 a:hover, #scrollable-body header h1 a:active {
+#scrollable-body > header h1 a:hover, #scrollable-body > header h1 a:active {
     color: #ffa033;
     text-shadow: 0 0 3px #ffce98;
     text-decoration: none;
 }
-#scrollable-body header h1 small {
+#scrollable-body > header h1 small {
     display: block;
     line-height: 1.4rem;
     font-size: .8rem;
     text-align: right;
     color: #444;
 }
-#scrollable-body header .sponsors {
+#scrollable-body > header .sponsors {
     float: right;
 }
-#scrollable-body header .sponsors a img {
+#scrollable-body > header .sponsors a img {
     height: 35px;
     margin-right: 2rem;
 }
-#scrollable-body header .sponsors a:hover {
+#scrollable-body > header .sponsors a:hover {
     text-decoration: none;
 }
 #sponsors-uob {
@@ -124,4 +124,34 @@ body.loading #scrollable-body:after {
 @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+#confirm-update {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    margin: 0;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#confirm-update:not(.visible) {
+    display: none
+}
+#confirm-update .icon {
+    font-size: 20rem;
+    line-height: 17rem;
+    color: #777;
+}
+
+body.iframe #scrollable-body {
+    margin-right: 0 !important;
+}
+body.iframe #scrollable-body > header {
+    display: none
 }

@@ -1,0 +1,118 @@
+import json
+
+from .errors import UserError
+
+def convert_value(val, target_types, items):
+    """
+    Convert (val) to one of (target_types)
+
+    - val: Either None (missing value) or string
+    - target_types: (list of) acceptible transformations, "string", "integer", "boolean", ..
+    - items: Dict of sub-type options, used for arrays
+    """
+    if target_types is None:
+        target_types = ["string"]
+    elif isinstance(target_types, str):
+        target_types = [target_types]
+
+    for t in target_types:
+        try:
+            if t == "array":
+                if val is None:
+                    val = []
+                elif isinstance(val, str) and val.startswith("[") and val.endswith("]"):
+                    # Assume JSON, as used by the line_ids lineid-picker
+                    val = [convert_value(v, items.get("type"), {}) for v in json.loads(val)]
+                elif not isinstance(val, list):
+                    val = [convert_value(v, items.get("type"), {}) for v in [val]]
+                else:
+                    val = [convert_value(v, items.get("type"), {}) for v in val]
+            elif t == "boolean":
+                val = bool(val)  # NB: Assume missing is false
+            elif t == "string":
+                val = None if val is None else str(val)
+            elif t == "integer":
+                val = None if val is None else int(val)
+            elif t == "number":
+                val = None if val is None else float(val)
+            else:
+                raise ValueError("Unknown type %s" % t)
+            return val
+        except ValueError:
+            pass  # Conversion failed, try the next type
+    raise UserError("Cannot convert '%s' to %s" % (
+        val,
+        target_types
+    ), "warn")
+
+
+def normalize(path, available_algorithms):
+    out = []
+    requires = []
+
+    for raw_spec in path:
+        # Ensure algo is a dict of name/type/expected arguments
+        algo_metadata = available_algorithms[raw_spec["algorithm_name"]]
+        algo = dict(
+            algorithm_name=raw_spec["algorithm_name"],
+            algorithm_type=algo_metadata["algorithm_type"],
+            args={},
+        )
+        arg_required = set(algo_metadata["args_schema"]["required"])
+        for arg_k, arg_spec in algo_metadata["args_schema"]["properties"].items():
+            val = raw_spec.get(arg_k) or arg_spec.get("default")
+            if arg_k in arg_required and val is None:
+                raise UserError("Argument %s for %s is required" % (arg_k, algo_metadata["full_name"]), "warn")
+            val = convert_value(val, arg_spec["type"], items=arg_spec.get('items', {}))
+            # Any values of None should be missing from the schema, so we don't trigger validation problems
+            if val is not None:
+                algo["args"][arg_k] = val
+
+        # Include argument requirements in our list
+        requires.extend(algo_metadata.get("requires", []))
+
+        # If we have a spacy-models argument, depend on that too
+        if algo["args"].get("spacy_model", None) is not None:
+            requires.append(algo["args"].get("spacy_model", None))
+
+        if algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
+            if len(out) == 0 or out[-1]["algorithm_type"] != "arrangement":
+                # Start new arrangement node
+                out.append(dict(
+                    algorithm_type="arrangement",
+                    ordering=[],
+                    grouping=None
+                ))
+            if algo["algorithm_type"] in ("partitioning", "clustering") and out[-1]["grouping"] is not None:
+                raise UserError("Cannot have more than one partitioning/clustering algorithm in an arrangement node, remove the last algorithm", "error")
+            if algo["algorithm_type"] in ("sorting", "ranking"):
+                out[-1]["ordering"].append(algo)
+            else:  # i.e. grouping
+                out[-1]["grouping"] = algo
+        else: # algo["algorithm_type"] == "selection" or algo["algorithm_type"] == "annotation":
+            out.append(algo)
+
+    return out, requires
+
+
+def normalize_source(opts, annotations, available_algorithms):
+    """
+    Normalise dict of CLiC query options & annotations.
+    Do a normalize() for annotations, and mangle any that should be server-side options
+    """
+    cs_annotations = []
+    extra_opts = {}
+    for a in annotations:
+        algo_metadata = available_algorithms[a["algorithm_name"]]
+        if algo_metadata.get("server_side_prefix"):
+            # Turn into server-side algorithm
+            (a,), _ = normalize([a], available_algorithms)
+            for k, v in a["args"].items():
+                extra_opts["%s%s" % (algo_metadata["server_side_prefix"], k)] = v
+        else:
+            cs_annotations.append(a)
+    cs_annotations, cs_annotations_requires = normalize(cs_annotations, available_algorithms)
+
+    if len(extra_opts) > 0:
+        opts = opts | extra_opts
+    return opts, cs_annotations, cs_annotations_requires

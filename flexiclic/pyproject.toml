@@ -1,0 +1,14 @@
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[project]
+name = "flexiclic"
+version = "0.0.0dev0"
+
+[project.optional-dependencies]
+testing = [
+    'pytest',
+    'pytest-cov',
+    'responses',
+]
+
+[tool.setuptools.packages.find]
+include = ["flexiclic"]

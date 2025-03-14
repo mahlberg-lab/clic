@@ -1,7 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, browser: true */
 /*global Promise */
-var ControlBar = require('./controlbar.js');
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
 
@@ -9,6 +8,7 @@ var page_classes = {
     '/concordance': require('./page_concordance.js'),
     '/clusters': require('./page_cluster.js'),
     '/subsets': require('./page_subset.js'),
+    '/flexiconc': require('./page_flexiconc.js'),
     '/keywords': require('./page_keyword.js'),
     '/text': require('./page_text.js'),
     '/count': require('./page_count.js'),
@@ -21,6 +21,11 @@ var page_classes = {
             throw new Error("Unknown page: " + page_state.doc());
         };
     },
+};
+
+var controlbar_classes = {
+    '/flexiconc': require('./controlbar_flexiconc.js'),
+    '': require('./controlbar.js'),
 };
 
 var state_defaults = {
@@ -48,6 +53,11 @@ var state_defaults = {
     'table-filter': '',
     'selected_rows': [],
 
+    'fc-select-type': "",
+    'fc-select': "[]",
+    'fc-path': "1",
+    'fc-all-paths': {},
+
     'book': '',
     'chapter_num': 0,
     'chapter_id': -1,
@@ -59,24 +69,31 @@ var state_defaults = {
 var page, cb, analytics, current_page = null;
 
 function select_components(page_state) {
-    var PageConstructor;
+    var PageConstructor, ControlBarConstructor, deconstructors = [];
 
     if (!page || page_state.doc() !== current_page) {
+        if (page && page.shutdown) {
+            deconstructors.push({ reload: page.shutdown });
+        }
         PageConstructor = page_classes[page_state.doc()] || page_classes[''];
         page = new PageConstructor(document.getElementById('content'));
-        current_page = page_state.doc();
     }
 
-    if (!cb) {
-        cb = new ControlBar(document.getElementById('control-bar'));
+    if (!cb || page_state.doc() !== current_page) {
+        if (cb && cb.shutdown) {
+            deconstructors.push({ reload: cb.shutdown });
+        }
+        ControlBarConstructor = controlbar_classes[page_state.doc()] || controlbar_classes[''];
+        cb = new ControlBarConstructor(document.getElementById('control-bar'));
     }
 
     if (!analytics) {
         analytics = new Analytics();
     }
 
+    current_page = page_state.doc();
     window.document.title = page.page_title(page_state);
-    return [page, cb, analytics];
+    return [cb, page, analytics].concat(deconstructors);
 }
 
 var pp = new PagePromise(select_components, state_defaults);

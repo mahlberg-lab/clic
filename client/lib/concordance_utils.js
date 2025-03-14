@@ -32,13 +32,18 @@ function tokenToType(tok) {
     return unidecode(tok.toLowerCase());
 }
 
-// Column is an array of tokens, mark these up as words, only sort on word content
+/**
+  * Column is an array of tokens, mark these up as words, only sort on word content
+  * * data: Array of tokens/type index -  ["these", " ", "words", [0, 2]]
+  * * data.kwicSpan.reverse: true iff this is a left context, and we should right-align
+  * * data.matches: Array of match indicies, 1-indexed outwards from context
+  */
 module.exports.renderTokenArray = function renderTokenArray(data, type, full, meta) {
     var i, t, out = "", word_indices = data[data.length - 1];
 
     if (type === 'display') {
         out = '<div class="' + (data.kwicSpan.reverse ? 'r' : 'l');
-        for (i = 0; i < data.matches.length; i++) {
+        for (i = 0; i < (data.matches || []).length; i++) {
             out += ' m' + data.matches[i];
         }
         out += '">';
@@ -141,4 +146,18 @@ module.exports.renderBook = function (render_mode, data, type) {
     }
 
     return render_mode === 'full' ? this.book_titles[data][0] : data;
+};
+
+// Plural-ise a few known phrases
+module.exports.plural = function (amount, unit) {
+    if (amount === 1) {
+        return amount + " " + unit;
+    }
+
+    switch (unit) {
+    case "KWIC match":
+        return amount + " " + unit + "es";
+    default:
+        return amount + " " + unit + "s";
+    }
 };

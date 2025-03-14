@@ -1,6 +1,20 @@
 /local-conf.mk
 
+*.pyc
+/*/pyvenv.cfg
+/*/bin
+/*/include
+/*/lib
+/*/local
+/*/share
+/*/.cache
+/*/lib64
+/*/dist
+/*/*.egg-info/
+/*/pip-selfcheck.json
+
 *.mktmp
+!/client/lib
 /client/coverage
 /client/doc
 /client/node_modules/
@@ -23,21 +37,11 @@
 /client/www/*.html
 /uwsgi_cache
 
-*.pyc
-/server/clic.egg-info/
-/server/pip-selfcheck.json
-/server/bin
-/server/include
-/server/lib
-/server/local
-/server/share
-/server/.cache
-/server/lib64
-/server/pyvenv.cfg
 /server/appconfig.py
 /server/clic/appconfig.py
 /server/.coverage
 /server/htmlcov/
+/server/st_models/
 
 /schema/bin
 
@@ -53,11 +57,13 @@
 
 /docs/module/
 /docs/_build/
-/docs/bin/
-/docs/lib/
-/docs/lib64
-/docs/pyvenv.cfg
-/docs/share/
 
 /goaccess_www/
 GeoLite2-*
+
+/flexiclic/build-workdir
+/flexiclic/prebuilt
+/flexiclic/www
+/flexiclic/flexiconc
+/flexiclic/spacy-pyodide/
+/flexiclic/tests/*.baseline.new

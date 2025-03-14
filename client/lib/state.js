@@ -1,5 +1,7 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true */
+/*jslint todo: true, regexp: true, unparam: true, nomen: true */
+
+var flatten = require('./flatten.js');
 
 function search_to_obj(search) {
     var out = {};
@@ -27,10 +29,10 @@ function obj_to_search(obj) {
     return Object.keys(obj).sort().map(function (k) {
         if (Array.isArray(obj[k])) {
             return obj[k].map(function (v) {
-                return (k === "#" ? '' : encodeURIComponent(k) + '=') + encodeURIComponent(v);
+                return (k === "#" ? '' : k + '=') + encodeURIComponent(v);
             }).join('&');
         }
-        return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
+        return k + '=' + encodeURIComponent(obj[k]);
     }).filter(function (s) { return !!s; }).join('&');
 }
 
@@ -70,10 +72,29 @@ State.prototype.doc = function () {
     return this._doc;
 };
 
+/** Fetch all available args, optionally filtered by a regex */
+State.prototype.all_args = function (regex) {
+    if (!regex) {
+        return this._args;
+    }
+    regex = new RegExp(regex);
+    return Object.keys(this._args).reduce(function (r, k) {
+        if (regex.test(k)) {
+            r[k] = this._args[k];
+        }
+        return r;
+    }.bind(this), {});
+};
+
 /** Fetch named a named argument (i.e. querystring), or all positional args */
 State.prototype.arg = function (name) {
     if (!name) {
         return this.arg('#');
+    }
+
+    if (name.match(/^\w+\[/)) {
+        // Deep reference to arg, assume array-default
+        return this._args[name] || [];
     }
 
     if (!this.defaults.hasOwnProperty(name)) {
@@ -109,9 +130,11 @@ State.prototype.to_args = function () {
 
 /**
   * Turn the state object back into a URL string
+  *
+  * - regex: Optional regex, if provided only matching arguments will be included
   */
-State.prototype.to_url = function () {
-    var querystring = obj_to_search(this._args);
+State.prototype.to_url = function (regex) {
+    var querystring = obj_to_search(this.all_args(regex));
 
     if (querystring) {
         querystring = '?' + querystring;
@@ -127,6 +150,7 @@ State.prototype.to_url = function () {
   *   - args: New querystring arguments
   *   - state: New state arguments
   *   - url: Shortcut, replaces doc/args with parsed URL before proceeding
+  *   - flush: Synonym for flush argument
   * - flush: Replaces args/state rather than merging with existing
   * returns true iff the changes result in a different state
   */
@@ -136,15 +160,28 @@ State.prototype.update = function (changes, flush) {
         modified = false;
 
     function compare(existing, change) {
+        function replacer(item_key, value) {
+            if (value instanceof global.Set) {
+                // Sets don't stringify by default: https://stackoverflow.com/a/46491780
+                return Array.from(value);
+            }
+            return value;
+        }
+
         if (existing === undefined) {
             // An empty array is a missing item in URL speak
             existing = [];
         }
 
-        if (JSON.stringify(change) !== JSON.stringify(existing)) {
+        if (JSON.stringify(change, replacer) !== JSON.stringify(existing, replacer)) {
             return false;
         }
         return true;
+    }
+
+    // Allow flush to be overriden in changes
+    if (changes.flush) {
+        flush = changes.flush;
     }
 
     if (changes.url) {

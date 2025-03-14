@@ -7,20 +7,6 @@ var concordance_utils = require('./concordance_utils.js');
 var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 
-// Plural-ise a few known phrases
-function plural(amount, unit) {
-    if (amount === 1) {
-        return amount + " " + unit;
-    }
-
-    switch (unit) {
-    case "KWIC match":
-        return amount + " " + unit + "es";
-    default:
-        return amount + " " + unit + "s";
-    }
-}
-
 /* Plot count should link to a URL for just that book */
 function renderPlotCount(data, type, full, meta) {
     data = data.length; // Show the count, not all the lines
@@ -387,15 +373,15 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         }
 
         // Book count
-        this.extra_info.push("from " + plural(Object.keys(allBooks).length, "book"));
+        this.extra_info.push("from " + concordance_utils.plural(Object.keys(allBooks).length, "book"));
     }
 
     // Add KWIC summary
     Object.keys(allMatches).sort(function (a, b) { return b - a; }).map(function (count) {
         this.extra_info.push(
-            plural(allMatches[count][0], "line") + " / " +
-                plural(Object.keys(allMatches[count][1]).length, "book") + " with " +
-                plural(parseInt(count, 10), "KWIC match")
+            concordance_utils.plural(allMatches[count][0], "line") + " / " +
+                concordance_utils.plural(Object.keys(allMatches[count][1]).length, "book") + " with " +
+                concordance_utils.plural(parseInt(count, 10), "KWIC match")
         );
     }.bind(this));
 

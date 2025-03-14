@@ -10,6 +10,7 @@ test:
 	make -C schema $@
 	make -C client $@
 	make -C server $@
+	make -C flexiclic $@
 	make -C docs $@
 
 lint:
