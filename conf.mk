@@ -33,7 +33,7 @@ WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev
 WWW_CERT_FULLCHAIN ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/fullchain.pem
 WWW_CERT_CHAIN ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/chain.pem
 WWW_CERT_KEY ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/privkey.pem
-WWW_DHPARAM_FILE ?= /etc/ssl/dhparam.pem
+WWW_DHPARAM_FILE ?= /etc/ssl/private/dhparam.pem
 
 ###################
 # Configuration options for installing goaccess
