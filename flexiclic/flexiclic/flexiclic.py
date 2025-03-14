@@ -97,6 +97,8 @@ class FlexiClic():
 
                 # Fetch query from CLiC server
                 data = await fetch_json("%s/api/concordance" % (self._api_root), opts)
+                if data.get("error", None):
+                    raise ValueError(data["error"].get("message", data["error"]))
                 self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
 
                 # Re-create concordance object, add any required annotations
