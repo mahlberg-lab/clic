@@ -75,6 +75,20 @@ test('to_url', function (t) {
     t.end();
 });
 
+test('to_json', function (t) {
+    var s;
+
+    // to_json returns the whole thing
+    s = new State(fake_window('/moo/doc', '?cuthbert&pigs=no&dibble&grub&cows=daisy', {animals: {duck: 2, goat: 3}}));
+    t.deepEqual(s.to_json(), {
+        doc: '/moo/doc',
+        args: { '#': [ 'cuthbert', 'dibble', 'grub' ], pigs: [ 'no' ], cows: [ 'daisy' ] },
+        state: { animals: { duck: 2, goat: 3 } },
+    });
+
+    t.end();
+});
+
 test('arg:defaults', function (t) {
     var s;
 

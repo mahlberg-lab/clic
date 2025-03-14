@@ -5,6 +5,7 @@ var ControlBar = require('./controlbar.js');
 var chosen_init = require('./chosen_init.js');
 var flexiclic = require('./flexiclic.js').flexiclic;
 var util_flexiconc = require('./util_flexiconc.js');
+var FileSaver = require('file-saver');
 
 // lineid-picker: Create the iframe, pull values back
 function lineid_picker_init(el, page_state) {
@@ -61,6 +62,9 @@ ControlBarFlexiConc.prototype.shutdown = function shutdown(page_state) {
 };
 
 ControlBarFlexiConc.prototype.reload = function reload(page_state) {
+    var self = this,
+        nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
+
     /** Promise to return DOM element for an (algo_name) with element names prefixed by (newPrefix) */
     function newAlgoHtml(algo_name, newPrefix) {
         return flexiclic.algorithm_render_html({algo_name: algo_name, prefix: newPrefix}).then(function (algoHtml) {
@@ -124,8 +128,6 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             return elNew;
         });
     }
-
-    var nested_args = util_flexiconc.renest_args(page_state.all_args(/^(?:algo|annotation)\[/));
 
     return flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
         return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
@@ -255,6 +257,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         });
         document.querySelector(".flexiconc-path-save").classList.toggle("disabled", getMutablePathNumber(fcPath) === null);
         document.querySelector(".flexiconc-path-save").style.display = fcPath === "0" ? "none" : "";
+        document.querySelector(".flexiconc-tree-save").style.display = fcPath !== "0" ? "none" : "";
 
         document.querySelector(".flexiconc-path-chooser").onchange = function (event) {
             // Click on "+", start with an empty set of algorithms
@@ -284,6 +287,21 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             });
             event.stopPropagation();
             event.preventDefault();
+        };
+
+        document.querySelector(".flexiconc-tree-save").onclick = function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            if (event.target.classList.contains("action-save")) {
+                var blob = new window.Blob([JSON.stringify(page_state.to_json())], { type: "application/json" });
+                FileSaver.saveAs(blob, "clic-analysis-tree.json");
+            } else if (event.target.classList.contains("action-load")) {
+                // Trigger main file loader, see filesystem.js
+                self.file_loader.trigger('load');
+            }
+
+            return false;
         };
 
         document.querySelector(".flexiconc-path-save").onkeypress = function (event) {

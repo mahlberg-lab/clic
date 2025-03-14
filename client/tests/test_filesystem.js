@@ -19,6 +19,25 @@ var filesystem = proxyquire.noCallThru().load('lib/filesystem.js', {
 });
 
 
+
+test('file_to_state', function (t) {
+    global.window.location = { pathname: 'ut-path' };
+    global.Blob = function (blob_arr, type) {
+        this.arr = blob_arr;
+        this.type = type;
+    };
+
+    // JSON is read ~as-is
+    t.deepEqual(filesystem.file_to_state('{ "doc": "/flexiconc", "args": {"a": 1}, "state": {"b": 2} }'), {
+        "doc": "/flexiconc",
+        "args": {"a": 1},
+        "state": {"b": 2},
+    });
+
+    t.end();
+});
+
+
 test('save', function (t) {
     global.window.location = { pathname: 'ut-path' };
     global.Blob = function (blob_arr, type) {

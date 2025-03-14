@@ -143,6 +143,15 @@ State.prototype.to_url = function (regex) {
     return this._doc + querystring;
 };
 
+State.prototype.to_json = function () {
+    return {
+        doc: this._doc,
+        args: this._args,
+        state: this._state,
+    };
+};
+
+
 /**
   * Update page state
   * - changes: Object containing any of the following optional items:

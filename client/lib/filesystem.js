@@ -75,6 +75,11 @@ module.exports.file_to_state = function (file) {
         });
     }
 
+    // Is the file actually JSON?
+    if (lines.length === 1 && lines[0].startsWith("{") && lines[0].endsWith("}")) {
+        return JSON.parse(lines.join("\r\n"));
+    }
+
     // Find tags in header
     header = parse_line(lines[0]);
     for (i = 0; i < header.length; i++) {
