@@ -175,9 +175,16 @@ Disallow: /api/
         ${GA_API_ACTION}
     }
 
-    location /flexiclic/ {
-        alias "${PROJECT_PATH}/flexiclic/www/";
-        autoindex on;
+    # Top level files (e.g. flexiclic.whl) can't be cached
+    location ~ ^/flexiclic/([^/]+)\$ {
+       alias "/srv/clic/flexiclic/www/\$1";
+    }
+
+    # Stuff in subdirectories is versioned, so cache
+    location ~ ^/flexiclic/(.+)/(.+)\$ {
+        alias "/srv/clic/flexiclic/www/\$1/\$2";
+        expires 1d;
+        add_header Cache-Control "public";
     }
 
     location /local-docs {
