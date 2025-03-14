@@ -4,11 +4,6 @@ set -eu
 API_UWSGI_CACHE_PATH="${PROJECT_PATH}/uwsgi_cache"
 WWW_UWSGI_CACHE_KEY="\$uri?\$args?${PROJECT_REV}"
 
-WWW_CERT_FULLCHAIN="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/fullchain.pem"
-WWW_CERT_CHAIN="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/chain.pem"
-WWW_CERT_KEY="${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey.pem"
-WWW_DHPARAM_FILE="/etc/ssl/dhparam.pem"
-
 GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
 
@@ -34,28 +29,29 @@ sudo -uwww-data cat "${PROJECT_PATH}/client/www/index.html" >/dev/null || {
     exit 1
 }
 
-# Make sure server-name is in domains.txt
-mkdir -p "/etc/dehydrated"
-[ -e "/etc/dehydrated/domains.txt" ] || echo "" > "/etc/dehydrated/domains.txt"
-grep -qE "^${WWW_SERVER_NAME}" "/etc/dehydrated/domains.txt" || {
-    echo "${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES}" >> "/etc/dehydrated/domains.txt"
-}
+case "${WWW_CERT_KEY}" in /var/lib/dehydrated/*)
+    # Make sure server-name is in domains.txt
+    mkdir -p "/etc/dehydrated"
+    [ -e "/etc/dehydrated/domains.txt" ] || echo "" > "/etc/dehydrated/domains.txt"
+    grep -qE "^${WWW_SERVER_NAME}" "/etc/dehydrated/domains.txt" || {
+        echo "${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES}" >> "/etc/dehydrated/domains.txt"
+    }
 
-# Self-signed bootstrap-cert
-mkdir -p "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}"
-if [ ! -e "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey.pem" ]; then
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
-            -keyout "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey-ss.pem" \
-            -out "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" \
-            -subj "/CN=${WWW_SERVER_NAME}" \
-            -addext "subjectAltName = DNS:selfsigned.${WWW_SERVER_NAME}"
-    ln -rs "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/privkey-ss.pem" "${WWW_CERT_KEY}"
-    ln -rs "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" "${WWW_CERT_FULLCHAIN}"
-    ln -rs "${WWW_CERT_PATH}/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" "${WWW_CERT_CHAIN}"
-fi
+    # Self-signed bootstrap-cert
+    mkdir -p "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}"
+    if [ ! -e "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/privkey.pem" ]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
+                -keyout "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/privkey-ss.pem" \
+                -out "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" \
+                -subj "/CN=${WWW_SERVER_NAME}" \
+                -addext "subjectAltName = DNS:selfsigned.${WWW_SERVER_NAME}"
+        ln -rs "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/privkey-ss.pem" "${WWW_CERT_KEY}"
+        ln -rs "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" "${WWW_CERT_FULLCHAIN}"
+        ln -rs "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}/fullchain-ss.pem" "${WWW_CERT_CHAIN}"
+    fi
+esac
 
 # Generate dhparam.pem if we don't have one
-WWW_DHPARAM_FILE="/etc/ssl/private/dhparam.pem"
 [ -f "${WWW_DHPARAM_FILE}" ] || openssl dhparam -out "${WWW_DHPARAM_FILE}" 4096
 
 # Prepend allow to each GOACCESS_ALLOW
@@ -83,7 +79,7 @@ server {
     server_name ${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES};
 
     location /.well-known/acme-challenge/ {
-        alias "${WWW_CERT_PATH}/acme-challenges/";
+        alias "/var/lib/dehydrated/acme-challenges/";
     }
 
     ssl_certificate      "${WWW_CERT_FULLCHAIN}";
@@ -241,15 +237,17 @@ ln -fs "/etc/nginx/sites-available/${PROJECT_NAME}" "/etc/nginx/sites-enabled/${
 nginx -t
 systemctl reload nginx.service
 
-if [ "${PROJECT_MODE}" = "production" ]; then
-    # Add dehydrated cronjob for production
-    cat <<EOF > "/etc/cron.weekly/dehydrated"
+case "${WWW_CERT_KEY}" in /var/lib/dehydrated/*)
+    if [ "${PROJECT_MODE}" = "production" ]; then
+        # Add dehydrated cronjob for production
+        cat <<EOF > "/etc/cron.weekly/dehydrated"
 #!/bin/sh -e
 
 /usr/bin/systemd-cat -t dehydrated /usr/bin/dehydrated -c
 systemctl reload nginx
 EOF
-    chmod a+x /etc/cron.weekly/dehydrated
-fi
+        chmod a+x /etc/cron.weekly/dehydrated
+    fi
+esac
 
 ./install_goaccess.sh

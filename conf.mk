@@ -25,10 +25,15 @@ ifeq ($(PROJECT_MODE),development)
 else
     WWW_UWSGI_CACHE_ZONE ?= api_cache
 endif
-WWW_CERT_PATH ?= /var/lib/dehydrated
 WWW_UWSGI_TIMEOUT ?= 5m
 # Make a guess at branch name, since production instances will be detached HEAD
 WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev=0 | grep -oE '[0-9]+\.[0-9]+')
+
+# SSL Cert locations, by default will assume that dehydrated (will be) installed
+WWW_CERT_FULLCHAIN ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/fullchain.pem
+WWW_CERT_CHAIN ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/chain.pem
+WWW_CERT_KEY ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/privkey.pem
+WWW_DHPARAM_FILE ?= /etc/ssl/dhparam.pem
 
 ###################
 # Configuration options for installing goaccess
