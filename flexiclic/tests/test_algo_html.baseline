@@ -156,7 +156,7 @@ random sample =
 	<legend>Random Sample</legend>
 	<input type="hidden" name="algprefix[algorithm_name]" value="Random Sample">
 	<label for="ctlb-flexiconc-algprefix[sample_size]"><span style="color: red" title="This property is required">*</span> The number of lines to sample.</label>
-	<input type="number" name="algprefix[sample_size]" id="ctlb-flexiconc-algprefix[sample_size]" class="form-control" step="1">
+	<input type="number" name="algprefix[sample_size]" id="ctlb-flexiconc-algprefix[sample_size]" class="form-control" step="1" min="1">
 	<label for="ctlb-flexiconc-algprefix[seed]"><span style="color: red" title="This property is required">*</span> An optional seed for random number generation.</label>
 	<input type="number" name="algprefix[seed]" id="ctlb-flexiconc-algprefix[seed]" class="form-control" value="42" step="1">
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
@@ -181,7 +181,7 @@ select weighted sample by metadata =
 	<label for="ctlb-flexiconc-algprefix[metadata_attribute]"><span style="color: red" title="This property is required">*</span> The metadata attribute to stratify by (e.g., &#x27;text_id&#x27;, &#x27;speaker&#x27;).</label>
 	<input type="text" name="algprefix[metadata_attribute]" id="ctlb-flexiconc-algprefix[metadata_attribute]" class="form-control" >
 	<label for="ctlb-flexiconc-algprefix[sample_size]"><span style="color: red" title="This property is required">*</span> The total number of lines to sample.</label>
-	<input type="number" name="algprefix[sample_size]" id="ctlb-flexiconc-algprefix[sample_size]" class="form-control" step="1">
+	<input type="number" name="algprefix[sample_size]" id="ctlb-flexiconc-algprefix[sample_size]" class="form-control" step="1" min="1">
 	<label for="ctlb-flexiconc-algprefix[seed]"><span style="color: red" title="This property is required">*</span> Random seed for reproducibility.</label>
 	<input type="number" name="algprefix[seed]" id="ctlb-flexiconc-algprefix[seed]" class="form-control" value="42" step="1">
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>

@@ -105,7 +105,9 @@ def html_prop(input_name, prop_desc, required=False):
             name=input_name,
             label=prop_desc["description"],
             value=prop_desc.get("default") or None,
-            step=1,  # TODO: Need to apply step when type is number, but to what?
+            step=prop_desc.get("step", 1),
+            min=prop_desc.get("minimum"),
+            max=prop_desc.get("maximum"),
             required=required,
         )
 
