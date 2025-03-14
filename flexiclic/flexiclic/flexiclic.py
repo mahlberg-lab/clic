@@ -53,6 +53,11 @@ class FlexiClic():
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
 
+    def _available_algorithms(self, data=None):
+        concordance = self._flexiconc_concordance()
+        out = concordance.available_algorithms
+        return out
+
     async def _follow_path(self, opts=None, annotations=None, path=[], speculative=False):
         """
         Follow path of algorithms, return Node at end
@@ -71,7 +76,7 @@ class FlexiClic():
                 if speculative:
                     raise errors.UserConfirmError()
 
-                annotations, annotations_requires = path_util.normalize(annotations, concordance.available_algorithms)
+                opts, annotations, annotations_requires = path_util.normalize_source(opts, annotations, self._available_algorithms())
 
                 # Try installing all required packages
                 for pkg in annotations_requires:
@@ -97,7 +102,7 @@ class FlexiClic():
                 raise
 
         # Try installing all required packages
-        path, path_requires = path_util.normalize(path, concordance.available_algorithms)
+        path, path_requires = path_util.normalize(path, self._available_algorithms())
         for pkg in path_requires:
             pkg = re.sub(r'[<=>].*$', '', pkg).strip()
             if self._install_package_fn:
@@ -124,10 +129,8 @@ class FlexiClic():
 
         class is a flexiclic invention, and either "annotation" or "algo"
         """
-        concordance = self._flexiconc_concordance()
-
         out = collections.defaultdict(list)
-        for algo_name, algo_metadata in concordance.available_algorithms.items():
+        for algo_name, algo_metadata in self._available_algorithms().items():
             invalid_algo = False
             for prop_name, prop_desc in algo_metadata['args_schema']["properties"].items():
                 # Algorithms that expect object aren't supported by CLiC
@@ -146,7 +149,7 @@ class FlexiClic():
 
     def algorithm_render_html(self, algo_name, prefix):
         concordance = self._flexiconc_concordance()
-        algo_schema = concordance.available_algorithms[algo_name]
+        algo_schema = self._available_algorithms()[algo_name]
         # If we have data loaded, get context-sensitive schema
         if concordance.metadata is not None and concordance.tokens is not None:
          algo_schema = algo_schema | concordance.root.schema_for(algo_name)
