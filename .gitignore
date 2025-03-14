@@ -62,6 +62,7 @@
 GeoLite2-*
 
 /flexiclic/build-workdir
+/flexiclic/prebuilt
 /flexiclic/www
 /flexiclic/flexiconc
 /flexiclic/spacy-pyodide/

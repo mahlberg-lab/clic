@@ -108,7 +108,7 @@ www/flexiconc-%.whl: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
 
 www/prebuilt/%.whl:
 	mkdir -p www/prebuilt/
-	cp build-workdir/*/dist/$(notdir $@) www/prebuilt/
+	cp prebuilt/$(notdir $@) www/prebuilt/
 
 # Fetch pure-python packages direct from PyPI
 www/pypi/%.whl:

@@ -184,3 +184,7 @@ EOF
 rm -r ./build || true
 ICU_VERSION=76.1 pyodide build
 popd
+
+# ==== Copy all build artefacts into output directory =========================
+mkdir -p ../prebuilt
+cp -v ./*/dist/*.whl ../prebuilt/
