@@ -48,7 +48,7 @@ class FlexiClic():
     def _flexiconc_concordance(self, data=None):
         if data is not None:
             self._flexiconc = flexiconc.Concordance()
-            self._flexiconc.load(**data_util.clic_to_flexiconc(data))
+            self._flexiconc.load(**data)
         elif getattr(self, "_flexiconc", None) is None:
             self._flexiconc = flexiconc.Concordance()
         return self._flexiconc
@@ -56,6 +56,17 @@ class FlexiClic():
     def _available_algorithms(self, data=None):
         concordance = self._flexiconc_concordance()
         out = concordance.available_algorithms
+        # Override Annotate with Sentence Transformers to become server-side
+        out['Annotate with Sentence Transformers']["requires"] = []
+        out['Annotate with Sentence Transformers']["server_side_prefix"] = "st_"
+        out['Annotate with Sentence Transformers']["args_schema"]["properties"] = {
+            "model_name": {
+                "type": "string",
+                "description": "The name of the pretrained Sentence Transformer model.",
+                "enum": ["all-MiniLM-L6-v2"],
+                "default": "all-MiniLM-L6-v2"
+            },
+        }
         return out
 
     async def _follow_path(self, opts=None, annotations=None, path=[], speculative=False):
@@ -89,7 +100,10 @@ class FlexiClic():
                 self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
 
                 # Re-create concordance object, add any required annotations
-                concordance = self._flexiconc_concordance(data=data.get('data', []))
+                concordance = self._flexiconc_concordance(data_util.clic_to_flexiconc(
+                    data=data.get('data', []),
+                    annotation_lines=data.get('annotation_lines', {}),
+                ))
                 for a in annotations:  # NB: Assume first entry is annotations
                     concordance.add_annotation(
                         (a["algorithm_name"], a["args"]),

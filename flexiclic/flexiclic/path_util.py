@@ -47,7 +47,6 @@ def convert_value(val, target_types, items):
 
 
 def normalize(path, available_algorithms):
-    annotations = []
     out = []
     requires = []
 
@@ -76,10 +75,7 @@ def normalize(path, available_algorithms):
         if algo["args"].get("spacy_model", None) is not None:
             requires.append(algo["args"].get("spacy_model", None))
 
-        # File appropriately, annotations are separate, sort/group get combined into an arrangement pseudo-algorithm
-        if algo["algorithm_type"] == "annotation":
-            annotations.append(algo)
-        elif algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
+        if algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
             if len(out) == 0 or out[-1]["algorithm_type"] != "arrangement":
                 # Start new arrangement node
                 out.append(dict(
@@ -93,9 +89,30 @@ def normalize(path, available_algorithms):
                 out[-1]["ordering"].append(algo)
             else:  # i.e. grouping
                 out[-1]["grouping"] = algo
-        elif algo["algorithm_type"] == "selection":
+        else: # algo["algorithm_type"] == "selection" or algo["algorithm_type"] == "annotation":
             out.append(algo)
-        else:
-            raise ValueError("Unknown algorithm_type: %s" % algo)
 
-    return annotations + out, requires
+    return out, requires
+
+
+def normalize_source(opts, annotations, available_algorithms):
+    """
+    Normalise dict of CLiC query options & annotations.
+    Do a normalize() for annotations, and mangle any that should be server-side options
+    """
+    cs_annotations = []
+    extra_opts = {}
+    for a in annotations:
+        algo_metadata = available_algorithms[a["algorithm_name"]]
+        if algo_metadata.get("server_side_prefix"):
+            # Turn into server-side algorithm
+            (a,), _ = normalize([a], available_algorithms)
+            for k, v in a["args"].items():
+                extra_opts["%s%s" % (algo_metadata["server_side_prefix"], k)] = v
+        else:
+            cs_annotations.append(a)
+    cs_annotations, cs_annotations_requires = normalize(cs_annotations, available_algorithms)
+
+    if len(extra_opts) > 0:
+        opts = opts | extra_opts
+    return opts, cs_annotations, cs_annotations_requires

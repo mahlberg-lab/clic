@@ -131,3 +131,30 @@ class TestTypesFromString(unittest.TestCase):
                 requires=[],
                 args_schema=dict(properties={},required=[]),
             )))
+
+    def test_normalise_source(self):
+        opts, annotations, requires = path_util.normalize_source(dict(
+            q="elbow",
+        ), [
+            dict(
+                algorithm_name="Annotate with Sentence Transformers",
+            ),
+        ], {
+            "Annotate with Sentence Transformers": dict(
+                full_name="Annotate with Sentence Transformers",
+                algorithm_type="annotation",
+                requires=[],
+                server_side_prefix="st_",
+                args_schema=dict(properties={
+                    "model_name": {"type": "string", "default": "all-MiniLM-L6-v2"},
+                },required=[]),
+            ),
+        })
+        # Annotation included onto API url
+        self.assertEqual(opts, {
+            'q': 'elbow',
+            'st_model_name': 'all-MiniLM-L6-v2',
+        })
+        # No client-side annotations
+        self.assertEqual(annotations, [])
+        self.assertEqual(requires, [])

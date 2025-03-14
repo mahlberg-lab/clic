@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-def clic_to_flexiconc(data):
+def clic_to_flexiconc(data, annotation_lines={}):
     """
     Convert CLiC concordance lines into FlexiConc DataFrames
 
@@ -95,8 +95,18 @@ def clic_to_flexiconc(data):
 
     tokens_df = pd.DataFrame(token_entries)
     tokens_df.set_index('id', inplace=True)
+    metadata_df = pd.DataFrame(metadata_list)
+
+    for column_name, column_data in annotation_lines.items():
+        # i.e. the equivalent of flexiconc/concordance:add_annotation
+        metadata_df[column_name] = pd.Series(
+            data=column_data,
+            index=range(len(column_data)),
+            name=column_name,
+        )
+
     return dict(
-        metadata=pd.DataFrame(metadata_list),
+        metadata=metadata_df,
         tokens=tokens_df,
         matches=pd.DataFrame(matches_list),
     )
