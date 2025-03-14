@@ -170,16 +170,17 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             return Promise.all(cur_algo_names.map(function (algo_name, i) {
                 var prefix = algo_class + "[" + i + "]";
 
-                if (algo_name === (elsExisting[i].elements[prefix + "[algorithm_name]"] || {}).value) {
-                    // algo_name matches, leave HTML as-is.
-                    elsExisting[i].disabled = false;
-                    return Promise.resolve();
-                }
                 return newAlgoHtml(algo_name, prefix).then(function (el) {
-                    // Replace old elements with new algo
-                    elsExisting[i].replaceWith(el);
-                    chosen_init.init(el);
-                    lineid_picker_init(el, page_state);
+                    if (el.outerHTML === elsExisting[i].fcOrigOuterHTML) {
+                        // Algorithm's HTML hasn't changed since it was created leave as-is
+                        elsExisting[i].disabled = false;
+                    } else {
+                        // Replace old elements with new algo
+                        el.fcOrigOuterHTML = el.outerHTML;  // NB HTML won't match afterwards, values change & tomselect selects
+                        elsExisting[i].replaceWith(el);
+                        chosen_init.init(el);
+                        lineid_picker_init(el, page_state);
+                    }
                 });
             }));
         }));
