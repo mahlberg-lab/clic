@@ -88,7 +88,6 @@ class FlexiClic():
                 for a in annotations:  # NB: Assume first entry is annotations
                     concordance.add_annotation(
                         (a["algorithm_name"], a["args"]),
-                        a["column_name"],
                     )
             except:
                 # Clear previous attempts so we try again next time

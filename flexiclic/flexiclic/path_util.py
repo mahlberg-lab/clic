@@ -78,7 +78,6 @@ def normalize(path, available_algorithms):
 
         # File appropriately, annotations are separate, sort/group get combined into an arrangement pseudo-algorithm
         if algo["algorithm_type"] == "annotation":
-            algo["column_name"] = algo["algorithm_name"]
             annotations.append(algo)
         elif algo["algorithm_type"] in ("sorting", "ranking", "partitioning", "clustering"):  # NB: clustering is assumed
             if len(out) == 0 or out[-1]["algorithm_type"] != "arrangement":
