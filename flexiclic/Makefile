@@ -2,15 +2,17 @@ EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
 FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
 
-PYODIDE_WHEELS = \
+PRELOAD_PYODIDE = \
     micropip \
     pyodide-http \
     jsonschema \
     pandas \
 
-PREBUILT_WHEELS = \
+PRELOAD_WHEELS = \
     pypi/anytree-2.12.1-py3-none-any.whl \
     pypi/platformdirs-4.3.6-py3-none-any.whl \
+    flexiclic-0.0.0.dev0-py3-none-any.whl \
+    flexiconc-0.1.3-py3-none-any.whl \
 
 LIBICU_WHEELS = \
     prebuilt/pyicu-2.14-cp312-cp312-pyodide_2024_0_wasm32.whl \
@@ -39,19 +41,14 @@ SPACY_WHEELS = \
     pypi/click-8.1.8-py3-none-any.whl \
     pypi/weasel-0.4.1-py3-none-any.whl \
 
-LOCAL_WHEELS = \
-    flexiclic-0.0.0.dev0-py3-none-any.whl \
-    flexiconc-0.1.3-py3-none-any.whl \
-
 OUT_FILES = \
     www/manifest.js \
     www/flexiclicWorker.js \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
-    $(patsubst %, www/%, $(PREBUILT_WHEELS)) \
+    $(patsubst %, www/%, $(PRELOAD_WHEELS)) \
     $(patsubst %, www/%, $(LIBICU_WHEELS)) \
     $(patsubst %, www/%, $(SPACY_WHEELS)) \
     $(patsubst %, www/%, $(SPACY_MODELS)) \
-    $(patsubst %, www/%, $(LOCAL_WHEELS)) \
 
 all: test $(OUT_FILES)
 
@@ -79,7 +76,7 @@ test: lib/.requirements
 www/manifest.js:
 	@echo 'const PYODIDE_REQUIREMENTS = {' > www/manifest.js
 	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
-	@echo ' "_preload": `$(LOCAL_WHEELS) $(PREBUILT_WHEELS) $(PYODIDE_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@echo ' "_preload": `$(PRELOAD_PYODIDE) $(PRELOAD_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "pyicu": `$(LIBICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "spacy": `$(SPACY_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@for m in $(SPACY_MODELS); do echo ' "'$$(basename $$m -3.8.0-py3-none-any.whl)'": "'$$m'".trim().split(/\s+/),'; done >> www/manifest.js
