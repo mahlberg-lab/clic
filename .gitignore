@@ -41,6 +41,7 @@
 /server/clic/appconfig.py
 /server/.coverage
 /server/htmlcov/
+/server/st_models/
 
 /schema/bin
 

@@ -258,7 +258,11 @@ expression ``_``::
     ['to', 'the', '_th', 'degree']
 
 """
+import itertools
+import os.path
 import re
+
+import sentence_transformers
 
 from clic.db.book import get_book
 from clic.db.book_metadata import get_book_metadata
@@ -267,6 +271,9 @@ from clic.db.lookup import api_subset_lookup, rclass_id_lookup
 from clic.errors import UserError
 from clic.tokenizer import types_from_string
 
+from . import appconfig
+
+
 RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns it
 
 
@@ -274,7 +281,7 @@ RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns 
 STOPWORDS = set(("the", "and", "to", "of", "a", "i", "in", "he", "was", "that"))
 
 
-def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[]):
+def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[], st_model_name=[""]):
     """
     Main entry function for concordance search
 
@@ -297,6 +304,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     if len(like_sets) == 0:
         raise UserError("You must supply at least one search term", "error")
     contextsize = int(contextsize[0])
+    st_model_name = st_model_name[0]
     metadata = set(metadata)
     book = None
 
@@ -338,6 +346,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             params['total_likes'] = len(likes)
             params['part_of'] = str(rclass_ids[0])
 
+            st_model_lines = []
             for i, l in enumerate(likes):
                 if i == anchor_offset:
                     # We should check the main token table for the anchor node, so
@@ -353,7 +362,14 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 node_tokens = full_tokens[node_start:node_start + len(likes)]
                 if not book or book['id'] != book_id:
                     book = get_book(book_cur, book_id, content=True)
-                yield to_conc(book['content'], full_tokens, node_tokens, contextsize) + [
+                conc = to_conc(book['content'], full_tokens, node_tokens, contextsize)
+
+                if st_model_name:
+                    st_model_lines.append(
+                        "".join(itertools.chain(*(x[:-1] for x in conc)))
+                    )
+
+                yield conc + [
                     [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
                     [
                         int(part_of.get(str(rclass['chapter.text']), -1)),
@@ -365,6 +381,15 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         book_cur.close()
 
     footer = get_book_metadata(cur, book_ids, metadata)
+
+    if st_model_name:
+        # Run gathered lines through SentenceTransformer model
+        if "annotation_lines" not in footer:
+            footer["annotation_lines"] = {}
+        footer["annotation_lines"]["embeddings_sentence_transformers"] = sentence_transformers.SentenceTransformer(
+            os.path.join(appconfig.ST_MODEL_DIR, st_model_name.replace("/", ""))
+        ).encode(st_model_lines).tolist()
+
     if footer:
         yield ('footer', footer)
 
@@ -482,3 +507,12 @@ def parse_query(q):
         '*',  # Consider * to be part of a type, 0-or-more chars
         '?',  # Consider * to be part of a type, exactly 1 char
     ))))
+
+
+def script_download_st_models():
+    """Fetch required models for annotations"""
+    import sys
+
+    for m in sys.argv[1:]:
+        model = sentence_transformers.SentenceTransformer(m)
+        model.save(os.path.join(appconfig.ST_MODEL_DIR, m))

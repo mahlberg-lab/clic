@@ -60,6 +60,10 @@ API_UWSGI_THREADS ?= 4
 API_UWSGI_HARAKIRI ?= 0
 API_UWSGI_CACHE_SIZE ?= 1g
 
+# The sentence_transformer models that should be available to annotate concordance lines
+API_ST_MODEL_DIR ?= $(PROJECT_PATH)/server/st_models
+API_ST_MODELS ?= all-MiniLM-L6-v2
+
 ###################
 # DB configuration options
 
