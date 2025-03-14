@@ -309,6 +309,7 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
     book = None
 
     book_cur = cur.connection.cursor()
+    st_model_lines = []
     try:
         for likes in like_sets:
             # Choose an "anchor". We search for this first to narrow the possible
@@ -346,7 +347,6 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
             params['total_likes'] = len(likes)
             params['part_of'] = str(rclass_ids[0])
 
-            st_model_lines = []
             for i, l in enumerate(likes):
                 if i == anchor_offset:
                     # We should check the main token table for the anchor node, so
