@@ -52,6 +52,8 @@ OUT_FILES = \
 
 all: test $(OUT_FILES)
 
+compile: $(OUT_FILES)
+
 clean:
 	rm -r www/* || true
 
@@ -74,6 +76,7 @@ test: lib/.requirements
 	./bin/pytest $(EGG_NAME) tests
 
 www/manifest.js:
+	mkdir -p www/
 	@echo 'const PYODIDE_REQUIREMENTS = {' > www/manifest.js
 	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
 	@echo ' "_preload": `$(PRELOAD_PYODIDE) $(PRELOAD_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
@@ -86,9 +89,11 @@ www/manifest.js:
 	@echo '];' >> www/manifest.js
 
 www/flexiclicWorker.js: flexiclicWorker.js
+	mkdir -p www/
 	cp $^ $@
 
 www/flexiclic-%.whl: lib/.requirements flexiclic/*.py *.py pyproject.toml
+	mkdir -p www/
 	./bin/python3 -m build
 	rm www/flexiclic-*.whl || true  # Remove old wheels to avoid version confusion
 	cp dist/$(notdir $@) $@
@@ -101,6 +106,7 @@ flexiconc/setup.py:
 	touch $@
 
 www/flexiconc-%.whl: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
+	mkdir -p www/
 	rm -r flexiconc/dist/ || true
 	cd flexiconc && ../bin/python3 -m build
 	rm www/FlexiConc-*.whl || true  # Remove old wheels to avoid version confusion

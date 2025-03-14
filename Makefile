@@ -5,6 +5,7 @@ compile:
 	make -C client $@
 	make -C server $@
 	make -C docs $@
+	make -C flexiclic $@
 
 test:
 	make -C schema $@
@@ -12,6 +13,7 @@ test:
 	make -C server $@
 	make -C flexiclic $@
 	make -C docs $@
+	make -C flexiclic $@
 
 lint:
 	make -C schema $@
