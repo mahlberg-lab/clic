@@ -159,6 +159,12 @@
 
 .button-group > .immutable {
   background: linear-gradient(#fff,#c9c9c9 10%);
+  transition-property: filter;
+  transition-duration: 0.5s;
+}
+.button-group > .immutable.new {
+  filter: sepia(0.8);
+  transition-duration: 0.01s;
 }
 .button-group > input:checked+label.immutable {
   background: linear-gradient(#c9c9c9 1%,#fff 15%);

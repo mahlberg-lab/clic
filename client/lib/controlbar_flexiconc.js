@@ -315,7 +315,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             return false;
         };
         document.querySelector("#ctlb-flexiconc-save-form").onsubmit = function (event) {
-            var fcNewPath;
+            var fcNewPath, elNewPath;
             event.stopPropagation();
             event.preventDefault();
 
@@ -335,10 +335,17 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
             }}));
 
             document.querySelector("#ctlb-flexiconc-fc-path-next").insertAdjacentHTML("beforebegin", newPathChooserItem(fcNewPath));
+            elNewPath = document.querySelector("#ctlb-flexiconc-fc-path-" + fcNewPath + " + label");
 
             // Scroll to path-chooser to make it obvious there's a new item
             document.querySelector(".flexiconc-path-chooser").scrollIntoView({inline: "center", block: "center"});
-            document.querySelector("#ctlb-flexiconc-fc-path-" + fcNewPath).scrollIntoView({inline: "center", block: "nearest"});
+            elNewPath.scrollIntoView({inline: "center", block: "nearest"});
+
+            // Blink new item
+            elNewPath.classList.add("new");
+            window.setTimeout(function () {
+                elNewPath.classList.remove("new");
+            }, 100);
 
             event.target.elements["save-name"].value = "";
 
