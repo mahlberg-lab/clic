@@ -102,3 +102,10 @@ this, you first need to install::
     make -C docs pdf
 
 The pdf will be available at ``/local-docs/latex/clic-userguide.pdf``.
+
+FlexiConc: Upgrading & dependencies
+-----------------------------------
+
+FlexiConc is run client-side within a pyodide environment.
+
+To upgrade the version used, or to add dependencies for a package, see ``flexiclic/Makefile``.

@@ -2,6 +2,22 @@ EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
 FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
 
+# ## Making packages available
+#
+# When a FlexiConc algorithm declares a requirement, e.g. ``"requires": ["pyicu"]``,
+# and a set of packages is defined in manifest.js, flexiclicWorker.js will try to
+# download it. This set of packages does not have to be purely python dependencies,
+# and could be model data, e.g.
+#
+# 1. Define a new x_WHEELS variable with required wheels. Wheels can have a prefix of:
+#   ``prebuilt/``: Built by the ``build-wheels.sh`` script
+#   ``pypi/``: Fetched from PyPI, for "*-none-any.whl" pure python wheels
+#   ``pyodide-$(PYODIDE_VERSION)/``: Pre-bundled in the current pyodide version
+# 2. Add x_WHEELS to the OUT_FILES list
+# 3. Add a definition for x_WHEELS to the manifest.js section below
+
+###############################################################################
+# _preload: wheels to preload when launching web worker
 PRELOAD_PYODIDE = \
     micropip \
     pyodide-http \
@@ -14,15 +30,14 @@ PRELOAD_WHEELS = \
     flexiclic-0.0.0.dev0-py3-none-any.whl \
     flexiconc-0.1.3-py3-none-any.whl \
 
-LIBICU_WHEELS = \
+###############################################################################
+# pyicu: Wheels loaded when importing pyicu
+PYICU_WHEELS = \
     prebuilt/pyicu-2.14-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/icudata-76.1-py3-none-any.whl \
 
-SPACY_MODELS = \
-    spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
-    spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
-
-# NB: Need 3.8 for Numpy 2.0, thinc 9.0.0 is too new for 3.8.4
+###############################################################################
+# spacy: Wheels loaded when importing spacy
 SPACY_WHEELS = \
     prebuilt/spacy-3.8.4-cp312-cp312-pyodide_2024_0_wasm32.whl \
     prebuilt/srsly-2.5.1-cp312-cp312-pyodide_2024_0_wasm32.whl \
@@ -41,12 +56,19 @@ SPACY_WHEELS = \
     pypi/click-8.1.8-py3-none-any.whl \
     pypi/weasel-0.4.1-py3-none-any.whl \
 
+###############################################################################
+# Wheels for each spacy model, will be loaded by name
+SPACY_MODELS = \
+    spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
+    spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
+
+###############################################################################
 OUT_FILES = \
     www/manifest.js \
     www/flexiclicWorker.js \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
     $(patsubst %, www/%, $(PRELOAD_WHEELS)) \
-    $(patsubst %, www/%, $(LIBICU_WHEELS)) \
+    $(patsubst %, www/%, $(PYICU_WHEELS)) \
     $(patsubst %, www/%, $(SPACY_WHEELS)) \
     $(patsubst %, www/%, $(SPACY_MODELS)) \
 
@@ -80,10 +102,12 @@ www/manifest.js:
 	@echo 'const PYODIDE_REQUIREMENTS = {' > www/manifest.js
 	@echo ' "_pyodide": `pyodide-$(PYODIDE_VERSION)/pyodide.js`,' >> www/manifest.js
 	@echo ' "_preload": `$(PRELOAD_PYODIDE) $(PRELOAD_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
-	@echo ' "pyicu": `$(LIBICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	@echo ' "pyicu": `$(PYICU_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
 	@echo ' "spacy": `$(SPACY_WHEELS)`.trim().split(/\s+/),' >> www/manifest.js
+	# Make requirements entry for model name --> wheel
 	@for m in $(SPACY_MODELS); do echo ' "'$$(basename $$m -3.8.0-py3-none-any.whl)'": "'$$m'".trim().split(/\s+/),'; done >> www/manifest.js
 	@echo '};' >> www/manifest.js
+	# Make list of all available models
 	@echo 'const SPACY_MODELS = [' >> www/manifest.js
 	@for m in $(SPACY_MODELS); do echo ' "'$$(basename $$m -3.8.0-py3-none-any.whl)'",'; done >> www/manifest.js
 	@echo '];' >> www/manifest.js
@@ -121,11 +145,6 @@ www/pypi/%.whl:
 	mkdir -p www/pypi
 	# https://wiki.debian.org/debian/watch#PyPI
 	(cd www/pypi/ && wget -c https://pypi.debian.net/`echo $(notdir $@) | sed 's/-.*//'`/$(notdir $@))
-
-www/spacy-pyodide/%.whl:
-	[ -d spacy-pyodide ] || git clone --depth 1 https://github.com/liu-nlp/spacy-pyodide
-	mkdir -p www/spacy-pyodide/
-	cp spacy-pyodide/$(notdir $@) $@
 
 www/spacy-models/%.whl:
 	mkdir -p www/spacy-models/

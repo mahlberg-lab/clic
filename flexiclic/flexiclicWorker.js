@@ -1,3 +1,9 @@
+/**
+  * flexiclic web worker: Loads pyodide, creates flexiclic instance & proxies requests
+  *
+  * To make calls to flexiclic, import client/lib/flexiclic.js
+  * To define sets of wheels in PYODIDE_REQUIREMENTS, see flexiclic/Makefile
+  */
 importScripts("manifest.js");
 importScripts(PYODIDE_REQUIREMENTS["_pyodide"]);
 // https://pyodide.org/en/stable/usage/type-conversions.html#explicit-conversion-of-proxies

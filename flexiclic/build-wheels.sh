@@ -1,12 +1,24 @@
 #!/bin/bash
 set -eu
-# apt install autoconf automake libtool
-
-mkdir -p "$(dirname $0)/build-workdir" && cd "$(dirname $0)/build-workdir"
+# # Script to build custom pyodide wheels
+#
+# The first section configures the compilation environment, the final section
+# copies all produced wheels for the rest of the setup script to use.
+#
+# Firstly, ensure your local build environment is set up:
+#
+#     apt install build-essential autoconf automake libtool
+#
+# Also, python 3.12 is required. Compile if necessary:
+#
+#     https://docs.brucerenner.com.au/posts/Debian-Buster-Python-Install/
+#
+# Then, run this script. In ~20mins, you should have a "flexiclic/prebuilt" directory.
 
 # ==== Configure Environment ==================================================
-# NB: Python version has to match pyodide's bundled version, compile if necessary with
-# https://docs.brucerenner.com.au/posts/Debian-Buster-Python-Install/
+mkdir -p "$(dirname $0)/build-workdir"
+cd "$(dirname $0)/build-workdir"
+
 python3.12 -m venv .
 source ./bin/activate
 pip install pyodide-build
