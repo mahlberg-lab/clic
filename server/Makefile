@@ -20,7 +20,7 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt setup.py bin/pip
 	./bin/pip freeze | grep -v egg=$(EGG_NAME) | grep -vE '^pkg-resources=|^setuptools=|^wheel=' > requirements.txt
 	touch lib/.requirements
 
-compile: lib/.requirements clic/appconfig.py  $(patsubst %, $(API_ST_MODEL_DIR)/%, $(API_ST_MODELS))
+compile: lib/.requirements clic/appconfig.py $(patsubst %, $(API_ST_MODEL_DIR)/%/config.json, $(API_ST_MODELS))
 
 test: compile
 	./bin/pytest $(EGG_NAME) tests
@@ -56,7 +56,7 @@ clic/appconfig.py:
 	echo "ST_MODEL_DIR = '$(API_ST_MODEL_DIR)'" >> $@.tmp
 	mv $@.tmp $@
 
-$(API_ST_MODEL_DIR)/%: clic/appconfig.py
-	./bin/download_st_models $(notdir $@)
+$(API_ST_MODEL_DIR)/%/config.json:
+	./bin/download_st_models $(dir $@)
 
 .PHONY: compile test lint coverage start install clic/appconfig.py

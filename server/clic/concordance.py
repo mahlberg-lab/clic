@@ -514,5 +514,6 @@ def script_download_st_models():
     import sys
 
     for m in sys.argv[1:]:
-        model = sentence_transformers.SentenceTransformer(m)
-        model.save(os.path.join(appconfig.ST_MODEL_DIR, m))
+        model_dir, model_name = os.path.split(os.path.normpath(m))
+        model = sentence_transformers.SentenceTransformer(model_name)
+        model.save(os.path.join(model_dir, model_name))
