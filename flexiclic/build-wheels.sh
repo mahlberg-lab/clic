@@ -119,7 +119,7 @@ EOF
 # https://unicode-org.github.io/icu/userguide/icu/howtouseicu.html
 # https://unicode-org.github.io/icu/userguide/icu/design.html
 ICU_DATA_FILTER_FILE=filters.json  \
-    CXXFLAGS='-fPIC -DICU_DATA_DIR=\"/lib/python3.12/site-packages/icu\"' \
+    CXXFLAGS='-fPIC -DICU_DATA_DIR=\"/lib/python3.12/site-packages/icudata\"' \
     CFLAGS="-fPIC" PKG_CONFIG_LIBDIR=${PYODIDE_EMSCRIPTEN_SYSROOT}/lib/pkgconfig \
     emconfigure ./configure \
     --prefix=${PYODIDE_EMSCRIPTEN_SYSROOT} --with-cross-build=`pwd` \
