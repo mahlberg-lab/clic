@@ -364,7 +364,7 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
         path: nested_args.algo || [],
         speculative: page_state.speculative,
     }).then(function (data) {
-        var i, out, lastSummaryIdx;
+        var i, out, lastSummaryIdx = null;
 
         // Assume first item in data array is CLiC metadata
         out = data.shift();
@@ -392,7 +392,7 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
                 data[i]["fc-select"] = true;
 
                 // Non-summary rows should announce their state on the summary row
-                if (page_state.arg("fc-select-type") === "line_id" && i !== lastSummaryIdx) {
+                if (lastSummaryIdx !== null && page_state.arg("fc-select-type") === "line_id" && i !== lastSummaryIdx) {
                     data[lastSummaryIdx]["fc-select"] = true;
                 }
             }
