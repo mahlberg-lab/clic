@@ -1,12 +1,9 @@
-# https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html
-# https://github.com/actions/checkout
-
 on:
-  push:
-    branches:
-      - '[0-9]+\.[0-9]+'
-    paths:
-      - flexiclic/build-wheels.sh
+#  push:
+#    branches:
+#      - '[0-9]+\.[0-9]+'
+#    paths:
+#      - flexiclic/build-wheels.sh
   workflow_dispatch:
 
 name: build-wheels
