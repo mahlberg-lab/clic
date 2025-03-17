@@ -47,7 +47,10 @@ def html_prop(input_name, prop_desc, required=False):
     - required: Property is required?
     """
     # Assume any prop_desc with missing type are objects
-    if prop_desc.get('type', 'object') == 'object':
+    prop_type = prop_desc.get('type', 'object')
+    prop_type = set((prop_type,)) if isinstance(prop_type, str) else set(prop_type)
+
+    if prop_type == 'object':
         return '<pre style="border: 1px solid red">Object type is too loose: %s</pre>' % prop_desc
 
     if input_name.endswith('[line_ids]'):
@@ -69,7 +72,7 @@ def html_prop(input_name, prop_desc, required=False):
         )
 
     if 'enum' in prop_desc:
-        if prop_desc['type'] != 'string':
+        if prop_type != set(("string",)):
             return '<pre style="border: 1px solid red">Non-string enum: %s</pre>' % prop_desc
         return html_prop_select(
             name=input_name,
@@ -82,7 +85,7 @@ def html_prop(input_name, prop_desc, required=False):
             required=required,
         )
 
-    if prop_desc['type'] == 'string' or prop_desc['type'] == ['string']:
+    if prop_type == set(("string",)):
         return html_prop_inputbox(
             input_type="text",
             name=input_name,
@@ -91,7 +94,7 @@ def html_prop(input_name, prop_desc, required=False):
             required=required,
         )
 
-    if prop_desc['type'] == 'boolean':
+    if prop_type == set(("boolean",)):
         return html_prop_checkbox(
             input_type="number",
             name=input_name,
@@ -99,19 +102,19 @@ def html_prop(input_name, prop_desc, required=False):
             value=prop_desc.get("default") or False,
         )
 
-    if prop_desc['type'] == 'integer' or prop_desc['type'] == ['integer'] or prop_desc['type'] == ['integer', 'number'] or prop_desc['type'] == ['number', 'integer']:
+    if prop_type == set(("integer",)) or prop_type == set(("number",)) or prop_type == set(("integer", "number")):
         return html_prop_inputbox(
             input_type="number",
             name=input_name,
             label=prop_desc["description"],
             value=prop_desc.get("default") or None,
-            step=prop_desc.get("step", 1),
+            step=prop_desc.get("step", 1 if "integer" in prop_type else None),
             min=prop_desc.get("minimum"),
             max=prop_desc.get("maximum"),
             required=required,
         )
 
-    if prop_desc['type'] == 'array' or prop_desc['type'] == ['array']:
+    if prop_type == set(("array",)):
         enum = [
             dict(value=x, label=x, selected=False)
             for x in prop_desc.get("items", {}).get("enum", [])

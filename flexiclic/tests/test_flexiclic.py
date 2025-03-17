@@ -177,7 +177,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
 
     async def test_compute_path_partition(self):
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
-            {"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"},
+            {"algorithm_name":"Partition by Ngrams","positions":["1","3"],"tokens_attribute":"word"},
         ])]
         self.assertEqual(out, [
             (['Partition', []], ['hello', []], ["('of', 'fog')", []], ['', '', ''], ['', '', ''], 0, '', {'rowcount': 2}),
@@ -211,41 +211,41 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
 
     async def test_tidy_paths(self):
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
-            {"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"},
+            {"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"},
         ])]
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1]],
         )
         await self._fc.tidy_paths(paths={
-            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-            "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "1": [{"algorithm_name":"Partition by Ngrams","positions":["1","3"],"tokens_attribute":"word"}],
         })
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1], [2]],
         )
         await self._fc.tidy_paths(paths={
-            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-            "1": [{"algorithm_name":"KWIC Patterns","positions":["1","3"],"tokens_attribute":"word"}],
-            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "1": [{"algorithm_name":"Partition by Ngrams","positions":["1","3"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
         })
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1], [2], [3]],
         )
         await self._fc.tidy_paths(paths={
-            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
         })
         self.assertEqual(
             self._fc.tree_ids(),
             [0, [1], [3]],
         )
         await self._fc.tidy_paths(paths={
-            "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-            "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
-            "3": [{"algorithm_name":"KWIC Patterns","positions":["1","6"],"tokens_attribute":"word"}],
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
+            "3": [{"algorithm_name":"Partition by Ngrams","positions":["1","6"],"tokens_attribute":"word"}],
         })
         self.assertEqual(
             self._fc.tree_ids(),
@@ -253,8 +253,8 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         )
         with self.assertWarnsRegex(Warning, r'Nonexistant algo'):
             await self._fc.tidy_paths(paths={
-                "0": [{"algorithm_name":"KWIC Patterns","positions":["1","2"],"tokens_attribute":"word"}],
-                "2": [{"algorithm_name":"KWIC Patterns","positions":["1","5"],"tokens_attribute":"word"}],
+                "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+                "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
                 # NB: This doesn't cause an error, but it is no longer included in the tree
                 "3": [{"algorithm_name":"Nonexistant algo","positions":["1","6"],"tokens_attribute":"word"}],
             })

@@ -52,7 +52,7 @@ test('renest_all', function (t) {
         "0": {},
         "1": {
             "algo[0][case_sensitive]": [],
-            "algo[0][algorithm_name]": ["KWIC Patterns"],
+            "algo[0][algorithm_name]": ["Partition by Ngrams"],
             "algo[0][positions]": ["-1"],
             "algo[0][tokens_attribute]": ["word"],
             "algo[1][algorithm_name]": ["Sort by Corpus Position"]
@@ -62,13 +62,13 @@ test('renest_all', function (t) {
             "algo[0][algorithm_name]": ["Random Sample"],
             "algo[0][sample_size]": ["10"],
             "algo[0][seed]": ["10"],
-            "algo[1][algorithm_name]": ["KWIC Patterns"],
+            "algo[1][algorithm_name]": ["Partition by Ngrams"],
             "algo[1][positions]": ["-1"],
             "algo[1][tokens_attribute]": ["word"]
         },
         "3": {
             "algo[0][case_sensitive]": [],
-            "algo[0][algorithm_name]": ["KWIC Patterns"],
+            "algo[0][algorithm_name]": ["Partition by Ngrams"],
             "algo[0][positions]": ["-1"],
             "algo[0][tokens_attribute]": ["word"],
             "algo[1][algorithm_name]": ["Select Slot"],
@@ -77,15 +77,15 @@ test('renest_all', function (t) {
         "4": {},
     }), {
         "1": [
-            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+            { case_sensitive: null, algorithm_name: 'Partition by Ngrams', positions: '-1', tokens_attribute: 'word' },
             { algorithm_name: 'Sort by Corpus Position' },
         ],
         "2": [
             { algorithm_name: 'Random Sample', sample_size: '10', seed: '10' },
-            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+            { case_sensitive: null, algorithm_name: 'Partition by Ngrams', positions: '-1', tokens_attribute: 'word' },
         ],
         "3": [
-            { case_sensitive: null, algorithm_name: 'KWIC Patterns', positions: '-1', tokens_attribute: 'word' },
+            { case_sensitive: null, algorithm_name: 'Partition by Ngrams', positions: '-1', tokens_attribute: 'word' },
             { algorithm_name: 'Select Slot', slot_id: '5' },
         ],
         "4": [],

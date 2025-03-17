@@ -97,19 +97,6 @@ kwic grouper ranker =
 	    <span>If True, count unique types within each line; otherwise, count all matches.</span>
 	 </label></div>
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
-kwic patterns = 
-	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	<legend>KWIC Patterns</legend>
-	<input type="hidden" name="algprefix[algorithm_name]" value="KWIC Patterns">
-	<label for="ctlb-flexiconc-algprefix[positions]"><span style="color: red" title="This property is required">*</span> The list of positions (offsets) to extract for the ngram pattern.</label>
-	<select name="algprefix[positions]" id="ctlb-flexiconc-algprefix[positions]" class="tomselect allow-add-items" multiple="multiple"></select>
-	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The positional attribute to search within (e.g., &#x27;word&#x27;).</label>
-	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
-	<div class="checkbox"><label>
-	    <input type="checkbox" name="algprefix[case_sensitive]"  >
-	    <span>If True, the search is case-sensitive.</span>
-	 </label></div>
-	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 manual line selection = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Manual Line Selection</legend>
@@ -135,6 +122,19 @@ partition by metadata attribute =
 	 </label></div>
 	<label for="ctlb-flexiconc-algprefix[sorted_values]">If provided, partitions will be sorted by these specific values.</label>
 	<select name="algprefix[sorted_values]" id="ctlb-flexiconc-algprefix[sorted_values]" class="tomselect allow-add-items" multiple="multiple"></select>
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+partition by ngrams = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Partition by Ngrams</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Partition by Ngrams">
+	<label for="ctlb-flexiconc-algprefix[positions]"><span style="color: red" title="This property is required">*</span> The list of positions (offsets) to extract for the ngram pattern.</label>
+	<select name="algprefix[positions]" id="ctlb-flexiconc-algprefix[positions]" class="tomselect allow-add-items" multiple="multiple"></select>
+	<label for="ctlb-flexiconc-algprefix[tokens_attribute]">The positional attribute to search within (e.g., &#x27;word&#x27;).</label>
+	<input type="text" name="algprefix[tokens_attribute]" id="ctlb-flexiconc-algprefix[tokens_attribute]" class="form-control" value="word">
+	<div class="checkbox"><label>
+	    <input type="checkbox" name="algprefix[case_sensitive]"  >
+	    <span>If True, the search is case-sensitive.</span>
+	 </label></div>
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 partition with openai = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -185,6 +185,26 @@ select weighted sample by metadata =
 	<label for="ctlb-flexiconc-algprefix[seed]"><span style="color: red" title="This property is required">*</span> Random seed for reproducibility.</label>
 	<input type="number" name="algprefix[seed]" id="ctlb-flexiconc-algprefix[seed]" class="form-control" value="42" step="1">
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+select by rank = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Select by Rank</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Select by Rank">
+	<label for="ctlb-flexiconc-algprefix[algo_key]">The specific algorithm key from rank_keys available at the current node.Allowed values have the form &#x27;algo_N&#x27;, and the recommended value is most often &#x27;algo_0&#x27;, i.e. the top-level ranking.</label>
+	<input type="text" name="algprefix[algo_key]" id="ctlb-flexiconc-algprefix[algo_key]" class="form-control" >
+	<label for="ctlb-flexiconc-algprefix[comparison_operator]">The comparison operator to use for rank values.</label>
+	<select name="algprefix[comparison_operator]" id="ctlb-flexiconc-algprefix[comparison_operator]" class="tomselect " ><option value="=="  selected>==</option> <option value="&lt;=" >&lt;=</option> <option value="&gt;=" >&gt;=</option> <option value="&lt;" >&lt;</option> <option value="&gt;" >&gt;</option></select>
+	<label for="ctlb-flexiconc-algprefix[value]">The value to compare the rank keys against.</label>
+	<input type="number" name="algprefix[value]" id="ctlb-flexiconc-algprefix[value]" class="form-control" >
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+select by sort keys = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Select by Sort Keys</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Select by Sort Keys">
+	<label for="ctlb-flexiconc-algprefix[comparison_operator]">The comparison operator to use for sort keys.</label>
+	<select name="algprefix[comparison_operator]" id="ctlb-flexiconc-algprefix[comparison_operator]" class="tomselect " ><option value="=="  selected>==</option> <option value="&lt;=" >&lt;=</option> <option value="&gt;=" >&gt;=</option> <option value="&lt;" >&lt;</option> <option value="&gt;" >&gt;</option></select>
+	<label for="ctlb-flexiconc-algprefix[value]">The value to compare the sort keys against.</label>
+	<input type="number" name="algprefix[value]" id="ctlb-flexiconc-algprefix[value]" class="form-control" >
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 select by a token-level attribute = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Select by a Token-Level Attribute</legend>
@@ -207,6 +227,15 @@ select by a token-level attribute =
 	    <input type="checkbox" name="algprefix[negative]"  >
 	    <span>If True, invert the selection (i.e., select lines where the match fails).</span>
 	 </label></div>
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+set operation = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Set Operation</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Set Operation">
+	<label for="ctlb-flexiconc-algprefix[operation_type]"><span style="color: red" title="This property is required">*</span> The type of set operation to perform: &#x27;union&#x27;, &#x27;intersection&#x27;, &#x27;difference&#x27;, &#x27;disjunctive union&#x27;, or &#x27;complement&#x27;.</label>
+	<select name="algprefix[operation_type]" id="ctlb-flexiconc-algprefix[operation_type]" class="tomselect " ><option value="union" >union</option> <option value="intersection" >intersection</option> <option value="difference" >difference</option> <option value="disjunctive union" >disjunctive union</option> <option value="complement" >complement</option></select>
+	<label for="ctlb-flexiconc-algprefix[nodes]"><span style="color: red" title="This property is required">*</span> A list of nodes to retrieve selected lines from.</label>
+	<select name="algprefix[nodes]" id="ctlb-flexiconc-algprefix[nodes]" class="tomselect allow-add-items" multiple="multiple"></select>
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 sort by corpus position = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
