@@ -1,3 +1,11 @@
+## 2.3.0 (2020-03-18)
+
+* FlexiConc Integration
+
+## 2.2.0 (2020-03-18)
+
+* CLiC upgrade to support modern versions of Ubuntu/Debian
+
 ## 2.1.1 (2020-07-23)
 
 * minor fixes to get changelog and docs to display correctly
