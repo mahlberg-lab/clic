@@ -16,7 +16,12 @@ module.exports.init = function chosen_init(el) {
         if (elSelect.multiple) {
             opts.plugins.remove_button = { title: 'Remove this item' };
         }
-        elSelect.tomselect = new TomSelect(elSelect, opts);
+        if (!el.closest("section.current")) {
+            return;
+        }
+        if (!elSelect.tomselect) {
+            elSelect.tomselect = new TomSelect(elSelect, opts);
+        }
     });
     window.jQuery(el).find('.chosen-select').chosen({ width: '100%', search_contains: true }).change(function (e) {
         // Chosen's change event isn't bubbling to the form, do it ourselves.
@@ -25,6 +30,9 @@ module.exports.init = function chosen_init(el) {
 };
 
 module.exports.refresh = function chosen_refresh(el) {
+    if (!el.closest("section.current")) {
+        return;
+    }
     if (el.tomselect) {
         el.tomselect.sync();
     } else {
