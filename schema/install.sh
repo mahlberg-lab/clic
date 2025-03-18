@@ -3,6 +3,9 @@ set -eu
 cat <<EOF > ${DB_CONF_FILE}
 # Created by $0, do not edit
 work_mem = ${DB_CONF_WORK_MEM}
+
+# The Postgresql JIT is currently adding seconds to any concordance query
+jit = off
 EOF
 
 # Build DB
