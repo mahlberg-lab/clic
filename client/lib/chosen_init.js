@@ -8,7 +8,7 @@ var chosen = require('chosen-js');
 var TomSelect = require('tom-select');
 
 module.exports.init = function chosen_init(el) {
-    el.querySelectorAll('.tomselect').forEach(function (elSelect) {
+    el.querySelectorAll('select.tomselect').forEach(function (elSelect) {
         var opts = {
             create: elSelect.classList.contains("allow-add-items"),
             plugins: { dropdown_input: true },
@@ -16,10 +16,7 @@ module.exports.init = function chosen_init(el) {
         if (elSelect.multiple) {
             opts.plugins.remove_button = { title: 'Remove this item' };
         }
-        if (!el.closest("section.current")) {
-            return;
-        }
-        if (!elSelect.tomselect) {
+        if (!elSelect.classList.contains("tomselected")) {
             elSelect.tomselect = new TomSelect(elSelect, opts);
         }
     });
@@ -30,9 +27,6 @@ module.exports.init = function chosen_init(el) {
 };
 
 module.exports.refresh = function chosen_refresh(el) {
-    if (!el.closest("section.current")) {
-        return;
-    }
     if (el.tomselect) {
         el.tomselect.sync();
     } else {
