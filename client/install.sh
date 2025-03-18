@@ -113,7 +113,8 @@ server {
         text/plain
         application/javascript
         application/x-javascript
-        application/json;
+        application/json
+        application/octet-stream;
 
     proxy_intercept_errors on;
     error_page 502 503 504 /error/bad_gateway.json;
@@ -207,6 +208,7 @@ Disallow: /api/
         try_files \$1 =404;
         expires 30d;
         add_header Vary Accept-Encoding;
+        gzip_static on;
     }
 
     # All pages are actually index.html
