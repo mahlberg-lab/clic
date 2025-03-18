@@ -96,8 +96,9 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
         })).then(function (rvs) {
             // Trigger post-load actions with main data
             page_components.map(function (x) {
-                if (rvs[0] && x.new_data) {
-                    x.new_data(rvs[0]);
+                // NB: The [1] here refers to whichever page component is the main page
+                if (rvs[1] && x.new_data) {
+                    x.new_data(rvs[1]);
                 }
             });
             return rvs;
