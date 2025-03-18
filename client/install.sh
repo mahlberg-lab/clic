@@ -180,6 +180,7 @@ Disallow: /api/
     # Top level files (e.g. flexiclic.whl) can't be cached
     location ~ ^/flexiclic/([^/]+)\$ {
        alias "/srv/clic/flexiclic/www/\$1";
+       gzip_static on;
     }
 
     # Stuff in subdirectories is versioned, so cache
@@ -187,6 +188,7 @@ Disallow: /api/
         alias "/srv/clic/flexiclic/www/\$1/\$2";
         expires 1d;
         add_header Cache-Control "public";
+        gzip_static on;
     }
 
     location /local-docs {
@@ -209,7 +211,6 @@ Disallow: /api/
         try_files \$1 =404;
         expires 30d;
         add_header Vary Accept-Encoding;
-        gzip_static on;
     }
 
     # All pages are actually index.html

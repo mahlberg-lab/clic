@@ -67,10 +67,10 @@ OUT_FILES = \
     www/manifest.js \
     www/flexiclicWorker.js \
     www/pyodide-$(PYODIDE_VERSION)/pyodide.js \
-    $(patsubst %, www/%, $(PRELOAD_WHEELS)) \
-    $(patsubst %, www/%, $(PYICU_WHEELS)) \
-    $(patsubst %, www/%, $(SPACY_WHEELS)) \
-    $(patsubst %, www/%, $(SPACY_MODELS)) \
+    $(subst .whl,.whl.gz,$(patsubst %, www/%, $(PRELOAD_WHEELS))) \
+    $(subst .whl,.whl.gz,$(patsubst %, www/%, $(PYICU_WHEELS))) \
+    $(subst .whl,.whl.gz,$(patsubst %, www/%, $(SPACY_WHEELS))) \
+    $(subst .whl,.whl.gz,$(patsubst %, www/%, $(SPACY_MODELS))) \
 
 all: test $(OUT_FILES)
 
@@ -116,11 +116,11 @@ www/flexiclicWorker.js: flexiclicWorker.js
 	mkdir -p www/
 	cp $^ $@
 
-www/flexiclic-%.whl: lib/.requirements flexiclic/*.py *.py pyproject.toml
+www/flexiclic-%.whl.gz: lib/.requirements flexiclic/*.py *.py pyproject.toml
 	mkdir -p www/
 	./bin/python3 -m build
-	rm www/flexiclic-*.whl || true  # Remove old wheels to avoid version confusion
-	cp dist/$(notdir $@) $@
+	rm www/flexiclic-*.whl.gz || true  # Remove old wheels to avoid version confusion
+	gzip -c dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 flexiconc/setup.py:
 	# TODO: Depend on flexiconc/*/*.py?
@@ -129,26 +129,28 @@ flexiconc/setup.py:
 	# ./bin/pip install -r flexiconc/optional_requirements.txt
 	touch $@
 
-www/flexiconc-%.whl: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
+www/flexiconc-%.whl.gz: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
 	mkdir -p www/
 	rm -r flexiconc/dist/ || true
 	cd flexiconc && ../bin/python3 -m build
-	rm www/FlexiConc-*.whl || true  # Remove old wheels to avoid version confusion
-	cp flexiconc/dist/$(notdir $@) $@
+	rm www/FlexiConc-*.whl.gz || true  # Remove old wheels to avoid version confusion
+	gzip -c flexiconc/dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
-www/prebuilt/%.whl:
+www/prebuilt/%.whl.gz:
 	mkdir -p www/prebuilt/
-	cp prebuilt/$(notdir $@) www/prebuilt/
+	gzip -c prebuilt/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 # Fetch pure-python packages direct from PyPI
-www/pypi/%.whl:
+www/pypi/%.whl.gz:
 	mkdir -p www/pypi
 	# https://wiki.debian.org/debian/watch#PyPI
-	(cd www/pypi/ && wget -c https://pypi.debian.net/`echo $(notdir $@) | sed 's/-.*//'`/$(notdir $@))
+	(cd www/pypi/ && wget -c https://pypi.debian.net/`echo $(notdir $@) | sed 's/-.*//'`/$(subst .whl.gz,.whl,$(notdir $@)))
+	gzip $(subst .whl.gz,.whl,$@)
 
-www/spacy-models/%.whl:
+www/spacy-models/%.whl.gz:
 	mkdir -p www/spacy-models/
-	(cd www/spacy-models/ && wget -c https://github.com/explosion/spacy-models/releases/download/$(subst -py3-none-any.whl,,$(notdir $@))/$(notdir $@))
+	(cd www/spacy-models/ && wget -c https://github.com/explosion/spacy-models/releases/download/$(subst -py3-none-any.whl.gz,,$(notdir $@))/$(subst .whl.gz,.whl,$(notdir $@)))
+	gzip $(subst .whl.gz,.whl,$@)
 
 www/spacy-models/%.tar.gz:
 	mkdir -p www/spacy-models/
@@ -158,7 +160,8 @@ www/spacy-models/%.tar.gz:
 www/pyodide-$(PYODIDE_VERSION)/pyodide.js:
 	mkdir -p www/pyodide-$(PYODIDE_VERSION)
 	curl -L https://github.com/pyodide/pyodide/releases/download/$(PYODIDE_VERSION)/pyodide-$(PYODIDE_VERSION).tar.bz2 | tar -jxv --strip-components=1 -C www/pyodide-$(PYODIDE_VERSION)
-	for f in www/pyodide-$(PYODIDE_VERSION)/{*.whl,*.wasm} ; do echo $$f ; gzip $$f; done
+	for f in www/pyodide-$(PYODIDE_VERSION)/*.whl ; do echo $$f ; gzip $$f; done
+	for f in www/pyodide-$(PYODIDE_VERSION)/*.wasm ; do echo $$f ; gzip $$f; done
 	touch $@
 
 .PHONY: all clean test www/manifest.js
