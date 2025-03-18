@@ -158,7 +158,7 @@ www/spacy-models/%.tar.gz:
 www/pyodide-$(PYODIDE_VERSION)/pyodide.js:
 	mkdir -p www/pyodide-$(PYODIDE_VERSION)
 	curl -L https://github.com/pyodide/pyodide/releases/download/$(PYODIDE_VERSION)/pyodide-$(PYODIDE_VERSION).tar.bz2 | tar -jxv --strip-components=1 -C www/pyodide-$(PYODIDE_VERSION)
-	for f in www/pyodide-$(PYODIDE_VERSION)/*.whl ; do echo $f ; gzip $f; done
+	for f in www/pyodide-$(PYODIDE_VERSION)/{*.whl,*.wasm} ; do echo $$f ; gzip $$f; done
 	touch $@
 
 .PHONY: all clean test www/manifest.js

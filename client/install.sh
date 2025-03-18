@@ -114,6 +114,7 @@ server {
         application/javascript
         application/x-javascript
         application/json
+        application/wasm
         application/octet-stream;
 
     proxy_intercept_errors on;
