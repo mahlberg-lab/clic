@@ -54,7 +54,7 @@ any server. For example::
 Favico regeneration
 -------------------
 
-Upload ``assets/logo.svg`` to http://cthedot.de/icongen/, and place the results into
+Upload ``./client/www/logos/clic_icon.svg`` to http://cthedot.de/icongen/, and place the results into
 ```client/www/index.html`` and ``client/www/iconx`` as appropriate.
 
 Preparing a release
