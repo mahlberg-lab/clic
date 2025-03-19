@@ -137,7 +137,7 @@ www/flexiconc-%.whl.gz: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
 	gzip -c flexiconc/dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 www/prebuilt/%.whl.gz:
-	[ -d prebuilt ] && git -C prebuilt-wheels pull || git clone --depth 1 https://github.com/mahlberg-lab/prebuilt-wheels
+	[ -d prebuilt-wheels ] && git -C prebuilt-wheels pull || git clone --depth 1 https://github.com/mahlberg-lab/prebuilt-wheels
 	mkdir -p www/prebuilt/
 	gzip -c prebuilt-wheels/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
