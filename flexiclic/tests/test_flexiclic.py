@@ -19,9 +19,9 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         [["I"," ","had"," ","brought"," ","no"," ","joy"," ","at"," ","any"," ","time"," ","to"," ","anybody's"," ",[0,2,4,6,8,10,12,14,16,18]],["heart",[0]],[" ","and"," ","that"," ","I"," ","was"," ","to"," ","no"," ","one"," ","upon"," ","earth"," ","what",[1,3,5,7,9,11,13,15,17,19]],["BH",38895,38900],[3,16,69]],
     ]
 
-    async def _compute_path(self, data=[], annotations=[], path=[], speculative=False, should_fetch=None):
+    async def _compute_path(self, data=[], annotations=[], path=[], speculative=False, should_fetch=None, expect_params={}):
         query_opts = {
-            "corpora": ["BH"],
+            "corpora": "BH",
             "subset": "all",
             "q": "hello",
             "contextsize": 10,
@@ -44,6 +44,9 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 rsps.add(
                     responses.GET,
                     "https://unittest.example.com/api/concordance",
+                    match=[
+                        responses.matchers.query_param_matcher(query_opts | expect_params),
+                    ],
                     status=200,
                     content_type="application/json",
                     body=json.dumps({
@@ -126,6 +129,20 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 }
             ], should_fetch=False)]
 
+    async def test_compute_path_annotations_server_side(self):
+        """
+        Some annotations result in server-side arguments
+        """
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+        ], should_fetch=True)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+        ], should_fetch=False)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name": "Annotate with Sentence Transformers",
+                "model_name": "bertha",
+            }
+        ], should_fetch=True, expect_params=dict(st_model_name="bertha"))]
 
     async def test_compute_path_speculate(self):
         """
