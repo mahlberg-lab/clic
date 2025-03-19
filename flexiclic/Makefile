@@ -10,7 +10,7 @@ FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
 # and could be model data, e.g.
 #
 # 1. Define a new x_WHEELS variable with required wheels. Wheels can have a prefix of:
-#   ``prebuilt/``: Built by the ``build-wheels.sh`` script
+#   ``prebuilt/``: Fetched from https://github.com/mahlberg-lab/prebuilt-wheels (see that repository to add further wheels)
 #   ``pypi/``: Fetched from PyPI, for "*-none-any.whl" pure python wheels
 #   ``pyodide-$(PYODIDE_VERSION)/``: Pre-bundled in the current pyodide version
 # 2. Add x_WHEELS to the OUT_FILES list
@@ -137,8 +137,9 @@ www/flexiconc-%.whl.gz: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
 	gzip -c flexiconc/dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 www/prebuilt/%.whl.gz:
+	[ -d prebuilt ] && git -C prebuilt-wheels pull || git clone --depth 1 https://github.com/mahlberg-lab/prebuilt-wheels
 	mkdir -p www/prebuilt/
-	gzip -c prebuilt/$(subst .whl.gz,.whl,$(notdir $@)) > $@
+	gzip -c prebuilt-wheels/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 # Fetch pure-python packages direct from PyPI
 www/pypi/%.whl.gz:

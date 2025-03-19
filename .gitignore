@@ -61,9 +61,7 @@
 /goaccess_www/
 GeoLite2-*
 
-/flexiclic/build-workdir
-/flexiclic/prebuilt
+/flexiclic/prebuilt-wheels/
 /flexiclic/www
 /flexiclic/flexiconc
-/flexiclic/spacy-pyodide/
 /flexiclic/tests/*.baseline.new
