@@ -123,13 +123,10 @@ www/flexiclic-%.whl.gz: lib/.requirements flexiclic/*.py *.py pyproject.toml
 	gzip -c dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
 
 flexiconc/setup.py:
-	# TODO: Depend on flexiconc/*/*.py?
 	[ -d "flexiconc/" ] && git -C flexiconc pull || git clone $(FLEXICONC_REPO) flexiconc
-	# TODO: This should instead be -e flexiconc[optional]
-	# ./bin/pip install -r flexiconc/optional_requirements.txt
 	touch $@
 
-www/flexiconc-%.whl.gz: lib/.requirements flexiconc/setup.py flexiconc/*/*.py
+www/flexiconc-%.whl.gz: $(shell find flexiconc -type f -name '*.py' || true)
 	mkdir -p www/
 	rm -r flexiconc/dist/ || true
 	cd flexiconc && ../bin/python3 -m build
