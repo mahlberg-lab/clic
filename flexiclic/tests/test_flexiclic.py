@@ -232,7 +232,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         ])]
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1]],
+            [1, [2]],
         )
         await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
@@ -240,7 +240,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         })
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1], [2]],
+            [1, [2], [3]],
         )
         await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
@@ -249,7 +249,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         })
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1], [2], [3]],
+            [1, [2], [3], [4]],
         )
         await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
@@ -257,7 +257,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         })
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1], [3]],
+            [1, [2], [4]],
         )
         await self._fc.tidy_paths(paths={
             "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
@@ -266,7 +266,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
         })
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1], [3], [4]],
+            [1, [2], [4], [5]],
         )
         with self.assertWarnsRegex(Warning, r'Nonexistant algo'):
             await self._fc.tidy_paths(paths={
@@ -277,5 +277,5 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             })
         self.assertEqual(
             self._fc.tree_ids(),
-            [0, [1], [3]],
+            [1, [2], [4]],
         )

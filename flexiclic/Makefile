@@ -1,6 +1,6 @@
 EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
-FLEXICONC_REPO=git@github.com:/fau-klue/flexiconc
+FLEXICONC_VERSION=0.1.4
 
 # ## Making packages available
 #
@@ -27,8 +27,8 @@ PRELOAD_PYODIDE = \
 PRELOAD_WHEELS = \
     pypi/anytree-2.12.1-py3-none-any.whl \
     pypi/platformdirs-4.3.6-py3-none-any.whl \
+    pypi/flexiconc-0.1.4-py3-none-any.whl \
     flexiclic-0.0.0.dev0-py3-none-any.whl \
-    flexiconc-0.1.3-py3-none-any.whl \
 
 ###############################################################################
 # pyicu: Wheels loaded when importing pyicu
@@ -85,7 +85,8 @@ bin/pip:
 requirements.txt:
 	touch requirements.txt
 
-lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip flexiconc/setup.py setup.py pyproject.toml
+lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip setup.py pyproject.toml
+	./bin/pip install flexiconc==$(FLEXICONC_VERSION)
 	# Install frozen requirements
 	./bin/pip install -r requirements.txt
 	# Make sure any new requirements are available
@@ -121,10 +122,6 @@ www/flexiclic-%.whl.gz: lib/.requirements flexiclic/*.py *.py pyproject.toml
 	./bin/python3 -m build
 	rm www/flexiclic-*.whl.gz || true  # Remove old wheels to avoid version confusion
 	gzip -c dist/$(subst .whl.gz,.whl,$(notdir $@)) > $@
-
-flexiconc/setup.py:
-	[ -d "flexiconc/" ] && git -C flexiconc pull || git clone $(FLEXICONC_REPO) flexiconc
-	touch $@
 
 www/flexiconc-%.whl.gz: $(shell find flexiconc -type f -name '*.py' || true)
 	mkdir -p www/

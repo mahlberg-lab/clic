@@ -185,6 +185,29 @@ select weighted sample by metadata =
 	<label for="ctlb-flexiconc-algprefix[seed]"><span style="color: red" title="This property is required">*</span> Random seed for reproducibility.</label>
 	<input type="number" name="algprefix[seed]" id="ctlb-flexiconc-algprefix[seed]" class="form-control" value="42" step="1">
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
+select by metadata attribute = 
+	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<legend>Select by Metadata Attribute</legend>
+	<input type="hidden" name="algprefix[algorithm_name]" value="Select by Metadata Attribute">
+	<label for="ctlb-flexiconc-algprefix[metadata_attribute]"><span style="color: red" title="This property is required">*</span> The metadata attribute to filter on.</label>
+	<input type="text" name="algprefix[metadata_attribute]" id="ctlb-flexiconc-algprefix[metadata_attribute]" class="form-control" >
+	<label for="ctlb-flexiconc-algprefix[value]"><span style="color: red" title="This property is required">*</span> The value to compare against, or a list of acceptable values. When a list is provided, only equality is used.</label>
+	<select name="algprefix[value]" id="ctlb-flexiconc-algprefix[value]" class="tomselect allow-add-items" multiple="multiple"></select>
+	<label for="ctlb-flexiconc-algprefix[operator]">The comparison operator for numeric comparisons. Only allowed for single numeric values. Default is &#x27;==&#x27;.</label>
+	<select name="algprefix[operator]" id="ctlb-flexiconc-algprefix[operator]" class="tomselect " ><option value="=="  selected>==</option> <option value="&lt;" >&lt;</option> <option value="&lt;=" >&lt;=</option> <option value="&gt;" >&gt;</option> <option value="&gt;=" >&gt;=</option></select>
+	<div class="checkbox"><label>
+	    <input type="checkbox" name="algprefix[regex]"  >
+	    <span>If True, use regex matching for string comparisons (only with equality). Default is False.</span>
+	 </label></div>
+	<div class="checkbox"><label>
+	    <input type="checkbox" name="algprefix[case_sensitive]"  >
+	    <span>If True, perform case-sensitive matching for strings. Default is False.</span>
+	 </label></div>
+	<div class="checkbox"><label>
+	    <input type="checkbox" name="algprefix[negative]"  >
+	    <span>If True, invert the selection. Default is False.</span>
+	 </label></div>
+	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 select by rank = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Select by Rank</legend>
@@ -217,15 +240,17 @@ select by a token-level attribute =
 	<input type="number" name="algprefix[offset]" id="ctlb-flexiconc-algprefix[offset]" class="form-control" step="1">
 	<div class="checkbox"><label>
 	    <input type="checkbox" name="algprefix[case_sensitive]"  >
-	    <span>If True, performs a case-sensitive match.</span>
+	    <span>If True, performs a case-sensitive match (for string values).</span>
 	 </label></div>
 	<div class="checkbox"><label>
 	    <input type="checkbox" name="algprefix[regex]"  >
-	    <span>If True, use regex matching instead of exact matching.</span>
+	    <span>If True, uses regex matching instead of exact matching (for string values).</span>
 	 </label></div>
+	<label for="ctlb-flexiconc-algprefix[comparison_operator]">Comparison operator for numeric values. Ignored for string values.</label>
+	<select name="algprefix[comparison_operator]" id="ctlb-flexiconc-algprefix[comparison_operator]" class="tomselect " ><option value="=="  selected>==</option> <option value="&lt;" >&lt;</option> <option value="&gt;" >&gt;</option> <option value="&lt;=" >&lt;=</option> <option value="&gt;=" >&gt;=</option></select>
 	<div class="checkbox"><label>
 	    <input type="checkbox" name="algprefix[negative]"  >
-	    <span>If True, invert the selection (i.e., select lines where the match fails).</span>
+	    <span>If True, inverts the selection (i.e., selects lines where the match fails).</span>
 	 </label></div>
 	<div class="control fork" aria-role="button" aria-label="Fork"><span aria-hidden="true"><img src="/icons/fork.svg" width="13" height="18" alt="Fork from this point" /></span></div>
 set operation = 

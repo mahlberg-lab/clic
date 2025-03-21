@@ -85,15 +85,6 @@ def html_prop(input_name, prop_desc, required=False):
             required=required,
         )
 
-    if prop_type == set(("string",)):
-        return html_prop_inputbox(
-            input_type="text",
-            name=input_name,
-            label=prop_desc["description"],
-            value=prop_desc.get("default") or None,
-            required=required,
-        )
-
     if prop_type == set(("boolean",)):
         return html_prop_checkbox(
             input_type="number",
@@ -114,7 +105,7 @@ def html_prop(input_name, prop_desc, required=False):
             required=required,
         )
 
-    if prop_type == set(("array",)):
+    if "array" in prop_type:
         enum = [
             dict(value=x, label=x, selected=False)
             for x in prop_desc.get("items", {}).get("enum", [])
@@ -125,6 +116,15 @@ def html_prop(input_name, prop_desc, required=False):
             options=enum or [],
             classes=["allow-add-items" if len(enum) == 0 else ""],
             multiple="multiple",
+            required=required,
+        )
+
+    if "string" in prop_type:
+        return html_prop_inputbox(
+            input_type="text",
+            name=input_name,
+            label=prop_desc["description"],
+            value=prop_desc.get("default") or None,
             required=required,
         )
 
