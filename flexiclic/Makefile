@@ -143,12 +143,12 @@ www/pypi/%.whl.gz:
 	mkdir -p www/pypi
 	# https://wiki.debian.org/debian/watch#PyPI
 	(cd www/pypi/ && wget -c https://pypi.debian.net/`echo $(notdir $@) | sed 's/-.*//'`/$(subst .whl.gz,.whl,$(notdir $@)))
-	gzip $(subst .whl.gz,.whl,$@)
+	gzip -f $(subst .whl.gz,.whl,$@)
 
 www/spacy-models/%.whl.gz:
 	mkdir -p www/spacy-models/
 	(cd www/spacy-models/ && wget -c https://github.com/explosion/spacy-models/releases/download/$(subst -py3-none-any.whl.gz,,$(notdir $@))/$(subst .whl.gz,.whl,$(notdir $@)))
-	gzip $(subst .whl.gz,.whl,$@)
+	gzip -f $(subst .whl.gz,.whl,$@)
 
 www/spacy-models/%.tar.gz:
 	mkdir -p www/spacy-models/
@@ -158,8 +158,8 @@ www/spacy-models/%.tar.gz:
 www/pyodide-$(PYODIDE_VERSION)/pyodide.js:
 	mkdir -p www/pyodide-$(PYODIDE_VERSION)
 	curl -L https://github.com/pyodide/pyodide/releases/download/$(PYODIDE_VERSION)/pyodide-$(PYODIDE_VERSION).tar.bz2 | tar -jxv --strip-components=1 -C www/pyodide-$(PYODIDE_VERSION)
-	for f in www/pyodide-$(PYODIDE_VERSION)/*.whl ; do echo $$f ; gzip $$f; done
-	for f in www/pyodide-$(PYODIDE_VERSION)/*.wasm ; do echo $$f ; gzip $$f; done
+	for f in www/pyodide-$(PYODIDE_VERSION)/*.whl ; do echo $$f ; gzip -f $$f; done
+	for f in www/pyodide-$(PYODIDE_VERSION)/*.wasm ; do echo $$f ; gzip -f $$f; done
 	touch $@
 
 .PHONY: all clean test www/manifest.js
