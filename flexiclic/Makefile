@@ -27,7 +27,7 @@ PRELOAD_PYODIDE = \
 PRELOAD_WHEELS = \
     pypi/anytree-2.12.1-py3-none-any.whl \
     pypi/platformdirs-4.3.6-py3-none-any.whl \
-    pypi/flexiconc-0.1.4-py3-none-any.whl \
+    pypi/flexiconc-$(FLEXICONC_VERSION)-py3-none-any.whl \
     flexiclic-0.0.0.dev0-py3-none-any.whl \
 
 ###############################################################################
