@@ -1,3 +1,7 @@
+## 2.3.1 (2020-03-24)
+
+* Upgrade FlexiConc to 0.1.4
+
 ## 2.3.0 (2020-03-18)
 
 * FlexiConc Integration
