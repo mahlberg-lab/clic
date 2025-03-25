@@ -2,7 +2,7 @@ import unittest
 
 from psycopg2._range import NumericRange
 
-from clic.concordance import concordance, to_conc, parse_query
+from clic.concordance import concordance, to_conc, conc_window, parse_query
 
 from .requires_postgresql import RequiresPostgresql
 
@@ -93,6 +93,43 @@ class Test_to_conc(unittest.TestCase):
             ['"', 'Ouch!', '",', [1]],
             [' ', 'he', ' ', 'said', [1, 3]],
         ])
+
+
+class Test_conc_window(unittest.TestCase):
+    def test_none(self):
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], None),
+            ['man', ' ', 'walked', ' ', '"', 'into'])
+
+    def test_positive(self):
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], 1),
+            ['man'])
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], 2),
+            ['man', ' ', 'walked'])
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], 3),
+            ['man', ' ', 'walked', ' ', '"', 'into'])
+        self.assertEqual(
+            # NB: Overshooting is fine
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], 4),
+            ['man', ' ', 'walked', ' ', '"', 'into'])
+
+    def test_negative(self):
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], -1),
+            ['into'])
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], -2),
+            ['walked', ' ', '"', 'into'])
+        self.assertEqual(
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], -3),
+            ['man', ' ', 'walked', ' ', '"', 'into'])
+        self.assertEqual(
+            # NB: Overshooting is fine
+            conc_window(['man', ' ', 'walked', ' ', '"', 'into', [0, 2, 5]], -4),
+            ['man', ' ', 'walked', ' ', '"', 'into'])
 
 
 class TestParseQuery(unittest.TestCase):

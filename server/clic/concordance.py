@@ -258,7 +258,6 @@ expression ``_``::
     ['to', 'the', '_th', 'degree']
 
 """
-import itertools
 import os.path
 import re
 
@@ -281,7 +280,16 @@ RE_WHITESPACE = re.compile(r'(\s+)')  # Capture the whitespace so split returns 
 STOPWORDS = set(("the", "and", "to", "of", "a", "i", "in", "he", "was", "that"))
 
 
-def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'], metadata=[], st_model_name=[""]):
+def concordance(
+        cur,
+        corpora=['dickens'],
+        subset=['all'],
+        q=[],
+        contextsize=['0'],
+        metadata=[],
+        st_model_name=[""],
+        st_window_start=[],
+        st_window_end=[]):
     """
     Main entry function for concordance search
 
@@ -305,6 +313,8 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
         raise UserError("You must supply at least one search term", "error")
     contextsize = int(contextsize[0])
     st_model_name = st_model_name[0]
+    st_window_start = int(st_window_start[0]) if len(st_window_start) > 0 else None
+    st_window_end = int(st_window_end[0]) if len(st_window_end) > 0 else None
     metadata = set(metadata)
     book = None
 
@@ -365,9 +375,11 @@ def concordance(cur, corpora=['dickens'], subset=['all'], q=[], contextsize=['0'
                 conc = to_conc(book['content'], full_tokens, node_tokens, contextsize)
 
                 if st_model_name:
-                    st_model_lines.append(
-                        "".join(itertools.chain(*(x[:-1] for x in conc)))
-                    )
+                    st_model_lines.append("".join((
+                        "".join(conc_window(conc[0], st_window_start)),
+                        "".join(conc_window(conc[1], None)),
+                        "".join(conc_window(conc[2], st_window_end)),
+                    )))
 
                 yield conc + [
                     [book['name'], node_tokens[0].lower, node_tokens[-1].upper],
@@ -489,6 +501,21 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     if len(concs) < 3:
         concs.append([[]])
     return [concs[1]] if contextsize == 0 else concs
+
+
+def conc_window(conc, window):
+    """
+    From ["list", " ", "of", " ", "tokens", [0,2,4]] extract (window), either
+    positive (from left), negative (from right) or none (all)
+    """
+    if window is None or window > len(conc[-1]) or window < -len(conc[-1]):
+        # No window / overshot size of conc
+        return conc[:-1]
+    if window < 0:
+        return conc[conc[-1][window]:-1]
+    if window > 0:
+        return conc[0:conc[-1][window - 1] + 1]
+    return []
 
 
 def parse_query(q):

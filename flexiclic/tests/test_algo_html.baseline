@@ -5,6 +5,10 @@ annotate with sentence transformers =
 	<input type="hidden" name="algprefix[algorithm_name]" value="Annotate with Sentence Transformers">
 	<label for="ctlb-flexiconc-algprefix[model_name]">The name of the pretrained Sentence Transformer model.</label>
 	<select name="algprefix[model_name]" id="ctlb-flexiconc-algprefix[model_name]" class="tomselect " ><option value="all-MiniLM-L6-v2"  selected>all-MiniLM-L6-v2</option></select>
+	<label for="ctlb-flexiconc-algprefix[window_start]">The lower bound of the window (inclusive). If None, uses the entire line.</label>
+	<input type="number" name="algprefix[window_start]" id="ctlb-flexiconc-algprefix[window_start]" class="form-control" step="1" max="0">
+	<label for="ctlb-flexiconc-algprefix[window_end]">The upper bound of the window (inclusive). If None, uses the entire line.</label>
+	<input type="number" name="algprefix[window_end]" id="ctlb-flexiconc-algprefix[window_end]" class="form-control" step="1" min="0">
 annotate with spacy embeddings = 
 	<button type="button" class="control" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	<legend>Annotate with SpaCy Embeddings</legend>

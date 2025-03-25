@@ -63,8 +63,19 @@ class FlexiClic():
             "model_name": {
                 "type": "string",
                 "description": "The name of the pretrained Sentence Transformer model.",
+                # NB: Chosen by API_ST_MODELS in conf.mk
                 "enum": ["all-MiniLM-L6-v2"],
                 "default": "all-MiniLM-L6-v2"
+            },
+            "window_start": {
+                "type": "integer",
+                "description": "The lower bound of the window (inclusive). If None, uses the entire line.",
+                "maximum": 0,
+            },
+            "window_end": {
+                "type": "integer",
+                "description": "The upper bound of the window (inclusive). If None, uses the entire line.",
+                "minimum": 0,
             },
         }
         return out
