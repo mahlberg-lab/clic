@@ -37,6 +37,8 @@ class FlexiClic():
         Create a flexiconc<->CLiC adapter
 
         - api_root: Prefix for API calls, e.g. "https://api.clic-project.org"
+        - install_package_fn: A callback to call before attempting to load an algorithm with dependencies
+        - available_spacy_models: A list of available spaCy models we will be able to load
         """
         self._api_root = api_root
         self._source_opts = {}
@@ -44,18 +46,11 @@ class FlexiClic():
         self._clic_meta = {}
         self._install_package_fn = install_package_fn or None
         self._available_spacy_models = available_spacy_models
-
-    def _flexiconc_concordance(self, data=None):
-        if data is not None:
-            self._flexiconc = flexiconc.Concordance()
-            self._flexiconc.load(**data)
-        elif getattr(self, "_flexiconc", None) is None:
-            self._flexiconc = flexiconc.Concordance()
-        return self._flexiconc
+        # Either a FlexiConc.Concordance populated with data, or None if we don't have a valid query
+        self._flexiconc = None
 
     def _available_algorithms(self, data=None):
-        concordance = self._flexiconc_concordance()
-        out = concordance.available_algorithms
+        out = flexiconc.Concordance().available_algorithms
         # Override Annotate with Sentence Transformers to become server-side
         out['Annotate with Sentence Transformers']["requires"] = []
         out['Annotate with Sentence Transformers']["server_side_prefix"] = "st_"
@@ -89,8 +84,6 @@ class FlexiClic():
         - path: List of unsorted algorithms to apply
         - speculative: If True, will not continue if we need to regenerate the tree (i.e. query CLiC+annotate)
         """
-        concordance = self._flexiconc_concordance()
-
         if opts is not None and annotations is not None and (self._source_opts != opts or self._source_annotations != annotations):
             self._source_opts = copy.deepcopy(opts)
             self._source_annotations = copy.deepcopy(annotations)
@@ -113,20 +106,27 @@ class FlexiClic():
                 self._clic_meta = {k:data[k] for k in opts.get('metadata', []) + ['version']}
 
                 # Re-create concordance object, add any required annotations
-                concordance = self._flexiconc_concordance(data_util.clic_to_flexiconc(
+                concordance = flexiconc.Concordance()
+                concordance.load(**data_util.clic_to_flexiconc(
                     data=data.get('data', []),
                     annotation_lines=data.get('annotation_lines', {}),
                 ))
+
                 for a in annotations:  # NB: Assume first entry is annotations
                     concordance.add_annotation(
                         (a["algorithm_name"], a["args"]),
                     )
+                # Stash flexiconc object for later use
+                self._flexiconc = concordance
             except:
                 # Clear previous attempts so we try again next time
-                self._flexiconc = None
                 self._source_opts = {}
                 self._source_annotations = {}
                 raise
+        else:
+            if not self._flexiconc:
+                raise errors.UserError("No valid CLiC query has been entered yet", "error")
+            concordance = self._flexiconc
 
         # Try installing all required packages
         path, path_requires = path_util.normalize(path, self._available_algorithms())
@@ -175,11 +175,10 @@ class FlexiClic():
         return out
 
     def algorithm_render_html(self, algo_name, prefix):
-        concordance = self._flexiconc_concordance()
         algo_schema = self._available_algorithms()[algo_name]
         # If we have data loaded, get context-sensitive schema
-        if concordance.metadata is not None and concordance.tokens is not None:
-         algo_schema = algo_schema | concordance.root.schema_for(algo_name)
+        if self._flexiconc is not None:
+            algo_schema = algo_schema | self._flexiconc.root.schema_for(algo_name)
 
         # If schema involves a spacy model, rewrite it to include the models we have available
         spacy_model = algo_schema.get("args_schema", {}).get("properties", {}).get("spacy_model", None)
@@ -191,7 +190,9 @@ class FlexiClic():
 
     def tree_ids(self, node=None):
         if node is None:
-            node = self._flexiconc_concordance().root
+            if self._flexiconc is None:
+                return []
+            node = self._flexiconc.root
         return [node.id] + [self.tree_ids(node=c) for c in node.children]
 
     async def render_tree_html(self, opts, annotations, paths):
@@ -218,8 +219,8 @@ class FlexiClic():
             ) for n in path_names
         ] for node_id, path_names in additional_children.items()}
 
-        concordance = self._flexiconc_concordance()
-        return tree_html.from_node(concordance.root, additional_children=additional_children)
+        root = self._flexiconc.root if self._flexiconc else flexiconc.Concordance().root
+        return tree_html.from_node(root, additional_children=additional_children)
 
     async def tidy_paths(self, opts=None, annotations=None, paths={}):
         """
@@ -254,8 +255,8 @@ class FlexiClic():
                 node = node.parent
 
         # Search tree, making sure it only contains what's in that set
-        concordance = self._flexiconc_concordance()
-        tidy_nodes(concordance.root, wanted_ids)
+        if self._flexiconc:
+            tidy_nodes(self._flexiconc.root, wanted_ids)
         return terminal_node_ids
 
     async def compute_path(self, opts, annotations, path, speculative=False):
@@ -304,9 +305,8 @@ class FlexiClic():
         view = node.view()
 
         # Pull concordance DataFrames back out of FlexiConc
-        concordance = self._flexiconc_concordance()
-        tokens = concordance.tokens
-        metadata = concordance.metadata
+        tokens = node.concordance().tokens
+        metadata = node.concordance().metadata
 
         if "grouping" in view:
             partition_line_ids = {
