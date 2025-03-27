@@ -43,7 +43,8 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
                 )
             out = "\n".join(await self._fc.render_tree_html(opts=query_opts, annotations=[], paths=paths))
             # Filter button-group down to path-name, we don't need to check the specifics
-            out = re.sub(r'<div class="button-group" data-path-name="(\d+)".*?</div>', '<div class="button-group" data-path-name="\\1"></div>', out)
+            if 'class="error"' not in out:
+                out = re.sub(r'<div class="button-group" data-path-name="(\d+)".*?</div>', '<div class="button-group" data-path-name="\\1"></div>', out)
             return out
 
     async def test_from_node(self):
@@ -131,5 +132,37 @@ class TestTreeHtml(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(out, """
 <ul class="tree"><li class="tree"><div class="node root">7 lines</div><ul class="tree">
 <li class="tree"><div class="button-group" data-path-name="1"></div></li>
+</ul></li></ul>
+        """.strip())
+
+        # Compute 2 paths, and an invalid path
+        out = await self._render_tree(data=data, paths={"1": [
+            {"algorithm_name":"Random Sample","sample_size":"2","seed":"3"},
+        ], "2" : [
+            {"algorithm_name":"Random Badger","seed":"3"},
+        ], "3" : [
+            {"algorithm_name":"Random Sample","sample_size":"4","seed":"3"},
+            {"algorithm_name":"Random Sort","seed":"3"},
+        ]})
+        self.assertEqual(out, """
+<ul class="tree"><li class="tree"><div class="node root">7 lines</div><ul class="tree">
+<li class="tree"><div class="node subset">
+  <header>subset <span style="float: right">2 lines</span></header>
+  <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 2, &#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="button-group" data-path-name="1"><button class="">1</button><button aria-label="Delete">🗑</button></div></li>
+</ul></li>
+<li class="tree"><div class="node subset">
+  <header>subset <span style="float: right">4 lines</span></header>
+  <ul class="subset"><li class="subset"><h4>Random Sample</h4>{&#x27;sample_size&#x27;: 4, &#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="node arrangement">
+  <header>arrangement <span style="float: right">4 lines</span></header>
+  <ul class="ordering"><li class="ordering"><h4>Random Sort</h4>{&#x27;seed&#x27;: 3}</li></ul>
+</div><ul class="tree">
+<li class="tree"><div class="button-group" data-path-name="3"><button class="">3</button><button aria-label="Delete">🗑</button></div></li>
+</ul></li>
+</ul></li>
+<li class="tree"><div class="button-group" data-path-name="2"><div class="error">KeyError: 'Random Badger'</div><button class="">2</button><button aria-label="Delete">🗑</button></div></li>
 </ul></li></ul>
         """.strip())

@@ -169,6 +169,13 @@
 .button-group > input:checked+label.immutable {
   background: linear-gradient(#c9c9c9 1%,#fff 15%);
 }
+.button-group > .error {
+  font-weight: bold;
+  color: darkred;
+  max-height: 5rem;
+  max-width: 30rem;
+  overflow-y: scroll;
+}
 
 /* Switch visible contents depending on whether control is enabled */
 #control-bar .flexiconc-path-save > *.when-disabled { display: none; }

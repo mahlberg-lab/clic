@@ -268,13 +268,18 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             self._fc.tree_ids(),
             [1, [2], [4], [5]],
         )
-        with self.assertWarnsRegex(Warning, r'Nonexistant algo'):
-            await self._fc.tidy_paths(paths={
-                "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
-                "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
-                # NB: This doesn't cause an error, but it is no longer included in the tree
-                "3": [{"algorithm_name":"Nonexistant algo","positions":["1","6"],"tokens_attribute":"word"}],
-            })
+
+        out = await self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
+            # NB: This error is included in the response
+            "3": [{"algorithm_name":"Nonexistant algo","positions":["1","6"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(out, {
+            '0': 2,
+            '2': 4,
+            '3': "KeyError: 'Nonexistant algo'",
+        })
         self.assertEqual(
             self._fc.tree_ids(),
             [1, [2], [4]],

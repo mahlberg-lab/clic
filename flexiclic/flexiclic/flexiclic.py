@@ -206,18 +206,23 @@ class FlexiClic():
 
         # Tidy paths, ensuring all paths are present, collect terminal nodes by node_id
         additional_children = collections.defaultdict(list)
-        for path_name, node_id in (await self.tidy_paths(opts=opts, annotations=annotations, paths=paths)).items():
-            additional_children[node_id].append(path_name)
-
-        # Generate HTML for each terminal node
-        additional_children = {node_id: [
-            '<div class="button-group" data-path-name="%s"><button class="%s">%s</button><button aria-label="Delete">🗑</button></div>' % (
-                n,
-                # NB: Should be in lock-step with getMutablePathNumber()
-                "" if re.match(r'^\d+$', n) else "immutable",
-                n,
-            ) for n in path_names
-        ] for node_id, path_names in additional_children.items()}
+        for path_name, node_id_or_exception in (await self.tidy_paths(opts=opts, annotations=annotations, paths=paths)).items():
+            if isinstance(node_id_or_exception, str):
+                # Add exception to root
+                additional_children[1].append('''<div class="button-group" data-path-name="%s"><div class="error">%s</div><button class="%s">%s</button><button aria-label="Delete">🗑</button></div>''' % (
+                    path_name,
+                    node_id_or_exception,
+                    # NB: Should be in lock-step with getMutablePathNumber()
+                    "" if re.match(r'^\d+$', path_name) else "immutable",
+                    path_name,
+                ))
+            else:
+                additional_children[node_id_or_exception].append('''<div class="button-group" data-path-name="%s"><button class="%s">%s</button><button aria-label="Delete">🗑</button></div>''' % (
+                    path_name,
+                    # NB: Should be in lock-step with getMutablePathNumber()
+                    "" if re.match(r'^\d+$', path_name) else "immutable",
+                    path_name,
+                ))
 
         root = self._flexiconc.root if self._flexiconc else flexiconc.Concordance().root
         return tree_html.from_node(root, additional_children=additional_children)
@@ -225,7 +230,7 @@ class FlexiClic():
     async def tidy_paths(self, opts=None, annotations=None, paths={}):
         """
         Remove any extraneous paths from FlexiConc instance
-        Return (path_name):(terminal node id) dict
+        Return (path_name):(terminal node id/exception string) dict
         """
         def tidy_nodes(node, wanted_ids):
             node.children = tuple(tidy_nodes(c, wanted_ids) for c in node.children if c.id in wanted_ids)
@@ -246,8 +251,8 @@ class FlexiClic():
             try:
                 _, node = await self._follow_path(opts=opts, annotations=annotations, path=path)
             except Exception as e:
-                # This path is invalid for some reason, ignore it
-                warnings.warn("Error whilst tidying paths: %s" % e)
+                # NB: We're adding a string, not the exception object, since this has to be serialisable for Javascript
+                terminal_node_ids[path_name] = "%s: %s" % (e.__class__.__name__, e)
                 continue
             terminal_node_ids[path_name] = node.id
             while node is not None:
