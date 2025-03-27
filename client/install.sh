@@ -181,6 +181,7 @@ Disallow: /api/
     location ~ ^/flexiclic/([^/]+)\$ {
        alias "/srv/clic/flexiclic/www/\$1";
        gzip_static on;
+       add_header 'Cache-Control' 'no-cache, no-store, must-revalidate';
     }
 
     # Stuff in subdirectories is versioned, so cache
