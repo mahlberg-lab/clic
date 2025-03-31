@@ -42,7 +42,7 @@ class FlexiClic():
         """
         self._api_root = api_root
         self._source_opts = {}
-        self._source_annotations = {}
+        self._source_annotations = []
         self._clic_meta = {}
         self._install_package_fn = install_package_fn or None
         self._available_spacy_models = available_spacy_models
@@ -84,14 +84,25 @@ class FlexiClic():
         - path: List of unsorted algorithms to apply
         - speculative: If True, will not continue if we need to regenerate the tree (i.e. query CLiC+annotate)
         """
-        if opts is not None and annotations is not None and (self._source_opts != opts or self._source_annotations != annotations):
-            self._source_opts = copy.deepcopy(opts)
-            self._source_annotations = copy.deepcopy(annotations)
-            try:
-                if speculative:
-                    raise errors.UserConfirmError()
+        if opts is None or annotations is None:
+            # No opts supplied, recycle if available, otherwise error
+            if not self._flexiconc:
+                raise errors.UserError("No valid CLiC query has been entered yet", "error")
+            concordance = self._flexiconc
+        else:
+            opts, annotations, annotations_requires = path_util.normalize_source(opts, annotations, self._available_algorithms())
 
-                opts, annotations, annotations_requires = path_util.normalize_source(opts, annotations, self._available_algorithms())
+            if self._flexiconc and self._source_opts == opts and self._source_annotations == annotations:
+                # Previous object available and matches, recycle
+                concordance = self._flexiconc
+            elif speculative:
+                # Need to reconstruct, but not allowed yet
+                raise errors.UserConfirmError()
+            else:
+                # Reconstruct self._flexiconc
+                # NB: Annotation options will get modified at some point, deepcopy now for later comparisons
+                source_opts = copy.deepcopy(opts)
+                source_annotations = copy.deepcopy(annotations)
 
                 # Try installing all required packages
                 for pkg in annotations_requires:
@@ -118,15 +129,8 @@ class FlexiClic():
                     )
                 # Stash flexiconc object for later use
                 self._flexiconc = concordance
-            except:
-                # Clear previous attempts so we try again next time
-                self._source_opts = {}
-                self._source_annotations = {}
-                raise
-        else:
-            if not self._flexiconc:
-                raise errors.UserError("No valid CLiC query has been entered yet", "error")
-            concordance = self._flexiconc
+                self._source_opts = source_opts
+                self._source_annotations = source_annotations
 
         # Try installing all required packages
         path, path_requires = path_util.normalize(path, self._available_algorithms())

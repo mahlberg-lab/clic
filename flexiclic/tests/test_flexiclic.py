@@ -113,6 +113,17 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 "window_start": "-5"
             }
         ], should_fetch=True)]
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name": "Annotate with TF-IDF",
+                "exclude_values_attribute": "",
+                "include_node": "on",
+                "tokens_attribute": "word",
+                # NB: Parameter types changed, but post-normalisation this is fine
+                "window_end": 1,
+                "window_start": -5
+            }
+        ], should_fetch=False)]
 
         # Fetch unknown algorithm an error
         with self.assertRaisesRegex(KeyError, "unknown"):
@@ -311,3 +322,15 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             self._fc.tree_ids(),
             [1, [2], [4]],
         )
+
+    async def test_tidy_paths_noopts(self):
+        """Try tidying without setting up opts/annotations"""
+        self._fc = FlexiClic(api_root="https://unittest.example.com")
+        out = await self._fc.tidy_paths(paths={
+            "0": [{"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"}],
+            "2": [{"algorithm_name":"Partition by Ngrams","positions":["1","5"],"tokens_attribute":"word"}],
+        })
+        self.assertEqual(out, {
+            '0': 'UserError: No valid CLiC query has been entered yet',
+            '2': 'UserError: No valid CLiC query has been entered yet',
+        })
