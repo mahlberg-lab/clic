@@ -129,6 +129,23 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 }
             ], should_fetch=False)]
 
+    async def test_compute_path_noresults(self):
+        """
+        Should produce empty results if asked
+        """
+        out = [x async for x in self._compute_path(data=[], annotations=[
+        ], should_fetch=True)]
+        self.assertEqual(out, [])
+        # Still has correct columns
+        self.assertEqual(
+            sorted(list(self._fc._flexiconc.metadata.columns)),
+            ['chapter', 'cpos_end', 'cpos_start', 'line_id', 'paragraph', 'sentence', 'text_id'],
+        )
+        self.assertEqual(
+            sorted(list(self._fc._flexiconc.tokens.columns)),
+            ['after_token', 'before_token', 'id_in_line', 'line_id', 'norm', 'offset', 'word'],
+        )
+
     async def test_compute_path_annotations_server_side(self):
         """
         Some annotations result in server-side arguments
@@ -170,6 +187,16 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             (5, 0, 5, {'matches': None}),
             (6, 0, 6, {'matches': None}),
         ])
+
+        # Columns match what FlexiConc expects
+        self.assertEqual(
+            sorted(list(self._fc._flexiconc.metadata.columns)),
+            ['chapter', 'cpos_end', 'cpos_start', 'line_id', 'paragraph', 'sentence', 'text_id'],
+        )
+        self.assertEqual(
+            sorted(list(self._fc._flexiconc.tokens.columns)),
+            ['after_token', 'before_token', 'id_in_line', 'line_id', 'norm', 'offset', 'word'],
+        )
 
         # Random sample, get given line
         out = [x async for x in self._compute_path(data=self.conc_data, path=[

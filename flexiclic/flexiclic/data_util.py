@@ -93,9 +93,31 @@ def clic_to_flexiconc(data, annotation_lines={}):
             'slot': 0
         })
 
-    tokens_df = pd.DataFrame(token_entries)
-    tokens_df.set_index('id', inplace=True)
-    metadata_df = pd.DataFrame(metadata_list)
+    if len(data) > 0:
+        tokens_df = pd.DataFrame(token_entries)
+        tokens_df.set_index('id', inplace=True)  # NB: set_index fails if there's no data
+    else:
+        tokens_df = pd.DataFrame(dict(
+            offset=[],
+            before_token=[],
+            word=[],
+            norm=[],
+            after_token=[],
+            line_id=[],
+            id_in_line=[],
+        ))
+    if len(metadata_list) > 0:
+        metadata_df = pd.DataFrame(metadata_list)
+    else:
+        metadata_df = pd.DataFrame(dict(
+            line_id=[],
+            text_id=[],
+            chapter=[],
+            paragraph=[],
+            sentence=[],
+            cpos_start=[],
+            cpos_end=[],
+        ))
 
     for column_name, column_data in annotation_lines.items():
         # i.e. the equivalent of flexiconc/concordance:add_annotation
