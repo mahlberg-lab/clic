@@ -14,9 +14,12 @@ function choose_name(tag_columns, base_tag_name) {
     return new_tag_name;
 }
 
-function escapeHtml(tag, s) {
+function escapeHtml(tag, s, attrs) {
     // https://bugs.jquery.com/ticket/11773
-    return '<' + tag + '>' + (String(s)
+    var attrHtml = Object.keys(attrs || {}).map(function (k) {
+        return ' ' + k + '="' + quoteattr(attrs[k]) + '"';
+    }).join("");
+    return '<' + tag + attrHtml + '>' + (String(s)
         .replace(/&(?!\w+;)/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -49,7 +52,11 @@ module.exports.renderTokenArray = function renderTokenArray(data, type, full, me
         out += '">';
 
         for (i = 0; i < data.length - 1; i++) {
-            out += escapeHtml(word_indices.indexOf(i) > -1 ? 'mark' : 'span', data[i].replace(/\n{2,}/g, " ¶ "));
+            out += escapeHtml(
+                word_indices.indexOf(i) > -1 ? 'mark' : 'span',
+                data[i].replace(/\n{2,}/g, " ¶ "),
+                (data.match_label || {})[i] ? { title: data.match_label[i] } : {}
+            );
         }
 
         return out + '</div>';

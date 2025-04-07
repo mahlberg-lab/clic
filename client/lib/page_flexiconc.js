@@ -378,6 +378,11 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
             data[i][0].matches = (data[i][7].matches || [])[0];
             data[i][1].matches = (data[i][7].matches || [])[1];
             data[i][2].matches = (data[i][7].matches || [])[2];
+            if (data[i][7].match_label) {
+                data[i][0].match_label = data[i][7].match_label[0];
+                data[i][1].match_label = data[i][7].match_label[1];
+                data[i][2].match_label = data[i][7].match_label[2];
+            }
             // Need to annotate each row for renderPosition()
             data[i].chapter_start = out.chapter_start[data[i][3][0]];
 

@@ -376,27 +376,43 @@ class FlexiClic():
                 line_tokens = line_tokens.sort_values(by=['offset', 'id_in_line'])
                 line_meta = metadata[metadata['line_id'] == line_id].to_dict('records')[0]
 
+                # Generate CLiC context results from line_tokens
+                clic_context_left = to_clic_context(line_tokens[line_tokens['offset'] < 0])
+                clic_context_node = to_clic_context(line_tokens[line_tokens['offset'] == 0])
+                clic_context_right = to_clic_context(line_tokens[line_tokens['offset'] > 0])
+
                 # If we have a token_span, convert it into an array of matches offsets using line IDs (see renderTokenArray)
+                extra_info = dict(matches=None)
                 if line_id in token_spans:
                     match_range = []
+                    match_label = {}
                     for t in token_spans[line_id]:
-                        match_range.extend(line_tokens[line_tokens['id_in_line'].between(
+                        match_tokens = line_tokens[line_tokens['id_in_line'].between(
                             t["start_id_in_line"],
                             t["end_id_in_line"],
-                        )]['offset'].values)
-                    matches = [
+                        )]
+                        match_range.extend(match_tokens['offset'].values)
+                        if t['tokens_attribute'] != "word":
+                            for _, row in match_tokens.iterrows():
+                                match_label[row['offset']] = row[t['tokens_attribute']]
+                    # Convert FlexiConc offsets into CLiC context positions
+                    if len(match_label) > 0:
+                        extra_info['match_label'] = [
+                            { clic_context_left[-1][k]:v for k, v in match_label.items() if k < 0 },
+                            { clic_context_node[-1][0]:v for k, v in match_label.items() if k == 0 },
+                            { clic_context_right[-1][k - 1]:v for k, v in match_label.items() if k > 0 },
+                        ]
+                    extra_info['matches'] = [
                         [int(abs(x)) for x in match_range if x < 0],
                         [1] if 0 in match_range else [],
                         [int(x) for x in match_range if x > 0],
                     ]
-                else:
-                    matches = None
 
                 # Create array entry to be digested in page_flexiconc.js:table_opts.non_tag_columns
                 yield (
-                    to_clic_context(line_tokens[line_tokens['offset'] < 0]),
-                    to_clic_context(line_tokens[line_tokens['offset'] == 0]),
-                    to_clic_context(line_tokens[line_tokens['offset'] > 0]),
+                    clic_context_left,
+                    clic_context_node,
+                    clic_context_right,
                     [
                         line_meta['text_id'],  # Book
                         line_meta['cpos_start'],  # Start position
@@ -409,5 +425,5 @@ class FlexiClic():
                     ],
                     partition_id,
                     line_id,
-                    line_info.get(line_id, {}) | dict(matches=matches),
+                    line_info.get(line_id, {}) | extra_info,
                 )

@@ -63,7 +63,24 @@ test('renderTokenArray', function (t) {
     data.matches = [1, 3];
     t.equal(concordance_utils.renderTokenArray(data, 'display').match(/<div.*?>/)[0], '<div class="r m1 m3">');
     data.kwicSpan = {};
-    t.equal(concordance_utils.renderTokenArray(data, 'display').match(/<div.*?>/)[0], '<div class="l m1 m3">');
+
+    // Match labels get added as title, escaped
+    data.match_label = {4: "item '3'", 8: "another item"};
+    t.equal(concordance_utils.renderTokenArray(data, 'display'),
+            '<div class="l m1 m3">' +
+            '<mark>and</mark>' +
+            '<span>\n</span>' +
+            '<mark>the</mark>' +
+            '<span> </span>' +
+            '<mark title="item &apos;3&apos;">hammerhead</mark>' +
+            '<span>-</span>' +
+            '<mark>sh&lt;a&gt;rk</mark>' +
+            '<span> </span>' +
+            '<mark title="another item">said</mark>' +
+            '<span>,</span>' +
+            '<span> </span>' +
+            '<span>&quot; ¶ </span>' +
+            '</div>');
 
     // Sort mode, get first/last three words, ignore whitespace
     t.equal(concordance_utils.renderTokenArray(data, 'sort'),

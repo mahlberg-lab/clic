@@ -264,6 +264,58 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             (6, 0, 6, {'matches': None, 'rank_keys': {'algo_0': 0}}),
         ])
 
+    async def test_compute_path_term_tokenlabel(self):
+        try:
+            import spacy
+            import en_core_web_md
+        except ImportError:
+            self.skipTest("We need spaCy / en_core_web_md installed for this test")
+
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                'algorithm_name': 'Annotate with spaCy POS tags',
+                'spacy_model': 'en_core_web_md',
+                'tokens_attribute': 'word',
+                'spacy_attributes': 'pos_',
+            },
+        ], path=[
+            {
+                'algorithm_name': 'Select by Token-Level String Attribute',
+                'search_terms': ['noun', 'verb'],
+                'tokens_attribute': 'pos_',
+                'offset': '2',
+                'case_sensitive': None,
+                'regex': None,
+                'negative': None,
+            },
+        ], should_fetch=True)]
+        self.assertEqual(out, [
+            (5, 0, 5, {'matches': [[], [], [2]], 'match_label': [{}, {}, {3: 'VERB'}]}),
+        ])
+
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                'algorithm_name': 'Annotate with spaCy POS tags',
+                'spacy_model': 'en_core_web_md',
+                'tokens_attribute': 'word',
+                'spacy_attributes': 'pos_',
+            },
+        ], path=[
+            {
+                'algorithm_name': 'Select by Token-Level String Attribute',
+                'search_terms': ['noun', 'verb'],
+                'tokens_attribute': 'pos_',
+                'offset': '-2',
+                'case_sensitive': None,
+                'regex': None,
+                'negative': None,
+            },
+        ], should_fetch=False)]
+        self.assertEqual(out, [
+            (1, 0, 1, {'matches': [[2], [], []], 'match_label': [{16: 'VERB'}, {}, {}]}),
+            (3, 0, 3, {'matches': [[2], [], []], 'match_label': [{16: 'VERB'}, {}, {}]}),
+        ])
+
     async def test_tidy_paths(self):
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"},
