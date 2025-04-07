@@ -235,6 +235,7 @@ icu
 unidecode
 flask flask_cors
 pylatexenc
+sentence_transformers
 """.split()
 
 # ----------------------------------------------------------------------------
