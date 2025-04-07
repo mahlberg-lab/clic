@@ -57,9 +57,11 @@ PagePromise.prototype.wire_events = function () {
     window.addEventListener('state_new', state_event.bind(this, 'new'));
 
     document.querySelector("#confirm-update").addEventListener('click', function () {
-        var state = new State(window, this.state_defaults);
-        state.speculative = false;
-        this.page_load(Promise.resolve(state), "reload");
+        this.current_promise = this.current_promise.then(function () {
+            var state = new State(window, this.state_defaults);
+            state.speculative = false;
+            return this.page_load(Promise.resolve(state), "reload");
+        }.bind(this));
     }.bind(this));
 };
 
