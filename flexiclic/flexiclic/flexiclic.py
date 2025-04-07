@@ -160,9 +160,20 @@ class FlexiClic():
 
         class is a flexiclic invention, and either "annotation" or "algo"
         """
-        out = collections.defaultdict(list)
+        out = dict(algo=[], annotation=[])
+
+        # Use available_algorithms() to get regular algorithms
+        for k in flexiconc.Concordance().root.available_algorithms().keys():
+            out['algo'].append(dict(
+                name=k,
+                label=k
+            ))
+
+        # Query available_algorithms directly for annotation algorithms
         for algo_name, algo_metadata in self._available_algorithms().items():
             invalid_algo = False
+            if algo_metadata["algorithm_type"] != "annotation":
+                continue
             for prop_name, prop_desc in algo_metadata['args_schema']["properties"].items():
                 # Algorithms that expect object aren't supported by CLiC
                 if prop_desc.get('type', 'object') == 'object':
@@ -172,7 +183,7 @@ class FlexiClic():
                 continue
 
             algo_class = "annotation" if algo_metadata["algorithm_type"] == "annotation" else "algo"
-            out[algo_class].append(dict(
+            out["annotation"].append(dict(
                 name=algo_name,
                 label=algo_name,
             ))
