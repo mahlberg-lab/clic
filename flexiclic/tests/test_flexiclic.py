@@ -252,7 +252,7 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
 
     async def test_compute_path_term_highlight(self):
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
-            { "algorithm_name": "KWIC Grouper Ranker", "count_types": "on", "search_term": "the", "tokens_attribute": "word", "window_end": "10", "window_start": "-10"},
+            { "algorithm_name": "KWIC Grouper Ranker", "count_types": "on", "search_terms": ["the"], "tokens_attribute": "word", "window_end": "10", "window_start": "-10"},
         ])]
         self.assertEqual(out, [
             (0, 0, 0, {'matches': [[2], [], [2, 5]], 'rank_keys': {'algo_0': 1}}),
