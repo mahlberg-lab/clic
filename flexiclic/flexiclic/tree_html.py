@@ -36,17 +36,16 @@ def _node_to_html(node):
         line_count=node.line_count,
         line_unit="line" if node.line_count == 1 else "lines",
         algos_html=algos_html,
-        #algos_html=html_list(list(_algo_to_html(a) for a in getattr(node, "algorithms", []))),
     )
 
 
-def from_node(node, additional_children={}, root=True):
+def from_node(node, additional_children={}):
     """
     Given a FlexiConc (node), return an HTML list structure representing the FlexiConc tree below
 
     - node: The FlexiConc root node
-    - root: Should remain True
     """
+    root = not node.parent
     has_children = bool(node.children or len(additional_children.get(node.id, [])) > 0)
     yield '%s<li class="tree">%s%s' % (
         '<ul class="tree">' if root else '',
@@ -54,7 +53,7 @@ def from_node(node, additional_children={}, root=True):
         '<ul class="tree">' if has_children else '',
     )
     for subnode in node.children:
-        yield from from_node(subnode, additional_children=additional_children, root=False)
+        yield from from_node(subnode, additional_children=additional_children)
     for subhtml in additional_children.get(node.id, []):
         yield '<li class="tree">%s</li>' % subhtml
     yield '%s</li>%s' % (
