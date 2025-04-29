@@ -368,6 +368,8 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
 
         // Assume first item in data array is CLiC metadata
         out = data.shift();
+        // NB: Collapse data batches
+        data = [].concat.apply([], data);
         out.data = data;
 
         for (i = 0; i < data.length; i++) {

@@ -39,11 +39,21 @@ class TestTypesFromString(unittest.TestCase):
         with self.assertRaises(errors.UserError):
             conv(None, dict(type="integer"), required=True)
 
+        # String conversions
+        self.assertEqual(conv("44", dict(type="string")), "44")
+        self.assertEqual(conv("", dict(type="string")), "")
+        self.assertEqual(conv(None, dict(type="string")), None)
+        self.assertEqual(conv("44", dict(type="string", default="Fred")), "44")
+        self.assertEqual(conv("", dict(type="string", default="Fred")), "")
+        self.assertEqual(conv(None, dict(type="string", default="Fred")), "Fred")
+
         # Integer conversions
         self.assertEqual(conv("44", dict(type="integer")), 44)
         self.assertEqual(conv("45", dict(type=["integer"])), 45)
         self.assertEqual(conv(None, dict(type="integer")), None)
         self.assertEqual(conv(None, dict(type="integer", default=99)), 99)
+        self.assertEqual(conv("", dict(type="integer")), None)
+        self.assertEqual(conv("", dict(type="integer", default=99)), 99)
         with self.assertRaisesRegex(errors.UserError, "Cannot convert.*frank.*integer"):
             conv("frank", dict(type="integer"))
 
@@ -51,14 +61,23 @@ class TestTypesFromString(unittest.TestCase):
         self.assertEqual(conv("on", dict(type="boolean")), True)
         self.assertEqual(conv("", dict(type="boolean")), False)
         self.assertEqual(conv(None, dict(type="boolean")), False)
+        # NB: default=True ignored,
+        self.assertEqual(conv("on", dict(type="boolean", default=True)), True)
+        self.assertEqual(conv("", dict(type="boolean", default=True)), False)
+        self.assertEqual(conv(None, dict(type="boolean", default=True)), False)
 
         # Integer / number fallback
         self.assertEqual(conv("45", dict(type=["integer", "number"])), int(45))
         self.assertEqual(conv("44.9", dict(type=["integer", "number"])), float(44.9))
+        self.assertEqual(conv("", dict(type=["integer", "number"], default=123.89)), float(123.89))
         self.assertEqual(conv("45", dict(type=["string", "integer"])), "45")  # String got there first
 
         # Arrays of type
         self.assertEqual(conv(["1", "2", "3"], dict(type=["array"])), ["1", "2", "3"])
+        # NB: Default never applied, we don't know if user provided None or []
+        self.assertEqual(conv(["1", "2", "3"], dict(type=["array"], default=["4", "5"])), ["1", "2", "3"])
+        self.assertEqual(conv([], dict(type=["array"], default=["4", "5"])), [])
+        self.assertEqual(conv(None, dict(type=["array"], default=["4", "5"])), [])
         self.assertEqual(conv(["1", "2", "3"], dict(type=["array"], items=dict(type="integer"))), [1, 2, 3])
         self.assertEqual(conv(4, dict(type=["array"], items=dict(type="integer"))), [4])
         self.assertEqual(conv("[5,6,7]", dict(type=["array"])), ["5", "6", "7"])

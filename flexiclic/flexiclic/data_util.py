@@ -61,9 +61,11 @@ def clic_to_flexiconc(data, annotation_lines={}):
     metadata_list = []
     token_entries = []
     matches_list = []
+    conc_lines = {}
 
     global_token_id = 0
     for line_id, line_data in enumerate(data):
+        conc_lines[line_id] = line_data
         corpus_info = line_data[3]
         structural_info = line_data[4]
         metadata_list.append({
@@ -131,4 +133,5 @@ def clic_to_flexiconc(data, annotation_lines={}):
         metadata=metadata_df,
         tokens=tokens_df,
         matches=pd.DataFrame(matches_list),
+        conc_lines=conc_lines,
     )
