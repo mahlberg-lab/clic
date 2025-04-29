@@ -58,22 +58,23 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                 )
             if not hasattr(self, "_fc"):
                 self._fc = FlexiClic(api_root="https://unittest.example.com")
-            for out_i, out_l in enumerate([x async for x in self._fc.compute_path(opts=query_opts, annotations=annotations, path=path, speculative=speculative)]):
+            for out_i, out_batch in enumerate([x async for x in self._fc.compute_path(opts=query_opts, annotations=annotations, path=path, speculative=speculative)]):
                 if out_i == 0:
                     # CLiC metadata passes through untouched
                     for k in meta.keys():
-                        self.assertEqual(out_l[k], meta[k])
+                        self.assertEqual(out_batch[k], meta[k])
                     continue
-                data_i = 0
-                for data_l in data:
-                    if out_l[0] == data_l[0] and out_l[1] == data_l[1] and out_l[2] == data_l[2] and out_l[3] == data_l[3] and out_l[4] == data_l[4]:
-                        # Matches a data line, just return the index, not the full thing
-                        yield (data_i,) + out_l[5:]
-                        break
-                    data_i += 1
-                else:
-                    # No matching line, return full thing
-                    yield out_l
+                for out_l in out_batch:
+                    data_i = 0
+                    for data_l in data:
+                        if out_l[0] == data_l[0] and out_l[1] == data_l[1] and out_l[2] == data_l[2] and out_l[3] == data_l[3] and out_l[4] == data_l[4]:
+                            # Matches a data line, just return the index, not the full thing
+                            yield (data_i,) + out_l[5:]
+                            break
+                        data_i += 1
+                    else:
+                        # No matching line, return full thing
+                        yield out_l
 
     async def test_compute_path_annotations(self):
         """

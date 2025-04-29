@@ -354,10 +354,11 @@ class FlexiClic():
 
         yield clic_meta  # Return clic metadata to client first
 
+        yield_batch = []
         for partition_id, (partition_label, line_ids) in enumerate(partition_line_ids.items()):
             if partition_label != "":
                 # Output header row for partition
-                yield (
+                yield_batch.append((
                     ["Partition", []],
                     query_as_context,
                     [partition_label, []],
@@ -366,7 +367,7 @@ class FlexiClic():
                     partition_id,
                     "",  # line_id
                     { "rowcount": len(line_ids) },
-                )
+                ))
             for line_id in line_ids:
                 # Borrowed from html_visualizer:_generate_lines_html
                 # Get tokens for this line
@@ -409,7 +410,7 @@ class FlexiClic():
                     ]
 
                 # Create array entry to be digested in page_flexiconc.js:table_opts.non_tag_columns
-                yield (
+                yield_batch.append((
                     clic_context_left,
                     clic_context_node,
                     clic_context_right,
@@ -426,4 +427,9 @@ class FlexiClic():
                     partition_id,
                     line_id,
                     line_info.get(line_id, {}) | extra_info,
-                )
+                ))
+                if len(yield_batch) > 1000:
+                    yield yield_batch
+                    yield_batch = []
+        if len(yield_batch) > 0:
+            yield yield_batch
