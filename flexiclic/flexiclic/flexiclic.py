@@ -48,6 +48,7 @@ class FlexiClic():
         self._available_spacy_models = available_spacy_models
         # Either a FlexiConc.Concordance populated with data, or None if we don't have a valid query
         self._flexiconc = None
+        self._conc_lines = {}
 
     def _available_algorithms(self, data=None):
         out = flexiconc.Concordance().available_algorithms
@@ -118,10 +119,15 @@ class FlexiClic():
 
                 # Re-create concordance object, add any required annotations
                 concordance = flexiconc.Concordance()
-                concordance.load(**data_util.clic_to_flexiconc(
+                fc = data_util.clic_to_flexiconc(
                     data=data.get('data', []),
                     annotation_lines=data.get('annotation_lines', {}),
-                ))
+                )
+                concordance.load(
+                    metadata=fc['metadata'],
+                    tokens=fc['tokens'],
+                    matches=fc['matches'],
+                )
 
                 for a in annotations:  # NB: Assume first entry is annotations
                     concordance.add_annotation(
@@ -131,6 +137,7 @@ class FlexiClic():
                 self._flexiconc = concordance
                 self._source_opts = source_opts
                 self._source_annotations = source_annotations
+                self._conc_lines = fc['conc_lines']
 
         # Try installing all required packages
         path, path_requires = path_util.normalize(path, self._available_algorithms())
@@ -287,32 +294,6 @@ class FlexiClic():
         - annotations: List of annotation algorithms to apply
         - path: List of other algorithms to apply
         """
-        def sorted_line_ids(line_ids):
-            if hasattr(node, 'ordering_result') and 'sort_keys' in node.ordering_result:
-                # Filter sort_keys to include only line_ids in this partition
-                partition_sort_keys = {line_id: node.ordering_result["sort_keys"][line_id] for line_id in line_ids if line_id in node.ordering_result["sort_keys"]}
-                # Sort line_ids based on sort_keys
-                line_ids = sorted(partition_sort_keys, key=partition_sort_keys.get)
-            return line_ids
-
-        def to_clic_context(tokens):
-            before = tokens['before_token'].tolist()
-            word = tokens['word'].tolist()
-            after = tokens['after_token'].tolist()
-
-            out = []
-            type_idx = []
-            for i, _ in enumerate(word):
-                if before[i]:  # i.e. ignore 0-length strings
-                    out.append(before[i])
-                if word[i]:
-                    type_idx.append(len(out))
-                    out.append(word[i])
-                if after[i]:
-                    out.append(after[i])
-            out.append(type_idx)
-            return out
-
         # Deep arguments, so will be proxy objects from Javascript
         if hasattr(opts, "to_py"):
             opts = opts.to_py()
@@ -369,18 +350,7 @@ class FlexiClic():
                     { "rowcount": len(line_ids) },
                 ))
             for line_id in line_ids:
-                # Borrowed from html_visualizer:_generate_lines_html
-                # Get tokens for this line
-                line_tokens = tokens[tokens['line_id'] == line_id]
-
-                # Sort tokens by offset and id_in_line to preserve order
-                line_tokens = line_tokens.sort_values(by=['offset', 'id_in_line'])
-                line_meta = metadata[metadata['line_id'] == line_id].to_dict('records')[0]
-
-                # Generate CLiC context results from line_tokens
-                clic_context_left = to_clic_context(line_tokens[line_tokens['offset'] < 0])
-                clic_context_node = to_clic_context(line_tokens[line_tokens['offset'] == 0])
-                clic_context_right = to_clic_context(line_tokens[line_tokens['offset'] > 0])
+                conc_out = self._conc_lines[line_id]
 
                 # If we have a token_span, convert it into an array of matches offsets using line IDs (see renderTokenArray)
                 extra_info = dict(matches=None)
@@ -388,10 +358,10 @@ class FlexiClic():
                     match_range = []
                     match_label = {}
                     for t in token_spans[line_id]:
-                        match_tokens = line_tokens[line_tokens['id_in_line'].between(
+                        match_tokens = tokens[(tokens['line_id'] == line_id) & (tokens['id_in_line'].between(
                             t["start_id_in_line"],
                             t["end_id_in_line"],
-                        )]
+                        ))]
                         match_range.extend(match_tokens['offset'].values)
                         if t['tokens_attribute'] != "word":
                             for _, row in match_tokens.iterrows():
@@ -399,9 +369,9 @@ class FlexiClic():
                     # Convert FlexiConc offsets into CLiC context positions
                     if len(match_label) > 0:
                         extra_info['match_label'] = [
-                            { clic_context_left[-1][k]:v for k, v in match_label.items() if k < 0 },
-                            { clic_context_node[-1][0]:v for k, v in match_label.items() if k == 0 },
-                            { clic_context_right[-1][k - 1]:v for k, v in match_label.items() if k > 0 },
+                            { conc_out[0][-1][k]:v for k, v in match_label.items() if k < 0 },
+                            { conc_out[1][-1][0]:v for k, v in match_label.items() if k == 0 },
+                            { conc_out[2][-1][k - 1]:v for k, v in match_label.items() if k > 0 },
                         ]
                     extra_info['matches'] = [
                         [int(abs(x)) for x in match_range if x < 0],
@@ -409,25 +379,12 @@ class FlexiClic():
                         [int(x) for x in match_range if x > 0],
                     ]
 
-                # Create array entry to be digested in page_flexiconc.js:table_opts.non_tag_columns
-                yield_batch.append((
-                    clic_context_left,
-                    clic_context_node,
-                    clic_context_right,
-                    [
-                        line_meta['text_id'],  # Book
-                        line_meta['cpos_start'],  # Start position
-                        line_meta['cpos_end'],  # End position
-                    ],
-                    [
-                        line_meta['chapter'],  # Chapter
-                        line_meta['paragraph'],  # Paragraph
-                        line_meta['sentence'],  # Sentence
-                    ],
+                # Add line_info to precalculated conc_out
+                yield_batch.append(conc_out + [
                     partition_id,
                     line_id,
                     line_info.get(line_id, {}) | extra_info,
-                ))
+                ])
                 if len(yield_batch) > 1000:
                     yield yield_batch
                     yield_batch = []

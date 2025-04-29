@@ -69,12 +69,12 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                     for data_l in data:
                         if out_l[0] == data_l[0] and out_l[1] == data_l[1] and out_l[2] == data_l[2] and out_l[3] == data_l[3] and out_l[4] == data_l[4]:
                             # Matches a data line, just return the index, not the full thing
-                            yield (data_i,) + out_l[5:]
+                            yield tuple([data_i] + out_l[5:])
                             break
                         data_i += 1
                     else:
                         # No matching line, return full thing
-                        yield out_l
+                        yield tuple(out_l)
 
     async def test_compute_path_annotations(self):
         """

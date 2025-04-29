@@ -39,6 +39,22 @@ elif test_query == "match_label":
             'negative': None,
         },
     ]
+elif test_query == "kwic_grouper_ranker":
+    opts = {"corpora":["corpus:DE19"],"subset":"all","q":"hinter","contextsize":10,"metadata":["chapter_start","word_count_all"]}
+    annotations = []
+    path = [
+        {
+            "regex":None,
+            "case_sensitive":None,
+            "include_node":None,
+            "algorithm_name":"KWIC Grouper Ranker",
+            "search_term":"er",
+            "tokens_attribute":"word",
+            "window_start":"",
+            "window_end":"",
+            "count_types": "on",
+        },
+    ]
 else:
     raise ValueError("Unknown test query %s" % test_query)
 
