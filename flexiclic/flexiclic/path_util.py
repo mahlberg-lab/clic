@@ -28,13 +28,14 @@ def convert_value(val, target_types, items):
                 else:
                     val = [convert_value(v, items.get("type"), {}) for v in val]
             elif t == "boolean":
-                val = bool(val)  # NB: Assume missing is false
+                # NB: Assume missing/None is false, meaning we don't get a chance to apply the default later
+                val = bool(val)
             elif t == "string":
                 val = None if val is None else str(val)
             elif t == "integer":
-                val = None if val is None else int(val)
+                val = None if val is None or val == "" else int(val)
             elif t == "number":
-                val = None if val is None else float(val)
+                val = None if val is None or val == "" else float(val)
             else:
                 raise ValueError("Unknown type %s" % t)
             return val
@@ -60,10 +61,11 @@ def normalize(path, available_algorithms):
         )
         arg_required = set(algo_metadata["args_schema"]["required"])
         for arg_k, arg_spec in algo_metadata["args_schema"]["properties"].items():
-            val = raw_spec.get(arg_k) or arg_spec.get("default")
+            val = convert_value(raw_spec.get(arg_k), arg_spec["type"], items=arg_spec.get('items', {}))
+            if val is None:
+                val = arg_spec.get("default")
             if arg_k in arg_required and val is None:
                 raise UserError("Argument %s for %s is required" % (arg_k, algo_metadata["full_name"]), "warn")
-            val = convert_value(val, arg_spec["type"], items=arg_spec.get('items', {}))
             # Any values of None should be missing from the schema, so we don't trigger validation problems
             if val is not None:
                 algo["args"][arg_k] = val
