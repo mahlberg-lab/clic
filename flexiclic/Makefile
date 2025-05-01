@@ -1,6 +1,6 @@
 EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
-FLEXICONC_VERSION=0.1.6
+FLEXICONC_VERSION=0.1.7
 
 # ## Making packages available
 #
