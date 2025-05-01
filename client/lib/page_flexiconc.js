@@ -225,9 +225,6 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         });
     }
 
-    // Generate column list based on tag_columns
-    this.table_opts.columns = this.table_opts.non_tag_columns;
-
     if (page_state.arg("fc-path") === "0") {
         // Switch to tree-mode, remove table & replace with tree
         if (this.table) {
@@ -302,7 +299,40 @@ PageFlexiConc.prototype.reload = function reload(page_state) {
         (page_state.arg('conc-type') === 'any' || (page_state.arg('conc-q').match(/\s+/g) || []).length < 6)
         );
 
-    return PageTable.prototype.reload.apply(this, arguments).then(function (data) {
+    return self.early_reload_data(page_state).then(function (data) {
+        self.early_data = data;  // Stash early data for reload_data() to collect later
+
+        // Generate column list based on tag_columns
+        self.table_opts.columns = [].concat(self.table_opts.non_tag_columns, (data.fc_extra_cols || []).map(function (fc_col, fc_col_idx) {
+            var example_data, elAbbr;
+
+            // Find first row of data, use that as example
+            if (data.data.length > 0) {
+                example_data = data.data[0][7].fc_extra_cols;
+            } else {
+                example_data = (data.fc_extra_cols || []).map(function () { return undefined; });
+            }
+
+            // Generate tooltipped text for title
+            elAbbr = document.createElement("ABBR");
+            elAbbr.setAttribute("title", fc_col.description);
+            elAbbr.innerText = fc_col.title;
+
+            return {
+                title: elAbbr.outerHTML,
+                data: "7.fc_extra_cols." + fc_col_idx,
+                className: [
+                    typeof example_data[fc_col_idx] === "number" ? "numeric" : "",
+                ].join(" "),
+                sortable: false,
+                searchable: false,
+            };
+        }));
+    }).catch(function (err) {
+        self.early_data = err;  // Stash error for reload_data() to collect later, so table is tidied on error
+    }).finally(function () {
+        return PageTable.prototype.reload.apply(self, [page_state]);
+    }).then(function (data) {
         // Add fixed filter for collapsed groups
         self.table.search.fixed("fc-grouping", function (searchStr, data, index) {
             if (data[6] === "") {
@@ -324,7 +354,10 @@ PageFlexiConc.prototype.tweak = function tweak(page_state) {
     });
 };
 
-PageFlexiConc.prototype.reload_data = function reload(page_state) {
+/**
+ * reload_data() before normal, so the output can be used to add columns
+ */
+PageFlexiConc.prototype.early_reload_data = function (page_state) {
     var self = this,
         fcSelect = new Set(JSON.parse(page_state.arg("fc-select"))),
         fcSelectFn = null,
@@ -407,6 +440,25 @@ PageFlexiConc.prototype.reload_data = function reload(page_state) {
 
         return out;
     });
+};
+
+/**
+ * reload() should have called early_reload_data() at this point, return it's output
+ */
+PageFlexiConc.prototype.reload_data = function (page_state) {
+    var early_data = this.early_data;
+
+    this.early_data = undefined; // No need to stash data beyond this point
+
+    if (early_data && early_data instanceof Error) {
+        return Promise.reject(early_data);
+    }
+
+    if (early_data) {
+        return Promise.resolve(early_data);
+    }
+
+    return Promise.reject(new Error("No early data!"));
 };
 
 module.exports = PageFlexiConc;
