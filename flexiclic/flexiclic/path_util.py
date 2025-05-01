@@ -91,7 +91,7 @@ def normalize(path, available_algorithms):
                 out[-1]["ordering"].append(algo)
             else:  # i.e. grouping
                 out[-1]["grouping"] = algo
-        else: # algo["algorithm_type"] == "selection" or algo["algorithm_type"] == "annotation":
+        else: # algo["algorithm_type"] == "selecting" or algo["algorithm_type"] == "annotation":
             out.append(algo)
 
     return out, requires

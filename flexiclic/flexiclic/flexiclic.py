@@ -148,7 +148,7 @@ class FlexiClic():
 
         node = concordance.root
         for node_spec in path:
-            if node_spec["algorithm_type"] == "selection":
+            if node_spec["algorithm_type"] == "selecting":
                 node = node.add_subset_node((node_spec["algorithm_name"], node_spec["args"]))
             elif node_spec["algorithm_type"] == "arrangement":
                 node = node.add_arrangement_node(
@@ -309,10 +309,10 @@ class FlexiClic():
         tokens = node.concordance().tokens
         metadata = node.concordance().metadata
 
-        if "grouping" in view:
+        if "grouping" in view and "partitions" in view["grouping"]:
             partition_line_ids = {
                 p["label"]: p["line_ids"]
-                for p in view["grouping"]
+                for p in view["grouping"]["partitions"]
             }
             # We'll be using the query as the node for headers, precalcuate it
             query_as_context = ["|".join([opts["q"]] if isinstance(opts["q"], str) else opts["q"]), []]
@@ -331,7 +331,17 @@ class FlexiClic():
                 token_spans[t["line_id"]] = [t]
             else:
                 token_spans[t["line_id"]].append(t)
-        line_info = view.get("line_info", {})
+
+        if len(view.get("line_info", {}).get("column_info", [])) > 0:
+            clic_meta['fc_extra_cols'] = [dict(
+                title=li['key'],
+                description=li['description'],
+            ) for li in view["line_info"]["column_info"]]
+            fc_extra_col_keys = [li['key'] for li in view["line_info"]["column_info"]]
+            fc_extra_col_data = view["line_info"]["data"]
+        else:
+            fc_extra_col_keys = []
+            fc_extra_col_data = {}
 
         yield clic_meta  # Return clic metadata to client first
 
@@ -379,11 +389,16 @@ class FlexiClic():
                         [int(x) for x in match_range if x > 0],
                     ]
 
-                # Add line_info to precalculated conc_out
+                if len(fc_extra_col_keys) > 0:
+                    extra_info["fc_extra_cols"] = [
+                        fc_extra_col_data.get(line_id, {}).get(k, "")
+                        for k in fc_extra_col_keys
+                    ]
+
                 yield_batch.append(conc_out + [
                     partition_id,
                     line_id,
-                    line_info.get(line_id, {}) | extra_info,
+                    extra_info,
                 ])
                 if len(yield_batch) > 1000:
                     yield yield_batch

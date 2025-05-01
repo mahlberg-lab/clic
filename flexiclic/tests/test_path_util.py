@@ -19,7 +19,7 @@ class TestTypesFromString(unittest.TestCase):
                 )
             ], dict(testing_algo=dict(
                 full_name="Testing algorithm",
-                algorithm_type="selection",
+                algorithm_type="selecting",
                 args_schema=dict(
                     required=["test_param"] if required else [],
                     properties=dict(test_param=type_spec),
@@ -97,7 +97,7 @@ class TestTypesFromString(unittest.TestCase):
             )
         ], dict(testing_algo=dict(
             full_name="Testing algorithm",
-            algorithm_type="selection",
+            algorithm_type="selecting",
             requires=["pyicu"],
             args_schema=dict(properties={},required=[]),
         )))
@@ -112,7 +112,7 @@ class TestTypesFromString(unittest.TestCase):
             )
         ], dict(testing_algo=dict(
             full_name="Testing algorithm",
-            algorithm_type="selection",
+            algorithm_type="selecting",
             requires=["spacy>=99"],
             args_schema=dict(properties={
                 "spacy_model": dict(type="string"),
@@ -127,7 +127,7 @@ class TestTypesFromString(unittest.TestCase):
             )
         ], dict(testing_algo=dict(
             full_name="Testing algorithm",
-            algorithm_type="selection",
+            algorithm_type="selecting",
             args_schema=dict(properties={},required=[]),
         )))
         self.assertEqual(requires, [])

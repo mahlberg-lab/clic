@@ -109,7 +109,7 @@
     padding: 0 5px;
 }
 
-.analysis-tree .node > ul > li.subset { background-color: hsl(225deg 33.33% 78.96%);; }
+.analysis-tree .node > ul > li.selecting { background-color: hsl(225deg 33.33% 78.96%);; }
 .analysis-tree .node > ul > li.ordering { background-color: hsl(122.33deg 33.33% 78.96%); }
 .analysis-tree .node > ul > li.grouping { background-color: hsl(164deg 33.33% 78.96%); }
 

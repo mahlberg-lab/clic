@@ -63,6 +63,9 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
                     # CLiC metadata passes through untouched
                     for k in meta.keys():
                         self.assertEqual(out_batch[k], meta[k])
+                    if "fc_extra_cols" in out_batch:
+                        # If this query returns extra cols, we want to know about it
+                        yield dict(fc_extra_cols=out_batch["fc_extra_cols"])
                     continue
                 for out_l in out_batch:
                     data_i = 0
@@ -256,13 +259,16 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             { "algorithm_name": "KWIC Grouper Ranker", "count_types": "on", "search_terms": ["the"], "tokens_attribute": "word", "window_end": "10", "window_start": "-10"},
         ])]
         self.assertEqual(out, [
-            (0, 0, 0, {'matches': [[2], [], [2, 5]], 'rank_keys': {'algo_0': 1}}),
-            (1, 0, 1, {'matches': [[5, 1], [], []], 'rank_keys': {'algo_0': 1}}),
-            (2, 0, 2, {'matches': [[8, 5, 1], [], [2, 5]], 'rank_keys': {'algo_0': 1}}),
-            (4, 0, 4, {'matches': [[], [], [9]], 'rank_keys': {'algo_0': 1}}),
-            (3, 0, 3, {'matches': None, 'rank_keys': {'algo_0': 0}}),
-            (5, 0, 5, {'matches': None, 'rank_keys': {'algo_0': 0}}),
-            (6, 0, 6, {'matches': None, 'rank_keys': {'algo_0': 0}}),
+            dict(fc_extra_cols=[
+                dict(title='Ranking: KWIC Grouper Ranker', description='Ranking score of the line from KWIC Grouper Ranker (ordering algorithm #0)'),
+            ]),
+            (0, 0, 0, {'matches': [[2], [], [2, 5]], 'fc_extra_cols': [1]}),
+            (1, 0, 1, {'matches': [[5, 1], [], []], 'fc_extra_cols': [1]}),
+            (2, 0, 2, {'matches': [[8, 5, 1], [], [2, 5]], 'fc_extra_cols': [1]}),
+            (4, 0, 4, {'matches': [[], [], [9]], 'fc_extra_cols': [1]}),
+            (3, 0, 3, {'matches': None, 'fc_extra_cols': [0]}),
+            (5, 0, 5, {'matches': None, 'fc_extra_cols': [0]}),
+            (6, 0, 6, {'matches': None, 'fc_extra_cols': [0]}),
         ])
 
     async def test_compute_path_term_tokenlabel(self):
