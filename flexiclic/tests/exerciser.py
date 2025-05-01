@@ -39,6 +39,40 @@ elif test_query == "match_label":
             'negative': None,
         },
     ]
+elif test_query == "flat_clustering":
+    opts = {
+        "corpora": [
+            "BH"
+        ],
+        "subset": "all",
+        "q": "hands",
+        "contextsize": 10,
+        "metadata": [
+            "chapter_start",
+            "word_count_all"
+        ]
+    }
+    annotations = [
+        {
+            "algorithm_name": "Annotate with SpaCy Embeddings",
+            "exclude_values_attribute": "",
+            "include_node": "on",
+            "spacy_model": "en_core_web_md",
+            "tokens_attribute": "word",
+            "window_end": "5",
+            "window_start": "-5"
+        }
+    ]
+    path = [
+        {
+            "algorithm_name": "Flat Clustering by Embeddings",
+            "embeddings_column": "embeddings_spacy",
+            "linkage": "average",
+            "method": "kmeans",
+            "metric": "cosine",
+            "n_partitions": "5"
+        }
+    ]
 elif test_query == "kwic_grouper_ranker":
     opts = {"corpora":["corpus:DE19"],"subset":"all","q":"hinter","contextsize":10,"metadata":["chapter_start","word_count_all"]}
     annotations = []
