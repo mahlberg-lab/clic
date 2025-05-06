@@ -59,6 +59,7 @@ SPACY_WHEELS = \
 ###############################################################################
 # Wheels for each spacy model, will be loaded by name
 SPACY_MODELS = \
+    spacy-models/de_core_news_sm-3.8.0-py3-none-any.whl \
     spacy-models/en_core_web_md-3.8.0-py3-none-any.whl \
     spacy-models/en_core_web_sm-3.8.0-py3-none-any.whl \
 
