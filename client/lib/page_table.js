@@ -44,7 +44,7 @@ PageTable.prototype.reload = function reload(page_state) {
 
         self.table_el.classList.toggle('metadata-hidden', page_state.arg('table-type') === 'basic');
 
-        if (self.table && self.init_cols === columns_string(self.table_opts.columns)) {
+        if (self.table && self.init_cols === columns_string(self.table_opts.columns || [])) {
             old_page = self.table.page();
 
             // Update any visible properties from table_opts
