@@ -323,6 +323,41 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             (3, 0, 3, {'matches': [[2], [], []], 'match_label': [{16: 'VERB'}, {}, {}]}),
         ])
 
+    async def test_algorithm_render_html_context(self):
+        try:
+            import spacy
+            import en_core_web_md
+        except ImportError:
+            self.skipTest("We need spaCy / en_core_web_md installed for this test")
+
+        # Before FlexiConc available, don't get an enum
+        out = "".join(x for x in FlexiClic(api_root="https://unittest.example.com").algorithm_render_html("Flat Clustering by Embeddings", "utprefix") if "embeddings_column" in x)
+        self.assertEqual(out, "\n".join((
+            '<label for="ctlb-flexiconc-utprefix[embeddings_column]"><span style="color: red" title="This property is required">*</span> The metadata column containing embeddings for each line.</label>',
+            '<input type="text" name="utprefix[embeddings_column]" id="ctlb-flexiconc-utprefix[embeddings_column]" class="form-control" >',
+        )))
+
+        out = [x async for x in self._compute_path(data=self.conc_data, annotations=[
+            {
+                "algorithm_name":"Annotate with SpaCy Embeddings",
+                "exclude_values_attribute":"",
+                "include_node":"on",
+                "spacy_model":"en_core_web_md",
+                "tokens_attribute":"word",
+                "window_end":"5",
+                "window_start":"-5"
+            },
+        ], path=[
+        ], should_fetch=True)]
+
+        # Now we have a FlexiConc, we get decorated with an enum
+        out = "".join(x for x in self._fc.algorithm_render_html("Flat Clustering by Embeddings", "utprefix") if "embeddings_column" in x)
+        self.assertEqual(out, "\n".join((
+            '<label for="ctlb-flexiconc-utprefix[embeddings_column]"><span style="color: red" title="This property is required">*</span> The metadata column containing embeddings for each line.</label>',
+            '<select name="utprefix[embeddings_column]" id="ctlb-flexiconc-utprefix[embeddings_column]" class="tomselect " ><option value="embeddings_spacy" >embeddings_spacy</option></select>',
+        )))
+
+
     async def test_tidy_paths(self):
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
             {"algorithm_name":"Partition by Ngrams","positions":["1","2"],"tokens_attribute":"word"},

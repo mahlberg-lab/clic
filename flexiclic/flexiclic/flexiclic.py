@@ -200,7 +200,7 @@ class FlexiClic():
         algo_schema = self._available_algorithms()[algo_name]
         # If we have data loaded, get context-sensitive schema
         if self._flexiconc is not None:
-            algo_schema = algo_schema | self._flexiconc.root.schema_for(algo_name)
+            algo_schema['args_schema'] = self._flexiconc.root.schema_for(algo_name)
 
         # If schema involves a spacy model, rewrite it to include the models we have available
         spacy_model = algo_schema.get("args_schema", {}).get("properties", {}).get("spacy_model", None)
