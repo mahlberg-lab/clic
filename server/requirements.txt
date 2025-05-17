@@ -7,7 +7,7 @@ coverage==7.6.1
 filelock==3.17.0
 flake8==7.1.1
 Flask==3.0.3
-Flask-Cors==5.0.0
+Flask-Cors==6.0.0
 fsspec==2025.3.0
 huggingface-hub==0.29.3
 idna==3.10
