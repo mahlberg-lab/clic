@@ -1,6 +1,6 @@
 EGG_NAME=flexiclic
 PYODIDE_VERSION=0.27.2
-FLEXICONC_VERSION=0.1.7
+FLEXICONC_VERSION=0.1.12
 
 # ## Making packages available
 #
@@ -23,6 +23,7 @@ PRELOAD_PYODIDE = \
     pyodide-http \
     jsonschema \
     pandas \
+    requests \
 
 PRELOAD_WHEELS = \
     pypi/anytree-2.12.1-py3-none-any.whl \
