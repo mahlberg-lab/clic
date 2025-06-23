@@ -9,17 +9,18 @@ function search_to_obj(search) {
         // Remove empty entries from an empty search/hash
         return str.length > 0;
     }).map(function (str) {
-        var m = /(.*?)\=(.*)/.exec(str);
+        var k, m = /(.*?)\=(.*)/.exec(str);
 
         if (!m) {
             // No key, so add it to a special "#" key.
             m = [null, '#', str];
         }
+        k = decodeURIComponent(m[1]);
 
-        if (!out[m[1]]) {
-            out[m[1]] = [];
+        if (!out[k]) {
+            out[k] = [];
         }
-        out[m[1]].push(decodeURIComponent(m[2]));
+        out[k].push(decodeURIComponent(m[2]));
     });
 
     return out;

@@ -145,6 +145,13 @@ test('all_args', function (t) {
     });
     t.deepEqual(s.all_args(/zzz/), {});
 
+    // URI keys can also be encoded, get decoded.
+    s = new State(fake_window('/moo/doc', '?animals%5Bcows%5D%5B%5D=daisy_pi&animals%5Bcows%5D%5B%5D=freda&animals%5Bpig%5D%5Ba%5D=frank', {}), {animals: {}});
+    t.deepEqual(s.all_args(), {
+        'animals[cows][]': [ 'daisy_pi', 'freda' ],
+        'animals[pig][a]': [ 'frank' ],
+    });
+
     t.end();
 });
 
