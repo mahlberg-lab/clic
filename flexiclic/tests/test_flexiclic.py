@@ -270,6 +270,18 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
             (5, 0, 5, {'matches': None, 'fc_extra_cols': [0]}),
             (6, 0, 6, {'matches': None, 'fc_extra_cols': [0]}),
         ])
+        # Make a query without extra columns afterwards, they clear from results
+        out = [x async for x in self._compute_path(data=self.conc_data, path=[
+        ])]
+        self.assertEqual(out, [
+            (0, 0, 0, {'matches': None}),
+            (1, 0, 1, {'matches': None}),
+            (2, 0, 2, {'matches': None}),
+            (3, 0, 3, {'matches': None}),
+            (4, 0, 4, {'matches': None}),
+            (5, 0, 5, {'matches': None}),
+            (6, 0, 6, {'matches': None}),
+        ])
 
     async def test_compute_path_term_tokenlabel(self):
         try:
