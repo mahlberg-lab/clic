@@ -305,6 +305,7 @@ class FlexiClic():
             path = path.to_py()
 
         clic_meta, node = await self._follow_path(opts=opts, annotations=annotations, path=path, speculative=speculative)
+        clic_meta = clic_meta.copy()  # Shallow-copy dict, so we don't stash additions, read: fc_extra_cols
         view = node.view()
 
         # Pull concordance DataFrames back out of FlexiConc
