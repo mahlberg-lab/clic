@@ -4,6 +4,7 @@
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
+var chosen_init = require('./chosen_init.js');
 var quoteattr = require('./quoteattr.js').quoteattr;
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var flexiclic = require('./flexiclic.js').flexiclic;
@@ -74,6 +75,23 @@ function api_opts(page_state) {
     return out;
 }
 
+
+function update_control_bar_add_algo(available_algorithms_by_class) {
+    // NB: Obviously this ought be happening in controlbar_flexiconc, but bodged here so we have access to metadata from compute_path
+
+    Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).forEach(function (elAlgoGroup) {
+        var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
+            elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select");
+
+        // Fill add select with available algorithms
+        // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
+        elAddSelect.innerHTML = '<option></option>' + available_algorithms_by_class[algo_class].map(function (a) {
+            return (new Option(a.label, a.name)).outerHTML;
+        });
+        chosen_init.refresh(elAddSelect);
+    });
+}
+
 // PageFlexiConc inherits PageTable
 function PageFlexiConc() {
     return PageTable.apply(this, arguments);
@@ -89,6 +107,10 @@ PageFlexiConc.prototype.init = function () {
     // NB: FlexiConc should be ordering
     this.table_opts.order = [];
     this.table_opts.ordering = false;
+
+    return flexiclic.algorithms_by_class().then(function (available_algorithms_by_class) {
+        update_control_bar_add_algo(available_algorithms_by_class);
+    });
 };
 
 PageFlexiConc.prototype.add_events = function () {
@@ -436,6 +458,11 @@ PageFlexiConc.prototype.early_reload_data = function (page_state) {
                     data[lastSummaryIdx]["fc-select"] = true;
                 }
             }
+        }
+
+        // Update controlbar algorithm-add options based on node
+        if (out.available_algorithms_by_class) {
+            update_control_bar_add_algo(out.available_algorithms_by_class);
         }
 
         return out;

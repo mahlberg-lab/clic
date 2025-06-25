@@ -129,64 +129,56 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         });
     }
 
-    return flexiclic.algorithms_by_class().then(function (algorithms_by_class) {
-        return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
-            var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
-                arg_algo = nested_args[algo_class] || [],
-                elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
-                elsExisting = Array.from(elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)")),
-                cur_algo_names = arg_algo.map(function (x) { return x.algorithm_name; });
+    return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
+        var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
+            arg_algo = nested_args[algo_class] || [],
+            elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),
+            elsExisting = Array.from(elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)")),
+            cur_algo_names = arg_algo.map(function (x) { return x.algorithm_name; });
 
-            // Fill add select with available algorithms
-            // NB: Blank option so we show placeholder: https://harvesthq.github.io/chosen/#default-text-support
-            elAddSelect.innerHTML = '<option></option>' + algorithms_by_class[algo_class].map(function (a) {
-                return (new Option(a.label, a.name)).outerHTML;
+        // Wire up change event to populate new algorithm
+        elAddSelect.onchange = function (event) {
+            // Count existing algorithms, new one will be one higher
+            var newPrefix = algo_class + "[" + elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length + "]",
+                el = event.target;
+
+            newAlgoHtml(el.options[el.selectedIndex].value, newPrefix).then(function (elNew) {
+                // Insert algorithm before the "algorithm-add" select
+                el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
+                chosen_init.init(elNew);
+                lineid_picker_init(elNew, page_state);
             });
+        };
 
-            // Wire up change event to populate new algorithm
-            elAddSelect.onchange = function (event) {
-                // Count existing algorithms, new one will be one higher
-                var newPrefix = algo_class + "[" + elAlgoGroup.querySelectorAll(":scope > .algorithm:not(.fixed)").length + "]",
-                    el = event.target;
+        // Remove excess entries, both from DOM & elExisting array
+        while (elsExisting.length > cur_algo_names.length) {
+            elsExisting.pop().remove();
+        }
 
-                newAlgoHtml(el.options[el.selectedIndex].value, newPrefix).then(function (elNew) {
-                    // Insert algorithm before the "algorithm-add" select
-                    el.closest('.algorithm-add').insertAdjacentElement("beforebegin", elNew);
-                    chosen_init.init(elNew);
-                    lineid_picker_init(elNew, page_state);
-                });
-            };
+        // Add dummy entries for entries that need to be created
+        while (elsExisting.length < cur_algo_names.length) {
+            elsExisting.push(document.createElement("fieldset"));
+            elAlgoGroup.lastElementChild.insertAdjacentElement("beforebegin", elsExisting[elsExisting.length - 1]);
+        }
 
-            // Remove excess entries, both from DOM & elExisting array
-            while (elsExisting.length > cur_algo_names.length) {
-                elsExisting.pop().remove();
-            }
+        // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
+        return Promise.all(cur_algo_names.map(function (algo_name, i) {
+            var prefix = algo_class + "[" + i + "]";
 
-            // Add dummy entries for entries that need to be created
-            while (elsExisting.length < cur_algo_names.length) {
-                elsExisting.push(document.createElement("fieldset"));
-                elAlgoGroup.lastElementChild.insertAdjacentElement("beforebegin", elsExisting[elsExisting.length - 1]);
-            }
-
-            // Ensure everything in elsExisting & cur_algo_names are for the same algorithm
-            return Promise.all(cur_algo_names.map(function (algo_name, i) {
-                var prefix = algo_class + "[" + i + "]";
-
-                return newAlgoHtml(algo_name, prefix).then(function (el) {
-                    if (el.outerHTML === elsExisting[i].fcOrigOuterHTML) {
-                        // Algorithm's HTML hasn't changed since it was created leave as-is
-                        elsExisting[i].disabled = false;
-                    } else {
-                        // Replace old elements with new algo
-                        el.fcOrigOuterHTML = el.outerHTML;  // NB HTML won't match afterwards, values change & tomselect selects
-                        elsExisting[i].replaceWith(el);
-                        chosen_init.init(el);
-                        lineid_picker_init(el, page_state);
-                    }
-                });
-            }));
+            return newAlgoHtml(algo_name, prefix).then(function (el) {
+                if (el.outerHTML === elsExisting[i].fcOrigOuterHTML) {
+                    // Algorithm's HTML hasn't changed since it was created leave as-is
+                    elsExisting[i].disabled = false;
+                } else {
+                    // Replace old elements with new algo
+                    el.fcOrigOuterHTML = el.outerHTML;  // NB HTML won't match afterwards, values change & tomselect selects
+                    elsExisting[i].replaceWith(el);
+                    chosen_init.init(el);
+                    lineid_picker_init(el, page_state);
+                }
+            });
         }));
-    }).then(function () {
+    })).then(function () {
         // Update path-chooser
         var fcAllPaths = Object.assign({"0": {}}, page_state.state("fc-all-paths")),
             fcPath = page_state.arg("fc-path"),

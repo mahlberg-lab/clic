@@ -161,16 +161,18 @@ class FlexiClic():
 
         return self._clic_meta, node
 
-    def algorithms_by_class(self):
+    def algorithms_by_class(self, node=None):
         """
         Group algorithms by class
 
         class is a flexiclic invention, and either "annotation" or "algo"
         """
         out = dict(algo=[], annotation=[])
+        if node is None:
+            node = flexiconc.Concordance().root
 
         # Use available_algorithms() to get regular algorithms
-        for k in flexiconc.Concordance().root.available_algorithms().keys():
+        for k in node.available_algorithms().keys():
             out['algo'].append(dict(
                 name=k,
                 label=k
@@ -308,6 +310,9 @@ class FlexiClic():
         # Pull concordance DataFrames back out of FlexiConc
         tokens = node.concordance().tokens
         metadata = node.concordance().metadata
+
+        # Add context-sensitive algorithms-by-class
+        clic_meta["available_algorithms_by_class"] = self.algorithms_by_class(node)
 
         if "grouping" in view and "partitions" in view["grouping"]:
             partition_line_ids = {
