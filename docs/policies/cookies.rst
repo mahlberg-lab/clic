@@ -1,6 +1,8 @@
 Cookies
 =======
 
+##TODO current cooky policy
+
 For information about cookies, including what they are and how you can manage them, please visit the `University of Birmingham's cookies policy page <https://www.birmingham.ac.uk/privacy/cookies.aspx>`_
 
 +------------------+----------------------------+--------------------------------------------------------------------------------------------+------------+
