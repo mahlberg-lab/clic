@@ -123,7 +123,7 @@ By default, your analysis has one branch, which is started when you run the quer
    :alt: Flexiconc analysis tree
    :align: center
    
-Figure 2: Analysis tree
+Figure 3: Analysis tree
 
 
 In this example, we started from the concordance shown in the initial query, which contains 1,5 75 lines. We applied a **random sort** – which is an arrangement node (in that it changes the order of lines). From there, the analysis branched off in two directions: 
@@ -138,7 +138,7 @@ Clicking on the **numbers at the end of each branch** takes you to the respectiv
 
 Saving and loading the tree
 ~~~~~~~~~~~~~
-While you are in the tree view, you will also see a **save and a load button**, as seen in Figure 3.
+While you are in the tree view, you will also see a **save and a load button**, as seen in Figure 4.
 
 .. _flexiclic_save_tree:
 
@@ -146,7 +146,7 @@ While you are in the tree view, you will also see a **save and a load button**, 
    :alt: Flexiconc save tree
    :align: center
    
-Figure 3: Save and load buttons for the analysis tree
+Figure 4: Save and load buttons for the analysis tree
 
 Clicking on ``save to file`` initiates a download, where the entire tree structure is stored as a JSON file. 
 
@@ -156,7 +156,7 @@ You can ``load`` this file back into FlexiConc to recreate your analysis at any 
 Adding algorithms
 ------------------
 
-When you are on a branch, clicking on the ``add algorithm`` button shows all available algorithms. You can scroll down or use the search bar to type an algorithm name. The menu is shown in Figure 4.
+When you are on a branch, clicking on the ``add algorithm`` button shows all available algorithms. You can scroll down or use the search bar to type an algorithm name. The menu is shown in Figure 5.
 
 .. flexiclic_algo:
 
@@ -164,14 +164,14 @@ When you are on a branch, clicking on the ``add algorithm`` button shows all ava
    :alt: Flexiconc add algorithm
    :align: center
 
-Figure 4: Adding an alogrithm to the tree
+Figure 5: Adding an alogrithm to the tree
 
 # Adding a new algorithm below an existing one will create a new node on the same branch. 
 
 # Clicking on the ``plus sign +`` next to the tree symbol creates a new branch on the top level. 
 
 # By clicking on the ``branch symbol`` at the bottom of a node, you create a new branch below that node. 
-In the example in Figure 5, the new branch would be initiated containing all steps up to, and including, the algorithm ``select by token-level string attribute``, but not any steps carried out below.
+In the example in Figure 6, the new branch would be initiated containing all steps up to, and including, the algorithm ``select by token-level string attribute``, but not any steps carried out below.
 
 
 .. flexiclic_algo_options:
@@ -182,10 +182,10 @@ In the example in Figure 5, the new branch would be initiated containing all ste
    :width: 40%
    :height: 40%
 
-Figure 5: Branching off from an existing branch
+Figure 6: Branching off from an existing branch
 
 
-As we have seen so far, the branches are numbered by default; and the number automatically counts up in the order of branch creation. This is a useful default, as the numbering then serves as a record of the order in which your analysis gradually built up. However, there are cases where the numbering isn’t enough to keep track of your results. You can therefore create a named path for any given branch by using the menu below the ``Add algorithm`` button, as shown in Figure 6:
+As we have seen so far, the branches are numbered by default; and the number automatically counts up in the order of branch creation. This is a useful default, as the numbering then serves as a record of the order in which your analysis gradually built up. However, there are cases where the numbering isn’t enough to keep track of your results. You can therefore create a named path for any given branch by using the menu below the ``Add algorithm`` button, as shown in Figure 7:
 
 
 .. flexiclic_named_path:
@@ -194,14 +194,14 @@ As we have seen so far, the branches are numbered by default; and the number aut
    :alt: Flexiconc naming paths
    :align: center
 
-Figure 6: Naming a path
+Figure 7: Naming a path
 
 
 Creating a named path will not overwrite your numbered path. Instead, it creates a copy that is stored separately under the name that you chose, and which you can access through the tree view just like a numbered path. After creating a named path, you will stay on the numbered path you have copied. 
 
 **Named paths are immutable**, i.e., you cannot append any algorithms to them.
 
-Named paths are also displayed in the tree view. In Figure 7, you can see that ``branch 2`` and ``my_path`` currently share the exact same sequence of algorithm steps:
+Named paths are also displayed in the tree view. In Figure 8, you can see that ``branch 2`` and ``my_path`` currently share the exact same sequence of algorithm steps:
 
 .. flexiclic_named_path_tree:
 
@@ -209,13 +209,13 @@ Named paths are also displayed in the tree view. In Figure 7, you can see that `
    :alt: Flexiconc named path in the tree view
    :align: center
 
-Figure 7: Named path in the tree view
+Figure 8: Named path in the tree view
 
 
 Annotations
 ------------------
 
-Annotations are automatic analyses of the concordance data that are added to the concordance through some external source of information. Once it has been added, you can use annotations in various sorts of algorithms. You can find the annotations in the add annotation toolbar located right below the query window, as shown in Figure 8.
+Annotations are automatic analyses of the concordance data that are added to the concordance through some external source of information. Once it has been added, you can use annotations in various sorts of algorithms. You can find the annotations in the add annotation toolbar located right below the query window, as shown in Figure 9.
 
 
 .. flexiclic_annotations:
@@ -224,7 +224,7 @@ Annotations are automatic analyses of the concordance data that are added to the
    :alt: Flexiconc annotation
    :align: center
 
-Figure 8: Adding annotation
+Figure 9: Adding annotation
 
 
 Currently, two **types of annotations** are available:
@@ -240,10 +240,10 @@ Each of these similarity measures offers a range of settings to specify how the 
    :alt: Flexiconc annotation: SpaCy embeddings
    :align: center
 
-Figure 9: Option for adding annotation with SpaCy embeddings
+Figure 10: Option for adding annotation with SpaCy embeddings
 
 Similarity measures can be used in the Flat clustering by embeddings algorithm, which creates groups based the similarity scores by applying k-means or agglomerative clustering.
 
 
 
-The second type of annotation that is integrated are ``part-of-speech (POS) tags``, which are again provided by spaCy models. POS tags are labels that provide a grammatical analysis of each token in the text, e.g. identifying words as nouns or adjectives. In contrast to the similarity annotations, POS tags are not comparisons that result in a score. Instead, they can be used in any algorithm that operates on token-level attributes. In other words, you can use these tags much in the same way that you might use the token itself in a specific position. For example, the tree in figure 2 contains a select algorithm with the condition that the token left to the node has to be an adjective.
+The second type of annotation that is integrated are ``part-of-speech (POS) tags``, which are again provided by spaCy models. POS tags are labels that provide a grammatical analysis of each token in the text, e.g. identifying words as nouns or adjectives. In contrast to the similarity annotations, POS tags are not comparisons that result in a score. Instead, they can be used in any algorithm that operates on token-level attributes. In other words, you can use these tags much in the same way that you might use the token itself in a specific position. For example, the tree in figure 3 contains a select algorithm with the condition that the token left to the node has to be an adjective.
