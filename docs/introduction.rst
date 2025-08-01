@@ -1,7 +1,7 @@
 Introduction
 ============
 
-The CLiC web app (http://clic.bham.ac.uk) has been developed
+The CLiC web app (http://clic-fiction.com) has been developed
 as part of the CLiC Dickens
 project (see [CLiC_project_page]_), which demonstrates
 through corpus stylistics how computer-assisted methods can be used to
