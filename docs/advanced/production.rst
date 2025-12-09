@@ -57,7 +57,11 @@ If you see errors about missing tables, or queries are particularly slow:
 
 If the home page is particularly slow:
 
-The homepage entries aren't cached yet, reload the page ~3 times until it is.
+* The homepage entries aren't cached yet, reload the page ~3 times until it is.
+
+If the "help" link is heading to a 404 on readthedocs.io:
+
+* The current branch is not generating documentation, go to https://readthedocs.org/projects/clic/ and diagnose (either adding a new branch for documentation, or diagnosing the existing one). See :doc:`development` for more information.
 
 Back-up / generating dumps
 --------------------------
