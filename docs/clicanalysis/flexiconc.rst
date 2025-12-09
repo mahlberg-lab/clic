@@ -132,7 +132,7 @@ In this example, we started from the concordance shown in the initial query, whi
 
 # ``Branch 2`` is also a subset of the concordance. Like in branch 1, it subsets the concordance by **select by a token-level attribute**. However, in branch 1, the attribute was a specific token (*her*). In branch 2, we instead use the attribute **pos_** as a filtering criterion, which is a part-of-speech tag that was added as an annotation layer to the overall concordance in an *annotation* step. 
 
-Like the selection for her in branch 1, this subset selects based on the L1 position, this time, the selection criterion is that pos_ has the value *ADJ*. In other words, we are selecting lines where the node is preceded by an adjective.
+Like the selection for her in branch 1, this subset selects based on the L1 position, this time, the selection criterion is that pos\_ has the value *ADJ*. In other words, we are selecting lines where the node is preceded by an adjective.
 
 Clicking on the **numbers at the end of each branch** takes you to the respective branch, where you can add more algorithms to it.
 
@@ -180,7 +180,6 @@ In the example in Figure 6, the new branch would be initiated containing all ste
    :alt: Flexiconc branching off
    :align: center
    :width: 40%
-   :height: 40%
 
 Figure 6: Branching off from an existing branch
 
