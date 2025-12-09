@@ -349,6 +349,7 @@ Also see the [GLARE_project_page]_.
 +-----------------------+-----------------------+-----------------------+
 
 .. rubric:: Titles in DE19; a German reference corpus compiled for the RC21_ project
+   :name: titles-in-de19
 
 +----------------------------------------------+------------------------+------------------+
 | Title                                        | Author                 | Year             |
@@ -422,7 +423,6 @@ Also see the [GLARE_project_page]_.
 +----------------------------------------------+------------------------+------------------+
 
 .. _RC21: https://www.dhss.phil.fau.de/2024/04/26/research-current-projects-reading-concordances-in-the-21st-century-rc21-rc21-blogs-deutsche-romane-des-19-jahrhunderts-de19-a-nineteenth-century-reference-corpus-of-german-novels-for-contrast/
-
 
 .. rubric:: CLiC texts listed in A-Level and GCSE specifications
    :name: clic-texts-listed-in-a-level-and-gcse-specifications
