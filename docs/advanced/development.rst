@@ -76,7 +76,17 @@ readthedocs is used for our documentation. In order for newly released versions 
 
 You can access the settings for CLiC's readthedocs by going to: https://readthedocs.org/projects/clic/
 
-If you have maintainer access you can modify which versions of CLiC are included in the readthedocs, including what the 'latest' version is. Tags are pulled through automatically, but branches are not, so these will need to be manually set.
+On this page, there should be a line for each CLiC branch / major.minor version, and 'latest'. When a new branch is started in CLiC the corresponding branch needs to be added to readthedocs, otherwise there will be a 404 error when selecting the "help" link. If a new branch is missing, go to the above page and...
+
+# "Add version"
+# Search for the branch number in the box
+# Turn on "Active"
+# Click "Update version"
+
+You should also change the default branch by...
+
+# "Settings" in top-right corner
+# Select new default branch in drop-down
 
 If you need maintainer access, please request from an existing maintainer.
 
