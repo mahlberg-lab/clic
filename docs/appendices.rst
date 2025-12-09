@@ -352,6 +352,7 @@ Also see the [GLARE_project_page]_.
 
 .. _RC21: https://www.dhss.phil.fau.de/2024/04/26/research-current-projects-reading-concordances-in-the-21st-century-rc21-rc21-blogs-deutsche-romane-des-19-jahrhunderts-de19-a-nineteenth-century-reference-corpus-of-german-novels-for-contrast/
 
+
 +----------------------------------------------+------------------------+------------------+
 | Title                                        | Author                 | Year             |
 +==============================================+========================+==================+
