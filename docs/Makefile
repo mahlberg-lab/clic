@@ -47,7 +47,7 @@ lib/.requirements: requirements.txt requirements-to-freeze.txt bin/pip
 	./bin/pip freeze | grep -v egg=$(EGG_NAME)  | grep -v 'pkg-resources==0.0.0' > requirements.txt
 	touch lib/.requirements
 
-_build/.buildinfo: lib/.requirements *.rst */*.rst
+_build/.buildinfo: lib/.requirements *.rst clicanalysis/*.rst advanced/*.rst policies/*.rst
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 
