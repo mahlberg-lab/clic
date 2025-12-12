@@ -4,7 +4,7 @@ Appendices
 The appendices only act as an overview. For up-to-date information and the documentation of how the corpus texts were cleaned, please refer to the README in the [GitHub_corpora]_ repository. You can also create a dynamic list of the books in the corpora (and their word counts) using the :ref:`Counts` tab.
 
 .. rubric:: A list of texts available in CLiC
-   :name: a-list-of-texts-available-in-clic
+   :name: a-list-of-texts-available-in-clicanyway
 
 **Pre-selected corpora in CLiC**
 
@@ -402,7 +402,7 @@ Also see the [GLARE_project_page]_.
 +----------------------------------------------+------------------------+------------------+
 | Der Hungerpastor                             | Raabe, W.              | 1863/64          |
 +----------------------------------------------+------------------------+------------------+
-| Die Leute aus dem Walde, ihre Sterne, Wege  | Raabe, W.              | 1863             |
+| Die Leute aus dem Walde, ihre Sterne, Wege   | Raabe, W.              | 1863             |
 | und Schicksale                               |                        |                  |
 +----------------------------------------------+------------------------+------------------+
 | Anna                                         | Schopenhauer, A.       | 1845             |
