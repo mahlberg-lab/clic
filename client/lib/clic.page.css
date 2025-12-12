@@ -43,13 +43,14 @@ body.loading #scrollable-body:after {
 }
 
 #scrollable-body > header {
-    padding: 15px 25px 10px 15px;
     border-bottom: 5px solid #1e345e;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 #scrollable-body > header h1 {
     float: left;
-    margin: 0;
+    margin: 15px 40px 10px 15px;
     line-height: 1.3rem;
     font-size: 41px;
     font-weight: normal;
@@ -70,19 +71,23 @@ body.loading #scrollable-body:after {
     color: #444;
 }
 #scrollable-body > header .sponsors {
-    float: right;
+    flex-grow: 1;
+    text-align: right;
+    white-space: nowrap;
 }
 #scrollable-body > header .sponsors a img {
     height: 35px;
     margin-right: 2rem;
+    position: relative; /* For manual position fudges below */
 }
 #scrollable-body > header .sponsors a:hover {
     text-decoration: none;
 }
-#sponsors-uob {
-    position: relative;
-    top: 8px;
-}
+
+#sponsors-fau { top: 2px; }
+#sponsors-tandl { height: 50px !important; top: 2px; }
+#sponsors-uob { top: 4px; }
+#sponsors-ahrc { top: -4px; }
 
 #alerts {
     transform: scaleY(0);
