@@ -10,6 +10,7 @@ MarkupSafe==2.1.5
 packaging==24.1
 Pygments==2.18.0
 requests==2.32.4
+roman-numerals==3.1.0
 snowballstemmer==2.2.0
 Sphinx==8.0.2
 sphinxcontrib-applehelp==2.0.0
