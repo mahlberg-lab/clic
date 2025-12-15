@@ -1,5 +1,5 @@
 Privacy
-=======
+^^^^^^^
 
 Name and address of the Data Protection Officer
 ===============================================
