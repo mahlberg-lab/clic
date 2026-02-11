@@ -37,7 +37,7 @@ nvidia-nvtx-cu12==12.4.127
 packaging==24.1
 pandas==2.2.2
 pg8000==1.31.2
-pillow==11.1.0
+pillow==12.1.1
 pluggy==1.5.0
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
