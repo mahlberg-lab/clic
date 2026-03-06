@@ -13,6 +13,7 @@ CLiC
    policies
    advanced
    references
+   image_sources
 
 .. only:: format_html
 
