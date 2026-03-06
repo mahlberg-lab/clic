@@ -1,7 +1,7 @@
 Cover Image Credits
 ===================
 
-Collage compiled by Dr. Ismail Barakat, representing the corpora available on `clic-fiction.com <https://clic-fiction.com/>`_. All images are in the public domain.
+The following images were used for corpora on `clic-fiction.com <https://clic-fiction.com/>`_. All images are in the public domain.
 
 **19C**: Sybil Tawse, illustration for *Cranford* by Elizabeth Gaskell (London: Adam and Charles Black, 1914), captioned "She always told them to hold out their tiny palms, into which she shook either peppermint or ginger lozenges." Internet Archive: `cranford191400gaskuoft <https://archive.org/details/cranford191400gaskuoft>`_
 
