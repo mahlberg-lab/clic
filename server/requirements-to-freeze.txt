@@ -1,8 +1,7 @@
 flake8
 coverage
 psycopg2-binary
-# NB: This restriction is to allow pybtex to install
-setuptools>=75.0.0,<82
+setuptools>=75.0.0
 wheel
 -e .
 -e .[testing]
