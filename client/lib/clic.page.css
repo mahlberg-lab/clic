@@ -74,20 +74,8 @@ body.loading #scrollable-body:after {
     flex-grow: 1;
     text-align: right;
     white-space: nowrap;
+    /* NB: sponsors doesn't have anything in it atm */
 }
-#scrollable-body > header .sponsors a img {
-    height: 35px;
-    margin-right: 2rem;
-    position: relative; /* For manual position fudges below */
-}
-#scrollable-body > header .sponsors a:hover {
-    text-decoration: none;
-}
-
-#sponsors-fau { top: 2px; }
-#sponsors-tandl { height: 50px !important; top: 2px; }
-#sponsors-uob { top: 4px; }
-#sponsors-ahrc { top: -4px; }
 
 #alerts {
     transform: scaleY(0);
@@ -130,6 +118,36 @@ body.loading #scrollable-body:after {
     from { opacity: 0; }
     to   { opacity: 1; }
 }
+
+#content > .clic-contents .sponsors {
+    margin: 1rem -1rem 2rem -1rem;
+    line-height: 6rem;
+    text-align: center;
+}
+#content > .clic-contents .sponsors > * {
+    display: inline-block;
+    margin: 0 1rem;
+}
+#content > .clic-contents .sponsors > * > img {
+    position: relative;
+    height: 5rem;
+}
+#content > .clic-contents .sponsors > .sponsor-avh > img {
+    top: -0.2rem;
+    height: 7rem;
+}
+#content > .clic-contents .sponsors > .sponsor-fau > img {
+    height: 4rem;
+}
+#content > .clic-contents .sponsors > .sponsor-tandl > img {
+    top: -0.5rem;
+}
+#content > .clic-contents .sponsors > .sponsor-uob > img {
+    top: 1rem;
+}
+#content > .clic-contents .sponsors > a:link { opacity: 0.8 }
+#content > .clic-contents .sponsors > a:hover,
+#content > .clic-contents .sponsors > a:active { opacity: 1 }
 
 #confirm-update {
     position: absolute;
