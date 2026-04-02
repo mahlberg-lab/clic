@@ -1,29 +1,50 @@
-CLiC
-====
+CLiC User Guide
+===============
 
 .. toctree::
    :maxdepth: 1
 
    introduction
-   whatsnew
-   systemrequirements
+
+.. toctree::
+   :maxdepth: 1
+   :caption: The CLiC corpora
+
    cliccorpora
-   clicanalysis
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Analysis tabs
+
+   clicanalysis/concordance
+   clicanalysis/flexiconc
+   clicanalysis/subsets
+   clicanalysis/clusters
+   clicanalysis/keywords
+   clicanalysis/counts
+   clicanalysis/texts
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced topics
+
+   advanced/api_usage
+   advanced/adding_corpora
+   advanced/development
+   advanced/production
+
+.. toctree::
+   :maxdepth: 1
+
    known-issues
-   policies
-   advanced
+
+.. toctree::
+   :caption: Appendices
+   :maxdepth: 1
+
+   appendices
+   whatsnew
    references
    image_sources
-
-.. only:: format_html
-
-    .. NB: For LaTeX, appendices are added in latex_appendices in conf.py
-
-    .. toctree::
-        :caption: Appendices
-
-        appendices
-        glossary
-
-    * :ref:`genindex`
-    * :ref:`search`
+   policies
+   glossary
