@@ -1,3 +1,5 @@
+.. _subsets:
+
 Subsets
 =======
 
@@ -8,8 +10,8 @@ further analysis. Note that we find this option most useful for the
 smaller subsets, i.e. quotes and suspensions; if you select the whole
 'non-quotes' subset the output may become unwieldy.
 
-.. rubric:: Show subsets
-   :name: show-subsets
+Show subsets
+------------
 
 Click onto the dropdown **'Show subsets'** (see :numref:`figure-analysis-subsets-show-options`) to select a relevant
 subset (short suspensions, long suspensions, quotes or non-quotes). You
@@ -33,14 +35,14 @@ total words in the corpus found in the selected subset.
    The first few lines from the subset of 'long suspensions'
    in Oliver Twist
 
-.. rubric:: Results
-   :name: results-1
+Results
+-------
 
 Like in the concordance tab, this allows you to adjust the way the
 concordance output ('table') is displayed.
 
-.. rubric:: Filter rows
-   :name: filter-rows-1
+Filter rows
+^^^^^^^^^^^
 
 The filter option lets you filter the output by the rows that contain a
 particular sequence of letters, as described in the :ref:`Filter rows`
@@ -66,21 +68,34 @@ suspensions in *Oliver Twist* and filtering rows for *perhaps* the
 results originate only from the co-text, as *perhaps* does not occur in
 long suspensions (see :numref:`figure-analysis-subsets-results-filter-cotext`).
 
-.. rubric:: View as
-   :name: view-as-1
+View as
+^^^^^^^
 
-Like the :ref:`View as` options for the Concordance tab, in Subsets you can view the 'Basic results' (concordance lines; book short title; link to 'in bk.' view) the 'full metadata' (+ chapter, paragraph & sentence numbers) or the 'distribution plot', which gives an overview of matching lines per book.
+Like the :ref:`View as` options for the Concordance tab, in Subsets you
+can view the 'Basic results' (concordance lines; book short title; link
+to 'in bk.' view) the 'full metadata' (+ chapter, paragraph & sentence
+numbers) or the 'distribution plot', which gives an overview of matching
+lines per book.
 
 .. _figure_distribution_plot_quotes:
 .. figure:: ../images/figure_distribution_plot_quotes.png
 
    The distribution plot view in the Subsets tab
 
-In the case of the Subsets tab, these lines obviously are not concordance lines, but instances of the subset e.g. a quote or non-quote element or a short/long suspension. When you then create a distribution plot of a selected subset, you will therefore see how the subset is distributed across a book or corpus. Note that this operation may take a moment to load for a large corpus. :numref:`figure_distribution_plot_quotes` gives an example of three particular books with rather distinct quote distributions: whereas *Pride and Prejudice* contains a lot of dialogue – as you can see from the white quote subsets interspersed by grey non-quotes – both *The Time Machine* and *Heart of Darkness* contain much longer quote chunks by a key character telling a story.
+In the case of the Subsets tab, these lines obviously are not concordance
+lines, but instances of the subset e.g. a quote or non-quote element or
+a short/long suspension. When you then create a distribution plot of a
+selected subset, you will therefore see how the subset is distributed
+across a book or corpus. Note that this operation may take a moment to
+load for a large corpus. :numref:`figure_distribution_plot_quotes` gives
+an example of three particular books with rather distinct quote
+distributions: whereas *Pride and Prejudice* contains a lot of dialogue
+– as you can see from the white quote subsets interspersed by grey
+non-quotes – both *The Time Machine* and *Heart of Darkness* contain
+much longer quote chunks by a key character telling a story.
 
-
-.. rubric:: KWICGrouper
-   :name: kwicgrouper-1
+KWICGrouper
+^^^^^^^^^^^
 
 If you want to restrict your search to the subset itself, the
 KWICGrouper is the better option; it will also highlight your search
@@ -97,14 +112,8 @@ for an illustration of the Subset KWICGrouper searching for lines with
    The search span of the Subset KWICGrouper applies to the
    subset; not to the co-text
 
-.. rubric:: Manage tag columns
-   :name: manage-tag-columns-1
-
-.. _figure-analysis-subsets-tagcolumns-gender:
-.. figure:: ../images/figure-analysis-subsets-tagcolumns-gender.png
-
-   Tagging subsets – here, long suspensions in ChiLit
-   containing *cried* are tagged for character gender
+Manage tag columns
+^^^^^^^^^^^^^^^^^^
 
 Just like in the Concordance tab (see :ref:`Concordance`), subset rows can be
 annotated with user-defined tags.
@@ -115,3 +124,9 @@ tagged for whether the crying character is male or female. Note that
 this screenshot just illustrates the technique; it does not represent
 the actual gender distribution of *cried* in the ChiLit long
 suspensions.
+
+.. _figure-analysis-subsets-tagcolumns-gender:
+.. figure:: ../images/figure-analysis-subsets-tagcolumns-gender.png
+
+   Tagging subsets – here, long suspensions in ChiLit
+   containing *cried* are tagged for character gender
