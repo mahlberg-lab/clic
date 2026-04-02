@@ -33,7 +33,7 @@ You can open and close it by clicking the menu icon in the top right
 corner.
 
 .. _figure-landing-page-menu:
-.. figure:: ../images/figure-landing-page-2_0_0_19C_menu.png
+.. figure:: images/figure-landing-page-2_0_0_19C_menu.png
 
    Open and close the sidebar menu by clicking the menu icon in
    the top right corner
@@ -82,7 +82,7 @@ tends to work best. You can print to a PDF file or directly to a
 printer.
 
 .. _figure-printing-settings:
-.. figure:: ../images/figure-analysis-common-printing-settings.png
+.. figure:: images/figure-analysis-common-printing-settings.png
 
    Enable background graphics in your browser's print settings
    to preserve colours
