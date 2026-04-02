@@ -87,13 +87,13 @@ clicking on **'in bk.' (in book) button** at the end of any row (see
 :numref:`figure-analysis-concordance-cotext-inbookbutton` and :numref:`figure-analysis-concordance-cotext-inbookchapter`).
 
 .. _figure-analysis-concordance-cotext-inbookbutton:
-.. figure:: images/figure-analysis-concordance-cotext-inbookbutton.png
+.. figure:: ../images/figure-analysis-concordance-cotext-inbookbutton.png
 
    The 'in bk.' (in book) button leads to the book view
    of the occurrence
 
 .. _figure-analysis-concordance-cotext-inbookchapter:
-.. figure:: images/figure-analysis-concordance-cotext-inbookchapter.png
+.. figure:: ../images/figure-analysis-concordance-cotext-inbookchapter.png
 
    The 'in bk.' view shows the relevant section in the whole book.
 
@@ -118,7 +118,7 @@ results; when we use the option **'filter rows'** and search for
 ``pockets``, this is filtered down to 8 results as illustrated in :numref:`figure-analysis-concordance-results-filter`.
 
 .. _figure-analysis-concordance-results-filter:
-.. figure:: images/figure-analysis-concordance-results-filter.png
+.. figure:: ../images/figure-analysis-concordance-results-filter.png
 
    Concordance of ``hands`` in *Oliver Twist* filtered down to
    ``pockets`` in the co-text
@@ -139,7 +139,7 @@ you search for particular types of punctuation (e.g. round brackets used
 in suspensions).
 
 .. _figure-analysis-concordance-results-filtersequence:
-.. figure:: images/figure-analysis-concordance-results-filtersequence.png
+.. figure:: ../images/figure-analysis-concordance-results-filtersequence.png
 
    Filtering for the letter sequence ``eat`` returns forms of
    the verb ``eat`` and other words containing the sequence
@@ -162,7 +162,7 @@ the distribution plot (hence, :numref:`figure_distribution_plot_workhouse` only 
 10 out of the 15 books in the DNov corpus).
 
 .. _figure_distribution_plot_workhouse:
-.. figure:: images/figure_distribution_plot_workhouse.png
+.. figure:: ../images/figure_distribution_plot_workhouse.png
 
    Distribution plot of `workhouse` in DNov
 
@@ -180,7 +180,7 @@ purple three matches. (Not displayed here: a line with four matches
 would be shown in pink.)
 
 .. _figure_distribution_plot_workhouse_KWICGroup:
-.. figure:: images/figure_distribution_plot_workhouse_KWICGroup.png
+.. figure:: ../images/figure_distribution_plot_workhouse_KWICGroup.png
 
    Distribution plot of `workhouse` in DNov, KWICGrouped for references to children
 
@@ -207,7 +207,7 @@ results from *Barnaby Rudge (BR)* come first – and then ordered by the
 co-text on the right.
 
 .. _figure-analysis-concordance-sorting-fireplacecombined:
-.. figure:: images/figure-analysis-concordance-sorting-fireplacecombined.png
+.. figure:: ../images/figure-analysis-concordance-sorting-fireplacecombined.png
 
    Concordance of fireplace in DNov (Dickens's Novels) –
    first ordered by book, then by the first word on the right
@@ -249,13 +249,13 @@ of words) from co-text surrounding *fire* in the concordance in order
 to group the concordance lines.
 
 .. _figure-analysis-concordance-kwicgrouper-fireplain:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireplain.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireplain.png
 
    The first concordance lines of fire in DNov (Dickens's
    Novels) with the default sorting by 'in bk'
 
 .. _figure-analysis-concordance-kwicgrouper-firetypes:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firetypes.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firetypes.png
 
    Selecting types related to sitting from the KWICGrouper
    to group the concordance lines
@@ -276,7 +276,7 @@ set in the following example context:
    *[Pickwick Papers, Chapter LI.]*
 
 .. _figure-analysis-concordance-kwicgrouper-fireresults:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireresults.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireresults.png
 
    The resulting 'KWICGrouped' concordance lines: the
    selected types are listed in the search box on the right; and in the
@@ -293,7 +293,7 @@ to the left side so that clearer patterns of sitting by the fire become
 visible.
 
 .. _figure-analysis-concordance-kwicgrouper-fireback:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-fireback.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-fireback.png
 
    The first lines of fire co-occurring with back (i.e. one
    KWICGrouper match) are highlighted and moved to the top
@@ -324,13 +324,13 @@ Dickens's novels contain only one instance of *fire* co-occurring with
 *back* and *her* (with *her back to the fire*).
 
 .. _figure-analysis-concordance-kwicgrouper-firebackhis:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firebackhis.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackhis.png
 
    The 27 lines with two matches (here, back and his) are
    highlighted in a darker green
 
 .. _figure-analysis-concordance-kwicgrouper-firebackher:
-.. figure:: images/figure-analysis-concordance-kwicgrouper-firebackher.png
+.. figure:: ../images/figure-analysis-concordance-kwicgrouper-firebackher.png
 
    Only one line contains both back and her; it is
    highlighted and shown above single match lines
@@ -350,7 +350,7 @@ In this case, occurrences of *dream* in *Oliver Twist* have been tagged
 according to who is dreaming.
 
 .. _figure-analysis-concordance-tagcolumns-dream:
-.. figure:: images/figure-analysis-concordance-tagcolumns-dream.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-dream.png
 
    Tagged concordance lines of dream in Oliver Twist
 
@@ -371,12 +371,12 @@ rows will be automatically deselected when you click on (i.e. select) a
 new row.
 
 .. _figure-analysis-concordance-tagcolumns-menu:
-.. figure:: images/figure-analysis-concordance-tagcolumns-menu.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-menu.png
 
    The menu for adding and renaming tags
 
 .. _figure-analysis-concordance-tagcolumns-selectline:
-.. figure:: images/figure-analysis-concordance-tagcolumns-selectline.png
+.. figure:: ../images/figure-analysis-concordance-tagcolumns-selectline.png
 
    Select a line (by clicking on it) in order to apply an
    existing tag; once tagged, the tick in the sidebar will appear green
