@@ -1,7 +1,16 @@
 The CLiC corpora
 ================
 
-CLiC contains the following pre-selected corpora:
+.. contents::
+   :local:
+   :depth: 2
+
+CLiC contains several pre-selected corpora of novels, which can be
+selected individually and combined freely for analysis in any of the
+CLiC tools.
+
+Available corpora
+-----------------
 
 - **DNov** (15 texts) -- Dickens's Novels. The complete novels of
   Charles Dickens.
@@ -20,6 +29,9 @@ An overview of the texts in each corpus (with word counts) can also be
 generated dynamically using the :ref:`Counts` tab. For a full list of
 titles, see :ref:`Appendix: Texts in CLiC <a-list-of-texts-available-in-clic>` and the [GitHub_corpora]_ repository.
 
+Selecting texts and corpora
+---------------------------
+
 The texts can be selected individually and combined freely for analysis
 in any of the CLiC tools. You can also select one of the pre-selected
 corpora listed above. For details on how to select texts and corpora,
@@ -36,18 +48,6 @@ illustrated in :numref:`figure-corpora-authorbased`.
 
    Example of creating an author-based corpus:
    selecting all of Jane Austen's novels
-
-How to cite corpora
--------------------
-
-When reporting results from CLiC, we recommend citing both the CLiC
-version and the corpus version. A citation might look like this:
-
-   We searched for X in [corpus/corpora] using the Concordance function
-   in CLiC 2.3 (Mahlberg et al. 2020; corpus version [number]),
-   accessed [date].
-
-For the general CLiC citation, see the :ref:`Introduction <citing-clic>`.
 
 Textual subsets
 ---------------
@@ -135,6 +135,20 @@ changes in the interface or the corpora.
 The corpora repository also contains the full text of the corpus files
 after any manual cleaning changes. The repository history lists all
 changes and links to the original versions as downloaded from Project
-Gutenberg for the for the ArTs corpus [GitHub_corpora_initial_ArTs]_ 
+Gutenberg for the ArTs corpus [GitHub_corpora_initial_ArTs]_
 (note that ArTs used to be called "Other" in the repository history) and the
 ChiLit corpus [GitHub_corpora_initial_ChiLit]_.
+
+How to cite corpora
+-------------------
+
+When reporting results from CLiC, we recommend citing both the CLiC
+version and the corpus version (see :ref:`Versioning and reproducibility
+<Versioning and reproducibility>` for where to find these). A citation
+might look like this:
+
+   We searched for X in [corpus/corpora] using the Concordance function
+   in CLiC 2.3 (Mahlberg et al. 2020; corpus version [number]),
+   accessed [date].
+
+For the general CLiC citation, see the :ref:`Introduction <citing-clic>`.
