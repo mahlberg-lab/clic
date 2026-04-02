@@ -15,6 +15,8 @@ of examples. If you are a creative writer, you might want to try out the
 `CLiC Creative <https://blog.bham.ac.uk/clic-dickens/clic-creative/>`_
 resources.
 
+.. _citing-clic:
+
 Citing CLiC
 -----------
 
@@ -23,6 +25,9 @@ When you use CLiC in your work, please cite CLiC like this:
    Mahlberg, M., Stockwell, P., Wiegand, V. and Lentin, J. (2020)
    CLiC 2.3. *Corpus Linguistics in Context*, available at:
    `clic-fiction.com <https://clic-fiction.com>`_ [Accessed: DATE]
+
+.. _navigating-the-interface:
+
 
 Navigating the interface
 ------------------------
