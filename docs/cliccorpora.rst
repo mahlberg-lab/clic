@@ -18,8 +18,7 @@ CLiC contains the following pre-selected corpora:
 
 An overview of the texts in each corpus (with word counts) can also be
 generated dynamically using the :ref:`Counts` tab. For a full list of
-titles, see :ref:`Appendix: Texts in CLiC <a-list-of-texts-available-in-clic>`
-and the `GitHub corpora repository <GitHub_corpora_>`_.
+titles, see :ref:`Appendix: Texts in CLiC <a-list-of-texts-available-in-clic>` and the [GitHub_corpora]_ repository.
 
 The texts can be selected individually and combined freely for analysis
 in any of the CLiC tools. You can also select one of the pre-selected
@@ -109,8 +108,7 @@ added corpora differs in technical implementation -- see
 Versioning and reproducibility
 ------------------------------
 
-The procedure for retrieving, cleaning and importing texts is described
-in detail in the `GitHub corpora repository <GitHub_corpora_>`_. Every
+The procedure for retrieving, cleaning and importing texts is described in detail in the [GitHub_corpora]_ repository. Every
 change to the repository is marked with a commit number (a sequence of
 characters and numbers), as shown in
 :numref:`figure-version-numbers-github`.
@@ -137,6 +135,6 @@ changes in the interface or the corpora.
 The corpora repository also contains the full text of the corpus files
 after any manual cleaning changes. The repository history lists all
 changes and links to the original versions as downloaded from Project
-Gutenberg for the `ArTs corpus <GitHub_corpora_initial_ArTs_>`_ (note
-that ArTs used to be called "Other" in the repository history) and the
-`ChiLit corpus <GitHub_corpora_initial_ChiLit_>`_.
+Gutenberg for the for the ArTs corpus [GitHub_corpora_initial_ArTs]_ 
+(note that ArTs used to be called "Other" in the repository history) and the
+ChiLit corpus [GitHub_corpora_initial_ChiLit]_.
