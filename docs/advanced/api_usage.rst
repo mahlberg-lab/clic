@@ -1,3 +1,5 @@
+.. _api-usage:
+
 CLiC API
 ========
 
@@ -7,40 +9,55 @@ CLiC API
 Overview
 --------
 
-Any data available through the `CLiC web interface <http://clic.bham.ac.uk/>`_ is also available by directly calling the *CLiC API*.
-The CLiC API returns a JSON representation of the CLiC data, which means that the data can be retrieved directly using any programming language.
-To get you started we have written some example code for both Python and R.
+Any data available through the `CLiC web interface <https://clic-fiction.com>`_
+is also available by directly calling the *CLiC API*. The CLiC API
+returns a JSON representation of the CLiC data, which means that the
+data can be retrieved directly using any programming language. To get you
+started we have written some example code for both Python and R.
 
-The sample code is for the *corpora* and *subset* endpoints.
-The corpora endpoint is used to retrieve the list of resources available in CLiC.
-This can then be used by your code to filter or select the resources you want to fetch (see the example usage).
-In the example code the corpora endpoint is called using the ``get_lookup()`` function which returns content something like::
+The sample code is for the *corpora* and *subset* endpoints. The corpora
+endpoint is used to retrieve the list of resources available in CLiC.
+This can then be used by your code to filter or select the resources you
+want to fetch (see the example usage). In the example code the corpora
+endpoint is called using the ``get_lookup()`` function which returns
+content something like::
 
     > lookup
          corpus                      author     id               title
       1: ChiLit            Agnes Strickland  rival   The Rival Crusoes
       2: ChiLit                 Andrew Lang prigio       Prince Prigio
       3: ChiLit           Ann Fraser Tytler  leila       Leila at Home
-     ---                                                              
+     ---
     136:    ntc              Wilkie Collins   arma            Armadale
     137:    ntc              Wilkie Collins wwhite  The Woman in White
     138:    ntc William Makepeace Thackeray vanity         Vanity Fair
 
-The subset endpoint is used to retrieve tokenized text for all or parts of one or more of the corpora.
-This endpoint is called 'subset' because you can restrict the retrieved tokens to a specific subset of the whole text, these subsets are: quoted text, non-quoted text, long suspensions or short suspensions.
-In the example code the subset endpoint is called using the ``get_tokens()`` function.
-The subset endpoint is documented at :mod:`clic.subset`.
+The subset endpoint is used to retrieve tokenized text for all or parts
+of one or more of the corpora. This endpoint is called 'subset' because
+you can restrict the retrieved tokens to a specific subset of the whole
+text, these subsets are: quoted text, non-quoted text, long suspensions
+or short suspensions. In the example code the subset endpoint is called
+using the ``get_tokens()`` function. The subset endpoint is documented
+at :mod:`clic.subset`.
 
-The *cluster* endpoint is used to retrieve n-grams and their counts.
-In the example code the clusters endpoint is called using the ``get_clusters()`` function.
-The cluster endpoint is documented at :mod:`clic.cluster`.
+The *cluster* endpoint is used to retrieve n-grams and their counts. In
+the example code the clusters endpoint is called using the
+``get_clusters()`` function. The cluster endpoint is documented at
+:mod:`clic.cluster`.
 
-We would be interested to hear about how you use the CLiC API and are always happy to consider CLiC related guest posts for the `CLiC blog <https://blog.bham.ac.uk/clic-dickens/>`_.
-To let us know how you are using the CLiC API, to give us feedback, or if you need any help that you cannot find here or through the `CLiC homepage <https://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic/>`_ you can contact us at `clic@contacts.bham.ac.uk <clic@contacts.bham.ac.uk>`_.
+We would be interested to hear about how you use the CLiC API and are
+always happy to consider CLiC related guest posts for the
+`CLiC blog <https://blog.bham.ac.uk/clic-dickens/>`_. To let us know
+how you are using the CLiC API, to give us feedback, or if you need any
+help, you can contact us at dhss-kontakt@fau.de.
 
-To help us understand who is using the API, when writing code to access the API please set the "User-Agent" header to something that identifies you or your application.
+To help us understand who is using the API, when writing code to access
+the API please set the "User-Agent" header to something that identifies
+you or your application.
 
-The CLiC API uses the legacy names for the CLiC corpora. The following table gives the correspondence between the corpora names as seen in the CLiC web interface and those used by the CLiC API.
+The CLiC API uses the legacy names for the CLiC corpora. The following
+table gives the correspondence between the corpora names as seen in the
+CLiC web interface and those used by the CLiC API.
 
 +--------------+--------------+-------------------------------------------+
 | CLiC Web     | CLiC API     | Description                               |
@@ -52,6 +69,8 @@ The CLiC API uses the legacy names for the CLiC corpora. The following table giv
 | ``ChiLit``   | ``ChiLit``   | 19th Century Children's Literature Corpus |
 +--------------+--------------+-------------------------------------------+
 | ``ArTs``     | ``Other``    | Additional Requested Texts                |
++--------------+--------------+-------------------------------------------+
+| ``DE19``     | ``DE19``     | German 19th Century Reference Corpus      |
 +--------------+--------------+-------------------------------------------+
 
 Example code
@@ -69,7 +88,7 @@ Python 3
     import pandas as pd
 
     UA = "CLiC API Example Python3 Code"  # user agent !! CHANGE ME !!
-    HOSTNAME = "clic.bham.ac.uk"
+    HOSTNAME = "clic-fiction.com"
 
     def api_request(endpoint, query=None):
         """
@@ -80,9 +99,9 @@ Python 3
         - query: endpoint specific parameters as a querystring
         """
         if query is None:
-            uri = 'http://%s/api/%s' % (HOSTNAME, endpoint)
+            uri = 'https://%s/api/%s' % (HOSTNAME, endpoint)
         else:
-            uri = 'http://%s/api/%s?%s' % (HOSTNAME, endpoint, query)
+            uri = 'https://%s/api/%s?%s' % (HOSTNAME, endpoint, query)
         resp = requests.get(uri, headers={'User-agent': UA, 'Accept': 'application/json'})
         try:
             rv = resp.json()
@@ -230,7 +249,7 @@ Keep each text separate::
     >>> austen_quotes['emma'][0:9]
     ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
 
-An now lets get some clusters for the Jane Austen novels::
+And now lets get some clusters for the Jane Austen novels::
 
     >>> austen_clusters = get_clusters(shortname=wanted, length=5, cutoff=5, subset="quote")
     >>> print(json.dumps(austen_clusters, indent=2))
@@ -247,8 +266,11 @@ An now lets get some clusters for the Jane Austen novels::
       "i do not pretend to": 11,
       ...
 
-
 R
 ^
 
-Functions to access the CLiC API from R are available in the `clicclient R package <https://github.com/mahlberg-lab/clicclient>`_. This package is still under development to work with CLiC 2.0. If you would like to contribute to this package, please get in touch at `clic@contacts.bham.ac.uk <clic@contacts.bham.ac.uk>`_.
+Functions to access the CLiC API from R are available in the
+`clicclient R package <https://github.com/mahlberg-lab/clicclient>`_.
+This package is still under development to work with CLiC 2.0. If you
+would like to contribute to this package, please get in touch at
+dhss-kontakt@fau.de.
