@@ -1,12 +1,15 @@
+.. _keywords:
+
 Keywords
 ========
 
 The keywords tool finds words (and phrases) that are used significantly
 more often in one corpus compared to another. CLiC incorporates the
-keyword extraction formula reported by [Rayson_Garside_2000]_. Apart from comparing single
-words, CLiC also allows you to compare clusters. Whereas the cluster tab
-focuses only on one corpus, the Keywords function can compare cluster
-lists. You have to make selections for the following options (also see
+keyword extraction formula reported by [Rayson_Garside_2000]_. Apart
+from comparing single words, CLiC also allows you to compare clusters.
+Whereas the cluster tab focuses only on one corpus, the Keywords
+function can compare cluster lists. You have to make selections for the
+following options (also see
 :numref:`figure-analysis-keywords-settings`):
 
 -  **'Target corpora':** Choose the corpus/corpora that you are
@@ -25,7 +28,7 @@ lists. You have to make selections for the following options (also see
 
 .. _figure-analysis-keywords-settings:
 .. figure:: ../images/figure-analysis-keywords-settings.png
-   
+
    The settings for the keywords tab require you to select
    two sets of corpora for the keyword comparison – target and reference
    – and their corresponding subsets
@@ -37,7 +40,7 @@ lists. You have to make selections for the following options (also see
    'quotes' in the 19th Century Reference Corpus
 
 Note that you have to select a subset for each of the two corpora or
-you'll see the error message: “Please select a subset”. So, for example,
+you'll see the error message: "Please select a subset". So, for example,
 when comparing 5-grams in *Oliver Twist* (quotes) against the 19th
 Century Reference Corpus (quotes), we retrieve the results displayed in
 :numref:`figure-analysis-keywords-19thcentury` (for a p-value of
@@ -49,6 +52,6 @@ The frequency threshold of 5 used for the cluster tab is not applied to
 the keyword tab, so that all frequencies are compared. The keyword
 output shows the top 3000 results (for most comparisons, you will yield
 fewer results, though). Moreover, CLiC only generates so-called
-'positive keywords': those that are 'overused' in the target corpus than
-in the reference corpus, but CLiC does not generate 'negative' or
+'positive keywords': those that are overused in the target corpus
+compared to the reference corpus. CLiC does not generate 'negative' or
 'underused' keywords.
