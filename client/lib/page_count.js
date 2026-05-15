@@ -8,7 +8,7 @@ var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
 
-var renderNumeric = DataTable.render.number;
+var renderNumeric = DataTable.render.number();
 
 // PageChapter inherits PageTable
 function PageChapter() {

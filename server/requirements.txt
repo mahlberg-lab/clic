@@ -41,7 +41,7 @@ pillow==11.1.0
 pluggy==1.5.0
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
-pybtex==0.24.0
+pybtex==0.25.1
 pycodestyle==2.12.1
 pyflakes==3.2.0
 PyICU==2.13.1
