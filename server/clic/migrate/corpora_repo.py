@@ -41,18 +41,16 @@ def parse_corpora_bib(corpora_dir, bib_name='corpora.bib'):
 
 def get_corpora_for(book_paths):
     """
-    Return all corpora objects that contain the books in book_paths
+    Return a mapping from book_path to the associated corpora object
     """
-    wanted_books = set(os.path.splitext(os.path.basename(p))[0] for p in book_paths)
-
     # Assume all books sit in the same root
     corpora_dir = os.path.dirname(os.path.dirname(book_paths[0]))
-    corpora = parse_corpora_bib(corpora_dir)
+    corpora = {c['name']: c for c in parse_corpora_bib(corpora_dir)}
 
-    # For each corpora, return it if it's contents are part of wanted_books
-    for c in corpora:
-        if not wanted_books.isdisjoint(c['contents']):
-            yield c
+    return {
+        p: corpora[os.path.basename(os.path.dirname(p))]
+        for p in book_paths
+    }
 
 
 def to_region_file(book_path):
@@ -107,7 +105,7 @@ def script_import_corpora_repo():
     import sys
     import timeit
     from ..db.book import put_book
-    from ..db.corpus import put_corpus
+    from ..db.corpus import put_corpus, add_book_to_corpus
     from ..db.cursor import get_script_cursor
     from ..db.version import update_version
     from ..region.tag import tagger
@@ -124,21 +122,27 @@ def script_import_corpora_repo():
         print("No books to insert.")
         sys.exit(0)
 
+    book_path_to_corpus = get_corpora_for(book_paths)
+
     with get_script_cursor(for_write=True) as cur:
+        # Ensure corpora exist. The bib's 'contents' is ignored here; the
+        # script links books to corpora itself, per-book, below.
+        seen_corpora = set()
+        for c in book_path_to_corpus.values():
+            if c['name'] in seen_corpora:
+                continue
+            put_corpus(cur, {k: v for k, v in c.items() if k != 'contents'})
+            seen_corpora.add(c['name'])
+
         for p in book_paths:
             print("* %s" % p, end=" ", flush=True)
             start_time = timeit.default_timer()
             book = import_book(p)  # Read book and/or regions file
             tagger(book)  # Fill in any remaining regions
             put_book(cur, book, force=args.force)  # Write to DB
+            add_book_to_corpus(cur, book_path_to_corpus[p], book)
             print("%.2f secs" % (timeit.default_timer() - start_time))
             cur.connection.commit()
-
-        for c in get_corpora_for(book_paths):
-            print("* corpora:%s" % c['name'], end=" ", flush=True)
-            start_time = timeit.default_timer()
-            put_corpus(cur, c)
-            print("%.2f secs" % (timeit.default_timer() - start_time))
 
         if len(book_paths) > 0:
             # Update DB versions to match current CLiC & corpora repo.
