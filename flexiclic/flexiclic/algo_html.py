@@ -93,7 +93,7 @@ def html_prop(input_name, prop_desc, required=False):
             value=prop_desc.get("default") or False,
         )
 
-    if prop_type == set(("integer",)) or prop_type == set(("number",)) or prop_type == set(("integer", "number")):
+    if prop_type == set(("integer",)) or prop_type == set(("number",)) or prop_type == set(("integer", "number")) or prop_type == set(("integer", "null")):
         return html_prop_inputbox(
             input_type="number",
             name=input_name,
