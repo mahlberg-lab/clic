@@ -39,4 +39,10 @@ install:
 	make -C server $@
 	make -C docs $@
 
-.PHONY: compile test lint coverage start install
+clean:
+	make -C schema $@
+	make -C client $@
+	make -C server $@
+	make -C docs $@
+
+.PHONY: compile test lint coverage start install clean

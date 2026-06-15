@@ -13,6 +13,8 @@ start:
 install:
 	./install.sh
 
+clean:
+
 bin/db_dump: ../conf.mk
 	@mkdir -p ./bin
 	@/bin/echo -e \
@@ -41,4 +43,4 @@ bin/db_restore: ../conf.mk
 	    > $@
 	@chmod a+x $@
 
-.PHONY: compile test lint start install
+.PHONY: compile test lint start install clean
