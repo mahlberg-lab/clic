@@ -1,7 +1,13 @@
+# Set $(1) to $(2) iff $(1) is not already defined. Evaluated immediately,
+# so $(shell …) on the RHS runs once at parse time rather than on every
+# recipe (cf. ?=, which is recursive assignment).
+default = $(if $(filter undefined,$(origin $(1))),$(eval $(1) := $(2)))
+unexport default  # don't let .EXPORT_ALL_VARIABLES expand the macro with empty args
+
 # The full project path
-PROJECT_PATH ?= $(shell git rev-parse --show-toplevel)
+$(call default,PROJECT_PATH,$(shell git rev-parse --show-toplevel))
 # The project directory name
-PROJECT_NAME ?= $(notdir $(PROJECT_PATH))
+$(call default,PROJECT_NAME,$(notdir $(PROJECT_PATH)))
 
 include $(PROJECT_PATH)/local-conf.mk
 
@@ -9,16 +15,16 @@ include $(PROJECT_PATH)/local-conf.mk
 PROJECT_MODE ?= development
 
 # Set PROJECT_REV from a tag on head, or if that fails (branch):(sha)
-PROJECT_REV = $(shell git describe --exact-match HEAD 2>/dev/null || true)
+PROJECT_REV := $(shell git describe --exact-match HEAD 2>/dev/null || true)
 ifeq ($(PROJECT_REV),)
-    PROJECT_REV = $(shell git rev-parse --abbrev-ref HEAD):$(shell git rev-parse --short HEAD)
+    PROJECT_REV := $(shell git rev-parse --abbrev-ref HEAD):$(shell git rev-parse --short HEAD)
 endif
 
 ###################
 # Configuration options for serving client
 
 # NGINX's server_name. Multiple space-separated values are allowed
-WWW_SERVER_NAME ?= $(shell hostname --fqdn)
+$(call default,WWW_SERVER_NAME,$(shell hostname --fqdn))
 WWW_SERVER_ALIASES ?=
 ifeq ($(PROJECT_MODE),development)
     WWW_UWSGI_CACHE_ZONE ?= off
@@ -27,7 +33,7 @@ else
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
 # Make a guess at branch name, since production instances will be detached HEAD
-WWW_RTD_BASE_URL ?= https://clic.readthedocs.io/en/$(shell git describe --abbrev=0 | grep -oE '[0-9]+\.[0-9]+')
+$(call default,WWW_RTD_BASE_URL,https://clic.readthedocs.io/en/$(shell git describe --abbrev=0 | grep -oE '[0-9]+\.[0-9]+'))
 
 # SSL Cert locations, by default will assume that dehydrated (will be) installed
 WWW_CERT_FULLCHAIN ?= /var/lib/dehydrated/certs/$(WWW_SERVER_NAME)/fullchain.pem
@@ -42,7 +48,7 @@ WWW_DHPARAM_FILE ?= /etc/ssl/private/dhparam.pem
 # See https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
 GOACCESS_ALLOW ?= 
 # Location of maxmind GeoLite2-Country mmdb download, requires signup.
-GOACCESS_MAXMIND_DB_TAR ?= $(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.gz 2>/dev/null)
+$(call default,GOACCESS_MAXMIND_DB_TAR,$(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.gz 2>/dev/null))
 
 ###################
 # Configuration options for running API server
@@ -50,8 +56,8 @@ GOACCESS_MAXMIND_DB_TAR ?= $(shell ls -1 $(PROJECT_PATH)/GeoLite2-Country*.tar.g
 API_SERVICE_FILE ?= /etc/systemd/system/$(PROJECT_NAME).service
 ifeq ($(PROJECT_MODE),development)
     # Default to user that checked out code (i.e the developer)
-    API_USER ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
-    API_GROUP ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
+    $(call default,API_USER,$(shell stat -c '%U' $(PROJECT_PATH)/.git))
+    $(call default,API_GROUP,$(shell stat -c '%U' $(PROJECT_PATH)/.git))
     API_SOCKET ?= /tmp/$(PROJECT_NAME)_uwsgi.$(PROJECT_MODE).sock
 else
     # Assume we're using a systemd DynamicUser
@@ -77,16 +83,16 @@ DB_SUDO_USER ?= postgres
 # The hostname / socket path to connect to
 DB_HOST ?= /var/run/postgresql/
 # The DB to create
-DB_NAME ?= $(shell echo -n $(PROJECT_NAME) | sed 's/\W/_/g')_db
+$(call default,DB_NAME,$(shell echo -n $(PROJECT_NAME) | sed 's/\W/_/g')_db)
 # The credentials that the app will use
 DB_USER ?= $(API_USER)
 DB_PASS ?=
 # An alternative user, generally the installing user used for running import script
-DB_ALT_USER ?= $(shell stat -c '%U' $(PROJECT_PATH)/.git)
+$(call default,DB_ALT_USER,$(shell stat -c '%U' $(PROJECT_PATH)/.git))
 DB_ALT_PASS ?=
 
 # The location of a postgres config we can use
-DB_CONF_FILE ?= $(shell ls -d1 /etc/postgresql/*/main/conf.d/ | sort | tail -1)${DB_NAME}.conf
+$(call default,DB_CONF_FILE,$(shell ls -d1 /etc/postgresql/*/main/conf.d/ | sort | tail -1)$(DB_NAME).conf)
 # The amount of memory which can be used for sorts.
 # 64MB handles the worst likely queries but will use potentially an extra 1G of server memory.
 DB_CONF_WORK_MEM = 64MB
