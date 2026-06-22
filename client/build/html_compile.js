@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, plusplus: true */
-/*global Promise */
 var fs = require('fs');
 var path = require('path');
 var nunjucks = require('nunjucks');

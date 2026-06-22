@@ -1,5 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true, browser: true */
 var test = require('tape');
 
 var State = require('../lib/state.js');

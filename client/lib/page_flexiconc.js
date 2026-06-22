@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true, nomen: true */
-/*global Promise, Set */
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
@@ -12,7 +10,7 @@ var util_flexiconc = require('./util_flexiconc.js');
 function renderPosition(data, type, full, meta) {
     var xVal, pos_start = data[1];
 
-    if (pos_start === "" && full[7].hasOwnProperty("rowcount")) {
+    if (pos_start === "" && Object.hasOwn(full[7], "rowcount")) {
         // Partition/cluster header row, show rowcount instead of position
         return '<span style="text-wrap: nowrap" title="Click to open/close partition">' + concordance_utils.plural(full[7].rowcount, "line") + '</span>';
     }
@@ -141,6 +139,7 @@ PageFlexiConc.prototype.add_events = function () {
                 this.classList.add("open");
 
                 // Set check for every row in this partition
+                // eslint-disable-next-line array-callback-return -- DataTables Rows API .every(), not Array#every
                 self.table.rows().every(function () {
                     if (this.data()[5] === partitionId) {
                         this.data()["fc-select"] = elCheckbox.checked;

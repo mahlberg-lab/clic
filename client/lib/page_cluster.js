@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 

@@ -1,7 +1,5 @@
 "use strict";
-/*jslint todo: true, browser: true */
-/*global Promise */
-var CC = require("cookieconsent");  // NB: Creates window.cookieconsent
+require("cookieconsent");  // NB: Creates window.cookieconsent
 
 function ga() {
     if (!window.ga) {

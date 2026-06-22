@@ -1,5 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true, browser: true */
 var test = require('tape');
 
 var concordance_utils = require('../lib/concordance_utils.js');
@@ -7,7 +6,7 @@ var concordance_utils = require('../lib/concordance_utils.js');
 // Turn a space-separated list of words into a KwicTerms lookup
 function kwic_terms(words) {
     var out = {};
-    words.split(' ').map(function (w) {
+    words.split(' ').forEach(function (w) {
         out[w] = 1;
     });
     return out;

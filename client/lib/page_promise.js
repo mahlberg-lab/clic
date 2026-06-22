@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true */
-/*global Promise */
 var State = require('./state.js');
 var Alerts = require('./alerts.js');
 
@@ -108,7 +106,7 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
             });
         })).then(function (rvs) {
             // Trigger post-load actions with main data
-            page_components.map(function (x) {
+            page_components.forEach(function (x) {
                 // NB: The [1] here refers to whichever page component is the main page
                 if (rvs[1] && x.new_data) {
                     x.new_data(rvs[1]);

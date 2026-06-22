@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise, Blob, FileReader */
 var FileSaver = require('file-saver');
 var Papa = require('papaparse');
 
@@ -11,7 +9,7 @@ module.exports.format_dt = function (dt) {
 
     // Format header row
     row = ['ID'];
-    dt.columns().header().map(function (el, i) {
+    dt.columns().header().each(function (el, i) {
         if (include_column[i]) {
             if (el.classList.contains('sorting_disabled')) {
                 // It's the count column, ignore that
@@ -30,7 +28,7 @@ module.exports.format_dt = function (dt) {
 
     // Format each cell, skipping over the ones we don't care about.
     row = [row_ids[0]];
-    dt.cells({ search: 'applied' }).render('export').map(function (c, i) {
+    dt.cells({ search: 'applied' }).render('export').each(function (c, i) {
         var col = i % include_column.length;
 
         if (include_column[col]) {
@@ -90,7 +88,7 @@ module.exports.file_to_state = function (file) {
     }
 
     // Populate tag values if any where found
-    (tag_column_offset !== null ? rows.slice(1) : []).map(function (line) {
+    (tag_column_offset !== null ? rows.slice(1) : []).forEach(function (line) {
         var j;
 
         for (j = 0; j < tag_column_order.length; j++) {

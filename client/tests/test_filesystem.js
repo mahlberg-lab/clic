@@ -1,6 +1,4 @@
 "use strict";
-/*jslint plusplus: true, nomen: true */
-/*global Promise */
 var test = require('tape');
 var proxyquire =  require('proxyquire');
 var Papa = require('papaparse');

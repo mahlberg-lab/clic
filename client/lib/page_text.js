@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise, DOMParser */
 var api = require('./api.js');
 var corpora_utils = require('lib/corpora_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;

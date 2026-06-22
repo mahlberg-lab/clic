@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true, nomen: true */
-/*global crypto, Promise, Proxy, Worker */
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
 // Create flexiclic, which proxies any method calls through to python

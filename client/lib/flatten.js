@@ -1,5 +1,4 @@
 "use strict";
-/*jslint plusplus: true, todo: true */
 /* TODO: Nabbed from https://raw.githubusercontent.com/lentinj/formson/refs/heads/master/lib/flatten.js */
 var GETTER = { '_getter': true },
     MISSING = { '_missing': true };
@@ -45,11 +44,11 @@ function walk_object(obj, key_parts, value) {
         if (value !== GETTER) {
             obj[key_parts[0]] = value;
         }
-        return obj.hasOwnProperty(key_parts[0]) ? obj[key_parts[0]] : MISSING;
+        return Object.hasOwn(obj, key_parts[0]) ? obj[key_parts[0]] : MISSING;
     }
 
     // Make sure object to recurse into exists, before recursing into it
-    if (!obj.hasOwnProperty(key_parts[0])) {
+    if (!Object.hasOwn(obj, key_parts[0])) {
         if (value === GETTER) {
             // No point carrying on if just trying to fetch value
             return MISSING;

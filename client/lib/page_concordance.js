@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true, nomen: true */
-/*global Promise */
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
@@ -225,7 +223,7 @@ PageConcordance.prototype.reload_data = function reload(page_state) {
     }
     kwicSpan = parseKwicSpan(page_state.arg('kwic-span'));
 
-    (page_state.arg('kwic-terms')).map(function (t, i) {
+    (page_state.arg('kwic-terms')).forEach(function (t, i) {
         if (t) {
             kwicTerms[t.toLowerCase()] = i + 1;
         }
@@ -308,7 +306,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         groupedData = {};
         for (i = 0; i < data.length; i++) {
             j = data[i][3][0]; // The book name
-            if (groupedData.hasOwnProperty(j)) {
+            if (Object.hasOwn(groupedData, j)) {
                 groupedData[j].push(data[i]);
             } else {
                 groupedData[j] = [data[i]];

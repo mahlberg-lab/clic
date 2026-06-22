@@ -1,6 +1,4 @@
 "use strict";
-/*jslint plusplus: true */
-/*global Promise */
 var test = require('tape');
 var proxyquire =  require('proxyquire');
 

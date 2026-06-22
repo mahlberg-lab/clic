@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 
 function TagToggle(tag_name, tag_desc) {
     this.tag_name = tag_name;

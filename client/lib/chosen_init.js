@@ -1,9 +1,6 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
-var noUiSlider = require('nouislider');
-var chosen = require('chosen-js');
+require('chosen-js');  // NB: Registers jQuery .chosen() plugin
 var TomSelect = require('tom-select');
 
 module.exports.init = function chosen_init(el) {

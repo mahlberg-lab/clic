@@ -49,7 +49,7 @@ coverage: node_modules/.requirements
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
 lint: node_modules/.requirements
-	$(NODE_CMD) node_modules/jslint/bin/jslint */*.js
+	$(NODE_CMD) node_modules/xo/dist/cli.js
 
 clean:
 	rm -r -- "node_modules/" || true

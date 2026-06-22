@@ -6,7 +6,7 @@ function shallow_clone(obj) {
         attr;
 
     for (attr in obj) {
-        if (obj.hasOwnProperty(attr)) {
+        if (Object.hasOwn(obj, attr)) {
             out[attr] = obj[attr];
         }
     }

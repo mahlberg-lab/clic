@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var quoteattr = require('./quoteattr.js').quoteattr;
 var unidecode = require('unidecode');
 
@@ -100,7 +98,7 @@ module.exports.generateKwicRow = function (kwicTerms, kwicSpan, d, allWords) {
             t = tokenToType(tokens[word_indices[span.reverse ? word_indices.length - i - 1 : i]]);
             allWords[t] = true;
 
-            if ((i + 1) >= span.start && kwicTerms.hasOwnProperty(t)) {
+            if ((i + 1) >= span.start && Object.hasOwn(kwicTerms, t)) {
                 // Matching has started and matches a terms, return which match it is
                 matchingTypes[t] = true;
                 out.push(i + 1);

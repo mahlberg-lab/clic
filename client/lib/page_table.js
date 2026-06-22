@@ -1,8 +1,7 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
+var DataTable;
 if (window && window.document) {
-    var DataTable = require('datatables.net');
+    DataTable = require('datatables.net');
 }
 var api = require('./api.js');
 var shallow_clone = require('./shallow_clone.js').shallow_clone;
@@ -49,7 +48,7 @@ PageTable.prototype.reload = function reload(page_state) {
 
             // Update any visible properties from table_opts
             self.table_opts.columns.forEach(function (c, i) {
-                if (c.hasOwnProperty("visible")) {
+                if (Object.hasOwn(c, "visible")) {
                     self.table.columns(i).visible(c.visible);
                 }
             });
@@ -170,7 +169,7 @@ PageTable.prototype.reload_data = function (page_state) {
 PageTable.prototype.add_events = function add_events() {
     var self = this;
 
-    if (self.hasOwnProperty('table_count_column')) {
+    if (Object.hasOwn(self, 'table_count_column')) {
         self.table.on('draw.dt', function () {
             var pageStart = self.table.page.info().start,
                 pageCells = self.table.cells(null, self.table_count_column, {page: 'current', order: 'applied', search: 'applied'});

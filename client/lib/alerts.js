@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true */
-/*global Promise */
 
 function Alerts(alert_el) {
     this.alert_el = alert_el;

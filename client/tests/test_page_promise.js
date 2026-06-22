@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true, browser: true */
-/*global Promise */
 var test = require('tape');
 
 // Fake DOM elements to satisfy page_load's direct document.* references

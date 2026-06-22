@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
 var api = require('./api.js');
@@ -62,7 +60,7 @@ function to_options_html(opts, group_label) {
     }
 
     out = opts.map(function (t) {
-        if (t.hasOwnProperty('id') && t.hasOwnProperty('title')) {
+        if (Object.hasOwn(t, 'id') && Object.hasOwn(t, 'title')) {
             if (t.id === null) {
                 // A null ID means we're trying to hide this option (read: all authors)
                 return '';
@@ -99,7 +97,7 @@ function clickedOn(e, tagName, className) {
 function swaps_to_url(page_state, arg_swaps) {
     var detail = { args: {} };
 
-    arg_swaps.split(",").map(function (str) {
+    arg_swaps.split(",").forEach(function (str) {
         var to_swap = str.split(":");
 
         if (to_swap.length === 2) {
@@ -213,7 +211,7 @@ function ControlBar(control_bar) {
             jQuery(form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
                     new_search[f.name].push(f.value);
-                } else if (new_search.hasOwnProperty(f.name)) {
+                } else if (Object.hasOwn(new_search, f.name)) {
                     new_search[f.name] = [new_search[f.name], f.value];
                 } else {
                     new_search[f.name] = [f.value];
@@ -447,7 +445,7 @@ ControlBar.prototype.reload = function reload(page_state) {
             ));
         });
     }).then(function (data) {
-        return Promise.all(Object.keys(self.panels).map(function (n) { self.panels[n].reload(page_state); })).then(function () {
+        return Promise.all(Object.keys(self.panels).map(function (n) { return self.panels[n].reload(page_state); })).then(function () {
             return data;
         });
     });
@@ -473,7 +471,7 @@ ControlBar.prototype.new_data = function new_data(data) {
             // Make sure KWIC term values already selected stay selectable
             prevVal = jQuery(el).val() || [];
 
-            prevVal.map(function (t) {
+            prevVal.forEach(function (t) {
                 data.allWords[t] = true;
             });
 

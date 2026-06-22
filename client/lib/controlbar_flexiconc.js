@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var ControlBar = require('./controlbar.js');
 var chosen_init = require('./chosen_init.js');
 var flexiclic = require('./flexiclic.js').flexiclic;

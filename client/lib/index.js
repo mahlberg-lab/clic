@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true */
-/*global Promise */
 var Analytics = require('./analytics.js');
 var PagePromise = require('./page_promise.js');
 

@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, plusplus: true, stupid: true */
-/*global Promise */
 var esbuild = require('esbuild');
 
 // Global on which library modules are exposed by the libraries bundle, so

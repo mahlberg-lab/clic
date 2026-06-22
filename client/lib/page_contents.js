@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var api = require('./api.js');
 var gen_carousel = require('lib/carousel.js').gen_carousel;
 
