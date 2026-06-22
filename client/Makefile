@@ -84,15 +84,12 @@ www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 	mkdir -p $(dir $@)
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 
-www/js/libraries.min.js: package.json
+www/js/libraries.min.js: package.json build/esbuild.js
 	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../node_modules .)
-	$(NODE_CMD) node_modules/.bin/browserify \
-	        $(foreach l,$(LIBRARIES_JS),-r $(l)) \
-	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
-	        --compress --mangle "reserved=['$$','require','exports']" \
-	        --output $@.mktmp
-	$(call sha1_symlink,js,$@.mktmp,$@)
+	rm -f $@
+	$(NODE_CMD) build/esbuild.js libraries $@ $(LIBRARIES_JS)
+	$(call sha1_symlink,js,$@,$@)
 
 www/css/libraries.min.css: package.json
 	mkdir -p $(dir $@)
@@ -100,18 +97,12 @@ www/css/libraries.min.css: package.json
 	cat $(LIBRARIES_CSS) > $@.mktmp
 	$(call sha1_symlink,css,$@.mktmp,$@)
 
-www/js/%.min.js: lib/%.js lib/*.js package.json
+www/js/%.min.js: lib/%.js lib/*.js package.json build/esbuild.js
 	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../lib .)
-	$(NODE_CMD) node_modules/.bin/browserify --debug \
-	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
-	        $< \
-	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
-	        --compress --mangle "reserved=['$$','require','exports']" \
-	        --source-map "content='inline',url='$(notdir $@).map'" \
-	        --output $@.mktmp
-	mv $@.mktmp.map $@.map
-	$(call sha1_symlink,js,$@.mktmp,$@)
+	rm -f $@ $@.map
+	$(NODE_CMD) build/esbuild.js main $< $@ $(LIBRARIES_JS)
+	$(call sha1_symlink,js,$@,$@)
 
 www/css/%.min.css: lib/%.css lib/*.css package.json
 	mkdir -p $(dir $@)

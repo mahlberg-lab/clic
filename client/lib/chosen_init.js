@@ -3,7 +3,6 @@
 /*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
-global.jQuery = jQuery;  // So chosen-js can find it
 var chosen = require('chosen-js');
 var TomSelect = require('tom-select');
 

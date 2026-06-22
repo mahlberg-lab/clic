@@ -1,5 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, unparam: true, nomen: true */
+/*global globalThis */
 
 function search_to_obj(search) {
     var out = {};
@@ -169,7 +170,7 @@ State.prototype.update = function (changes, flush) {
 
     function compare(existing, change) {
         function replacer(item_key, value) {
-            if (value instanceof global.Set) {
+            if (value instanceof globalThis.Set) {
                 // Sets don't stringify by default: https://stackoverflow.com/a/46491780
                 return Array.from(value);
             }
