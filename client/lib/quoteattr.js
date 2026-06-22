@@ -10,7 +10,7 @@ function quoteattr(s, preserveCR) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         /*
-        You may add other replacements here for HTML only 
+        You may add other replacements here for HTML only
         (but it's not necessary).
         Or for XML, only if the named entities are defined in its DTD.
         */
