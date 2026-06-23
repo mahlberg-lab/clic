@@ -6,6 +6,7 @@ compile:
 	make -C server $@
 	make -C docs $@
 	make -C flexiclic $@
+	make -C jsclictagger $@
 
 test:
 	make -C schema $@
@@ -14,6 +15,7 @@ test:
 	make -C flexiclic $@
 	make -C docs $@
 	make -C flexiclic $@
+	make -C jsclictagger $@
 
 lint:
 	make -C schema $@
@@ -44,5 +46,6 @@ clean:
 	make -C client $@
 	make -C server $@
 	make -C docs $@
+	make -C jsclictagger $@
 
 .PHONY: compile test lint coverage start install clean

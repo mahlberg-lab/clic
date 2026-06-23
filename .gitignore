@@ -66,3 +66,7 @@ GeoLite2-*
 /flexiclic/www
 /flexiclic/flexiconc
 /flexiclic/tests/*.baseline.new
+
+/jsclictagger/prebuilt-wheels/
+/jsclictagger/www
+/jsclictagger/clictagger
