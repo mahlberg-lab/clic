@@ -7,6 +7,7 @@ var TagToggle = require('./tagtoggle.js');
 var filesystem = require('./filesystem.js');
 var concordance_utils = require('./concordance_utils.js');
 var chosen_init = require('./chosen_init.js');
+var cm_command = require('./cm-command.mjs');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -176,6 +177,19 @@ function ControlBar(control_bar) {
 
             document.getElementById('panel-' + e.target.getAttribute('data-panel')).classList.toggle('in');
 
+            return;
+        }
+
+        el = e.target.closest('button[data-cm-command]');
+        if (el) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            cm_command.dispatch(
+                window,
+                el.getAttribute("data-cm-command"),
+                JSON.parse(el.getAttribute("data-cm-command-args") || "[]"),
+            );
             return;
         }
     });

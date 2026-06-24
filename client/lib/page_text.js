@@ -4,6 +4,7 @@ var corpora_utils = require('lib/corpora_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var cm_region_decoration = require('./cm-region-decoration.mjs');
 var cm_highlight_decoration = require('./cm-highlight-decoration.mjs');
+var cm_command = require('./cm-command.mjs');
 
 var cm_state = require('@codemirror/state');
 var cm_view = require('@codemirror/view');
@@ -82,6 +83,7 @@ function PageText(content_el) {
                 // NB: highlights first cause highlights to sit atop regions
                 cm_highlight_decoration.config,
                 cm_region_decoration.config,
+                cm_command.cm_command_plugin,
                 // Let the outer #scrollable-body do the scrolling, not the editor
                 cm_view.EditorView.theme({
                     "&": { height: "auto" },
