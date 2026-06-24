@@ -88,6 +88,31 @@ export function chapter_title_pos(view, chapter_num) {
 }
 
 /**
+  * Find the [from, to] range of the chapter containing pos, by walking the
+  * region decorations for chapter.title marks. Returns null if not found.
+  */
+export function chapter_range_at(view, pos) {
+    const deco = view.state.field(region_decorations_field);
+    let chapter_start = null;
+    let chapter_end = view.state.doc.length;
+
+    deco.between(0, view.state.doc.length, (from, to, value) => {
+        if (!(value.spec.class && value.spec.class.startsWith("chapter-title"))) {
+            return;
+        }
+
+        if (from <= pos) {
+            chapter_start = from;
+        } else if (chapter_start !== null) {
+            chapter_end = from;
+            return false;
+        }
+    });
+
+    return chapter_start === null ? null : [chapter_start, chapter_end];
+}
+
+/**
   * Build the editor-attributes extension that adds the book-content + per-region
   * highlight classes to the outer .cm-editor element.
   */

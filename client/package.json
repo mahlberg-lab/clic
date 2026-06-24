@@ -17,6 +17,7 @@
     "nunjucks": "^3.2.4",
     "papaparse": "^5.5.4",
     "tom-select": "^2.4.3",
+    "typopo": "^3.1.0",
     "unidecode": "^1.1.0"
   },
   "maintainers": [
