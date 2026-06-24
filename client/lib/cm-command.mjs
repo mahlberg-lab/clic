@@ -1,12 +1,14 @@
 // NB: Use require() so we pull the same copy as page_text.js
 const cmView = require('@codemirror/view');
 const cmCommands = require('@codemirror/commands');
+const cm_insert_quotation = require('./cm-insert-quotation.mjs');
 
 const ViewPlugin = cmView.ViewPlugin;
 
 const COMMANDS = {
     undo: cmCommands.undo,
     redo: cmCommands.redo,
+    'insert-quotation': cm_insert_quotation.insert_quotation,
 };
 
 /**

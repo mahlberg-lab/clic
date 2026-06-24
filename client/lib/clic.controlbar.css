@@ -355,3 +355,11 @@ body.iframe #control-bar + .handle {
     border-color: #666;
     color: inherit;
 }
+
+#control-bar .button-group.corpus-insert-char > button {
+    font-size: 200%;
+    width: 4rem;
+    /* NB: Need both to preserve center-alignment */
+    letter-spacing: 0.4rem;
+    text-indent: 0.4rem;
+}
