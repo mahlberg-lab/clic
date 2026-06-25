@@ -107,8 +107,8 @@ module.exports.file_to_state = function (file) {
     };
 };
 
-/** Generate a hidden file field attached to page which tries to upload when trigger is called */
-module.exports.file_loader = function file_loader(document, fn) {
+/** Generate a hidden file field attached to page which passes a File object to fn when trigger is called */
+module.exports.file_opener = function file_opener(document, fn) {
     var el = document.createElement('SPAN');
 
     // Create input element
@@ -118,12 +118,7 @@ module.exports.file_loader = function file_loader(document, fn) {
 
     // Attach events
     el.addEventListener('change', function (e) {
-        var reader = new FileReader();
-
-        reader.onload = function (load_ev) {
-            fn.apply(this, [load_ev.target.result].concat(el.trigger_args));
-        };
-        reader.readAsText(e.target.files[0], "utf-8");
+        fn.apply(this, [e.target.files[0]].concat(el.trigger_args));
 
         // Clear value so we can do it again later
         el.value = "";
@@ -135,4 +130,17 @@ module.exports.file_loader = function file_loader(document, fn) {
         el.click();
     };
     return el;
+};
+
+/** Generate a hidden file field attached to page which reads file contents and passes them to fn when trigger is called */
+module.exports.file_loader = function file_loader(document, fn) {
+    return module.exports.file_opener(document, function (file) {
+        var reader = new FileReader(),
+            trigger_args = Array.prototype.slice.call(arguments, 1);
+
+        reader.onload = function (load_ev) {
+            fn.apply(this, [load_ev.target.result].concat(trigger_args));
+        };
+        reader.readAsText(file, "utf-8");
+    });
 };
