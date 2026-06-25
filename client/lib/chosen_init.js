@@ -1,7 +1,7 @@
 "use strict";
 var jQuery = require('jquery/dist/jquery.slim.js');
 require('chosen-js');  // NB: Registers jQuery .chosen() plugin
-var TomSelect = require('tom-select');
+var TomSelect = require('tom-select').default;
 
 module.exports.init = function chosen_init(el) {
     el.querySelectorAll('select.tomselect').forEach(function (elSelect) {
