@@ -53,6 +53,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.extlinks',
+    'sphinxcontrib.youtube',
 ]
 suppress_warnings = ['autosectionlabel.*']  # Tries to generate duplicate labels
 
