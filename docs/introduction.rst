@@ -7,6 +7,8 @@ study of narrative fiction. It started off with the
 project and now contains a range of fictional texts from children's
 literature to German novels (all out of copyright).
 
+..  youtube:: yv6OP3W2NDE
+
 This guide covers information on how to use CLiC, developer features,
 information on the corpora and legal & technical details. For inspiration
 on what to do with CLiC, the
