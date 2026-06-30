@@ -33,7 +33,8 @@ start:
 install:
 
 bin/pip:
-	python3 -m venv .
+	# 3.13+ adds "--without-scm-ignore-files", without which we blat .gitignore
+	if python3 -m venv --help | grep -q -- "--without-scm-ignore-files"; then python3 -m venv --without-scm-ignore-files . ; else python3 -m venv .; fi
 
 requirements.txt:
 	touch requirements.txt
