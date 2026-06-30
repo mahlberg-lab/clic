@@ -22,9 +22,21 @@ CREATE TABLE IF NOT EXISTS corpus_book (
     corpus_id INT NOT NULL,
     FOREIGN KEY (corpus_id) REFERENCES corpus(corpus_id) ON DELETE CASCADE,
     book_id INT NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
+    FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+    PRIMARY KEY (corpus_id, book_id)
 );
 COMMENT ON TABLE  corpus_book IS 'Corpus <-> books many-to-many';
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+         WHERE conrelid = 'corpus_book'::regclass
+           AND contype = 'p'
+    ) THEN
+        ALTER TABLE corpus_book ADD PRIMARY KEY (corpus_id, book_id);
+    END IF;
+END$$;
 
 
 COMMIT;
