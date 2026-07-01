@@ -49,7 +49,7 @@ Branching and publishing to live
 The CLiC project has several long-lived branches:
 
 development
-    The default branch, the test server will run this version of the CLiC code
+    The default branch, the test server will run this version of the CLiC code.
     Documentation updates should be done directly in this branch.
     Code updates should be done in a feature branch and merged with a pull request.
 2.x (e.g. ``2.0``, ``2.1``, ...)
