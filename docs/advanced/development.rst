@@ -43,6 +43,20 @@ Coverage reports can be built for both client and server::
 
 ...the reports will be available through the reports at the end.
 
+Branching and publishing to live
+--------------------------------
+
+The CLiC project has several long-lived branches:
+
+development
+    The default branch, the test server will run this version of the CLiC code
+    Documentation updates should be done directly in this branch.
+    Code updates should be done in a feature branch and merged with a pull request.
+2.x (e.g. ``2.0``, ``2.1``, ...)
+    Production branch for major versions of CLiC, the production server will be running one of these branches.
+    Generally, new releases should be done with a pull request from the ``development`` branch.
+    Any bug-fix changes should be done with a pull request directly to the ``2.x`` branch.
+
 Exercise API integration tests
 ------------------------------
 
