@@ -2,6 +2,7 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise, Blob, FileReader */
 var FileSaver = require('file-saver');
+var Papa = require('papaparse');
 
 module.exports.format_dt = function (dt) {
     var out = [], row = [],
@@ -50,38 +51,34 @@ module.exports.format_dt = function (dt) {
   * Save (data), probably from format_dt(), to disk
   */
 module.exports.save = function (data) {
-    var blob, filename = window.location.pathname.replace('/', 'clic-') + '.csv';
+    var csv, blob, filename = window.location.pathname.replace('/', 'clic-') + '.csv';
 
-    blob = new Blob(data.map(function (d) {
-        return d.map(function (val) {
-            return '"' + (val || '').toString().replace(/"/g, '""').replace(/\n{2,}/g, "¶ ").replace(/\n+/g, ' ') + '"';
-        }).join(',') + '\r\n';
-    }), { type: "text/csv;charset=utf-8" });
+    csv = Papa.unparse(data.map(function (row) {
+        return row.map(function (val) {
+            return (val || '').toString().replace(/\n{2,}/g, "¶ ").replace(/\n+/g, ' ');
+        });
+    }), { newline: '\r\n' });
+    // Prepend a UTF-8 BOM so Excel opens the file as Unicode
+    blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv;charset=utf-8" });
     FileSaver.saveAs(blob, filename);
 };
 
 /** Turn a CSV file into state object **/
 module.exports.file_to_state = function (file) {
-    var i, header,
+    var i, header, rows,
         tag_column_offset = null,
-        lines = file.split('\r\n'),
         tag_columns = {},
         tag_column_order = [];
 
-    // Turn a CSV line string into an array of values
-    function parse_line(line) {
-        return line.split(/^"|","|"$/).slice(1, -1).map(function (val) {
-            return val.replace(/""/g, '"');
-        });
+    // Is the file actually JSON?
+    if (file.startsWith("{") && file.endsWith("}")) {
+        return JSON.parse(file);
     }
 
-    // Is the file actually JSON?
-    if (lines.length === 1 && lines[0].startsWith("{") && lines[0].endsWith("}")) {
-        return JSON.parse(lines.join("\r\n"));
-    }
+    rows = Papa.parse(file, { skipEmptyLines: true }).data;
+    header = rows[0] || [];
 
     // Find tags in header
-    header = parse_line(lines[0]);
     for (i = 0; i < header.length; i++) {
         if (header[i].indexOf("tag:") === 0) {
             if (tag_column_offset === null) {
@@ -93,8 +90,8 @@ module.exports.file_to_state = function (file) {
     }
 
     // Populate tag values if any where found
-    (tag_column_offset !== null ? lines.splice(1) : []).map(function (line_str) {
-        var j, line = parse_line(line_str);
+    (tag_column_offset !== null ? rows.slice(1) : []).map(function (line) {
+        var j;
 
         for (j = 0; j < tag_column_order.length; j++) {
             if (line[tag_column_offset + j] > ' ') {
