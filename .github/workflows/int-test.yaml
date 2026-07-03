@@ -5,11 +5,11 @@ on:
   push:
     branches:
       - '[0-9]+\.[0-9]+'
-      - 'development'
+      - 'test'
   pull_request:
     branches:
       - '[0-9]+\.[0-9]+'
-      - 'development'
+      - 'test'
 
 name: int-test
 
@@ -39,6 +39,20 @@ jobs:
           fetch-tags: true
       - name: Install prerequisites
         run: sudo ./prerequisites.sh
+      - name: Cache pip downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-to-freeze.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Create config file
         # NB: Full hostname is too long for a self-signed cert
         run: |
