@@ -32,23 +32,23 @@ LIBRARIES_CSS = \
     node_modules/cookieconsent/build/cookieconsent.min.css \
     node_modules/bootstrap/dist/css/bootstrap-reboot.min.css
 
-compile: node_modules/ clean-unused $(OUT_FILES)
+compile: node_modules/.requirements clean-unused $(OUT_FILES)
 
 start: all
 
 install:
 	./install.sh
 
-test: node_modules/
+test: node_modules/.requirements
 	$(NODE_CMD) node_modules/.bin/tape tests/test_*.js
 
-coverage: node_modules/
+coverage: node_modules/.requirements
 	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
 	mkdir -p ../client/www/coverage
 	ln -frs coverage/lcov-report ../client/www/coverage/client
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
-lint: node_modules/
+lint: node_modules/.requirements
 	$(NODE_CMD) node_modules/jslint/bin/jslint */*.js
 
 clean:
@@ -64,9 +64,9 @@ clean-unused:
 watch:
 	while inotifywait -r lib; do make compile; done
 
-node_modules/: package.json package-lock.json
+node_modules/.requirements: package.json package-lock.json
 	npm ci
-	touch node_modules/
+	touch $@
 
 # Move minified output to a version with sha1 hash in it's name, symlink to proper output
 sha1_symlink = \
