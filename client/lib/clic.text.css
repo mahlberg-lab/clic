@@ -35,7 +35,7 @@ nav section[data-name="text"] label.chapter-sentence input:checked + span {
 .book-content.h-chapter-sentence span.chapter-sentence {
   border-top: 1px solid #999;
   border-bottom: 1px solid #999;
-  background: hsl(220, 15%, 90);
+  background: hsl(220, 15%, 90%);
 }
 .book-content.h-chapter-sentence span.boundary-sentence {
   border-right: 1px solid #999;
