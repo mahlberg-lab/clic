@@ -29,7 +29,7 @@ WWW_SERVER_ALIASES ?=
 ifeq ($(PROJECT_MODE),development)
     WWW_UWSGI_CACHE_ZONE ?= off
 else
-    WWW_UWSGI_CACHE_ZONE ?= api_cache
+    WWW_UWSGI_CACHE_ZONE ?= api_cache_${PROJECT_NAME}
 endif
 WWW_UWSGI_TIMEOUT ?= 5m
 # Make a guess at branch name, since production instances will be detached HEAD

@@ -71,7 +71,7 @@ upstream uwsgi_${PROJECT_NAME}_server {
 
 # NB: inactive items get thrown away entirely, uwsgi_cache_background_update
 # won't save us.
-uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=api_cache_${PROJECT_NAME}:8m inactive=2w max_size=${API_UWSGI_CACHE_SIZE};
+uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=${WWW_UWSGI_CACHE_ZONE}:8m inactive=2w max_size=${API_UWSGI_CACHE_SIZE};
 
 server {
     listen 80;
