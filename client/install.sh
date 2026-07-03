@@ -33,9 +33,11 @@ case "${WWW_CERT_KEY}" in /var/lib/dehydrated/*)
     # Make sure server-name is in domains.txt
     mkdir -p "/etc/dehydrated"
     [ -e "/etc/dehydrated/domains.txt" ] || echo "" > "/etc/dehydrated/domains.txt"
-    grep -qE "^${WWW_SERVER_NAME}" "/etc/dehydrated/domains.txt" || {
+    if grep -qE "^${WWW_SERVER_NAME} " "/etc/dehydrated/domains.txt"; then
+        sed -i "s/^${WWW_SERVER_NAME} .*/${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES}/" "/etc/dehydrated/domains.txt"
+    else
         echo "${WWW_SERVER_NAME} ${WWW_SERVER_ALIASES}" >> "/etc/dehydrated/domains.txt"
-    }
+    fi
 
     # Self-signed bootstrap-cert
     mkdir -p "/var/lib/dehydrated/certs/${WWW_SERVER_NAME}"
