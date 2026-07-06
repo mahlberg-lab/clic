@@ -73,7 +73,7 @@ function select_components(page_state) {
 
     if (!page || page_state.doc() !== current_page) {
         if (page && page.shutdown) {
-            deconstructors.push({ reload: page.shutdown });
+            deconstructors.push({ reload: page.shutdown.bind(page) });
         }
         PageConstructor = page_classes[page_state.doc()] || page_classes[''];
         page = new PageConstructor(document.getElementById('content'));
@@ -81,7 +81,7 @@ function select_components(page_state) {
 
     if (!cb || page_state.doc() !== current_page) {
         if (cb && cb.shutdown) {
-            deconstructors.push({ reload: cb.shutdown });
+            deconstructors.push({ reload: cb.shutdown.bind(cb) });
         }
         ControlBarConstructor = controlbar_classes[page_state.doc()] || controlbar_classes[''];
         cb = new ControlBarConstructor(document.getElementById('control-bar'));
@@ -93,7 +93,7 @@ function select_components(page_state) {
 
     current_page = page_state.doc();
     window.document.title = page.page_title(page_state);
-    return [cb, page, analytics].concat(deconstructors);
+    return deconstructors.concat([cb, page, analytics]);
 }
 
 var pp = new PagePromise(select_components, state_defaults);

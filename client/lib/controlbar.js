@@ -116,13 +116,13 @@ function ControlBar(control_bar) {
 
     this.control_bar = control_bar;
 
-    window.document.querySelectorAll('nav + .handle')[0].addEventListener('click', function (e) {
+    self.recordEventListener(window.document.querySelectorAll('nav + .handle')[0], 'click', function (e) {
         e.preventDefault();
         e.stopPropagation();
         control_bar.classList.toggle('in');
     });
 
-    control_bar.addEventListener('click', function (e) {
+    self.recordEventListener(control_bar, "click", function (e) {
         if (clickedOn(e, 'HEADER', null)) {
             e.preventDefault();
             e.stopPropagation();
@@ -171,7 +171,7 @@ function ControlBar(control_bar) {
         }
     });
 
-    control_bar.addEventListener('keypress', function (e) {
+    self.recordEventListener(control_bar, "keypress", function (e) {
         if (e.keyCode === 13) {
             // Don't submit on enter, change instead
             e.preventDefault();
@@ -181,7 +181,7 @@ function ControlBar(control_bar) {
         }
     });
 
-    self.control_bar.addEventListener('change', function (e) {
+    self.recordEventListener(control_bar, "change", function (e) {
         if (this.change_timeout) {
             window.clearTimeout(this.change_timeout);
         }
@@ -268,6 +268,28 @@ function ControlBar(control_bar) {
         window.dispatchEvent(new window.CustomEvent('state_new', { detail: new_state }));
     });
 }
+
+/** addEventListner, but record entries in self.event_listeners for removal on shutdown */
+ControlBar.prototype.recordEventListener = function (target, type, listener) {
+    if (!this.event_listeners) {
+        this.event_listeners = [];
+    }
+    target.addEventListener(type, listener);
+    this.event_listeners.push([target, type, listener]);
+};
+
+ControlBar.prototype.shutdown = function shutdown(page_state) {
+    var self = this;
+
+    return new Promise(function (resolve) {
+        // Remove any registered event listeners
+        (self.event_listeners || []).forEach(function (x) {
+            x[0].removeEventListener(x[1], x[2]);
+        });
+        self.event_listeners = undefined;
+        resolve();
+    });
+};
 
 // Refresh controls based on page_state
 ControlBar.prototype.reload = function reload(page_state) {
