@@ -57,8 +57,9 @@ function ControlBarFlexiConc() {
 ControlBarFlexiConc.prototype = Object.create(ControlBar.prototype);
 
 ControlBarFlexiConc.prototype.shutdown = function shutdown(page_state) {
-    // Not a flexiconc page, shutdown if needed & carry on
-    return flexiclic ? flexiclic.shutdown() : Promise.resolve({});
+    return ControlBar.prototype.shutdown.apply(this, arguments).then(function () {
+        return flexiclic ? flexiclic.shutdown() : {};
+    });
 };
 
 ControlBarFlexiConc.prototype.reload = function reload(page_state) {
