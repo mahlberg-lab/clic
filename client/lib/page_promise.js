@@ -85,9 +85,20 @@ PagePromise.prototype.page_load = function (p, comp_fn) {
         self.loading_banner(1);
 
         return Promise.all(page_components.map(function (x) {
-            var fn = x[comp_fn] || function () { return Promise.resolve({}); };
+            var fn, page_p;
 
-            return (fn.call(x, page_state)).catch(function (err) {
+            try {
+                if (x[comp_fn]) {
+                    fn = x[comp_fn];
+                    page_p = fn.call(x, page_state);
+                } else {
+                    page_p = Promise.resolve({});
+                }
+            } catch (e) {
+                // Catch synchronous errors and pipe them into same machinery
+                page_p = Promise.reject(e);
+            }
+            return page_p.catch(function (err) {
                 // Turn any error output back into a level: { message: ... } object
                 var rv = { a: self.alerts.err_to_alert(err) };
                 if (rv.a[1] === 'error') { console.error(err); }
