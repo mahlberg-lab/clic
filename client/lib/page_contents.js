@@ -23,9 +23,12 @@ PageContents.prototype.reload = function reload(page_state) {
         var carousel_el = self.content_el.querySelector('#content > .clic-contents > .carousel');
 
         function gen_carousel_item(d) {
+            if (!d.example_url) {
+                d.example_url = '/concordance?corpora=' + d.id;
+            }
             return [
-                '<li style="background-image: url(/api/corpora/image?corpora=' + encodeURIComponent(d.id) + '"><a href="/concordance?corpora=' + d.id + '">',
-                '  <span class="carousel-title">' + d.title + '</span>',
+                '<li style="background-image: url(/api/corpora/image?corpora=' + encodeURIComponent(d.id) + ')"><a href="' + escapeHTML(d.example_url) + '">',
+                '  <span class="carousel-title">' + escapeHTML(d.title) + '</span>',
                 '  <strong>' + d.book_count.toLocaleString() + '</strong> books,<br/>',
                 '  <strong>' + d.word_count.toLocaleString() + '</strong> total words</a>',
                 '</li>',

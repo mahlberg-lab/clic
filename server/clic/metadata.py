@@ -71,6 +71,7 @@ def corpora_headlines(cur):
     cur.execute("""
         SELECT c.name
              , c.title
+             , c.example_url
              , COUNT(*) book_count
              , SUM((
                  SELECT SUM(word_count)
@@ -87,10 +88,11 @@ def corpora_headlines(cur):
     ))
 
     out = []
-    for (c_id, c_title, book_count, word_count) in cur:
+    for (c_id, c_title, example_url, book_count, word_count) in cur:
         out.append(dict(
             id='corpus:%s' % c_id,
             title=c_title,
+            example_url=example_url,
             book_count=book_count,
             word_count=word_count,
         ))

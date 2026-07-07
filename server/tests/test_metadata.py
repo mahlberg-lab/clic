@@ -112,7 +112,11 @@ It was an iron bar
             """.strip(),
         )
         self.put_corpora(
-            dict(name="zcorp", contents=['ut_corpora_3', 'ut_corpora_2']),
+            dict(
+                name="zcorp",
+                contents=['ut_corpora_3', 'ut_corpora_2'],
+                example_url="https://clic-fiction.com/concordance?corpora=zcorp",
+            ),
             dict(name="acorp", contents=['ut_corpora_1']),
         )
         out = corpora_headlines(self.pg_cur())
@@ -120,12 +124,16 @@ It was an iron bar
             {
                 "id": "corpus:zcorp",
                 "title": "UT corpus zcorp",
+                # example_url passed through put_corpus, with clic-fiction.com stripped
+                "example_url": "/concordance?corpora=zcorp",
                 "book_count": 2,
                 "word_count": 8,
             },
             {
                 "id": "corpus:acorp",
                 "title": "UT corpus acorp",
+                # No example_url specified, so returned as None
+                "example_url": None,
                 "book_count": 1,
                 "word_count": 6,
             },
