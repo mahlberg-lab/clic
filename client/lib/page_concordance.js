@@ -267,17 +267,6 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         tag_state = page_state.state('tag_columns'),
         tag_column_order = page_state.state('tag_column_order');
 
-    function shallow_copy(x) {
-        var k, out = {};
-
-        for (k in x) {
-            if (x.hasOwnProperty(k)) {
-                out[k] = x[k];
-            }
-        }
-
-        return out;
-    }
     for (i = 0; i < data.length; i++) {
         data[i].DT_RowId = data[i][3][0] + ':' + data[i][3][1] + ':' + data[i][3][2];
         data[i].DT_RowClass = ''; // Make sure we clear any previous RowClass
@@ -333,7 +322,7 @@ PageConcordance.prototype.post_process = function (page_state, kwicTerms, kwicSp
         }
         // Turn dict of book => rows into array of [book, rows]
         // NB: Shallow copy as otherwise cached_get's copy gets modified
-        raw_data = shallow_copy(raw_data);
+        raw_data = shallow_clone(raw_data);
         raw_data.data = Object.entries(groupedData);
 
         r = page_state.clone({args: { 'table-type': 'basic', corpora: [] }}).to_url();

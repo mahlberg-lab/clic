@@ -2,8 +2,6 @@
 /*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
 /*global Promise */
 var DataTable = require('datatables.net');
-var api = require('./api.js');
-var State = require('./state.js');
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
