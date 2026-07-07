@@ -67,6 +67,11 @@ PageKeyword.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a reference subset", "warn");
     }
 
+    if (page_state.speculative) {
+        // Don't allow speculative updates, block behind confirm button
+        throw new DisplayError("Confirm to continue processing", "confirm");
+    }
+
     return this.cached_get('keyword', api_opts).then(this.post_process.bind(this, page_state));
 };
 
