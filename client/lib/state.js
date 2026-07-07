@@ -1,8 +1,6 @@
 "use strict";
 /*jslint todo: true, regexp: true, unparam: true, nomen: true */
 
-var flatten = require('./flatten.js');
-
 function search_to_obj(search) {
     var out = {};
     search.split(/;|&/).filter(function (str) {

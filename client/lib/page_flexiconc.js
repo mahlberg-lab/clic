@@ -5,8 +5,6 @@ var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 var concordance_utils = require('./concordance_utils.js');
 var chosen_init = require('./chosen_init.js');
-var quoteattr = require('./quoteattr.js').quoteattr;
-var shallow_clone = require('./shallow_clone.js').shallow_clone;
 var flexiclic = require('./flexiclic.js').flexiclic;
 var util_flexiconc = require('./util_flexiconc.js');
 

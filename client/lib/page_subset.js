@@ -3,7 +3,6 @@
 /*global Promise */
 var PageConcordance = require('./page_concordance.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
-var concordance_utils = require('./concordance_utils.js');
 
 // PageSubset inherits PageConcordance
 function PageSubset() {
