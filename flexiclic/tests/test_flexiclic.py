@@ -178,16 +178,17 @@ class TestFlexiClic(unittest.IsolatedAsyncioTestCase):
 
     async def test_compute_path_speculate(self):
         """
-        Don't recompute source concordance in speculate
+        Speculative queries always require user confirmation
         """
         with self.assertRaises(errors.UserConfirmError):
             out = [x async for x in self._compute_path(data=self.conc_data, path=[
             ], speculative=True, should_fetch=False)]
-        # After running the query, can speculate
+        # Even after running the query, speculating still requires confirmation
         out = [x async for x in self._compute_path(data=self.conc_data, path=[
         ], should_fetch=True)]
-        out = [x async for x in self._compute_path(data=self.conc_data, path=[
-        ], speculative=True, should_fetch=False)]
+        with self.assertRaises(errors.UserConfirmError):
+            out = [x async for x in self._compute_path(data=self.conc_data, path=[
+            ], speculative=True, should_fetch=False)]
 
     async def test_compute_path_nopartition(self):
         # No path, just get lines back in same order
