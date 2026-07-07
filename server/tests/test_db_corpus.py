@@ -98,6 +98,93 @@ class Test_put_corpus(RequiresPostgresql, unittest.TestCase):
         cur.execute("SELECT carousel_image FROM corpus WHERE name = %s", ("ut_corp_noimg_b",))
         self.assertEqual(cur.fetchone(), (None,))
 
+    def test_example_url(self):
+        """example_url is stored, and clic-fiction.com hostname stripped"""
+        cur = self.pg_cur()
+
+        # Full clic-fiction.com URL is rewritten to a relative path
+        put_corpus(cur, dict(
+            name="ut_corp_url_full",
+            title="UT corpus url full",
+            ordering=0,
+            example_url="https://clic-fiction.com/concordance?corpora=dickens",
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_full",))
+        self.assertEqual(cur.fetchone(), ("/concordance?corpora=dickens",))
+
+        # A URL to another host is left alone
+        put_corpus(cur, dict(
+            name="ut_corp_url_other",
+            title="UT corpus url other",
+            ordering=0,
+            example_url="https://example.com/somewhere",
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_other",))
+        self.assertEqual(cur.fetchone(), ("https://example.com/somewhere",))
+
+        # An already-relative URL is left alone
+        put_corpus(cur, dict(
+            name="ut_corp_url_rel",
+            title="UT corpus url rel",
+            ordering=0,
+            example_url="/concordance?corpora=other",
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_rel",))
+        self.assertEqual(cur.fetchone(), ("/concordance?corpora=other",))
+
+    def test_no_example_url(self):
+        """An absent / falsy example_url results in NULL"""
+        cur = self.pg_cur()
+
+        # Key missing entirely
+        put_corpus(cur, dict(
+            name="ut_corp_nourl_a",
+            title="UT corpus no url a",
+            ordering=0,
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_nourl_a",))
+        self.assertEqual(cur.fetchone(), (None,))
+
+        # Key present but None
+        put_corpus(cur, dict(
+            name="ut_corp_nourl_b",
+            title="UT corpus no url b",
+            ordering=0,
+            example_url=None,
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_nourl_b",))
+        self.assertEqual(cur.fetchone(), (None,))
+
+    def test_update_example_url(self):
+        """Re-inserting overwrites example_url, including clearing to NULL"""
+        cur = self.pg_cur()
+        put_corpus(cur, dict(
+            name="ut_corp_url_upd",
+            title="UT corpus url upd",
+            ordering=0,
+            example_url="https://clic-fiction.com/first",
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_upd",))
+        self.assertEqual(cur.fetchone(), ("/first",))
+
+        put_corpus(cur, dict(
+            name="ut_corp_url_upd",
+            title="UT corpus url upd",
+            ordering=0,
+            example_url="https://clic-fiction.com/second",
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_upd",))
+        self.assertEqual(cur.fetchone(), ("/second",))
+
+        # Dropping the key back to nothing NULLs the column again
+        put_corpus(cur, dict(
+            name="ut_corp_url_upd",
+            title="UT corpus url upd",
+            ordering=0,
+        ))
+        cur.execute("SELECT example_url FROM corpus WHERE name = %s", ("ut_corp_url_upd",))
+        self.assertEqual(cur.fetchone(), (None,))
+
 
 class Test_add_book_to_corpus(RequiresPostgresql, unittest.TestCase):
     def _book_ids_in(self, cur, corpus_name):

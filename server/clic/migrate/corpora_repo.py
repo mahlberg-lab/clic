@@ -32,6 +32,7 @@ def parse_corpora_bib(corpora_dir, bib_name='corpora.bib'):
             corpora[c_id]['description'] = lt2txt.latex_to_text(entry.fields.get('abstract', ''))
             corpora[c_id]['carousel_image_path'] = carousel_image_path
             corpora[c_id]['ordering'] = int(lt2txt.latex_to_text(entry.fields['number']))
+            corpora[c_id]['example_url'] = lt2txt.latex_to_text(entry.fields['example_url']) if 'example_url' in entry.fields else None
         else:
             for kw in keywords:
                 corpora[kw]['contents'].append(lt2txt.latex_to_text(entry.fields['shorttitle']))

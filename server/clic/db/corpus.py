@@ -13,6 +13,7 @@ def put_corpus(cur, corpus):
     - title: Visible title of corpus
     - carousel_image_path: Filename to use for carousel image
     - ordering: Ordering of corpus entries in DB
+    - example_url: An example CLiC URL to use in the carousel. Hostname will be stripped
     """
     # Replace image path with image content
     if corpus.get('carousel_image_path', None):
@@ -21,14 +22,20 @@ def put_corpus(cur, corpus):
     else:
         corpus['carousel_image'] = None
 
+    if corpus.get('example_url', None):
+        corpus["example_url"] = corpus["example_url"].replace("https://clic-fiction.com/", "/")
+    else:
+        corpus["example_url"] = None
+
     # Insert, or update existing entry with matching name
     cur.execute("""
-        INSERT INTO corpus (name, title, carousel_image, ordering)
-             VALUES (%(name)s, %(title)s, %(carousel_image)s, %(ordering)s)
+        INSERT INTO corpus (name, title, carousel_image, ordering, example_url)
+             VALUES (%(name)s, %(title)s, %(carousel_image)s, %(ordering)s, %(example_url)s)
         ON CONFLICT (name) DO UPDATE
                 SET title = EXCLUDED.title
                   , carousel_image = EXCLUDED.carousel_image
                   , ordering = EXCLUDED.ordering
+                  , example_url = EXCLUDED.example_url
           RETURNING corpus_id
     """, corpus)
     (corpus_id,) = cur.fetchone()

@@ -113,7 +113,7 @@ class Test_parse_corpora_bib(unittest.TestCase, RequiresCorporaDir):
     def test_call(self):
         corpora_dir = self.corpora_dir({
             'images/ChiLit_0.4.jpg': "JPEG!",
-            'corpora.bib': """
+            'corpora.bib': r"""
 @book{swift_gullivers_1726,
         title = {Gulliver's Travels into Several Remote Nations of the World},
         url = {https://www.gutenberg.org/ebooks/829},
@@ -134,6 +134,7 @@ class Test_parse_corpora_bib(unittest.TestCase, RequiresCorporaDir):
         publisher = {Centre for Corpus Research},
         author = {Čermáková, A. and Mahlberg, M. and Wiegand, V.},
         date = {2017},
+        example_url = {https://clic-fiction.com/toot?leap\&peep},
         keywords = {corpus}
 }
 
@@ -178,6 +179,8 @@ class Test_parse_corpora_bib(unittest.TestCase, RequiresCorporaDir):
                 description='',
                 ordering=3,
                 carousel_image_path=os.path.join(corpora_dir, 'images', 'ChiLit_0.4.jpg'),
+                # NB: Unescaped
+                example_url="https://clic-fiction.com/toot?leap&peep",
                 contents=['brass', 'toadylion'],
             ), dict(
                 name='ArTs',
@@ -185,6 +188,7 @@ class Test_parse_corpora_bib(unittest.TestCase, RequiresCorporaDir):
                 description='',
                 ordering=4,
                 carousel_image_path=None,
+                example_url=None,
                 contents=['gulliver', 'toadylion'],
             ),
         ])
