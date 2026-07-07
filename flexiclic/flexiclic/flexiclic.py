@@ -93,12 +93,12 @@ class FlexiClic():
         else:
             opts, annotations, annotations_requires = path_util.normalize_source(opts, annotations, self._available_algorithms())
 
-            if self._flexiconc and self._source_opts == opts and self._source_annotations == annotations:
+            if speculative:
+                # We don't ever allow speculative updates in flexiconc
+                raise errors.UserConfirmError()
+            elif self._flexiconc and self._source_opts == opts and self._source_annotations == annotations:
                 # Previous object available and matches, recycle
                 concordance = self._flexiconc
-            elif speculative:
-                # Need to reconstruct, but not allowed yet
-                raise errors.UserConfirmError()
             else:
                 # Reconstruct self._flexiconc
                 # NB: Annotation options will get modified at some point, deepcopy now for later comparisons
