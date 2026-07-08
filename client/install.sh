@@ -181,14 +181,14 @@ Disallow: /api/
 
     # Top level files (e.g. flexiclic.whl) can't be cached
     location ~ ^/flexiclic/([^/]+)\$ {
-       alias "/srv/clic/flexiclic/www/\$1";
+       alias "${PROJECT_PATH}/flexiclic/www/\$1";
        gzip_static on;
        add_header 'Cache-Control' 'no-cache, no-store, must-revalidate';
     }
 
     # Stuff in subdirectories is versioned, so cache
     location ~ ^/flexiclic/(.+)/(.+)\$ {
-        alias "/srv/clic/flexiclic/www/\$1/\$2";
+        alias "${PROJECT_PATH}/flexiclic/www/\$1/\$2";
         expires 1d;
         add_header Cache-Control "public";
         gzip_static on;
