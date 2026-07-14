@@ -24,6 +24,8 @@ LIBRARIES_JS = \
     cookieconsent \
     nouislider \
     unidecode \
+    @codemirror/state \
+    @codemirror/view \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
@@ -97,7 +99,7 @@ www/css/libraries.min.css: package.json
 	cat $(LIBRARIES_CSS) > $@.mktmp
 	$(call sha1_symlink,css,$@.mktmp,$@)
 
-www/js/%.min.js: lib/%.js lib/*.js package.json build/esbuild.js
+www/js/%.min.js: lib/%.js lib/*.js lib/*.mjs package.json build/esbuild.js
 	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../lib .)
 	rm -f $@ $@.map

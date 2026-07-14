@@ -2,6 +2,23 @@
 var api = require('./api.js');
 var corpora_utils = require('lib/corpora_utils.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
+var cm_region_decoration = require('./cm-region-decoration.mjs');
+var cm_highlight_decoration = require('./cm-highlight-decoration.mjs');
+
+var cm_state = require('@codemirror/state');
+var cm_view = require('@codemirror/view');
+
+const ALL_REGIONS = [
+    'metadata.title',
+    'metadata.author',
+    'chapter.part',
+    'chapter.title',
+    'chapter.sentence',
+    'quote.quote',
+    'quote.suspension.short',
+    'quote.suspension.long',
+    'quote.embedded',
+];
 
 function PageText(content_el) {
     this.current = {};
@@ -10,12 +27,17 @@ function PageText(content_el) {
       * Scroll event: Find which chapter user is looking at, and send tweak event
       */
     this.scroll = function () {
-        var title_els, body_el = document.getElementById('scrollable-body');
+        var body_el = document.getElementById('scrollable-body'),
+            scroller_bottom = body_el.getBoundingClientRect().bottom,
+            title_els;
 
-        // Find all titles that are above the bottom of the page
-        title_els = Array.prototype.filter.call(document.querySelectorAll('#content .chapter-title'), function (el) {
-            return el.offsetParent && el.offsetTop < (el.offsetParent.scrollTop + el.offsetParent.offsetHeight);
-        });
+        // All chapter titles above the bottom of the viewport
+        title_els = Array.prototype.filter.call(
+            document.querySelectorAll('#content .chapter-title'),
+            function (el) {
+                return el.getBoundingClientRect().top < scroller_bottom;
+            }
+        );
         if (title_els.length > 0) {
             window.dispatchEvent(new window.CustomEvent('state_tweak', { detail: {
                 args: {
@@ -35,6 +57,54 @@ function PageText(content_el) {
     };
 
     /**
+      * Tear down the current CodeMirror view, if any
+      */
+    this.destroy_view = function () {
+        if (this.view) {
+            this.view.destroy();
+            this.view = null;
+        }
+    };
+
+    /**
+      * Build a fresh EditorView for the loaded content + regions + state.
+      */
+    this.build_view = function (init_content) {
+        var state;
+
+        this.destroy_view();
+        content_el.innerHTML = '';
+
+        state = cm_state.EditorState.create({
+            doc: init_content,
+            extensions: [
+                cm_view.EditorView.lineWrapping,
+                // NB: highlights first cause highlights to sit atop regions
+                cm_highlight_decoration.config,
+                cm_region_decoration.config,
+                // Let the outer #scrollable-body do the scrolling, not the editor
+                cm_view.EditorView.theme({
+                    "&": { height: "auto" },
+                    ".cm-scroller": { overflow: "visible", fontFamily: "inherit" },
+                    ".cm-content": { padding: 0, fontFamily: "inherit" },
+                    ".cm-line": { padding: 0 }
+                }),
+                // Set editor to readonly
+                cm_state.EditorState.readOnly.of(true),
+                cm_view.EditorView.editable.of(false),
+                cm_view.EditorView.theme({
+                    ".cm-content": { caretColor: "transparent" },
+                }),
+            ]
+        });
+
+        this.view = new cm_view.EditorView({
+            state: state,
+            parent: content_el
+        });
+    };
+
+    /**
       * Load the given text and add to page
       */
     this.reload = function reload(page_state) {
@@ -47,7 +117,7 @@ function PageText(content_el) {
                 window.clearTimeout(body_el.scroll_timeout);
             }
             body_el.scroll_timeout = window.setTimeout(function () {
-                if (!body_el.querySelector(":scope > #content > .book-content")) {
+                if (!body_el.querySelector(":scope > #content > .cm-editor")) {
                     // Not part of the page anymore, so tidy up
                     body_el.onscroll = undefined;
                     return;
@@ -61,84 +131,85 @@ function PageText(content_el) {
             var args;
 
             if (!page_state.arg('book')) {
+                this.destroy_view();
                 content_el.innerHTML = '';
                 throw new DisplayError("Please select a book", "warn");
             }
 
             if (JSON.stringify(page_state.arg('book')) !== this.current.book) {
-                // NB: Rebuild this.current to invalidate anything else stored in it
+                // Rebuild this.current to invalidate anything else stored in it
                 this.current = { book: JSON.stringify(page_state.arg('book')) };
 
-                content_el.innerHTML = '';
                 args = {
                     corpora: page_state.arg('book'),
-                    regions: [
-                        'metadata.title',
-                        'metadata.author',
-                        'chapter.part',
-                        'chapter.title',
-                        'chapter.sentence',
-                        'quote.quote',
-                        'quote.suspension.short',
-                        'quote.suspension.long',
-                        'quote.embedded',
-                    ],
+                    regions: ALL_REGIONS,
                 };
 
-                // Fetch book text, stash in page object
                 return api.get('text', args).then(function (data) {
-                    this.content = data.content;
-                    this.regions = data.data;
-                }.bind(this));
+                    return { content: data.content, regions: data.data };
+                });
             }
-        }.bind(this)).then(function () {
-            var book_el, highlight_arr, rerendered = false;
 
-            // Render book, highlighting any words in chapter_num (e.g. for concordance selection)
+            return {};
+        }.bind(this)).then(function (data) {
+            var highlight_arr, pos, rerendered = false;
+
+            if (!this.view) {
+                this.build_view(data.content);
+                rerendered = true;
+            } else {
+                data.content = this.view.state.doc.toString();
+            }
+            if (data.regions) {
+                cm_region_decoration.view_update_regions(this.view, data.regions);
+            }
+            cm_region_decoration.view_update_visible_regions(this.view, page_state.arg('chap-highlight'));
+
+            // (Re)build the view if the highlighted word range changed (or it's a new book)
             if (JSON.stringify(page_state.arg('word-highlight')) !== this.current['word-highlight']) {
                 this.current['word-highlight'] = JSON.stringify(page_state.arg('word-highlight'));
 
-                highlight_arr = page_state.arg('word-highlight').split(':').map(function (x) {
-                    return parseInt(x, 10);
+                // Turn word-highlight into an array of start/stop pairs
+                highlight_arr = page_state.arg('word-highlight').map(s => {
+                    return s.split(':').map(x => parseInt(x, 10));
                 });
-                if (highlight_arr[0] === 0 && highlight_arr[1] === 0) {
-                    highlight_arr = null;
-                }
 
-                content_el.innerHTML = '';
-                book_el = document.createElement('DIV');
-                book_el.className = 'book-content';
-                book_el.innerHTML = corpora_utils.regions_to_html(this.content, this.regions, highlight_arr);
-                content_el.appendChild(book_el);
-                rerendered = true;
+                cm_highlight_decoration.view_update_highlights(this.view, highlight_arr);
             }
-
-            // Add a highlight-class for each specified highlight
-            content_el.childNodes[0].className = 'book-content ' + page_state.arg('chap-highlight').map(function (x) {
-                return 'h-' + x.replace(/\./g, '-');
-            }).join(" ");
 
             if (rerendered) {
                 // Freshly loaded, try harder to find something to scroll to
                 // NB: Timeout to let content attach to page
                 window.setTimeout(function () {
+                    var target = -1, block = "center";
                     if (page_state.arg('word-highlight') !== '0:0') {
-                        content_el.querySelector('.book-content > .highlight').scrollIntoView({block: "center"});
+                        target = parseInt(page_state.arg('word-highlight').split(':')[0], 10);
                     } else if (page_state.arg('chapter_num') > 0) {
-                        content_el.querySelector('.book-content > .chapter-title.chapter-' + page_state.arg('chapter_num')).scrollIntoView();
+                        target = cm_region_decoration.chapter_title_pos(this.view, page_state.arg('chapter_num'));
+                        block = "start";
                     } else if (page_state.state('scroll-pos') > -1) {
                         document.getElementById('scrollable-body').scrollTop = page_state.state('scroll-pos');
+                        return;
                     }
-                }, 100);
-            } else {
-                if (page_state.arg('chapter_num') > 0) {
-                    content_el.querySelector('.book-content > .chapter-title.chapter-' + page_state.arg('chapter_num')).scrollIntoView();
+                    if (target >= 0) {
+                        this.view.dispatch({
+                            selection: { anchor: target },
+                            effects: cm_view.EditorView.scrollIntoView(target, { y: block }),
+                        });
+                    }
+                }.bind(this), 100);
+            } else if (page_state.arg('chapter_num') > 0) {
+                pos = cm_region_decoration.chapter_title_pos(this.view, page_state.arg('chapter_num'));
+                if (pos >= 0) {
+                    this.view.dispatch({
+                        selection: { anchor: pos },
+                        effects: cm_view.EditorView.scrollIntoView(pos, { y: "start" }),
+                    });
                 }
             }
 
-            // Return data for ControlBar.prototype.new_data
             return {
-                chapter_nums: corpora_utils.chapter_headings(this.content, this.regions),
+                chapter_nums: data.content && data.regions ? corpora_utils.chapter_headings(data.content, data.regions) : undefined,
                 chapter_num_selected: page_state.arg('chapter_num'),
             };
         }.bind(this));
@@ -150,6 +221,10 @@ function PageText(content_el) {
             chapter_num_selected: page_state.arg('chapter_num'),
         });
     };
+
+    this.shutdown = function () {
+        return Promise.resolve(this.destroy_view());
+    }.bind(this);
 
     this.page_title = function () {
         return "CLiC text view";

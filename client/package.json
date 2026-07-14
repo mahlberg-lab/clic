@@ -4,6 +4,8 @@
   "description": "CLiC clientside code",
   "homepage": "http://www.birmingham.ac.uk/schools/edacs/departments/englishlanguage/research/projects/clic.aspx",
   "dependencies": {
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.6",
     "bootstrap": "^4.1.2",
     "chosen-js": "^1.7.0",
     "cookieconsent": "^3.1.1",
