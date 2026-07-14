@@ -6,6 +6,32 @@ const xoConfig = [
     {
         space: 4,
         semicolon: true,
+        files: ['lib/**/*.mjs', 'tests/**/*.mjs'],
+        rules: {
+            'camelcase': 'off',
+            'capitalized-comments': 'off',
+            'object-shorthand': 'off',
+            'one-var': 'off',
+            'prefer-destructuring': 'off',
+            'no-warning-comments': 'off',
+            'arrow-body-style': 'off',
+
+            '@stylistic/object-curly-spacing': 'off',
+            '@stylistic/quotes': 'off',
+            '@stylistic/arrow-parens': 'off', // "(x) => x" is fine
+
+            'unicorn/filename-case': 'off', // test-cm-dirtyflag.mjs fine
+            'unicorn/no-array-callback-reference': 'off',
+            'unicorn/prefer-spread': 'off',
+            'unicorn/prevent-abbreviations': 'off',
+
+            'unicorn/prefer-module': 'off', // TODO: We shouldn't really have this
+            'unicorn/prefer-switch': 'off',
+        },
+    },
+    {
+        space: 4,
+        semicolon: true,
         files: ['lib/**/*.js', 'tests/**/*.js', 'build/**/*.js'],
         languageOptions: {
             ecmaVersion: 2022,
@@ -52,6 +78,7 @@ const xoConfig = [
         },
         rules: {
             // Keep ES5-era style: var, function decls, snake_case, "use strict" pragmas.
+            'arrow-body-style': 'off',
             'no-var': 'off',
             'prefer-const': 'off',
             'prefer-arrow-callback': 'off',
