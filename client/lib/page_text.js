@@ -184,8 +184,8 @@ function PageText(content_el) {
                 // NB: Timeout to let content attach to page
                 window.setTimeout(function () {
                     var target = -1, block = "center";
-                    if (page_state.arg('word-highlight') !== '0:0') {
-                        target = parseInt(page_state.arg('word-highlight').split(':')[0], 10);
+                    if (page_state.arg('word-highlight').length > 0) {
+                        target = parseInt(page_state.arg('word-highlight')[0].split(':')[0], 10);
                     } else if (page_state.arg('chapter_num') > 0) {
                         target = cm_region_decoration.chapter_title_pos(this.view, page_state.arg('chapter_num'));
                         block = "start";

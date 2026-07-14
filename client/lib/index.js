@@ -59,7 +59,7 @@ var state_defaults = {
     'book': '',
     'chapter_num': 0,
     'chapter_id': -1,
-    'word-highlight': '0:0',
+    'word-highlight': [],
     'scroll-pos': -1,
     'chap-highlight': [],
 };
