@@ -353,77 +353,50 @@ ControlBar.prototype.reload = function reload(page_state) {
             });
         }
 
-        // Hide the KWIC direction slider we're not using
-        if (elements['kwic-int-start'] && elements['kwic-int-end']) {
-            if (page_state.arg('kwic-dir') === 'start') {
-                elements['kwic-int-start'].disabled = false;
-                elements['kwic-int-end'].disabled = true;
-            } else {
-                elements['kwic-int-start'].disabled = true;
-                elements['kwic-int-end'].disabled = false;
+        // Populate selects that need dynamic content
+        Array.prototype.forEach.call(elements, function (el) {
+            if (!el.name || el.tagName === 'FIELDSET') {
+                Math.floor(0);
+            } else if (el.name === 'kwic-int-start') {
+                // Hide the KWIC direction slider we're not using
+                el.disabled = page_state.arg('kwic-dir') !== 'start';
+            } else if (el.name === 'kwic-int-end') {
+                // Hide the KWIC direction slider we're not using
+                el.disabled = page_state.arg('kwic-dir') === 'start';
+            } else if (el.name === "kwic-terms") {
+                // Make sure we consider existing options valid
+                el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
+            } else if (el.name === "corpora" || el.name === "refcorpora") {
+                // Populate corpora dropdowns
+                el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
+                    return to_options_html(c.children.map(function (child) {
+                        return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
+                    }), c.title);
+                }).join("");
+            } else if (el.name === "book") {
+                // Populate book dropdowns
+                el.innerHTML = self.corpora.corpora.map(function (c) {
+                    return to_options_html(c.children.map(function (child) {
+                        return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
+                    }), c.title);
+                }).join("");
             }
-        }
+            if (el.tagName === "SELECT" && el.classList.contains("allow-add-items")) {
+                // We should add any missing items for an allow-add-items
+                const existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
 
-        // Set values from page options, or defaults
-        Array.prototype.forEach.call(elements, function (el_or_array) {
-            Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
-                var new_val = page_state.arg(el.name), existingOptions;
-
-                if (el.tagName === 'FIELDSET') {
-                    Math.floor(0);
-                } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
-                    el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
-                } else if (el.tagName === 'INPUT' && el.type === "radio") {
-                    el.checked = new_val === el.value;
-                } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
-                    // Trigger slider update
-                    el.slider_div.noUiSlider.set(new_val.split(':'));
-                } else if (el.tagName === 'SELECT') {
-                    if (el.name === "kwic-terms") {
-                        // Make sure we consider existing options valid
-                        el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
-                    } else if (el.name === "corpora" || el.name === "refcorpora") {
-                        // Populate corpora dropdowns
-                        el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
-                            return to_options_html(c.children.map(function (child) {
-                                return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
-                            }), c.title);
-                        }).join("");
-                        // Resolve aliases in corpora selection, and turn back into a flat list
-                        new_val = [].concat.apply([], new_val.map(function (c) {
-                            return corpora.aliases[c] || [c];
-                        }));
-                    } else if (el.name === "book") {
-                        // Populate book dropdowns
-                        el.innerHTML = self.corpora.corpora.map(function (c) {
-                            return to_options_html(c.children.map(function (child) {
-                                return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
-                            }), c.title);
-                        }).join("");
-                    } else if (el.classList.contains("allow-add-items")) {
-                        // We should add any missing items before continuing
-                        existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
-
-                        el.append.apply(el, new_val.filter(function (x) {
-                            // Only want to add items not already in the list
-                            // TODO: When creating new algorithms via. JS, the value is [null]?
-                            return x && !existingOptions.has(x);
-                        }).map(function (x) {
-                            // Turn them into an already-selected Option
-                            return new Option(x, x, true, true);
-                        }));
-                    }
-                    jQuery(el).val(new_val);
-                } else if (Array.isArray(new_val) && new_val.length > 1) {
-                    // Multiple values, assume that there's multiple fields with the same name
-                    el.form.querySelectorAll("*[name='" + el.name + "']").forEach(function (otherEl, i) {
-                        otherEl.value = new_val[i];
-                    });
-                } else {
-                    el.value = new_val;
-                }
-            });
+                el.append.apply(el, page_state.arg(el.name).filter(function (x) {
+                    // Only want to add items not already in the list
+                    // TODO: When creating new algorithms via. JS, the value is [null]?
+                    return x && !existingOptions.has(x);
+                }).map(function (x) {
+                    // Turn them into an already-selected Option
+                    return new Option(x, x, true, true);
+                }));
+            }
         });
+
+        self._apply_state(elements, page_state);
 
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select,.tomselect'), function (el, i) {
@@ -501,6 +474,68 @@ ControlBar.prototype.tweak = function tweak(page_state) {
     return Promise.all(Object.keys(self.panels).map(function (n) {
         return self.panels[n].tweak(page_state);
     }));
+};
+
+ControlBar.prototype._apply_state = function (elements, page_state) {
+    var self = this;
+
+    // Set values from page options, or defaults
+    Array.prototype.forEach.call(elements, function (el_or_array) {
+        var all_els = el_or_array instanceof window.Element ? [el_or_array] : Array.from(el_or_array);
+        var first_el = all_els[0];
+        var new_val = page_state.arg(first_el.name);
+
+        if (first_el.tagName === 'FIELDSET' || !first_el.name) {
+            Math.floor(0);
+        } else if (first_el.tagName === 'INPUT' && first_el.type === "checkbox") {
+            all_els.forEach(function (el) {
+                el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
+            });
+        } else if (first_el.tagName === 'INPUT' && first_el.type === "radio") {
+            all_els.forEach(function (el) {
+                el.checked = new_val === el.value;
+            });
+        } else if (first_el.tagName === 'INPUT' && first_el.getAttribute('type') === "nouislider") {
+            if (all_els.length > 1) {
+                throw new Error("There should be only one nouislider with given name");
+            }
+            // Trigger slider update
+            first_el.slider_div.noUiSlider.set(new_val.split(':'));
+        } else if (first_el.tagName === 'SELECT') {
+            if (all_els.length > 1) {
+                throw new Error("There should be only one select with given name");
+            }
+            if (first_el.name === "corpora" || first_el.name === "refcorpora") {
+                // Resolve aliases in corpora selection, and turn back into a flat list
+                new_val = [].concat.apply([], new_val.map(function (c) {
+                    return self.corpora.aliases[c] || [c];
+                }));
+            }
+            jQuery(first_el).val(new_val);
+        } else {
+            if (!Array.isArray(new_val)) {
+                new_val = [new_val];
+            }
+
+            while (all_els.length > 1 && all_els.length > new_val.length) {
+                // Element list too long: Remove some (but stop before we empty the list)
+                all_els[all_els.length - 1].parentElement.removeChild(all_els[all_els.length - 1]);
+                all_els.pop();
+            }
+
+            // First item should be disabled (instead of removed) iff new_val is empty
+            all_els[0].disabled = (new_val.length === 0);
+
+            while (all_els.length < new_val.length) {
+                // Element list too short: Clone first element to add further elements
+                all_els.push(all_els[0].cloneNode());
+                all_els[all_els.length - 2].insertAdjacentElement("afterend", all_els[all_els.length - 1]);
+            }
+            all_els.forEach(function (el, i) {
+                el.value = new_val[i];
+            });
+        }
+    });
 };
 
 module.exports = ControlBar;
