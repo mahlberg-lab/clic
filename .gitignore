@@ -18,6 +18,7 @@
 /client/coverage
 /client/doc
 /client/node_modules/
+/client/.nyc_output/
 /client/www/coverage/
 /client/www/carousel-images
 /client/www/css/lib
