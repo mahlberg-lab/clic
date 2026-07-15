@@ -54,10 +54,12 @@ function region_to_class(r) {
 export function view_update_regions(view, regions) {
     let i, r;
     const marks = [];
+    const docLen = view.state.doc.length;
 
     for (i = 0; i < regions.length; i++) {
         r = regions[i];
-        if (r[2] > r[1]) {
+        // Doc might have changed since we generated regions, ignore any outside document
+        if (r[1] < docLen && r[2] <= docLen && r[2] > r[1]) {
             marks.push(Decoration.mark({class: region_to_class(r)}).range(r[1], r[2]));
         }
     }
