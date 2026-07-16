@@ -181,6 +181,21 @@ function ControlBar(control_bar) {
             return;
         }
 
+        // data-ctlb-command elements trigger a method on the controlbar
+        el = e.target.closest('*[data-ctlb-command]');
+        if (el) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            window.dispatchEvent(new window.CustomEvent('state_command', { detail: {
+                fn: self[el.getAttribute("data-ctlb-command")].bind.apply(
+                    self[el.getAttribute("data-ctlb-command")],
+                    [self].concat(JSON.parse(el.getAttribute("data-ctlb-command-args") || "[]")),
+                ),
+            }}));
+            return;
+        }
+
         el = e.target.closest('button[data-cm-command]');
         if (el) {
             e.stopPropagation();

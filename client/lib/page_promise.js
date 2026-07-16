@@ -54,6 +54,11 @@ PagePromise.prototype.wire_events = function () {
     window.addEventListener('state_speculative_update', state_event.bind(this, 'speculative_update'));
     window.addEventListener('state_new', state_event.bind(this, 'new'));
 
+    // state_command runs an async function wrapped in PagePromise machinery
+    window.addEventListener('state_command', function (e) {
+        this.command(e.detail.fn);
+    }.bind(this));
+
     document.querySelector("#confirm-update").addEventListener('click', function () {
         this.current_promise = this.current_promise.then(function () {
             var state = new State(window, this.state_defaults);
@@ -67,6 +72,21 @@ PagePromise.prototype.wire_events = function () {
 PagePromise.prototype.loading_banner = function (increment) {
     this.active_loads = Math.max(this.active_loads + increment, 0);
     document.body.classList.toggle('loading', this.active_loads > 0);
+};
+
+PagePromise.prototype.command = function (fn) {
+    var self = this;
+
+    return Promise.resolve(new State(window, this.state_defaults)).then(function (page_state) {
+        self.loading_banner(1);
+        return fn(page_state);
+    }).then(function () {
+        self.loading_banner(-1);
+    }).catch(function (err) {
+        self.alerts.error(err);
+        console.error(err);
+        self.loading_banner(-1);
+    });
 };
 
 PagePromise.prototype.page_load = function (p, comp_fn) {

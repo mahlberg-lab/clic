@@ -35,6 +35,23 @@ global.document = {
     },
 };
 
+// Sibling test files stash things on global.window (e.g. setTimeout); swap our own
+// fake in for the duration of a command test then restore, so we don't break them.
+function with_fake_window(t, fn) {
+    var prev_window = global.window;
+    global.window = {
+        location: { pathname: '/mydoc', search: '?a&b' },
+        history: { state: {} },
+    };
+    return fn().then(function () {
+        global.window = prev_window;
+        t.end();
+    }, function (err) {
+        global.window = prev_window;
+        t.end(err);
+    });
+}
+
 // Silence expected console.error calls from tests that intentionally trigger errors
 global.console.error = function () { return; };
 
@@ -297,5 +314,87 @@ test('page_load: rejected input promise routed to top-level catch', function (t)
         t.equal(pp.alerts.shown.length, 0, "No per-component alert produced");
         t.equal(pp.active_loads, 0, "Loading banner cleared");
         t.end();
+    });
+});
+
+test('command: fn receives a State built from window + state_defaults', function (t) {
+    reset_dom();
+    return with_fake_window(t, function () {
+        var received;
+        var pp = new PagePromise(function () { return []; }, { pigs: 'no' });
+        pp.alerts = fake_alerts();
+
+        return pp.command(function (page_state) {
+            received = page_state;
+            return Promise.resolve();
+        }).then(function () {
+            t.equal(received.doc(), '/mydoc', "State built from window.location.pathname");
+            t.deepEqual(received.arg(), ['a', 'b'], "State exposes querystring args");
+            t.equal(received.arg('pigs'), 'no', "state_defaults threaded through to State");
+            t.equal(pp.active_loads, 0, "Loading banner cleared");
+            t.equal(pp.alerts.errors.length, 0, "No top-level errors");
+        });
+    });
+});
+
+test('command: loading banner raised while fn runs, cleared on resolve', function (t) {
+    reset_dom();
+    return with_fake_window(t, function () {
+        var pp = make_pp([]);
+        var during;
+
+        return pp.command(function () {
+            during = pp.active_loads;
+            return Promise.resolve();
+        }).then(function () {
+            t.equal(during, 1, "Loading banner raised for the duration of fn");
+            t.equal(pp.active_loads, 0, "Loading banner cleared on completion");
+        });
+    });
+});
+
+test('command: rejected fn surfaces error via alerts.error and clears banner', function (t) {
+    reset_dom();
+    return with_fake_window(t, function () {
+        var pp = make_pp([]);
+        var err = new Error('async command boom!');
+
+        return pp.command(function () {
+            return Promise.reject(err);
+        }).then(function () {
+            t.equal(pp.alerts.errors.length, 1, "alerts.error called");
+            t.equal(pp.alerts.errors[0], err, "Original error passed through");
+            t.equal(pp.alerts.shown.length, 0, "command does not surface via alerts.show");
+            t.equal(pp.active_loads, 0, "Loading banner cleared after rejection");
+        });
+    });
+});
+
+test('command: synchronous throw from fn caught by outer catch', function (t) {
+    reset_dom();
+    return with_fake_window(t, function () {
+        var pp = make_pp([]);
+
+        return pp.command(function () {
+            throw new Error('sync command boom!');
+        }).then(function () {
+            t.equal(pp.alerts.errors.length, 1, "alerts.error called");
+            t.equal(pp.alerts.errors[0].message, 'sync command boom!', "Sync throw routed through catch");
+            t.equal(pp.active_loads, 0, "Loading banner cleared after sync throw");
+        });
+    });
+});
+
+test('command: non-promise return value from fn treated as success', function (t) {
+    reset_dom();
+    return with_fake_window(t, function () {
+        var pp = make_pp([]);
+
+        return pp.command(function () {
+            return 'not a promise';
+        }).then(function () {
+            t.equal(pp.alerts.errors.length, 0, "No errors for non-promise return");
+            t.equal(pp.active_loads, 0, "Loading banner cleared");
+        });
     });
 });
