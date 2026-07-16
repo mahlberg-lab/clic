@@ -115,7 +115,7 @@ www/css/%.min.css: lib/%.css lib/*.css package.json
 	    $<
 	$(call sha1_symlink,css,$@,$@)
 
-www/%.html: lib/%.html lib/controlbar.html $(filter-out %.html,$(OUT_FILES)) \
+www/%.html: lib/%.html lib/controlbar*.html $(filter-out %.html,$(OUT_FILES)) \
     $(PROJECT_PATH)/conf.mk \
     build/html_compile.js \
     package.json

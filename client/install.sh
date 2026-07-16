@@ -240,6 +240,7 @@ Disallow: /api/
     location = /keywords { try_files \$uri \$uri.html /index.html; }
     location = /count { try_files \$uri \$uri.html /index.html; }
     location = /text { try_files \$uri \$uri.html /index.html; }
+    location = /corpus { try_files \$uri \$uri.html /index.html; }
 
     location / {
         # Downloads links

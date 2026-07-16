@@ -9,6 +9,7 @@ var page_classes = {
     '/flexiconc': require('./page_flexiconc.js'),
     '/keywords': require('./page_keyword.js'),
     '/text': require('./page_text.js'),
+    '/corpus': require('./page_corpus.js'),
     '/count': require('./page_count.js'),
     '/': require('./page_contents.js'),
     '': function () {
@@ -23,6 +24,7 @@ var page_classes = {
 
 var controlbar_classes = {
     '/flexiconc': require('./controlbar_flexiconc.js'),
+    '/corpus': require('./controlbar_corpus.js'),
     '': require('./controlbar.js'),
 };
 
@@ -62,6 +64,11 @@ var state_defaults = {
     'word-highlight': [],
     'scroll-pos': -1,
     'chap-highlight': [],
+
+    'corpus-editoractive': 'no',
+    'corpus-content': '',
+    'corpus-regions': [],
+    'corpus-filename': 'clic-book.txt',
 };
 
 var page, cb, analytics, current_page = null;

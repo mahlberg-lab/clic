@@ -1,0 +1,61 @@
+  <details data-name="corpus">
+    <summary><a href="/corpus" title="Edit new and existing texts and inspect clictagger region tags">Corpus</a></summary>
+    <form>
+
+    <div class="button-group">
+      <button data-ctlb-command="load_from_file">Load from file</button>
+      <button data-ctlb-command="save_content">Save to file</button>
+      <button data-ctlb-command="save_regions">Save regions CSV</button>
+    </div>
+
+    <label for="ctlb-corpus-book">...or, load book from CLiC:</label>
+    <select id="ctlb-corpus-book" title="book" data-populate="book" data-placeholder="Select a book..." class="tomselect">
+    </select>
+
+    <p>To add texts into CLiC, you need to <a href="https://github.com/mahlberg-lab/corpora">open a pull request</a>.</p>
+
+    <h4><span>Highlight subsets</span></h4>
+      <label class="chapter-sentence">
+        <input name="chap-highlight" type="checkbox" value="chapter.sentence" /><span>Sentences</span>
+      </label>
+      <label class="quote-quote">
+        <input name="chap-highlight" type="checkbox" value="quote.quote" /><span>Quotes</span>
+      </label>
+      <label class="quote-suspension-short">
+        <input name="chap-highlight" type="checkbox" value="quote.suspension.short" /><span>Short suspensions</span>
+      </label>
+      <label class="quote-suspension-long">
+        <input name="chap-highlight" type="checkbox" value="quote.suspension.long" /><span>Long suspensions</span>
+      </label>
+      <label class="quote-embedded">
+        <input name="chap-highlight" type="checkbox" value="quote.embedded" /><span>Embedded quotes</span>
+      </label>
+
+    <h4><span>Editing</span></h4>
+      <div class="button-group">
+        <button data-cm-command="undo">Undo</button>
+        <button data-cm-command="redo">Redo</button>
+        <button data-cm-command="toggle-search-panel">Find / replace</button>
+      </div>
+
+      <label for="ctlb-corpus-insert-char">Add/replace quotation marks around selection:</label>
+      <div class="button-group corpus-insert-char">
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["“", "”"]' id="ctlb-corpus-insert-char">“”</button>
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["‘", "’"]'>‘’</button>
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["»", "«"]'>»«</button>
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["›", "‹"]'>›‹</button>
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["„", "“"]'>„“</button>
+        <button title="Add/replace quotation marks around selection" data-cm-command="insert-quotation" data-cm-command-args='["‚", "‘"]'>‚‘</button>
+      </div>
+
+      <label for="ctlb-text-apply-typopo">Apply <a href="https://typopo.org/" rel="noreferrer external" target="_blank">typopo</a> to:</label>
+      <div class="button-group text-apply-typopo">
+        <button data-scope="selection" data-cm-command="apply-typopo" data-cm-command-args='["selection"]' id="ctlb-text-apply-typopo">Selection</button>
+        <button data-scope="chapter" data-cm-command="apply-typopo" data-cm-command-args='["chapter"]'>Chapter</button>
+        <button data-scope="all" data-cm-command="apply-typopo" data-cm-command-args='["all"]'>Whole book</button>
+      </div>
+
+      <input type="submit" aria-label="submit" style="display: none;">
+
+    </form>
+  </details>
