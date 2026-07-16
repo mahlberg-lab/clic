@@ -6,10 +6,10 @@ var Papa = require('papaparse');
 var last_saved = {};
 
 var filesystem = proxyquire.noCallThru().load('lib/filesystem.js', {
-    'file-saver': {
-        saveAs: function (blob, filename) {
+    'browser-fs-access': {
+        fileSave: function (blob, opts) {
             last_saved = {
-                filename: filename,
+                filename: opts.fileName,
                 type: blob.type,
                 content: blob.arr,
             };
@@ -78,7 +78,7 @@ test('save', function (t) {
     last_saved.content = last_saved.content.join("").split("\r\n");
     t.deepEqual(last_saved, {
         filename: 'ut-path.csv',
-        type: { type: 'text/csv;charset=utf-8' },
+        type: { type: 'text/csv' },
         content: [
             // Leading UTF-8 BOM so Excel opens as Unicode; quotes within values get escaped
             Papa.BYTE_ORDER_MARK + '"There were ""five"" carrots",left in the bag',

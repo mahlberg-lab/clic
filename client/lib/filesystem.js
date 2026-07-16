@@ -1,5 +1,5 @@
 "use strict";
-var FileSaver = require('file-saver');
+var bfa = require('browser-fs-access');
 var Papa = require('papaparse');
 
 module.exports.format_dt = function (dt) {
@@ -57,8 +57,8 @@ module.exports.save = function (data) {
         });
     }), { newline: '\r\n' });
     // Prepend a UTF-8 BOM so Excel opens the file as Unicode
-    blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv;charset=utf-8" });
-    FileSaver.saveAs(blob, filename);
+    blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv" });
+    return bfa.fileSave(blob, { fileName: filename });
 };
 
 /** Turn a CSV file into state object **/

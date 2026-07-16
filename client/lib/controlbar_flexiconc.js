@@ -3,7 +3,7 @@ var ControlBar = require('./controlbar.js');
 var chosen_init = require('./chosen_init.js');
 var flexiclic = require('./flexiclic.js').flexiclic;
 var util_flexiconc = require('./util_flexiconc.js');
-var FileSaver = require('file-saver');
+var bfa = require('browser-fs-access');
 
 // lineid-picker: Create the iframe, pull values back
 function lineid_picker_init(el, page_state) {
@@ -286,7 +286,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
 
             if (event.target.classList.contains("action-save")) {
                 var blob = new window.Blob([JSON.stringify(page_state.to_json())], { type: "application/json" });
-                FileSaver.saveAs(blob, "clic-analysis-tree.json");
+                bfa.fileSave(blob, { fileName: "clic-analysis-tree.json" });
             } else if (event.target.classList.contains("action-load")) {
                 // Trigger main file loader, see filesystem.js
                 self.file_loader.trigger('load');
