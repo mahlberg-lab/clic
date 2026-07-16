@@ -12,6 +12,10 @@
   font-family: inherit;
   white-space: pre-wrap;
 }
+.book-content .cm-panel {
+  /* Reset font-family for search panels */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
 
 .book-content .metadata-title {
   font-size: 3rem;
