@@ -388,21 +388,32 @@ ControlBar.prototype.reload = function reload(page_state) {
             } else if (el.name === "kwic-terms") {
                 // Make sure we consider existing options valid
                 el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
-            } else if (el.name === "corpora" || el.name === "refcorpora") {
+            }
+
+            if (el.getAttribute("data-populate") === "corpora") {
                 // Populate corpora dropdowns
                 el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
                     return to_options_html(c.children.map(function (child) {
                         return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                     }), c.title);
                 }).join("");
-            } else if (el.name === "book") {
+                if (!el.name) {
+                    // Clear initial selection if there's no name (otherwise _apply_state will sort it out)
+                    el.selectedIndex = -1;
+                }
+            } else if (el.getAttribute("data-populate") === "book") {
                 // Populate book dropdowns
                 el.innerHTML = self.corpora.corpora.map(function (c) {
                     return to_options_html(c.children.map(function (child) {
                         return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
                     }), c.title);
                 }).join("");
+                if (!el.name) {
+                    // Clear initial selection if there's no name (otherwise _apply_state will sort it out)
+                    el.selectedIndex = -1;
+                }
             }
+
             if (el.tagName === "SELECT" && el.classList.contains("allow-add-items")) {
                 // We should add any missing items for an allow-add-items
                 const existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
