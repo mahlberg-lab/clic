@@ -288,8 +288,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
                 var blob = new window.Blob([JSON.stringify(page_state.to_json())], { type: "application/json" });
                 bfa.fileSave(blob, { fileName: "clic-analysis-tree.json" });
             } else if (event.target.classList.contains("action-load")) {
-                // Trigger main file loader, see filesystem.js
-                self.file_loader.trigger('load');
+                self.load_state('load');
             }
 
             return false;

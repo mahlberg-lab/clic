@@ -1,6 +1,7 @@
 "use strict";
 var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
+var bfa = require('browser-fs-access');
 var api = require('./api.js');
 var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
@@ -161,9 +162,9 @@ function ControlBar(control_bar) {
                     filesystem.save(filesystem.format_dt(window.dt));
                 }
             } else if (clickedOn(e, 'A', 'load')) {
-                self.file_loader.trigger('load');
+                self.load_state('load');
             } else if (clickedOn(e, 'A', 'merge')) {
-                self.file_loader.trigger('merge');
+                self.load_state('merge');
             } else {
                 throw new Error("Unknown action '" + e.target.className + "'");
             }
@@ -276,10 +277,15 @@ function ControlBar(control_bar) {
     if (window.document.getElementById('panel-tag-columns')) {
         this.panels['tag-columns'] = new PanelTagColumns(window.document.getElementById('panel-tag-columns'));
     }
+}
 
-    // Add file loader
-    this.file_loader = filesystem.file_loader(document, function (file, load_mode) {
-        var new_state = filesystem.file_to_state(file);
+ControlBar.prototype.load_state = function load_state(load_mode) {
+    var self = this;
+
+    return bfa.fileOpen().then(function (file) {
+        return file.text();
+    }).then(function (content) {
+        var new_state = filesystem.file_to_state(content);
 
         if (load_mode === 'merge') {
             new_state.state = concordance_utils.merge_tags({
@@ -289,8 +295,10 @@ function ControlBar(control_bar) {
         }
 
         window.dispatchEvent(new window.CustomEvent('state_new', { detail: new_state }));
+    }).catch(function (err) {
+        if (err.name !== 'AbortError') { throw err; }
     });
-}
+};
 
 /** addEventListner, but record entries in self.event_listeners for removal on shutdown */
 ControlBar.prototype.recordEventListener = function (target, type, listener) {

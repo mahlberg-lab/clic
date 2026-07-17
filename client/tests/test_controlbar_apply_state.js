@@ -19,12 +19,11 @@ var ControlBar = proxyquire.noCallThru().load('lib/controlbar.js', {
     './api.js': {},
     './panel_tagcolumn.js': function () {},
     './tagtoggle.js': function () {},
-    './filesystem.js': {
-        file_loader: function () { return { trigger: function () {} }; },
-    },
+    './filesystem.js': {},
     './concordance_utils.js': {},
     './chosen_init.js': { init: function () {}, refresh: function () {} },
     './cm-command.mjs': { dispatch: function () {} },
+    'browser-fs-access': {},
 });
 
 function fake_page_state(args) {
