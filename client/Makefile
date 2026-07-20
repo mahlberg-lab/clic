@@ -40,7 +40,7 @@ install:
 	./install.sh
 
 test: node_modules/.requirements
-	$(NODE_CMD) node_modules/.bin/tape tests/test_*.js
+	$(NODE_CMD) node_modules/.bin/tape tests/test_*.{js,mjs}
 
 coverage: node_modules/.requirements
 	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
