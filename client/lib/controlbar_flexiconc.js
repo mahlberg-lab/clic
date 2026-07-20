@@ -130,7 +130,7 @@ ControlBarFlexiConc.prototype.reload = function reload(page_state) {
         });
     }
 
-    return Promise.all(Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
+    return Promise.all(Array.from(window.document.querySelectorAll("#control-bar details[data-name='flexiconc'] .algorithm-group")).map(function (elAlgoGroup) {
         var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
             arg_algo = nested_args[algo_class] || [],
             elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select"),

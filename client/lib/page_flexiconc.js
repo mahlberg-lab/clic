@@ -77,7 +77,7 @@ function api_opts(page_state) {
 function update_control_bar_add_algo(available_algorithms_by_class) {
     // NB: Obviously this ought be happening in controlbar_flexiconc, but bodged here so we have access to metadata from compute_path
 
-    Array.from(window.document.querySelectorAll("#control-bar section[data-name='flexiconc'] .algorithm-group")).forEach(function (elAlgoGroup) {
+    Array.from(window.document.querySelectorAll("#control-bar details[data-name='flexiconc'] .algorithm-group")).forEach(function (elAlgoGroup) {
         var algo_class = elAlgoGroup.getAttribute('data-algorithm-class'),
             elAddSelect = elAlgoGroup.querySelector(":scope > .algorithm-add > select");
 

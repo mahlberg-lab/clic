@@ -111,6 +111,17 @@ function swaps_to_url(page_state, arg_swaps) {
     return page_state.clone(detail).to_url();
 }
 
+function scrollDetailsIntoView(el) {
+    // Wait until animation has finished, then scroll controlbar form into view if needed
+    window.setTimeout(function () {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 500);
+}
+
+
 function ControlBar(control_bar) {
     var self = this;
 
@@ -123,20 +134,20 @@ function ControlBar(control_bar) {
     });
 
     self.recordEventListener(control_bar, "click", function (e) {
-        if (clickedOn(e, 'HEADER', null)) {
+        var el;
+
+        el = e.target.closest('summary');
+        if (el) {
             e.preventDefault();
             e.stopPropagation();
 
             window.dispatchEvent(new window.CustomEvent('state_new', { detail: {
-                doc: e.target.pathname,
+                doc: el.firstChild.pathname,
                 args: { corpora: self.page_state ? self.page_state.arg('corpora') : [] },
                 state: {},
             }}));
 
-            // Wait until animation has finished, then scroll viewport
-            window.setTimeout(function () {
-                e.target.scrollIntoView({ behavior: "smooth" });
-            }, 300);
+            scrollDetailsIntoView(el.parentElement);
             return;
         }
 
@@ -187,7 +198,7 @@ function ControlBar(control_bar) {
         }
         this.change_timeout = window.setTimeout(function () {
             var new_search = {},
-                form = control_bar.querySelector('section.current form');
+                form = control_bar.querySelector('details[open] form');
             if (!form) {
                 // Don't try and commit changes until there's a current section (i.e. the form has finished loading)
                 // NB: This is triggered by updating noUiSlider on load
@@ -195,7 +206,7 @@ function ControlBar(control_bar) {
             }
 
             // Unchecked checkboxes should be emptied if not mentioned
-            Array.prototype.forEach.call(control_bar.querySelectorAll('section.current input[type=checkbox]:not(:checked)'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('details[open] input[type=checkbox]:not(:checked)'), function (el, i) {
                 new_search[el.name] = [];
             });
 
@@ -210,7 +221,7 @@ function ControlBar(control_bar) {
             });
 
             // Empty select boxes should be empty
-            Array.prototype.forEach.call(control_bar.querySelectorAll('section.current select[multiple]'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('details[open] select[multiple]'), function (el, i) {
                 new_search[el.name] = jQuery(el).val();
             });
 
@@ -305,13 +316,19 @@ ControlBar.prototype.reload = function reload(page_state) {
         self.corpora = corpora;
 
         // Enable the section for the page
-        Array.prototype.forEach.call(self.control_bar.querySelectorAll('section'), function (el, i) {
-            el.classList.toggle('current', '/' + el.getAttribute('data-name') === page_state.doc());
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('details[data-name]'), function (el, i) {
+            if ('/' + el.getAttribute('data-name') === page_state.doc()) {
+                el.setAttribute('open', 'open');
+
+                scrollDetailsIntoView(el);
+            } else {
+                el.removeAttribute('open');
+            }
         });
-        elements = (self.control_bar.querySelector('section.current form') || {elements: []}).elements;
+        elements = (self.control_bar.querySelector('details[open] form') || {elements: []}).elements;
 
         // Recreate tag toggles
-        tag_toggles_el = self.control_bar.querySelectorAll('section.current .tag-toggles')[0];
+        tag_toggles_el = self.control_bar.querySelectorAll('details[open] .tag-toggles')[0];
         if (tag_toggles_el) {
             tag_toggles_el.innerHTML = '';
             self.tag_toggles = Object.keys(page_state.state('tag_columns')).map(function (t) {
@@ -450,7 +467,7 @@ ControlBar.prototype.new_data = function new_data(data) {
     }
 
     if (data.allWords) {
-        el = this.control_bar.querySelector('section.current form').elements['kwic-terms'];
+        el = this.control_bar.querySelector('details[open] form').elements['kwic-terms'];
 
         if (el) {
             // Make sure KWIC term values already selected stay selectable
@@ -467,7 +484,7 @@ ControlBar.prototype.new_data = function new_data(data) {
     }
 
     if (data.chapter_nums || data.chapter_num_selected) {
-        el = this.control_bar.querySelector('section.current form').elements.chapter_num;
+        el = this.control_bar.querySelector('details[open] form').elements.chapter_num;
 
         if (el) {
             if (data.chapter_nums) {
