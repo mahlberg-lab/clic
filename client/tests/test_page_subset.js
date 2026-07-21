@@ -1,6 +1,4 @@
 "use strict";
-/*jslint plusplus: true, nomen: true */
-/*global Promise */
 var test = require('tape');
 var proxyquire =  require('proxyquire');
 
@@ -42,7 +40,7 @@ function page_state(pathname, search) {
 // Turn a space-separated list of words into a KwicTerms lookup
 function kwic_terms(words) {
     var out = {};
-    words.split(' ').map(function (w) {
+    words.split(' ').forEach(function (w) {
         out[w] = 1;
     });
     return out;

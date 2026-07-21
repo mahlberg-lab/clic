@@ -194,6 +194,21 @@ Disallow: /api/
         gzip_static on;
     }
 
+    # Top level files (e.g. jsclictagger.whl) can't be cached
+    location ~ ^/jsclictagger/([^/]+)\$ {
+       alias "${PROJECT_PATH}/jsclictagger/www/\$1";
+       gzip_static on;
+       add_header 'Cache-Control' 'no-cache, no-store, must-revalidate';
+    }
+
+    # Stuff in subdirectories is versioned, so cache
+    location ~ ^/jsclictagger/(.+)/(.+)\$ {
+        alias "${PROJECT_PATH}/jsclictagger/www/\$1/\$2";
+        expires 1d;
+        add_header Cache-Control "public";
+        gzip_static on;
+    }
+
     location /local-docs {
         alias "${PROJECT_PATH}/docs/_build";
     }
@@ -225,6 +240,7 @@ Disallow: /api/
     location = /keywords { try_files \$uri \$uri.html /index.html; }
     location = /count { try_files \$uri \$uri.html /index.html; }
     location = /text { try_files \$uri \$uri.html /index.html; }
+    location = /corpus { try_files \$uri \$uri.html /index.html; }
 
     location / {
         # Downloads links

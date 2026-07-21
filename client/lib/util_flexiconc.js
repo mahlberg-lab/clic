@@ -1,5 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, unparam: true, nomen: true */
 
 var flatten = require('./flatten.js');
 
@@ -18,7 +17,7 @@ module.exports.renest_args = function (args) {
         }
         // Empty list
         return {key: k, value: null};
-    }.bind(this)));
+    }));
 
     return out;
 };

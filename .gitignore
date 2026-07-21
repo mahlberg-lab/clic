@@ -18,6 +18,7 @@
 /client/coverage
 /client/doc
 /client/node_modules/
+/client/.nyc_output/
 /client/www/coverage/
 /client/www/carousel-images
 /client/www/css/lib
@@ -65,3 +66,7 @@ GeoLite2-*
 /flexiclic/www
 /flexiclic/flexiconc
 /flexiclic/tests/*.baseline.new
+
+/jsclictagger/prebuilt-wheels/
+/jsclictagger/www
+/jsclictagger/clictagger

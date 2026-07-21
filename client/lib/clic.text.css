@@ -6,62 +6,88 @@
   font-size: 1.5em;
 }
 
-.book-content span.metadata-title {
+/* CodeMirror gives .cm-content a monospace font and small padding by default;
+   override so the book reads like prose. */
+.book-content .cm-content {
+  font-family: inherit;
+  white-space: pre-wrap;
+}
+.book-content .cm-panel {
+  /* Reset font-family for search panels */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.book-content .metadata-title {
   font-size: 3rem;
 }
 
-.book-content span.metadata-author {
+.book-content .metadata-author {
   font-size: 2rem;
 }
 
-.book-content span.chapter-part,
-.book-content span.chapter-title {
+.book-content .chapter-part,
+.book-content .chapter-title {
   font-size: 1.7rem;
 }
 
-nav section[data-name="text"] label span {
+nav details[data-name="text"] label span {
   padding: 0 0.3rem;
   line-height: 1.4em;
 }
 
-nav section[data-name="text"] label.chapter-sentence input + span {
+nav details[data-name="text"] label.chapter-sentence input + span {
   margin-left: -2px;
 }
-nav section[data-name="text"] label.chapter-sentence input:checked + span {
+nav details[data-name="text"] label.chapter-sentence input:checked + span {
   border: 1px solid #999;
   border-radius: 2px;
   background: #eee;
 }
-.book-content.h-chapter-sentence span.chapter-sentence {
+.book-content.h-chapter-sentence:not(.df-dirty) .chapter-sentence {
   border-top: 1px solid #999;
-  border-bottom: 1px solid #999;
-  background: hsl(220, 15%, 90%);
-}
-.book-content.h-chapter-sentence span.boundary-sentence {
   border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+  background: rgba(0,0,0,0.1);
 }
 
-nav section[data-name="text"] label.quote-quote input:checked + span,
-.book-content.h-quote-quote span.quote-quote {
+nav details[data-name="text"] label.quote-quote input:checked + span,
+.book-content.h-quote-quote:not(.df-dirty) .quote-quote {
   background: hsl(205, 65%, 80%);
 }
 
-nav section[data-name="text"] label.quote-suspension-short input:checked + span,
-.book-content.h-quote-suspension-short span.quote-suspension-short {
+nav details[data-name="text"] label.quote-suspension-short input:checked + span,
+.book-content.h-quote-suspension-short:not(.df-dirty) .quote-suspension-short {
   background: hsl(50, 80%, 80%);
 }
 
-nav section[data-name="text"] label.quote-suspension-long input:checked + span,
-.book-content.h-quote-suspension-long span.quote-suspension-long {
+nav details[data-name="text"] label.quote-suspension-long input:checked + span,
+.book-content.h-quote-suspension-long:not(.df-dirty) .quote-suspension-long {
   background: hsl(20, 80%, 80%);
 }
 
-nav section[data-name="text"] label.quote-embedded input:checked + span,
-.book-content.h-quote-embedded span.quote-embedded {
+nav details[data-name="text"] label.quote-embedded input:checked + span,
+.book-content.h-quote-embedded:not(.df-dirty) .quote-embedded {
   background: hsl(145, 45%, 80%);
 }
 
-.book-content span.highlight {
+.book-content .highlight {
   background: yellow !important;
   font-weight: bold;
+}
+
+#confirm-region-refresh {
+  position: sticky;
+  bottom: 1rem;
+  float: right;
+  transition: opacity 0.3s ease-in;
+}
+.cm-editor:not(.df-dirty) + #confirm-region-refresh {
+  opacity: 0;
+  pointer-events: none;
+}
+#confirm-region-refresh .icon {
+  position: relative;
+  top: 0.3rem;
+  line-height: 4rem;
+  font-size: 5rem;
 }

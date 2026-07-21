@@ -1,11 +1,7 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
-var noUiSlider = require('nouislider');
-global.jQuery = jQuery;  // So chosen-js can find it
-var chosen = require('chosen-js');
-var TomSelect = require('tom-select');
+require('chosen-js');  // NB: Registers jQuery .chosen() plugin
+var TomSelect = require('tom-select').default;
 
 module.exports.init = function chosen_init(el) {
     el.querySelectorAll('select.tomselect').forEach(function (elSelect) {

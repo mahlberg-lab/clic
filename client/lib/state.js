@@ -1,12 +1,11 @@
 "use strict";
-/*jslint todo: true, regexp: true, unparam: true, nomen: true */
 
 function search_to_obj(search) {
     var out = {};
     search.split(/;|&/).filter(function (str) {
         // Remove empty entries from an empty search/hash
         return str.length > 0;
-    }).map(function (str) {
+    }).forEach(function (str) {
         var k, m = /(.*?)\=(.*)/.exec(str);
 
         if (!m) {
@@ -55,7 +54,7 @@ function State(win, defaults) {
     this.defaults = { '#': [] };
     if (defaults) {
         for (k in defaults) {
-            if (defaults.hasOwnProperty(k)) {
+            if (Object.hasOwn(defaults, k)) {
                 this.defaults[k] = defaults[k];
             }
         }
@@ -96,19 +95,19 @@ State.prototype.arg = function (name) {
         return this._args[name] || [];
     }
 
-    if (!this.defaults.hasOwnProperty(name)) {
+    if (!Object.hasOwn(this.defaults, name)) {
         throw new Error("Unknown arg " + name);
     }
 
     if (Array.isArray(this.defaults[name])) {
         return this._args[name] || this.defaults[name];
     }
-    return this._args.hasOwnProperty(name) ? (this._args[name] || []).join("") : this.defaults[name];
+    return Object.hasOwn(this._args, name) ? (this._args[name] || []).join("") : this.defaults[name];
 };
 
 /** Fetch key out of window.history.state object */
 State.prototype.state = function (name) {
-    if (!this.defaults.hasOwnProperty(name)) {
+    if (!Object.hasOwn(this.defaults, name)) {
         throw new Error("Unknown state variable " + name);
     }
 
@@ -169,7 +168,7 @@ State.prototype.update = function (changes, flush) {
 
     function compare(existing, change) {
         function replacer(item_key, value) {
-            if (value instanceof global.Set) {
+            if (value instanceof globalThis.Set) {
                 // Sets don't stringify by default: https://stackoverflow.com/a/46491780
                 return Array.from(value);
             }

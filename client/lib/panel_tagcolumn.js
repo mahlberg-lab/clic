@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 
 function choose_name(tag_columns, base_tag_name) {
     var new_tag_name,

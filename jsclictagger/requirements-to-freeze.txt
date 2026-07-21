@@ -1,0 +1,4 @@
+build >=1.5.0
+clictagger @ git+https://github.com/mahlberg-lab/clictagger
+-e .
+-e .[testing]

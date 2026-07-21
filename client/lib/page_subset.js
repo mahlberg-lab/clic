@@ -1,6 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var PageConcordance = require('./page_concordance.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
@@ -29,7 +27,7 @@ PageSubset.prototype.reload_data = function reload(page_state) {
     };
 
     // Lower-case all terms, put them in object
-    (page_state.arg('kwic-terms')).map(function (t, i) {
+    (page_state.arg('kwic-terms')).forEach(function (t, i) {
         if (t) {
             kwicTerms[t.toLowerCase()] = i + 1;
         }

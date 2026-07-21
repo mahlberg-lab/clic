@@ -1,14 +1,14 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise */
 var jQuery = require('jquery/dist/jquery.slim.js');
 var noUiSlider = require('nouislider');
+var bfa = require('browser-fs-access');
 var api = require('./api.js');
 var PanelTagColumns = require('./panel_tagcolumn.js');
 var TagToggle = require('./tagtoggle.js');
 var filesystem = require('./filesystem.js');
 var concordance_utils = require('./concordance_utils.js');
 var chosen_init = require('./chosen_init.js');
+var cm_command = require('./cm-command.mjs');
 
 var noUiSlider_opts = {
     'kwic-span': {
@@ -62,7 +62,7 @@ function to_options_html(opts, group_label) {
     }
 
     out = opts.map(function (t) {
-        if (t.hasOwnProperty('id') && t.hasOwnProperty('title')) {
+        if (Object.hasOwn(t, 'id') && Object.hasOwn(t, 'title')) {
             if (t.id === null) {
                 // A null ID means we're trying to hide this option (read: all authors)
                 return '';
@@ -99,7 +99,7 @@ function clickedOn(e, tagName, className) {
 function swaps_to_url(page_state, arg_swaps) {
     var detail = { args: {} };
 
-    arg_swaps.split(",").map(function (str) {
+    arg_swaps.split(",").forEach(function (str) {
         var to_swap = str.split(":");
 
         if (to_swap.length === 2) {
@@ -110,6 +110,17 @@ function swaps_to_url(page_state, arg_swaps) {
 
     return page_state.clone(detail).to_url();
 }
+
+function scrollDetailsIntoView(el) {
+    // Wait until animation has finished, then scroll controlbar form into view if needed
+    window.setTimeout(function () {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 500);
+}
+
 
 function ControlBar(control_bar) {
     var self = this;
@@ -123,20 +134,20 @@ function ControlBar(control_bar) {
     });
 
     self.recordEventListener(control_bar, "click", function (e) {
-        if (clickedOn(e, 'HEADER', null)) {
+        var el;
+
+        el = e.target.closest('summary');
+        if (el) {
             e.preventDefault();
             e.stopPropagation();
 
             window.dispatchEvent(new window.CustomEvent('state_new', { detail: {
-                doc: e.target.pathname,
+                doc: el.firstChild.pathname,
                 args: { corpora: self.page_state ? self.page_state.arg('corpora') : [] },
                 state: {},
             }}));
 
-            // Wait until animation has finished, then scroll viewport
-            window.setTimeout(function () {
-                e.target.scrollIntoView({ behavior: "smooth" });
-            }, 300);
+            scrollDetailsIntoView(el.parentElement);
             return;
         }
 
@@ -151,9 +162,9 @@ function ControlBar(control_bar) {
                     filesystem.save(filesystem.format_dt(window.dt));
                 }
             } else if (clickedOn(e, 'A', 'load')) {
-                self.file_loader.trigger('load');
+                self.load_state('load');
             } else if (clickedOn(e, 'A', 'merge')) {
-                self.file_loader.trigger('merge');
+                self.load_state('merge');
             } else {
                 throw new Error("Unknown action '" + e.target.className + "'");
             }
@@ -167,6 +178,34 @@ function ControlBar(control_bar) {
 
             document.getElementById('panel-' + e.target.getAttribute('data-panel')).classList.toggle('in');
 
+            return;
+        }
+
+        // data-ctlb-command elements trigger a method on the controlbar
+        el = e.target.closest('*[data-ctlb-command]');
+        if (el) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            window.dispatchEvent(new window.CustomEvent('state_command', { detail: {
+                fn: self[el.getAttribute("data-ctlb-command")].bind.apply(
+                    self[el.getAttribute("data-ctlb-command")],
+                    [self].concat(JSON.parse(el.getAttribute("data-ctlb-command-args") || "[]")),
+                ),
+            }}));
+            return;
+        }
+
+        el = e.target.closest('button[data-cm-command]');
+        if (el) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            cm_command.dispatch(
+                window,
+                el.getAttribute("data-cm-command"),
+                JSON.parse(el.getAttribute("data-cm-command-args") || "[]"),
+            );
             return;
         }
     });
@@ -187,7 +226,7 @@ function ControlBar(control_bar) {
         }
         this.change_timeout = window.setTimeout(function () {
             var new_search = {},
-                form = control_bar.querySelector('section.current form');
+                form = control_bar.querySelector('details[open] form');
             if (!form) {
                 // Don't try and commit changes until there's a current section (i.e. the form has finished loading)
                 // NB: This is triggered by updating noUiSlider on load
@@ -195,14 +234,14 @@ function ControlBar(control_bar) {
             }
 
             // Unchecked checkboxes should be emptied if not mentioned
-            Array.prototype.forEach.call(control_bar.querySelectorAll('section.current input[type=checkbox]:not(:checked)'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('details[open] input[type=checkbox]:not(:checked)'), function (el, i) {
                 new_search[el.name] = [];
             });
 
             jQuery(form).serializeArray().forEach(function (f) {
                 if (Array.isArray(new_search[f.name])) {
                     new_search[f.name].push(f.value);
-                } else if (new_search.hasOwnProperty(f.name)) {
+                } else if (Object.hasOwn(new_search, f.name)) {
                     new_search[f.name] = [new_search[f.name], f.value];
                 } else {
                     new_search[f.name] = [f.value];
@@ -210,7 +249,7 @@ function ControlBar(control_bar) {
             });
 
             // Empty select boxes should be empty
-            Array.prototype.forEach.call(control_bar.querySelectorAll('section.current select[multiple]'), function (el, i) {
+            Array.prototype.forEach.call(control_bar.querySelectorAll('details[open] select[multiple]'), function (el, i) {
                 new_search[el.name] = jQuery(el).val();
             });
 
@@ -253,10 +292,15 @@ function ControlBar(control_bar) {
     if (window.document.getElementById('panel-tag-columns')) {
         this.panels['tag-columns'] = new PanelTagColumns(window.document.getElementById('panel-tag-columns'));
     }
+}
 
-    // Add file loader
-    this.file_loader = filesystem.file_loader(document, function (file, load_mode) {
-        var new_state = filesystem.file_to_state(file);
+ControlBar.prototype.load_state = function load_state(load_mode) {
+    var self = this;
+
+    return bfa.fileOpen().then(function (file) {
+        return file.text();
+    }).then(function (content) {
+        var new_state = filesystem.file_to_state(content);
 
         if (load_mode === 'merge') {
             new_state.state = concordance_utils.merge_tags({
@@ -266,8 +310,10 @@ function ControlBar(control_bar) {
         }
 
         window.dispatchEvent(new window.CustomEvent('state_new', { detail: new_state }));
+    }).catch(function (err) {
+        if (err.name !== 'AbortError') { throw err; }
     });
-}
+};
 
 /** addEventListner, but record entries in self.event_listeners for removal on shutdown */
 ControlBar.prototype.recordEventListener = function (target, type, listener) {
@@ -305,13 +351,19 @@ ControlBar.prototype.reload = function reload(page_state) {
         self.corpora = corpora;
 
         // Enable the section for the page
-        Array.prototype.forEach.call(self.control_bar.querySelectorAll('section'), function (el, i) {
-            el.classList.toggle('current', '/' + el.getAttribute('data-name') === page_state.doc());
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll('details[data-name]'), function (el, i) {
+            if ('/' + el.getAttribute('data-name') === page_state.doc()) {
+                el.setAttribute('open', 'open');
+
+                scrollDetailsIntoView(el);
+            } else {
+                el.removeAttribute('open');
+            }
         });
-        elements = (self.control_bar.querySelector('section.current form') || {elements: []}).elements;
+        elements = (self.control_bar.querySelector('details[open] form') || {elements: []}).elements;
 
         // Recreate tag toggles
-        tag_toggles_el = self.control_bar.querySelectorAll('section.current .tag-toggles')[0];
+        tag_toggles_el = self.control_bar.querySelectorAll('details[open] .tag-toggles')[0];
         if (tag_toggles_el) {
             tag_toggles_el.innerHTML = '';
             self.tag_toggles = Object.keys(page_state.state('tag_columns')).map(function (t) {
@@ -338,77 +390,61 @@ ControlBar.prototype.reload = function reload(page_state) {
             });
         }
 
-        // Hide the KWIC direction slider we're not using
-        if (elements['kwic-int-start'] && elements['kwic-int-end']) {
-            if (page_state.arg('kwic-dir') === 'start') {
-                elements['kwic-int-start'].disabled = false;
-                elements['kwic-int-end'].disabled = true;
-            } else {
-                elements['kwic-int-start'].disabled = true;
-                elements['kwic-int-end'].disabled = false;
+        // Populate selects that need dynamic content
+        Array.prototype.forEach.call(elements, function (el) {
+            if (!el.name || el.tagName === 'FIELDSET') {
+                Math.floor(0);
+            } else if (el.name === 'kwic-int-start') {
+                // Hide the KWIC direction slider we're not using
+                el.disabled = page_state.arg('kwic-dir') !== 'start';
+            } else if (el.name === 'kwic-int-end') {
+                // Hide the KWIC direction slider we're not using
+                el.disabled = page_state.arg('kwic-dir') === 'start';
+            } else if (el.name === "kwic-terms") {
+                // Make sure we consider existing options valid
+                el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
             }
-        }
 
-        // Set values from page options, or defaults
-        Array.prototype.forEach.call(elements, function (el_or_array) {
-            Array.prototype.forEach.call(Array.isArray(el_or_array) ? el_or_array : [el_or_array], function (el) {
-                var new_val = page_state.arg(el.name), existingOptions;
-
-                if (el.tagName === 'FIELDSET') {
-                    Math.floor(0);
-                } else if (el.tagName === 'INPUT' && el.type === "checkbox") {
-                    el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
-                } else if (el.tagName === 'INPUT' && el.type === "radio") {
-                    el.checked = new_val === el.value;
-                } else if (el.tagName === 'INPUT' && el.getAttribute('type') === "nouislider") {
-                    // Trigger slider update
-                    el.slider_div.noUiSlider.set(new_val.split(':'));
-                } else if (el.tagName === 'SELECT') {
-                    if (el.name === "kwic-terms") {
-                        // Make sure we consider existing options valid
-                        el.innerHTML = to_options_html(page_state.arg('kwic-terms'));
-                    } else if (el.name === "corpora" || el.name === "refcorpora") {
-                        // Populate corpora dropdowns
-                        el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
-                            return to_options_html(c.children.map(function (child) {
-                                return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
-                            }), c.title);
-                        }).join("");
-                        // Resolve aliases in corpora selection, and turn back into a flat list
-                        new_val = [].concat.apply([], new_val.map(function (c) {
-                            return corpora.aliases[c] || [c];
-                        }));
-                    } else if (el.name === "book") {
-                        // Populate book dropdowns
-                        el.innerHTML = self.corpora.corpora.map(function (c) {
-                            return to_options_html(c.children.map(function (child) {
-                                return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
-                            }), c.title);
-                        }).join("");
-                    } else if (el.classList.contains("allow-add-items")) {
-                        // We should add any missing items before continuing
-                        existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
-
-                        el.append.apply(el, new_val.filter(function (x) {
-                            // Only want to add items not already in the list
-                            // TODO: When creating new algorithms via. JS, the value is [null]?
-                            return x && !existingOptions.has(x);
-                        }).map(function (x) {
-                            // Turn them into an already-selected Option
-                            return new Option(x, x, true, true);
-                        }));
-                    }
-                    jQuery(el).val(new_val);
-                } else if (Array.isArray(new_val) && new_val.length > 1) {
-                    // Multiple values, assume that there's multiple fields with the same name
-                    el.form.querySelectorAll("*[name='" + el.name + "']").forEach(function (otherEl, i) {
-                        otherEl.value = new_val[i];
-                    });
-                } else {
-                    el.value = new_val;
+            if (el.getAttribute("data-populate") === "corpora") {
+                // Populate corpora dropdowns
+                el.innerHTML = to_options_html(self.corpora.corpora, 'CLiC corpora') + self.corpora.corpora.map(function (c) {
+                    return to_options_html(c.children.map(function (child) {
+                        return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
+                    }), c.title);
+                }).join("");
+                if (!el.name) {
+                    // Clear initial selection if there's no name (otherwise _apply_state will sort it out)
+                    el.selectedIndex = -1;
                 }
-            });
+            } else if (el.getAttribute("data-populate") === "book") {
+                // Populate book dropdowns
+                el.innerHTML = self.corpora.corpora.map(function (c) {
+                    return to_options_html(c.children.map(function (child) {
+                        return { id: child.id, title: child.title + (child.author ? ' (' + child.author + ')' : '') };
+                    }), c.title);
+                }).join("");
+                if (!el.name) {
+                    // Clear initial selection if there's no name (otherwise _apply_state will sort it out)
+                    el.selectedIndex = -1;
+                }
+            }
+
+            if (el.tagName === "SELECT" && el.classList.contains("allow-add-items")) {
+                // We should add any missing items for an allow-add-items
+                const existingOptions = new window.Set(Array.from(el.options).map(function (o) { return o.value; }));
+
+                el.append.apply(el, page_state.arg(el.name).filter(function (x) {
+                    // Only want to add items not already in the list
+                    // TODO: When creating new algorithms via. JS, the value is [null]?
+                    return x && !existingOptions.has(x);
+                }).map(function (x) {
+                    // Turn them into an already-selected Option
+                    return new Option(x, x, true, true);
+                }));
+            }
         });
+
+        self._apply_state(elements, page_state);
 
         // Tell all the chosen's that values are altered
         Array.prototype.forEach.call(self.control_bar.querySelectorAll('.chosen-select,.tomselect'), function (el, i) {
@@ -430,7 +466,7 @@ ControlBar.prototype.reload = function reload(page_state) {
             ));
         });
     }).then(function (data) {
-        return Promise.all(Object.keys(self.panels).map(function (n) { self.panels[n].reload(page_state); })).then(function () {
+        return Promise.all(Object.keys(self.panels).map(function (n) { return self.panels[n].reload(page_state); })).then(function () {
             return data;
         });
     });
@@ -450,13 +486,13 @@ ControlBar.prototype.new_data = function new_data(data) {
     }
 
     if (data.allWords) {
-        el = this.control_bar.querySelector('section.current form').elements['kwic-terms'];
+        el = this.control_bar.querySelector('details[open] form').elements['kwic-terms'];
 
         if (el) {
             // Make sure KWIC term values already selected stay selectable
             prevVal = jQuery(el).val() || [];
 
-            prevVal.map(function (t) {
+            prevVal.forEach(function (t) {
                 data.allWords[t] = true;
             });
 
@@ -467,7 +503,7 @@ ControlBar.prototype.new_data = function new_data(data) {
     }
 
     if (data.chapter_nums || data.chapter_num_selected) {
-        el = this.control_bar.querySelector('section.current form').elements.chapter_num;
+        el = this.control_bar.querySelector('details[open] form').elements.chapter_num;
 
         if (el) {
             if (data.chapter_nums) {
@@ -486,6 +522,68 @@ ControlBar.prototype.tweak = function tweak(page_state) {
     return Promise.all(Object.keys(self.panels).map(function (n) {
         return self.panels[n].tweak(page_state);
     }));
+};
+
+ControlBar.prototype._apply_state = function (elements, page_state) {
+    var self = this;
+
+    // Set values from page options, or defaults
+    Array.prototype.forEach.call(elements, function (el_or_array) {
+        var all_els = el_or_array instanceof window.Element ? [el_or_array] : Array.from(el_or_array);
+        var first_el = all_els[0];
+        var new_val = page_state.arg(first_el.name);
+
+        if (first_el.tagName === 'FIELDSET' || !first_el.name) {
+            Math.floor(0);
+        } else if (first_el.tagName === 'INPUT' && first_el.type === "checkbox") {
+            all_els.forEach(function (el) {
+                el.checked = Array.isArray(new_val) ? new_val.indexOf(el.value) > -1 : (new_val === el.value);
+            });
+        } else if (first_el.tagName === 'INPUT' && first_el.type === "radio") {
+            all_els.forEach(function (el) {
+                el.checked = new_val === el.value;
+            });
+        } else if (first_el.tagName === 'INPUT' && first_el.getAttribute('type') === "nouislider") {
+            if (all_els.length > 1) {
+                throw new Error("There should be only one nouislider with given name");
+            }
+            // Trigger slider update
+            first_el.slider_div.noUiSlider.set(new_val.split(':'));
+        } else if (first_el.tagName === 'SELECT') {
+            if (all_els.length > 1) {
+                throw new Error("There should be only one select with given name");
+            }
+            if (first_el.name === "corpora" || first_el.name === "refcorpora") {
+                // Resolve aliases in corpora selection, and turn back into a flat list
+                new_val = [].concat.apply([], new_val.map(function (c) {
+                    return self.corpora.aliases[c] || [c];
+                }));
+            }
+            jQuery(first_el).val(new_val);
+        } else {
+            if (!Array.isArray(new_val)) {
+                new_val = [new_val];
+            }
+
+            while (all_els.length > 1 && all_els.length > new_val.length) {
+                // Element list too long: Remove some (but stop before we empty the list)
+                all_els[all_els.length - 1].parentElement.removeChild(all_els[all_els.length - 1]);
+                all_els.pop();
+            }
+
+            // First item should be disabled (instead of removed) iff new_val is empty
+            all_els[0].disabled = (new_val.length === 0);
+
+            while (all_els.length < new_val.length) {
+                // Element list too short: Clone first element to add further elements
+                all_els.push(all_els[0].cloneNode());
+                all_els[all_els.length - 2].insertAdjacentElement("afterend", all_els[all_els.length - 1]);
+            }
+            all_els.forEach(function (el, i) {
+                el.value = new_val[i];
+            });
+        }
+    });
 };
 
 module.exports = ControlBar;

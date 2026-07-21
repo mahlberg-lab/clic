@@ -67,24 +67,35 @@ body.iframe #control-bar + .handle {
     padding: 5px;
 }
 
-#control-bar section {
-    flex: 0 0 5rem;
-    transition: flex-grow 0.3s;
-}
-
-#control-bar section.current {
+#control-bar details[open] {
     border-bottom: 1px solid #AAA;
-    flex: 1 0 auto;
 }
 
-#control-bar section header {
+#control-bar details {
+    interpolate-size: allow-keywords;
+}
+#control-bar details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.5s ease;
+}
+#control-bar details[open]::details-content {
+    block-size: auto;
+}
+
+#control-bar summary {
     margin: 0;
     font-size: 1.5rem;
+    list-style: none;
+    cursor: pointer;
 }
-#control-bar section header > a,
-#control-bar section header > a:active,
-#control-bar section header > a:visited,
-#control-bar section header > a:hover {
+#control-bar summary::-webkit-details-marker {
+    display: none;
+}
+#control-bar summary > a,
+#control-bar summary > a:active,
+#control-bar summary > a:visited,
+#control-bar summary > a:hover {
     display: block;
     height: 5rem;
     line-height: 5rem;
@@ -96,17 +107,13 @@ body.iframe #control-bar + .handle {
     text-decoration: none;
 }
 
-#control-bar section.current > header > a {
+#control-bar details[open] > summary > a {
     background: #CCC;
 }
 
-#control-bar section > header + * {
-    display: none;
+#control-bar details > summary + * {
     margin-top: .5rem;
     padding: 5px;
-}
-#control-bar section.current > header + * {
-    display: block;
 }
 
 
@@ -279,6 +286,17 @@ body.iframe #control-bar + .handle {
 
 #control-bar label {
     display: block;
+    margin-top: .3rem;
+    margin-bottom: .2rem;
+}
+#control-bar details > form > p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+#control-bar input[type=checkbox] + label,
+#control-bar input[type=radio] + label {
+    margin-top: 0;
+    margin-bottom: .5rem;
 }
 #control-bar select {
     width: 100%;
@@ -336,4 +354,12 @@ body.iframe #control-bar + .handle {
 #control-bar .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
     border-color: #666;
     color: inherit;
+}
+
+#control-bar .button-group.corpus-insert-char > button {
+    font-size: 200%;
+    width: 4rem;
+    /* NB: Need both to preserve center-alignment */
+    letter-spacing: 0.4rem;
+    text-indent: 0.4rem;
 }

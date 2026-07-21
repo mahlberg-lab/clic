@@ -24,6 +24,8 @@ LIBRARIES_JS = \
     cookieconsent \
     nouislider \
     unidecode \
+    @codemirror/state \
+    @codemirror/view \
 
 LIBRARIES_CSS = \
     node_modules/chosen-js/chosen.css \
@@ -40,16 +42,16 @@ install:
 	./install.sh
 
 test: node_modules/.requirements
-	$(NODE_CMD) node_modules/.bin/tape tests/test_*.js
+	$(NODE_CMD) node_modules/.bin/tape tests/test_*.{js,mjs}
 
 coverage: node_modules/.requirements
-	$(NODE_CMD) node_modules/istanbul/lib/cli.js cover node_modules/tape/bin/tape tests/test_*.js
+	$(NODE_CMD) node_modules/nyc/bin/nyc.js --reporter=lcov --reporter=text-summary --include='lib/**' node_modules/tape/bin/tape tests/test_*.js
 	mkdir -p ../client/www/coverage
 	ln -frs coverage/lcov-report ../client/www/coverage/client
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
 lint: node_modules/.requirements
-	$(NODE_CMD) node_modules/jslint/bin/jslint */*.js
+	$(NODE_CMD) node_modules/xo/dist/cli.js
 
 clean:
 	rm -r -- "node_modules/" || true
@@ -84,15 +86,12 @@ www/css/chosen-sprite.png: node_modules/chosen-js/chosen-sprite.png
 	mkdir -p $(dir $@)
 	cp node_modules/chosen-js/chosen-sprite*.png www/css/
 
-www/js/libraries.min.js: package.json
+www/js/libraries.min.js: package.json build/esbuild.js
 	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../node_modules .)
-	$(NODE_CMD) node_modules/.bin/browserify \
-	        $(foreach l,$(LIBRARIES_JS),-r $(l)) \
-	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
-	        --compress --mangle "reserved=['$$','require','exports']" \
-	        --output $@.mktmp
-	$(call sha1_symlink,js,$@.mktmp,$@)
+	rm -f $@
+	$(NODE_CMD) build/esbuild.js libraries $@ $(LIBRARIES_JS)
+	$(call sha1_symlink,js,$@,$@)
 
 www/css/libraries.min.css: package.json
 	mkdir -p $(dir $@)
@@ -100,18 +99,12 @@ www/css/libraries.min.css: package.json
 	cat $(LIBRARIES_CSS) > $@.mktmp
 	$(call sha1_symlink,css,$@.mktmp,$@)
 
-www/js/%.min.js: lib/%.js lib/*.js package.json
+www/js/%.min.js: lib/%.js lib/*.js lib/*.mjs ../jsclictagger/*.js package.json build/esbuild.js
 	mkdir -p $(dir $@)
 	(cd www/js && ln -sf ../../lib .)
-	$(NODE_CMD) node_modules/.bin/browserify --debug \
-	        $(foreach l,$(LIBRARIES_JS),-x $(l)) \
-	        $< \
-	    | $(NODE_CMD) node_modules/.bin/uglifyjs \
-	        --compress --mangle "reserved=['$$','require','exports']" \
-	        --source-map "content='inline',url='$(notdir $@).map'" \
-	        --output $@.mktmp
-	mv $@.mktmp.map $@.map
-	$(call sha1_symlink,js,$@.mktmp,$@)
+	rm -f $@ $@.map
+	$(NODE_CMD) build/esbuild.js main $< $@ $(LIBRARIES_JS)
+	$(call sha1_symlink,js,$@,$@)
 
 www/css/%.min.css: lib/%.css lib/*.css package.json
 	mkdir -p $(dir $@)
@@ -122,7 +115,7 @@ www/css/%.min.css: lib/%.css lib/*.css package.json
 	    $<
 	$(call sha1_symlink,css,$@,$@)
 
-www/%.html: lib/%.html lib/controlbar.html $(filter-out %.html,$(OUT_FILES)) \
+www/%.html: lib/%.html lib/controlbar*.html $(filter-out %.html,$(OUT_FILES)) \
     $(PROJECT_PATH)/conf.mk \
     build/html_compile.js \
     package.json

@@ -1,7 +1,5 @@
 "use strict";
-/*jslint todo: true, regexp: true, browser: true, unparam: true, plusplus: true */
-/*global Promise, Blob, FileReader */
-var FileSaver = require('file-saver');
+var bfa = require('browser-fs-access');
 var Papa = require('papaparse');
 
 module.exports.format_dt = function (dt) {
@@ -11,7 +9,7 @@ module.exports.format_dt = function (dt) {
 
     // Format header row
     row = ['ID'];
-    dt.columns().header().map(function (el, i) {
+    dt.columns().header().each(function (el, i) {
         if (include_column[i]) {
             if (el.classList.contains('sorting_disabled')) {
                 // It's the count column, ignore that
@@ -30,7 +28,7 @@ module.exports.format_dt = function (dt) {
 
     // Format each cell, skipping over the ones we don't care about.
     row = [row_ids[0]];
-    dt.cells({ search: 'applied' }).render('export').map(function (c, i) {
+    dt.cells({ search: 'applied' }).render('export').each(function (c, i) {
         var col = i % include_column.length;
 
         if (include_column[col]) {
@@ -59,8 +57,8 @@ module.exports.save = function (data) {
         });
     }), { newline: '\r\n' });
     // Prepend a UTF-8 BOM so Excel opens the file as Unicode
-    blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv;charset=utf-8" });
-    FileSaver.saveAs(blob, filename);
+    blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv" });
+    return bfa.fileSave(blob, { fileName: filename });
 };
 
 /** Turn a CSV file into state object **/
@@ -90,7 +88,7 @@ module.exports.file_to_state = function (file) {
     }
 
     // Populate tag values if any where found
-    (tag_column_offset !== null ? rows.slice(1) : []).map(function (line) {
+    (tag_column_offset !== null ? rows.slice(1) : []).forEach(function (line) {
         var j;
 
         for (j = 0; j < tag_column_order.length; j++) {
@@ -107,34 +105,4 @@ module.exports.file_to_state = function (file) {
             tag_column_order: tag_column_order,
         }
     };
-};
-
-/** Generate a hidden file field attached to page which tries to upload when trigger is called */
-module.exports.file_loader = function file_loader(document, fn) {
-    var el = document.createElement('SPAN');
-
-    // Create input element
-    el.innerHTML = '<label for="file" style="display: none;">File system</label><input type="file" title="file" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">';
-    el = el.children[1];
-    document.body.appendChild(el);
-
-    // Attach events
-    el.addEventListener('change', function (e) {
-        var reader = new FileReader();
-
-        reader.onload = function (load_ev) {
-            fn.apply(this, [load_ev.target.result].concat(el.trigger_args));
-        };
-        reader.readAsText(e.target.files[0], "utf-8");
-
-        // Clear value so we can do it again later
-        el.value = "";
-    });
-
-    // Trigger function
-    el.trigger = function () {
-        el.trigger_args = Array.prototype.slice.call(arguments);
-        el.click();
-    };
-    return el;
 };

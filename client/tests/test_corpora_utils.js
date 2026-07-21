@@ -1,5 +1,4 @@
 "use strict";
-/*jslint todo: true, regexp: true, nomen: true, browser: true */
 var test = require('tape');
 
 var corpora_utils = require('../lib/corpora_utils.js');

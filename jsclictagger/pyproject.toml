@@ -1,0 +1,13 @@
+[project]
+name = "jsclictagger"
+version = "0.0.0dev0"
+description = "Pyodide-friendly wrapper around clictagger"
+
+[project.optional-dependencies]
+testing = [
+    'pytest',
+    'pytest-cov',
+]
+
+[tool.setuptools.packages.find]
+include = ["jsclictagger"]
