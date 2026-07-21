@@ -289,6 +289,10 @@ body.iframe #control-bar + .handle {
     margin-top: .3rem;
     margin-bottom: .2rem;
 }
+#control-bar details > form > p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
 #control-bar input[type=checkbox] + label,
 #control-bar input[type=radio] + label {
     margin-top: 0;
