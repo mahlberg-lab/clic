@@ -58,7 +58,7 @@ requirements.txt:
 	.venv/bin/pip install ./clictagger || true
 	.venv/bin/pip install -r requirements.txt
 	.venv/bin/pip install -r requirements-to-freeze.txt
-	.venv/bin/pip freeze | grep -v egg=$(EGG_NAME) | grep -vE '^pkg-resources=|^setuptools=|^wheel=' | sed 's|file://$(PWD)/|file:|' > requirements.txt
+	.venv/bin/pip freeze | grep -v egg=$(EGG_NAME) | grep -vE '^pkg-resources=|^setuptools=|^wheel=|^clictagger @' > requirements.txt
 	touch .venv/lib/.requirements
 
 test: .venv/lib/.requirements
