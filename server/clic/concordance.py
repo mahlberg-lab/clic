@@ -309,6 +309,7 @@ def concordance(
     if len(rclass_ids) != 1:
         raise UserError("You must supply exactly one subset", "error")
     like_sets = [parse_query(s) for s in q]
+    like_sets = [[":type:son", "and"]]  # TODO: Hard-coding query, because it won't make it through parse_query
     if len(like_sets) == 0:
         raise UserError("You must supply at least one search term", "error")
     contextsize = int(contextsize[0])
@@ -318,6 +319,42 @@ def concordance(
     metadata = set(metadata)
     book = None
 
+    """
+-- Example contents of a custom type to use in the below
+DROP TABLE IF EXISTS type_dombey_son;
+CREATE TABLE type_dombey_son AS
+SELECT t.book_id
+     , INT4RANGE(LOWER(b.crange), UPPER(t.crange)) crange
+     , ':type:son' ttype
+     , b.ordering ordering
+     , 2 tok_length
+     , ARRAY[b.ttype, t.ttype] orig_ttypes
+  FROM token t
+  JOIN token b ON t.book_id = b.book_id
+              AND t.ordering = b.ordering + 1
+ WHERE t.book_id = 133 AND t.ttype = 'dombey' AND b.ttype IN ('little')
+    UNION ALL
+SELECT t.book_id
+     , INT4RANGE(LOWER(b.crange), UPPER(t.crange)) crange
+     , ':type:son' ttype
+     , b.ordering ordering
+     , 2 tok_length
+     , ARRAY[b.ttype, t.ttype] orig_ttypes
+  FROM token t
+  JOIN token b ON t.book_id = b.book_id
+              AND t.ordering = b.ordering + 1
+ WHERE t.book_id = 133 AND t.ttype = 'fellow' AND b.ttype IN ('little')
+    UNION ALL
+SELECT t.book_id
+     , INT4RANGE(LOWER(t.crange), UPPER(t.crange)) crange
+     , ':type:son' ttype
+     , t.ordering ordering
+     , 1 tok_length
+     , ARRAY[t.ttype] orig_ttypes
+  FROM token t
+ WHERE t.book_id = 133 AND t.ttype = 'son';
+    """
+
     book_cur = cur.connection.cursor()
     st_model_lines = []
     try:
@@ -326,26 +363,56 @@ def concordance(
             # outputs as much as possible, then consider the types around each.
             anchor_offset = find_anchor_offset(*likes)
 
-            query = ""
             params = dict()
-            query += """
+
+            inner_query = """
+                 SELECT ARRAY_POSITION(ARRAY_AGG(t_surrounding.ordering = t.ordering ORDER BY book_id, ordering), TRUE) - %(anchor_offset)s node_start
+                      , ARRAY_AGG(CASE WHEN t_surrounding.ordering < (t.ordering - %(anchor_offset)s) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
+                                       WHEN t_surrounding.ordering > (t.ordering - %(anchor_offset)s + %(total_likes)s - 1) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
+                                       WHEN t_surrounding.part_of ? %(part_of)s THEN t_surrounding.ttype
+                                       ELSE NULL -- part of the node, but not in the right rclass, NULL should fail any node checks later on
+                                        END ORDER BY book_id, ordering) ttypes
+                      , ARRAY_AGG(t_surrounding.crange ORDER BY book_id, ordering) cranges
+                      , MIN(t_surrounding.ordering ORDER BY book_id, ordering) min_ordering
+                   FROM token t_surrounding
+                  WHERE t_surrounding.book_id = t.book_id
+                    AND t_surrounding.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s AND t.ordering - %(anchor_offset)s + (%(total_likes)s - 1) + %(contextsize)s
+            """
+
+            # TODO: This should be picking out relevant tables, and switching on the overal number of types
+            if ':type:son' in likes:
+                # https://www.postgresql.org/docs/current/functions-array.html#ARRAY-FUNCTIONS-TABLE
+                # https://dba.stackexchange.com/a/221411
+                # NB: type_dombey_son has
+                # - ordering: Ordering of first token that this type encompasses
+                # - tok_length: Number of tokens this type encompasses, "mr" "dombey" --> 2
+                # - crange: crange of full type
+                # NB: Can have multiple CROSS JOINs for each instance of a :typ:dombey we need, WHERE t1.ordering < t2.ordering. Add a cust_repl for each row
+                # TODO: This isn't taking into account node/context. In particular, queries without context fall over because there isn't the context to steal nodes from
+                inner_query = """
+                SELECT ts.node_start
+                     , type_repl(ts.ttypes, td.ordering - ts.min_ordering + 1, td.ttype, 0) ttypes -- Replace the first entry with our type, rest will be binned (NB: Shoudn't do the replacement if it's already NULL)
+                     , type_repl(ts.cranges, td.ordering - ts.min_ordering + 1, td.crange, td.tok_length - 1) cranges -- i.e. replace first ordering with our full crange, rest with NULL
+                     , ts.min_ordering min_ordering
+                FROM (""" + inner_query + """) ts
+                CROSS JOIN type_dombey_son td WHERE td.book_id = t.book_id AND td.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s AND t.ordering - %(anchor_offset)s + (%(total_likes)s - 1) + %(contextsize)s
+                """
+
+                # Finalise, dump any NULLs from ttypes/cranges arrays
+                inner_query = """
+                SELECT tsi.node_start
+                     , multi_remove(tsi.ttypes, ARRAY_POSITIONS(tsi.cranges, NULL)) ttypes
+                     , multi_remove(tsi.cranges, ARRAY_POSITIONS(tsi.cranges, NULL)) cranges
+                FROM (""" + inner_query + """) tsi
+                """
+            query = """
                  SELECT t.book_id
                       , c.node_start - 1 node_start -- NB: Postgres is 1-indexed
                       , c.cranges full_tokens
                       , t.part_of
                    FROM token t
                    JOIN LATERAL ( -- i.e. for each valid anchor token, get all tokens around it, including context
-                       SELECT ARRAY_POSITION(ARRAY_AGG(t_surrounding.ordering = t.ordering ORDER BY book_id, ordering), TRUE) - %(anchor_offset)s node_start
-                            , ARRAY_AGG(CASE WHEN t_surrounding.ordering < (t.ordering - %(anchor_offset)s) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
-                                             WHEN t_surrounding.ordering > (t.ordering - %(anchor_offset)s + %(total_likes)s - 1) THEN t_surrounding.ttype -- i.e. part of the context, so rclass irrelevant
-                                             WHEN t_surrounding.part_of ? %(part_of)s THEN t_surrounding.ttype
-                                             ELSE NULL -- part of the node, but not in the right rclass, NULL should fail any node checks later on
-                                              END ORDER BY book_id, ordering) ttypes
-                            , ARRAY_AGG(t_surrounding.crange ORDER BY book_id, ordering) cranges
-                         FROM token t_surrounding
-                        WHERE t_surrounding.book_id = t.book_id
-                          AND t_surrounding.ordering BETWEEN t.ordering - %(anchor_offset)s - %(contextsize)s
-                                             AND t.ordering - %(anchor_offset)s + (%(total_likes)s - 1) + %(contextsize)s
+                   """ + inner_query + """
                    ) c on TRUE
                  WHERE t.book_id IN %(book_ids)s
                    AND t.part_of ? %(part_of)s
@@ -359,13 +426,19 @@ def concordance(
 
             for i, l in enumerate(likes):
                 if i == anchor_offset:
-                    # We should check the main token table for the anchor node, so
-                    # postgres searches for this first
-                    query += "AND t.ttype LIKE %(like_" + str(i) + ")s\n"
+                    if l.startswith(":type:"):
+                        # Replacement hasn't happened for anchor node, so select based on ordering
+                        # TODO: This also should be switching on the type table required
+                        query += " AND EXISTS (SELECT 1 FROM type_dombey_son td WHERE td.book_id = t.book_id AND td.ordering = t.ordering AND td.ttype = %(like_" + str(i) + ")s)"
+                    else:
+                        # We should check the main token table for the anchor node, so
+                        # postgres searches for this first
+                        query += "AND t.ttype LIKE %(like_" + str(i) + ")s\n"
                 else:
                     query += "AND c.ttypes[c.node_start + " + str(i) + "] LIKE %(like_" + str(i) + ")s\n"
                 params["like_" + str(i)] = l
 
+            # print(cur.mogrify(query, params).decode())
             cur.execute(query, params)
             for book_id, node_start, full_tokens, part_of in cur:
                 # Extract portion of tokens that are the node
