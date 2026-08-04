@@ -450,8 +450,8 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     """
     Convert full text + tokens back into wire format
     - full_text: String covering entire area, including window
-    - full_tokens: List of tokens, including window
-    - node_tokens: List of tokens, excluding window
+    - full_tokens: List of upper-exclusive token NumericRanges (i.e. crange), including window
+    - node_tokens: List of upper-exclusive token NumericRanges (i.e. crange), excluding window
     - contextsize: Number of tokens should be in window, if 0 then don't return window
 
     A token is a NumericRange type indicating the range in full_text it corresponds to
@@ -544,3 +544,72 @@ def script_download_st_models():
         model_dir, model_name = os.path.split(os.path.normpath(m))
         model = sentence_transformers.SentenceTransformer(model_name)
         model.save(os.path.join(model_dir, model_name))
+
+
+def script_concordance():
+    """
+    Run a concordance query from the command line, display pretty-printed output.
+    Arguments match the clic.concordance:concordance function.
+    """
+    import argparse
+    import json
+    import re
+    import timeit
+    from .db.cursor import get_script_cursor
+
+    ansi_re = re.compile(r"\x1b\[[0-9;]*m")
+
+    def format_context(ctx):
+        type_idxs = set(ctx.pop())
+        return "".join(
+            ("\x1b[0;37;44m%s\033[0m" % t if i in type_idxs else t).replace("\n\n", " ¶ ").replace("\n", "")
+            for i, t in enumerate(ctx)
+        )
+
+    def pad(cell, width, align):
+        # rjust/center/ljust use len(), which counts invisible ANSI bytes —
+        # measure on a stripped copy and add the shortfall as literal spaces.
+        padding = " " * max(0, width - len(ansi_re.sub("", cell)))
+        if align == "r":
+            return padding + cell
+        if align == "c":
+            half = len(padding) // 2
+            return padding[:half] + cell + padding[half:]
+        return cell + padding
+
+    parser = argparse.ArgumentParser(description=script_concordance.__doc__)
+    parser.add_argument('--corpora', nargs='+', default=['dickens'])
+    parser.add_argument('--subset', default='all')
+    parser.add_argument('-q', nargs='+', default=['fog'])
+    parser.add_argument('--contextsize', default='5')
+    parser.add_argument('--metadata', nargs='+', default=[])
+    args = parser.parse_args()
+
+    with get_script_cursor(for_write=False) as cur:
+        start_time = timeit.default_timer()
+        out = [c for c in concordance(
+            cur,
+            corpora=args.corpora,
+            subset=[args.subset],
+            q=args.q,
+            contextsize=[args.contextsize],
+            metadata=args.metadata,
+        )]
+        end_time = timeit.default_timer()
+        rows = []
+        meta_global = {}
+        for c in out:
+            if isinstance(c, tuple):
+                meta_global.update(c[1])
+                continue
+            meta_position_in_book = c.pop()  # noqa
+            meta_result = c.pop()  # noqa
+            rows.append([format_context(ctx) for ctx in c])
+        aligns = ("r", "c", "l") if rows and len(rows[0]) == 3 else ("l",) * (len(rows[0]) if rows else 0)
+        widths = [max((len(ansi_re.sub("", r[i])) for r in rows), default=0) for i in range(len(aligns))]
+        for r in rows:
+            print("  ".join(pad(cell, widths[i], aligns[i]) for i, cell in enumerate(r)))
+
+        for k, v in meta_global.items():
+            print("%s: %s" % (k, json.dumps(v, indent=True)))
+        print("Query time: %.2f secs" % (end_time - start_time))

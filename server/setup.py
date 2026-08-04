@@ -33,6 +33,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
+            'concordance=clic.concordance:script_concordance',
             'import_corpora_repo=clic.migrate.corpora_repo:script_import_corpora_repo',
             'region_export=clic.migrate.corpora_repo:script_region_export',
             'region_preview=clic.migrate.region_preview:script_region_preview',
