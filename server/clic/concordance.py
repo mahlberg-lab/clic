@@ -450,8 +450,8 @@ def to_conc(full_text, full_tokens, node_tokens, contextsize):
     """
     Convert full text + tokens back into wire format
     - full_text: String covering entire area, including window
-    - full_tokens: List of tokens, including window
-    - node_tokens: List of tokens, excluding window
+    - full_tokens: List of upper-exclusive token NumericRanges (i.e. crange), including window
+    - node_tokens: List of upper-exclusive token NumericRanges (i.e. crange), excluding window
     - contextsize: Number of tokens should be in window, if 0 then don't return window
 
     A token is a NumericRange type indicating the range in full_text it corresponds to
