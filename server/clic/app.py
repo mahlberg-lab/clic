@@ -28,6 +28,7 @@ API_ENDPOINTS = [
     (clic.keyword.keyword, 'stream'),
     (clic.subset.subset, 'stream'),
     (clic.text.text, 'stream'),
+    (clic.metadata.version, 'json'),
     (clic.metadata.corpora, 'json'),
     (clic.metadata.corpora_headlines, 'json'),
     (clic.metadata.corpora_image, 'raw'),

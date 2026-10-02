@@ -73,6 +73,13 @@ upstream uwsgi_${PROJECT_NAME}_server {
 # won't save us.
 uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=${WWW_UWSGI_CACHE_ZONE}:8m inactive=2w max_size=${API_UWSGI_CACHE_SIZE};
 
+# The client fetches /api/version to discover the current corpora version, so it
+# must never be served from cache (otherwise it couldn't detect a re-import).
+map \$uri \$clic_api_no_cache {
+    default      0;
+    /api/version 1;
+}
+
 server {
     listen 80;
     listen [::]:80;
@@ -161,6 +168,8 @@ Disallow: /api/
         # All API results are deterministic, cache them
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
         uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
+        uwsgi_cache_bypass \$clic_api_no_cache;
+        uwsgi_no_cache \$clic_api_no_cache;
         uwsgi_cache_valid 200 302;
         uwsgi_cache_methods GET HEAD;
         # Less thundering herd
