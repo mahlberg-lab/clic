@@ -2,7 +2,10 @@
 set -eu
 
 API_UWSGI_CACHE_PATH="${PROJECT_PATH}/uwsgi_cache"
-WWW_UWSGI_CACHE_KEY="\$uri?\$args?${PROJECT_REV}"
+# NB: $http_x_version_* are version headers echoed back by the client (see
+# client/lib/api.js). It changes when corpora are (re-)imported, so stale cache
+# entries become unreachable without needing import.sh to purge anything.
+WWW_UWSGI_CACHE_KEY="\$uri?\$args?\$http_x_version_clic?\$http_x_version_corpora"
 
 GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
