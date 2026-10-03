@@ -83,6 +83,14 @@ map \$uri \$clic_api_no_cache {
     /api/version 1;
 }
 
+# Requests without X-Version-Clic (e.g. client failed to fetch /api/version, or
+# not from the CLiC client at all) would share an unversioned cache key, so
+# don't cache them.
+map \$http_x_version_clic \$clic_api_no_version {
+    default 0;
+    ""      1;
+}
+
 server {
     listen 80;
     listen [::]:80;
@@ -171,8 +179,8 @@ Disallow: /api/
         # All API results are deterministic, cache them
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
         uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
-        uwsgi_cache_bypass \$clic_api_no_cache;
-        uwsgi_no_cache \$clic_api_no_cache;
+        uwsgi_cache_bypass \$clic_api_no_cache \$clic_api_no_version;
+        uwsgi_no_cache \$clic_api_no_cache \$clic_api_no_version;
         uwsgi_cache_valid 200 302;
         uwsgi_cache_methods GET HEAD;
         # Less thundering herd
