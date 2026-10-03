@@ -77,10 +77,17 @@ body.iframe #control-bar + .handle {
 #control-bar details::details-content {
     block-size: 0;
     overflow: clip;
-    transition: block-size 0.5s ease;
+    transition: block-size 0.5s ease, overflow 0s allow-discrete;
 }
 #control-bar details[open]::details-content {
     block-size: auto;
+    overflow: visible;
+}
+@supports (interpolate-size: allow-keywords) {
+    /* Only stop clipping once the opening animation has finished */
+    #control-bar details[open]::details-content {
+        transition: block-size 0.5s ease, overflow 0s 0.5s allow-discrete;
+    }
 }
 
 #control-bar summary {
