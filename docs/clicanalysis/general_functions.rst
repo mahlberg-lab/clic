@@ -10,11 +10,11 @@ The CLiC functions can be divided into two groups:
 * **A:** The **'Concordance'** and **'Subsets'** tabs both display text
   (patterns) from the selected books in context. This is where you can
   analyse the use of particular words and phrases.
-* **B:** The **'Clusters'** and **'Keywords'** tabs both show lists of
+* **B:** The **'N-grams'** and **'Keywords'** tabs both show lists of
   frequent patterns (without context), but they differ in their
-  applications. The Clusters tab lists frequent words and word sequences ('clusters')
+  applications. The N-grams tab lists frequent words and word sequences ('clusters')
   in a single corpus (or several corpora if you have selected more than one). In the
-  Keywords tab, you can compare the frequency of words and clusters in one corpus with
+  Keywords tab, you can compare the frequency of words and n-grams in one corpus with
   another; CLiC will provide a list of those items that are significantly "overused"
   in the first corpus (for more information, see the :ref:`Keywords` section).
 

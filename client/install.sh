@@ -256,7 +256,8 @@ Disallow: /api/
     location = /concordance { try_files \$uri \$uri.html /index.html; }
     location = /flexiconc { try_files \$uri \$uri.html /index.html; }
     location = /subsets { try_files \$uri \$uri.html /index.html; }
-    location = /clusters { try_files \$uri \$uri.html /index.html; }
+    location = /ngrams { try_files \$uri \$uri.html /index.html; }
+    location = /clusters { return 301 /ngrams\$is_args\$args; }
     location = /keywords { try_files \$uri \$uri.html /index.html; }
     location = /count { try_files \$uri \$uri.html /index.html; }
     location = /text { try_files \$uri \$uri.html /index.html; }

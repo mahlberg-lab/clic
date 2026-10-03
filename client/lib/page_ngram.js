@@ -2,32 +2,32 @@
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
-/* Clusters should link back to an equivalent concordance */
-function renderCluster(data, type, full, meta) {
+/* N-grams should link back to an equivalent concordance */
+function renderNgram(data, type, full, meta) {
     if (type === 'display') {
         return '<a title="Click to find individual concordances" target="_blank"' +
                ' onclick="event.stopPropagation();"' +
-               ' href="' + full.cluster_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
+               ' href="' + full.ngram_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
                '>' + data + '</a>';
     }
 
     return data;
 }
 
-// PageCluster inherits PageTable
-function PageCluster() {
+// PageNgram inherits PageTable
+function PageNgram() {
     return PageTable.apply(this, arguments);
 }
-PageCluster.prototype = Object.create(PageTable.prototype);
+PageNgram.prototype = Object.create(PageTable.prototype);
 
-PageCluster.prototype.init = function () {
+PageNgram.prototype.init = function () {
     PageTable.prototype.init.apply(this, arguments);
 
     this.table_opts.deferRender = true;
     this.table_opts.autoWidth = false;
     this.table_opts.columns = [
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "Cluster", data: "0", render: renderCluster },
+        { title: "N-gram", data: "0", render: renderNgram },
         { title: "Frequency", data: "1"},
     ];
     this.table_opts.order = [[2, "desc"]];
@@ -35,18 +35,18 @@ PageCluster.prototype.init = function () {
     this.table_count_column = 0;
 };
 
-PageCluster.prototype.page_title = function (page_state) {
-    return "CLiC clusters search";
+PageNgram.prototype.page_title = function (page_state) {
+    return "CLiC n-grams search";
 };
 
-PageCluster.prototype.reload = function reload(page_state) {
-    // Make a URL pointing at the concordance page, with the same corpora, use this in cluster links
-    this.table_opts.columns[1].render = renderCluster;
+PageNgram.prototype.reload = function reload(page_state) {
+    // Make a URL pointing at the concordance page, with the same corpora, use this in ngram links
+    this.table_opts.columns[1].render = renderNgram;
 
     return PageTable.prototype.reload.apply(this, arguments);
 };
 
-PageCluster.prototype.reload_data = function reload(page_state) {
+PageNgram.prototype.reload_data = function reload(page_state) {
     var api_opts = {};
 
     // Mangle page_state into the API's required parameters
@@ -61,10 +61,10 @@ PageCluster.prototype.reload_data = function reload(page_state) {
         throw new DisplayError("Please select a subset", "warn");
     }
 
-    return this.cached_get('cluster', api_opts).then(this.post_process.bind(this, page_state));
+    return this.cached_get('ngram', api_opts).then(this.post_process.bind(this, page_state));
 };
 
-PageCluster.prototype.post_process = function (page_state, raw_data) {
+PageNgram.prototype.post_process = function (page_state, raw_data) {
     var i, url_prefix,
         data = raw_data.data || [];
 
@@ -74,11 +74,11 @@ PageCluster.prototype.post_process = function (page_state, raw_data) {
     }}, true).to_url();
 
     for (i = 0; i < data.length; i++) {
-        // Add cluster URL prefix for use in the render function
-        data[i].cluster_url_prefix = url_prefix;
+        // Add ngram URL prefix for use in the render function
+        data[i].ngram_url_prefix = url_prefix;
     }
 
     return raw_data;
 };
 
-module.exports = PageCluster;
+module.exports = PageNgram;

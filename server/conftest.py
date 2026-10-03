@@ -55,11 +55,11 @@ def just_metadata(conc_results):
     raise ValueError("No footer")
 
 
-def format_cluster(cluster_results):
+def format_ngram(ngram_results):
     """Drop footer, just include results"""
-    cluster_results = [x for x in cluster_results if x[0] != 'footer']
-    cluster_results.sort(key=lambda x: x[0])
-    return cluster_results
+    ngram_results = [x for x in ngram_results if x[0] != 'footer']
+    ngram_results.sort(key=lambda x: x[0])
+    return ngram_results
 
 
 def run_tagger(content, *fns):
@@ -80,7 +80,7 @@ def doctest_extras(doctest_namespace):
     doctest_namespace['test_database'] = test_database
     doctest_namespace['format_conc'] = format_conc
     doctest_namespace['just_metadata'] = just_metadata
-    doctest_namespace['format_cluster'] = format_cluster
+    doctest_namespace['format_ngram'] = format_ngram
     doctest_namespace['run_tagger'] = run_tagger
     yield doctest_namespace
 

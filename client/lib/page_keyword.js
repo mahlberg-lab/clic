@@ -2,12 +2,12 @@
 var PageTable = require('./page_table.js');
 var DisplayError = require('./alerts.js').prototype.DisplayError;
 
-/* Clusters should link back to an equivalent concordance */
-function renderCluster(data, type, full, meta) {
+/* N-grams should link back to an equivalent concordance */
+function renderNgram(data, type, full, meta) {
     if (type === 'display') {
         return '<a title="Click to find individual concordances" target="_blank"' +
                ' onclick="event.stopPropagation();"' +
-               ' href="' + full.cluster_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
+               ' href="' + full.ngram_url_prefix + '&conc-q=' + encodeURIComponent(data) + '"' +
                '>' + data + '</a>';
     }
 
@@ -27,7 +27,7 @@ PageKeyword.prototype.init = function () {
     this.table_opts.autoWidth = false;
     this.table_opts.columns = [
         { title: "", defaultContent: "", width: "3rem", sortable: false, searchable: false },
-        { title: "N-gram", data: "1", render: renderCluster },
+        { title: "N-gram", data: "1", render: renderNgram },
         { title: "Target frequency", data: "2"},
         { title: "Ref frequency", data: "4"},
         { title: "LL", data: "8"},
@@ -83,8 +83,8 @@ PageKeyword.prototype.post_process = function (page_state, raw_data) {
     }}, true).to_url();
 
     for (i = 0; i < data.length; i++) {
-        // Add cluster URL prefix for use in the render function
-        data[i].cluster_url_prefix = url_prefix;
+        // Add ngram URL prefix for use in the render function
+        data[i].ngram_url_prefix = url_prefix;
     }
 
     return raw_data;

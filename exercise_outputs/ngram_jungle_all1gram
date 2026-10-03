@@ -1,4 +1,4 @@
-/api/cluster?corpora=jungle&subset=all&clusterlength=1
+/api/ngram?corpora=jungle&subset=all&clusterlength=1
 ["39th",2]
 ["a",1093]
 ["able",6]
@@ -1088,7 +1088,7 @@
 ["india",11]
 ["indian",10]
 ["infantry",3]
-], "info":{"message":"2270 clusters with a frequency less than 2 are not shown"}}
+], "info":{"message":"2270 n-grams with a frequency less than 2 are not shown"}}
 ["inherited",3]
 ["inky",2]
 ["inland",5]

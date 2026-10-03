@@ -1,7 +1,7 @@
-/api/cluster?corpora=vanity&corpora=jungle&subset=longsus&clusterlength=3
+/api/ngram?corpora=vanity&corpora=jungle&subset=longsus&clusterlength=3
 ["after a pause",8]
 ["he said to",5]
-], "info":{"message":"1798 clusters with a frequency less than 5 are not shown"}}
+], "info":{"message":"1798 n-grams with a frequency less than 5 are not shown"}}
 ["said in a",6]
 ["said with a",7]
 {"version":{"clic":"v2.0.1","clic-import":"v2.0.1","corpora":"db61de3"},"data":[
