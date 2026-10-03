@@ -9,6 +9,15 @@ from clic.db.corpora import OLD_ALIASES
 from clic.db.lookup import rclass_id_lookup
 
 
+def version(cur):
+    """
+    Return just the current CLiC code & corpora versions.
+
+    NB: This is deliberately uncached so client/lib/api.js can find the current corpora version
+    """
+    return dict()
+
+
 def corpora(cur):
     """
     Return a list of dicts containing:

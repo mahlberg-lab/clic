@@ -2,7 +2,10 @@
 set -eu
 
 API_UWSGI_CACHE_PATH="${PROJECT_PATH}/uwsgi_cache"
-WWW_UWSGI_CACHE_KEY="\$uri?\$args?${PROJECT_REV}"
+# NB: $http_x_version_* are version headers echoed back by the client (see
+# client/lib/api.js). It changes when corpora are (re-)imported, so stale cache
+# entries become unreachable without needing import.sh to purge anything.
+WWW_UWSGI_CACHE_KEY="\$uri?\$args?\$http_x_version_clic?\$http_x_version_corpora"
 
 GOACCESS_ALLOW="${GOACCESS_ALLOW-}"
 GOACCESS_OUTPUT_DIR="${PROJECT_PATH}/goaccess_www"
@@ -72,6 +75,21 @@ upstream uwsgi_${PROJECT_NAME}_server {
 # NB: inactive items get thrown away entirely, uwsgi_cache_background_update
 # won't save us.
 uwsgi_cache_path ${API_UWSGI_CACHE_PATH} levels=1:2 keys_zone=${WWW_UWSGI_CACHE_ZONE}:8m inactive=2w max_size=${API_UWSGI_CACHE_SIZE};
+
+# The client fetches /api/version to discover the current corpora version, so it
+# must never be served from cache (otherwise it couldn't detect a re-import).
+map \$uri \$clic_api_no_cache {
+    default      0;
+    /api/version 1;
+}
+
+# Requests without X-Version-Clic (e.g. client failed to fetch /api/version, or
+# not from the CLiC client at all) would share an unversioned cache key, so
+# don't cache them.
+map \$http_x_version_clic \$clic_api_no_version {
+    default 0;
+    ""      1;
+}
 
 server {
     listen 80;
@@ -161,6 +179,8 @@ Disallow: /api/
         # All API results are deterministic, cache them
         uwsgi_cache ${WWW_UWSGI_CACHE_ZONE};
         uwsgi_cache_key "${WWW_UWSGI_CACHE_KEY}";
+        uwsgi_cache_bypass \$clic_api_no_cache \$clic_api_no_version;
+        uwsgi_no_cache \$clic_api_no_cache \$clic_api_no_version;
         uwsgi_cache_valid 200 302;
         uwsgi_cache_methods GET HEAD;
         # Less thundering herd

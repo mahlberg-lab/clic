@@ -36,6 +36,9 @@ function api_error_object(data) {
     return e;
 }
 
+// Cache the X-Version-* headers returned by "/api/version"
+var version_headers_promise = null;
+
 module.exports.get = function (endpoint, qs) {
     var opts = {
         headers: {
@@ -43,7 +46,37 @@ module.exports.get = function (endpoint, qs) {
         },
     };
 
-    return window.fetch('/api/' + endpoint + '?' + to_query_string(qs), opts).then(function (response) {
+    // Resolve (once) to the X-Version-* headers from /api/version, which we send on
+    // every API request. X-Version-Corpora forms part of the NGINX cache key (see
+    // client/install.sh), so a corpora re-import naturally busts the cache: new
+    // clients fetch the new version and key their requests under it.
+    //
+    // /api/version is deliberately uncached in NGINX config
+    if (!version_headers_promise) {
+        version_headers_promise = window.fetch('/api/version', {
+            headers: { 'Accept': 'application/json' },
+        }).then(function (response) {
+            var version_headers = {};
+
+            response.headers.forEach(function (v, k) {
+                if (k.toLowerCase().indexOf('x-version-') === 0) {
+                    version_headers[k] = v;
+                }
+            });
+            return version_headers;
+        })['catch'](function () {
+            // Fail open: behave as before, without any version headers
+            return {};
+        });
+    }
+
+    return version_headers_promise.then(function (version_headers) {
+        // Send version headers to use as part of cache-busting key
+        Object.keys(version_headers).forEach(function (k) {
+            opts.headers[k] = version_headers[k];
+        });
+        return window.fetch('/api/' + endpoint + '?' + to_query_string(qs), opts);
+    }).then(function (response) {
         if (response.status === 200) {
             if (response.headers.get('Content-Type') === 'application/json') {
                 return response.json().then(function (data) {
