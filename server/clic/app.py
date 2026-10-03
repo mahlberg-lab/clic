@@ -8,7 +8,7 @@ from flask import Flask, request, Response, jsonify, g, stream_with_context
 from flask_cors import CORS
 
 import clic.concordance
-import clic.cluster
+import clic.ngram
 import clic.count
 import clic.metadata
 import clic.keyword
@@ -22,7 +22,8 @@ from clic.stream_json import stream_json, format_error, JSONEncoder
 
 # API endpoint functions and their view type (see to_view_func)
 API_ENDPOINTS = [
-    (clic.cluster.cluster, 'stream'),
+    (clic.ngram.ngram, 'stream'),
+    (clic.ngram.cluster, 'stream'),  # Deprecated alias of ngram
     (clic.concordance.concordance, 'stream'),
     (clic.count.count, 'stream'),
     (clic.keyword.keyword, 'stream'),

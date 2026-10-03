@@ -4,7 +4,7 @@ var PagePromise = require('./page_promise.js');
 
 var page_classes = {
     '/concordance': require('./page_concordance.js'),
-    '/clusters': require('./page_cluster.js'),
+    '/ngrams': require('./page_ngram.js'),
     '/subsets': require('./page_subset.js'),
     '/flexiconc': require('./page_flexiconc.js'),
     '/keywords': require('./page_keyword.js'),

@@ -40,10 +40,10 @@ or short suspensions. In the example code the subset endpoint is called
 using the ``get_tokens()`` function. The subset endpoint is documented
 at :mod:`clic.subset`.
 
-The *cluster* endpoint is used to retrieve n-grams and their counts. In
-the example code the clusters endpoint is called using the
-``get_clusters()`` function. The cluster endpoint is documented at
-:mod:`clic.cluster`.
+The *ngram* endpoint is used to retrieve n-grams and their counts. In
+the example code the ngrams endpoint is called using the
+``get_ngrams()`` function. The ngram endpoint is documented at
+:mod:`clic.ngram`.
 
 We would be interested to hear about how you use the CLiC API and are
 always happy to consider CLiC related guest posts for the
@@ -158,15 +158,15 @@ Python 3
             return [i.lower() for i in tokens]
         return tokens
 
-    def get_clusters(shortname, length, cutoff=5, subset=None):
+    def get_ngrams(shortname, length, cutoff=5, subset=None):
         """
-        Fetches n-grams using the 'cluster' endpoint.
-        Returns a OrderedDict of clusters to counts.
+        Fetches n-grams using the 'ngram' endpoint.
+        Returns a OrderedDict of ngrams to counts.
 
         - shortname: can be any value from the 'corpus' or 'shortname' columns returned
               by get_lookup() can be a string or a list of strings
-        - length: cluster length to search for, one of 1/3/4/5 (NB: There is no 2)
-        - cutoff: [default: 5] the cutoff frequency, if a cluster occurs less times
+        - length: ngram length to search for, one of 1/3/4/5 (NB: There is no 2)
+        - cutoff: [default: 5] the cutoff frequency, if an n-gram occurs less times
               than this it is not returned
         - subset: [optional] any one of "shortsus", "longsus", "nonquote", "quote"
         """
@@ -178,9 +178,9 @@ Python 3
                 raise ValueError('bad subset parameter: "%s"' % subset)
             query = query + "&subset=%s" % subset
         query = query + "&clusterlength=%d&cutoff=%d" % (length, cutoff)
-        rv = api_request(endpoint="cluster", query=query)
-        clusters = OrderedDict(sorted(rv['data'], key=itemgetter(1), reverse=True))
-        return clusters
+        rv = api_request(endpoint="ngram", query=query)
+        ngrams = OrderedDict(sorted(rv['data'], key=itemgetter(1), reverse=True))
+        return ngrams
 
 
 Find out what texts are available::
@@ -249,10 +249,10 @@ Keep each text separate::
     >>> austen_quotes['emma'][0:9]
     ['poor', 'miss', 'taylor', 'i', 'wish', 'she', 'were', 'here', 'again']
 
-And now lets get some clusters for the Jane Austen novels::
+And now lets get some ngrams for the Jane Austen novels::
 
-    >>> austen_clusters = get_clusters(shortname=wanted, length=5, cutoff=5, subset="quote")
-    >>> print(json.dumps(austen_clusters, indent=2))
+    >>> austen_ngrams = get_ngrams(shortname=wanted, length=5, cutoff=5, subset="quote")
+    >>> print(json.dumps(austen_ngrams, indent=2))
     {
       "i do not know what": 26,
       "i am sure you will": 16,

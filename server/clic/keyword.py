@@ -54,7 +54,7 @@ Or using text files as input:
 import pandas as pd
 import numpy as np
 
-from clic.cluster import get_word_list
+from clic.ngram import get_word_list
 from clic.db.corpora import corpora_to_book_ids
 from clic.db.lookup import api_subset_lookup
 

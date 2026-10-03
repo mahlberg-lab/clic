@@ -19,7 +19,7 @@ CLiC User Guide
    clicanalysis/concordance
    clicanalysis/flexiconc
    clicanalysis/subsets
-   clicanalysis/clusters
+   clicanalysis/ngrams
    clicanalysis/keywords
    clicanalysis/counts
    clicanalysis/texts

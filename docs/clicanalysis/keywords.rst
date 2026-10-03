@@ -6,9 +6,9 @@ Keywords
 The keywords tool finds words (and phrases) that are used significantly
 more often in one corpus compared to another. CLiC incorporates the
 keyword extraction formula reported by [Rayson_Garside_2000]_. Apart
-from comparing single words, CLiC also allows you to compare clusters.
-Whereas the cluster tab focuses only on one corpus, the Keywords
-function can compare cluster lists. You have to make selections for the
+from comparing single words, CLiC also allows you to compare n-grams.
+Whereas the N-grams tab focuses only on one corpus, the Keywords
+function can compare n-gram lists. You have to make selections for the
 following options (also see
 :numref:`figure-analysis-keywords-settings`):
 
@@ -36,7 +36,7 @@ following options (also see
 .. _figure-analysis-keywords-19thcentury:
 .. figure:: ../images/figure-analysis-keywords-19thcentury.png
 
-   Key 5-word clusters in Oliver Twist 'quotes' compared to
+   Key 5-word n-grams in Oliver Twist 'quotes' compared to
    'quotes' in the 19th Century Reference Corpus
 
 Note that you have to select a subset for each of the two corpora or
@@ -48,7 +48,7 @@ Century Reference Corpus (quotes), we retrieve the results displayed in
 (LL) value, the 'keyness' statistic used here (for more details on the
 calculation, please refer to [Rayson_Garside_2000]_).
 
-The frequency threshold of 5 used for the cluster tab is not applied to
+The frequency threshold of 5 used for the N-grams tab is not applied to
 the keyword tab, so that all frequencies are compared. The keyword
 output shows the top 3000 results (for most comparisons, you will yield
 fewer results, though). Moreover, CLiC only generates so-called

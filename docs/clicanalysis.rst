@@ -8,7 +8,7 @@ CLiC analysis tabs
    clicanalysis/concordance
    clicanalysis/flexiconc
    clicanalysis/subsets
-   clicanalysis/clusters
+   clicanalysis/ngrams
    clicanalysis/keywords
    clicanalysis/counts
    clicanalysis/texts
