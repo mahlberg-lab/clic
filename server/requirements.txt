@@ -58,7 +58,7 @@ safetensors==0.5.3
 scikit-learn==1.6.1
 scipy==1.15.2
 scramp==1.4.5
-sentence-transformers==3.4.1
+sentence-transformers==5.6.0
 six==1.16.0
 sympy==1.13.1
 testing.common.database==2.0.3
