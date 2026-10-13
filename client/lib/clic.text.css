@@ -30,15 +30,15 @@
   font-size: 1.7rem;
 }
 
-nav details[data-name="text"] label span {
+nav .highlight-checkboxes label span {
   padding: 0 0.3rem;
   line-height: 1.4em;
 }
 
-nav details[data-name="text"] label.chapter-sentence input + span {
+nav .highlight-checkboxes label.chapter-sentence input + span {
   margin-left: -2px;
 }
-nav details[data-name="text"] label.chapter-sentence input:checked + span {
+nav .highlight-checkboxes label.chapter-sentence input:checked + span {
   border: 1px solid #999;
   border-radius: 2px;
   background: #eee;
@@ -50,22 +50,27 @@ nav details[data-name="text"] label.chapter-sentence input:checked + span {
   background: rgba(0,0,0,0.1);
 }
 
-nav details[data-name="text"] label.quote-quote input:checked + span,
+nav .highlight-checkboxes label.chapter-title input:checked + span,
+.book-content.h-chapter-title:not(.df-dirty) .chapter-title {
+  background: hsl(99, 65%, 80%);
+}
+
+nav .highlight-checkboxes label.quote-quote input:checked + span,
 .book-content.h-quote-quote:not(.df-dirty) .quote-quote {
   background: hsl(205, 65%, 80%);
 }
 
-nav details[data-name="text"] label.quote-suspension-short input:checked + span,
+nav .highlight-checkboxes label.quote-suspension-short input:checked + span,
 .book-content.h-quote-suspension-short:not(.df-dirty) .quote-suspension-short {
   background: hsl(50, 80%, 80%);
 }
 
-nav details[data-name="text"] label.quote-suspension-long input:checked + span,
+nav .highlight-checkboxes label.quote-suspension-long input:checked + span,
 .book-content.h-quote-suspension-long:not(.df-dirty) .quote-suspension-long {
   background: hsl(20, 80%, 80%);
 }
 
-nav details[data-name="text"] label.quote-embedded input:checked + span,
+nav .highlight-checkboxes label.quote-embedded input:checked + span,
 .book-content.h-quote-embedded:not(.df-dirty) .quote-embedded {
   background: hsl(145, 45%, 80%);
 }
