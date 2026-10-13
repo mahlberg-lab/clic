@@ -98,7 +98,7 @@ ControlBarCorpus.prototype.save_regions = function (page_state) {
 
     // Prepend a UTF-8 BOM so Excel opens the file as Unicode
     blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv" });
-    return bfa.fileSave(blob, { fileName: page_state.state("corpus-filename") + '.regions.csv' }).catch(function (err) {
+    return bfa.fileSave(blob, { fileName: page_state.state("corpus-filename").replaceAll(".txt", "") + '.regions.csv' }).catch(function (err) {
         if (err.name === 'AbortError') {
             // User pressed cancel, nothing to do
             return;
