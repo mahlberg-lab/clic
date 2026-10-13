@@ -50,6 +50,11 @@ nav .highlight-checkboxes label.chapter-sentence input:checked + span {
   background: rgba(0,0,0,0.1);
 }
 
+nav .highlight-checkboxes label.chapter-title input:checked + span,
+.book-content.h-chapter-title:not(.df-dirty) .chapter-title {
+  background: hsl(99, 65%, 80%);
+}
+
 nav .highlight-checkboxes label.quote-quote input:checked + span,
 .book-content.h-quote-quote:not(.df-dirty) .quote-quote {
   background: hsl(205, 65%, 80%);
