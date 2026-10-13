@@ -82,6 +82,12 @@ ControlBarCorpus.prototype.save_content = function (page_state) {
         id: "clic-cm-download-file",
         fileName: filename,
         startIn: "downloads",
+    }).catch(function (err) {
+        if (err.name === 'AbortError') {
+            // User pressed cancel, nothing to do
+            return;
+        }
+        throw err;
     });
 };
 
@@ -92,7 +98,13 @@ ControlBarCorpus.prototype.save_regions = function (page_state) {
 
     // Prepend a UTF-8 BOM so Excel opens the file as Unicode
     blob = new Blob([Papa.BYTE_ORDER_MARK + csv], { type: "text/csv" });
-    return bfa.fileSave(blob, { fileName: page_state.state("corpus-filename") + '.regions.csv' });
+    return bfa.fileSave(blob, { fileName: page_state.state("corpus-filename") + '.regions.csv' }).catch(function (err) {
+        if (err.name === 'AbortError') {
+            // User pressed cancel, nothing to do
+            return;
+        }
+        throw err;
+    });
 };
 
 module.exports = ControlBarCorpus;
