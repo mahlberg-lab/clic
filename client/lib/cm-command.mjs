@@ -2,7 +2,6 @@
 const cmView = require('@codemirror/view');
 const cmCommands = require('@codemirror/commands');
 const cmSearch = require('@codemirror/search');
-const cm_apply_typopo = require('./cm-apply-typopo.mjs');
 const cm_insert_quotation = require('./cm-insert-quotation.mjs');
 
 const ViewPlugin = cmView.ViewPlugin;
@@ -11,7 +10,6 @@ const COMMANDS = {
     undo: cmCommands.undo,
     redo: cmCommands.redo,
     'toggle-search-panel': view => cmSearch.closeSearchPanel(view) || cmSearch.openSearchPanel(view),
-    'apply-typopo': cm_apply_typopo.apply_typopo,
     'insert-quotation': cm_insert_quotation.insert_quotation,
 };
 
