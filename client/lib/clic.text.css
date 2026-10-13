@@ -35,6 +35,16 @@ nav .highlight-checkboxes label span {
   line-height: 1.4em;
 }
 
+nav .highlight-checkboxes > .region-spinner {
+  float: right;
+  margin: 0.3rem 0 0 0; /* Match #control-bar label */
+}
+nav .highlight-checkboxes > .region-spinner > button {
+  padding: 0 0.4rem;
+  line-height: 1.2rem;
+  font-size: 0.8rem;
+}
+
 nav .highlight-checkboxes label.chapter-sentence input + span {
   margin-left: -2px;
 }
