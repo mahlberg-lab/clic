@@ -16,21 +16,45 @@
 
     <h4><span>Highlight subsets</span></h4>
     <div class="highlight-checkboxes">
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous chapter title" data-cm-command="region-prev" data-cm-command-args='["chapter.title"]'>▲</button>
+        <button type="button" title="Next chapter title" data-cm-command="region-next" data-cm-command-args='["chapter.title"]'>▼</button>
+      </div>
       <label class="chapter-title">
         <input name="chap-highlight" type="checkbox" value="chapter.title" /><span>Chapter titles</span>
       </label>
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous sentence" data-cm-command="region-prev" data-cm-command-args='["chapter.sentence"]'>▲</button>
+        <button type="button" title="Next sentence" data-cm-command="region-next" data-cm-command-args='["chapter.sentence"]'>▼</button>
+      </div>
       <label class="chapter-sentence">
         <input name="chap-highlight" type="checkbox" value="chapter.sentence" /><span>Sentences</span>
       </label>
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous quote" data-cm-command="region-prev" data-cm-command-args='["quote.quote"]'>▲</button>
+        <button type="button" title="Next quote" data-cm-command="region-next" data-cm-command-args='["quote.quote"]'>▼</button>
+      </div>
       <label class="quote-quote">
         <input name="chap-highlight" type="checkbox" value="quote.quote" /><span>Quotes</span>
       </label>
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous short suspension" data-cm-command="region-prev" data-cm-command-args='["quote.suspension.short"]'>▲</button>
+        <button type="button" title="Next short suspension" data-cm-command="region-next" data-cm-command-args='["quote.suspension.short"]'>▼</button>
+      </div>
       <label class="quote-suspension-short">
         <input name="chap-highlight" type="checkbox" value="quote.suspension.short" /><span>Short suspensions</span>
       </label>
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous long suspension" data-cm-command="region-prev" data-cm-command-args='["quote.suspension.long"]'>▲</button>
+        <button type="button" title="Next long suspension" data-cm-command="region-next" data-cm-command-args='["quote.suspension.long"]'>▼</button>
+      </div>
       <label class="quote-suspension-long">
         <input name="chap-highlight" type="checkbox" value="quote.suspension.long" /><span>Long suspensions</span>
       </label>
+      <div class="button-group region-spinner">
+        <button type="button" title="Previous embedded quote" data-cm-command="region-prev" data-cm-command-args='["quote.embedded"]'>▲</button>
+        <button type="button" title="Next embedded quote" data-cm-command="region-next" data-cm-command-args='["quote.embedded"]'>▼</button>
+      </div>
       <label class="quote-embedded">
         <input name="chap-highlight" type="checkbox" value="quote.embedded" /><span>Embedded quotes</span>
       </label>

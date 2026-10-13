@@ -113,6 +113,65 @@ export function chapter_range_at(view, pos) {
 }
 
 /**
+  * Find the [from, to] range of the next (dir > 0) / previous (dir < 0) region
+  * of rclass, relative to pos, or null if there isn't one.
+  */
+function region_range_from(view, rclass, pos, dir) {
+    const deco = view.state.field(region_decorations_field);
+    // NB: Only the first class, chapter.title adds a chapter-N we're not interested in
+    const cls = region_to_class([rclass]).split(' ')[0];
+    let found = null;
+
+    deco.between(0, view.state.doc.length, (from, to, value) => {
+        if (!value.spec.class || value.spec.class.split(' ')[0] !== cls) {
+            return;
+        }
+
+        if (dir > 0) {
+            if (from > pos) {
+                found = [from, to];
+                return false;
+            }
+        } else if (from < pos) {
+            found = [from, to];
+        } else {
+            return false;
+        }
+    });
+
+    return found;
+}
+
+function region_move(view, rclass, dir) {
+    // NB: Use selection start, so a currently-selected region counts as "here"
+    const range = region_range_from(view, rclass, view.state.selection.main.from, dir);
+    if (!range) {
+        return false;
+    }
+
+    view.dispatch({
+        selection: {anchor: range[0], head: range[1]},
+        effects: EditorView.scrollIntoView(range[0], {y: 'center'}),
+    });
+    view.focus();
+    return true;
+}
+
+/**
+  * CM command: Move cursor to start of next region of rclass
+  */
+export function region_next(view, rclass) {
+    return region_move(view, rclass, 1);
+}
+
+/**
+  * CM command: Move cursor to start of previous region of rclass
+  */
+export function region_prev(view, rclass) {
+    return region_move(view, rclass, -1);
+}
+
+/**
   * Build the editor-attributes extension that adds the book-content + per-region
   * highlight classes to the outer .cm-editor element.
   */

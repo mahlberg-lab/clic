@@ -26,7 +26,7 @@ test('cm-command', async (t) => {
 
     try {
         const {dispatch, cm_command_plugin} = await import('../lib/cm-command.mjs');
-        const {EditorState, EditorSelection} = globalThis.require('@codemirror/state');
+        const {EditorState, EditorSelection, StateEffect} = globalThis.require('@codemirror/state');
         const {EditorView} = globalThis.require('@codemirror/view');
         const {history} = globalThis.require('@codemirror/commands');
 
@@ -90,6 +90,31 @@ test('cm-command', async (t) => {
                 view.state.doc.toString(),
                 '“word”',
                 'insert-quotation received the provided open/close chars',
+            );
+
+            view.destroy();
+            parent.remove();
+        }
+
+        // region-next / region-prev are routed through with the rclass argument
+        {
+            const {view, parent} = make_view('one two three');
+            const {config, view_update_regions} = globalThis.require('./cm-region-decoration.mjs');
+            view.dispatch({effects: StateEffect.appendConfig.of(config)});
+            view_update_regions(view, [['quote.quote', 4, 7], ['quote.quote', 8, 13]]);
+
+            dispatch(globalThis, 'region-next', ['quote.quote']);
+            t.deepEqual(
+                [view.state.selection.main.from, view.state.selection.main.to],
+                [4, 7],
+                'region-next selected the first region',
+            );
+            dispatch(globalThis, 'region-next', ['quote.quote']);
+            dispatch(globalThis, 'region-prev', ['quote.quote']);
+            t.deepEqual(
+                [view.state.selection.main.from, view.state.selection.main.to],
+                [4, 7],
+                'region-prev selected the previous region',
             );
 
             view.destroy();

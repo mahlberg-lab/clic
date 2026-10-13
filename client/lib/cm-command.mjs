@@ -3,6 +3,7 @@ const cmView = require('@codemirror/view');
 const cmCommands = require('@codemirror/commands');
 const cmSearch = require('@codemirror/search');
 const cm_insert_quotation = require('./cm-insert-quotation.mjs');
+const cm_region_decoration = require('./cm-region-decoration.mjs');
 
 const ViewPlugin = cmView.ViewPlugin;
 
@@ -11,6 +12,8 @@ const COMMANDS = {
     redo: cmCommands.redo,
     'toggle-search-panel': view => cmSearch.closeSearchPanel(view) || cmSearch.openSearchPanel(view),
     'insert-quotation': cm_insert_quotation.insert_quotation,
+    'region-next': cm_region_decoration.region_next,
+    'region-prev': cm_region_decoration.region_prev,
 };
 
 /**

@@ -126,7 +126,7 @@
 .button-group > * {
   background: linear-gradient(#fff 0%, #eee 10%);
   border: 1px solid #aaa;
-  border-left-width: none;
+  border-left-width: 0;
   line-height: 2rem;
   padding: 5px;
   margin: 0;
