@@ -3,9 +3,8 @@
     <form>
 
     <div class="button-group">
-      <button data-ctlb-command="load_from_file">Load from file</button>
-      <button data-ctlb-command="save_content">Save to file</button>
-      <button data-ctlb-command="save_regions">Save regions CSV</button>
+      <button data-ctlb-command="load_from_file">Load text from file</button>
+      <button data-ctlb-command="save_content">Save text to file</button>
     </div>
 
     <label for="ctlb-corpus-book">...or, load book from CLiC:</label>
@@ -58,6 +57,10 @@
       <label class="quote-embedded">
         <input name="chap-highlight" type="checkbox" value="quote.embedded" /><span>Embedded quotes</span>
       </label>
+    </div>
+
+    <div class="button-group">
+      <button data-ctlb-command="save_regions">Export all regions to CSV</button>
     </div>
 
     <h4><span>Editing</span></h4>
