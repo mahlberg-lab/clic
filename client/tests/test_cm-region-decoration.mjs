@@ -23,6 +23,8 @@ test('cm-region-decoration', async (t) => {
             view_update_regions,
             chapter_title_pos,
             chapter_range_at,
+            region_next,
+            region_prev,
             view_update_visible_regions,
         } = await import('../lib/cm-region-decoration.mjs');
         const {EditorState} = globalThis.require('@codemirror/state');
@@ -236,6 +238,55 @@ test('cm-region-decoration', async (t) => {
         {
             const {view, parent} = make_view('hello world');
             t.equal(chapter_range_at(view, 5), null, 'no chapter.title regions → null');
+            view.destroy();
+            parent.remove();
+        }
+
+        // region_next / region_prev select the next / previous region of the given rclass
+        {
+            //             0         1
+            //             0123456789012345678
+            const doc = 'one two three four';
+            const {view, parent} = make_view(doc);
+            view_update_regions(view, [
+                ['quote.quote', 4, 7],
+                ['chapter.title', 8, 13, 1],
+                ['quote.quote', 14, 18],
+            ]);
+            const sel = () => [view.state.selection.main.anchor, view.state.selection.main.head];
+
+            view.dispatch({selection: {anchor: 0}});
+            t.equal(region_next(view, 'quote.quote'), true, 'region_next returns true when a region is found');
+            t.deepEqual(sel(), [4, 7], 'region_next selects first quote.quote region, anchored at start');
+            t.equal(region_next(view, 'quote.quote'), true, 'region_next from selected region moves on');
+            t.deepEqual(sel(), [14, 18], 'region_next skips other rclasses to reach next quote.quote');
+            t.equal(region_next(view, 'quote.quote'), false, 'region_next returns false at last region');
+            t.deepEqual(sel(), [14, 18], 'selection unchanged when there is no next region');
+
+            t.equal(region_prev(view, 'quote.quote'), true, 'region_prev returns true when a region is found');
+            t.deepEqual(sel(), [4, 7], 'region_prev from selected region selects the previous one');
+            t.equal(region_prev(view, 'quote.quote'), false, 'region_prev returns false at first region');
+            t.deepEqual(sel(), [4, 7], 'selection unchanged when there is no previous region');
+
+            view.dispatch({selection: {anchor: 5}});
+            t.equal(region_prev(view, 'quote.quote'), true, 'region_prev from inside a region');
+            t.deepEqual(sel(), [4, 7], 'region_prev from inside a region selects that region');
+            view.dispatch({selection: {anchor: 5}});
+            region_next(view, 'quote.quote');
+            t.deepEqual(sel(), [14, 18], 'region_next from inside a region selects the following one');
+
+            view.dispatch({selection: {anchor: 0}});
+            region_next(view, 'chapter.title');
+            t.deepEqual(sel(), [8, 13], 'chapter.title matches despite extra chapter-N class');
+            view.dispatch({selection: {anchor: doc.length}});
+            region_prev(view, 'chapter.title');
+            t.deepEqual(sel(), [8, 13], 'region_prev from doc end finds chapter.title');
+
+            view.dispatch({selection: {anchor: 0}});
+            t.equal(region_next(view, 'quote'), false, 'rclass must match whole class, not a prefix');
+            t.equal(region_next(view, 'quote.embedded'), false, 'unknown rclass returns false');
+            t.equal(region_prev(view, 'quote.embedded'), false, 'unknown rclass returns false for prev');
+            t.deepEqual(sel(), [0, 0], 'selection unchanged when rclass not found');
             view.destroy();
             parent.remove();
         }
