@@ -4,28 +4,6 @@ set -eu
 # shellcheck source=/dev/null
 . /etc/os-release
 
-if [ "$ID" = "debian" ] && [ "$VERSION_ID" -lt "12" ]; then
-    echo "Unsupported debian version ${PRETTY_NAME}, add support to prerequisites.sh"
-    exit 1
-fi
-
-if [ "$ID" = "ubuntu" ]; then
-    BARE_VER="$(echo "${VERSION_ID}" | sed -e 's/.[0-9][0-9]//')"
-    if [ "$BARE_VER" -eq "22" ]; then
-        # nodejs from ubuntu is too old, make sure one has been installed from nodesource
-        if [ -z "$(which nodejs)" ]; then
-            echo "For ubuntu 22.04, nodejs 18 is required, install by fetching a setup script from https://deb.nodesource.com/setup_18.x"
-            exit 1
-        elif nodejs -v | grep -qvE '^v18\.'; then
-            echo "For ubuntu 22.04, nodejs 18 is required, install by fetching a setup script from https://deb.nodesource.com/setup_18.x"
-            exit 1
-        fi
-    elif [ "$BARE_VER" -lt "24" ]; then
-        echo "Unsupported ubuntu version ${PRETTY_NAME}, add support to prerequisites.sh"
-        exit 1
-    fi
-fi
-
 if [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
     apt update
 
@@ -37,7 +15,9 @@ if [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
     # NB: ICU needs to at least be version 56, postgresql at least version 9.5
 
     # Client prerequisites
-    apt install -y make nodejs npm nginx
+    apt install -y make nodejs nginx
+    # NB: nodesource's nodejs includes npm, and conflicts with the distribution's package
+    [ -n "$(which npm)" ] || apt install -y npm
 
     # If you require web traffic to be encrypted (read: production)
     apt install -y dehydrated ssl-cert
