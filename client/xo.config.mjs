@@ -1,7 +1,7 @@
 /** @type {import('xo').FlatXoConfig} */
 const xoConfig = [
     {
-        ignores: ['www/**', 'node_modules/**', 'xo.config.*', 'postcss.config.js'],
+        ignores: ['www/**', 'node_modules*/**', 'xo.config.*', 'postcss.config.js'],
     },
     {
         space: 4,

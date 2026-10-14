@@ -50,8 +50,9 @@ coverage: node_modules/.requirements
 	ln -frs coverage/lcov-report ../client/www/coverage/client
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
+# NB: xo.config.mjs ignores aren't applied before tsconfig lookup, so repeat here
 lint: node_modules/.requirements
-	$(NODE_CMD) node_modules/xo/dist/cli.js
+	$(NODE_CMD) node_modules/xo/dist/cli.js --ignore 'node_modules*/**'
 
 clean:
 	rm -r -- "node_modules/" || true
