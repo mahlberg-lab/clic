@@ -50,8 +50,9 @@ coverage: node_modules/.requirements
 	ln -frs coverage/lcov-report ../client/www/coverage/client
 	echo Visit http://$(WWW_SERVER_NAME)/coverage/client/index.html
 
+# NB: xo.config.mjs ignores aren't applied before tsconfig lookup, so repeat here
 lint: node_modules/.requirements
-	$(NODE_CMD) node_modules/xo/dist/cli.js
+	$(NODE_CMD) node_modules/xo/dist/cli.js --ignore 'node_modules*/**'
 
 clean:
 	rm -r -- "node_modules/" || true
@@ -66,7 +67,11 @@ clean-unused:
 watch:
 	while inotifywait -r lib; do make compile; done
 
-node_modules/.requirements: package.json package-lock.json
+check-node:
+	@echo "Using node $(NODE) $$($(NODE) --version), npm $$(which npm) $$(npm --version)"
+	@$(NODE) -e 'process.features.require_module || (console.error("Node " + process.version + " cannot require() ESM, need >= 20.19.0 or 22.12.0\n *** Install using script from https://deb.nodesource.com/setup_22.x"), process.exit(1))'
+
+node_modules/.requirements: package.json package-lock.json | check-node
 	npm ci
 	touch $@
 
@@ -124,4 +129,4 @@ www/%.html: lib/%.html lib/controlbar*.html $(filter-out %.html,$(OUT_FILES)) \
 	    NODE_PATH="$(CURDIR)" $(NODE) build/html_compile.js $< $@.mktmp $^
 	mv $@.mktmp $@
 
-.PHONY: compile test coverage start install lint clean clean-unused watch
+.PHONY: check-node compile test coverage start install lint clean clean-unused watch
