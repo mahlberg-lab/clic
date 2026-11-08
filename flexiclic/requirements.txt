@@ -1,7 +1,7 @@
 anytree==2.13.0
 attrs==26.1.0
 build==1.2.2
-certifi==2026.5.20
+certifi==2026.10.18
 charset-normalizer==3.4.7
 coverage==7.14.1
 FlexiConc==0.1.12
