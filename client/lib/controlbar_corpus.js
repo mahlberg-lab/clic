@@ -35,6 +35,24 @@ function ControlBarCorpus(control_bar) {
 }
 ControlBarCorpus.prototype = Object.create(ControlBar.prototype);
 
+ControlBarCorpus.prototype.reload = function (page_state) {
+    var self = this;
+
+    return ControlBar.prototype.reload.apply(this, arguments).then(function (data) {
+
+        // Update region spinner disabled status based on associated checkbox
+        Array.prototype.forEach.call(self.control_bar.querySelectorAll("details[data-name='corpus'] .highlight-checkboxes > div"), function (elContainer) {
+            var elCheckbox = elContainer.querySelector("input");
+
+            Array.prototype.forEach.call(elContainer.querySelectorAll("button[data-cm-command]"), function (elButton) {
+                elButton.disabled = !(elCheckbox.checked);
+            });
+        });
+
+        return data;
+    });
+};
+
 ControlBarCorpus.prototype.load_from_clic = function (book) {
     return api.get('text', {corpora: book, regions: ALL_REGIONS}).then(function (data) {
         window.dispatchEvent(new window.CustomEvent('state_new', { detail: {

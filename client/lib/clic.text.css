@@ -30,16 +30,26 @@
   font-size: 1.7rem;
 }
 
+nav .highlight-checkboxes > div {
+  padding: 2px 2px 1px 0;
+  margin: 0.1rem 0;
+}
+nav .highlight-checkboxes > div:has(input:checked) {
+  background: white;
+}
+nav .highlight-checkboxes label {
+  margin: 0 !important;
+}
 nav .highlight-checkboxes label span {
   padding: 0 0.3rem;
   line-height: 1.4em;
 }
 
-nav .highlight-checkboxes > .region-spinner {
+nav .highlight-checkboxes .region-spinner {
   float: right;
-  margin: 0.3rem 0 0 0; /* Match #control-bar label */
+  margin: 0;
 }
-nav .highlight-checkboxes > .region-spinner > button {
+nav .highlight-checkboxes .region-spinner > button {
   padding: 0 0.4rem;
   line-height: 1.2rem;
   font-size: 0.8rem;
