@@ -153,6 +153,10 @@
 .button-group > label:active {
     background: #ccc;
 }
+.button-group > button:disabled {
+  cursor: default;
+  color: #aaa;
+}
 .button-group > input:checked+label {
   background: linear-gradient(#eee 1%,#fff 15%);
 }
