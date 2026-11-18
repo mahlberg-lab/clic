@@ -93,20 +93,6 @@ function PageCorpus(content_el) {
             state: state,
             parent: content_el
         });
-
-        // Add region-refresh button to recalc regions when dirty
-        content_el.insertAdjacentHTML("beforeend", '<div id="confirm-region-refresh" class="button-group"><button><div class="icon">↺</div><div class="text">Recalc Regions</div></button></div>');
-        content_el.lastElementChild.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            window.dispatchEvent(new window.CustomEvent('state_update', { detail: {
-                state: {
-                    "corpus-content": this.view.state.doc.toString(),
-                    "corpus-regions": ["__recalc", "parp"],
-                },
-            }}));
-        }.bind(this));
     };
 
     /**
