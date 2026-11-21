@@ -14,6 +14,11 @@ const txExtender = EditorState.transactionExtender.of(tr => {
         return null;
     }
 
+    const elBtn = globalThis.document.querySelector("#ctlb-corpus-recalc-regions");
+    if (elBtn) {
+        elBtn.disabled = false;
+    }
+
     return {
         effects: comp.reconfigure(EditorView.editorAttributes.of({class: "df-dirty"})),
     };
@@ -28,6 +33,11 @@ export const config = [
   * Clear the dirty flag on the given view.
   */
 export function clear(view) {
+    const elBtn = globalThis.document.querySelector("#ctlb-corpus-recalc-regions");
+    if (elBtn) {
+        elBtn.disabled = true;
+    }
+
     view.dispatch({
         effects: comp.reconfigure(EditorView.editorAttributes.of({class: "df-clean"})),
     });

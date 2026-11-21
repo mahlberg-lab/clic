@@ -99,20 +99,3 @@ nav .highlight-checkboxes label.quote-embedded input:checked + span,
   background: yellow !important;
   font-weight: bold;
 }
-
-#confirm-region-refresh {
-  position: sticky;
-  bottom: 1rem;
-  float: right;
-  transition: opacity 0.3s ease-in;
-}
-.cm-editor:not(.df-dirty) + #confirm-region-refresh {
-  opacity: 0;
-  pointer-events: none;
-}
-#confirm-region-refresh .icon {
-  position: relative;
-  top: 0.3rem;
-  line-height: 4rem;
-  font-size: 5rem;
-}

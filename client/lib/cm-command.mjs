@@ -14,6 +14,16 @@ const COMMANDS = {
     'insert-quotation': cm_insert_quotation.insert_quotation,
     'region-next': cm_region_decoration.region_next,
     'region-prev': cm_region_decoration.region_prev,
+    'recalc-regions': view => globalThis.dispatchEvent(new globalThis.CustomEvent('state_update', {
+        detail: {
+            state: {
+                "corpus-content": view.state.doc.toString(),
+                // NB: The second part is meaningless, but required, since otherwise we may not
+                //     trigger a modified state
+                "corpus-regions": ["__recalc", "regions"],
+            },
+        },
+    })),
 };
 
 /**
